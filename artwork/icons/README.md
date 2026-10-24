@@ -1,0 +1,1 @@
+Put the 24 IPRPS icon PNGs (256×256) here: apps, audio, file-system, finder, folder-archives, folder-code-scripts, folder-desktop, folder-documents, folder-downloads, folder-home, folder-music, folder-network, folder-pictures, folder-root-system, folder-rpg-vault, folder-videos, home, internet, menu, network, security, settings, terminal, trash.

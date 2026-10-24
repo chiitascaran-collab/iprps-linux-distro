@@ -1,0 +1,6 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# Create the standard and IPRPS folders (safe to run at every login)
+command -v xdg-user-dirs-update >/dev/null && xdg-user-dirs-update
+mkdir -p "$HOME/Campaigns/Handouts" "$HOME/Campaigns/Maps" "$HOME/Campaigns/Audio"

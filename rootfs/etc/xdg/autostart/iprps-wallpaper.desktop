@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS Wallpaper
+Exec=/usr/bin/iprps-wallpaper
+NoDisplay=true

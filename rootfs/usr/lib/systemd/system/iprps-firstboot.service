@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+[Unit]
+Description=IPRPS first boot: grow disk, create swap, new keys
+ConditionPathExists=!/var/lib/iprps/firstboot-done
+After=local-fs.target
+Before=display-manager.service sshd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/iprps-firstboot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

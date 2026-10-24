@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+[Unit]
+Description=IPRPS first boot: create the campaign database
+ConditionPathExists=!/var/lib/iprps/db-done
+After=mariadb.service
+Requires=mariadb.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/iprps-db-init
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

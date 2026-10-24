@@ -1,0 +1,22 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-db-init — create the IPRPS database and a unique random application password
+set -e
+PW=$(head -c 48 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24)
+mariadb -u root << SQL
+CREATE DATABASE IF NOT EXISTS iprps CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS 'iprps'@'localhost' IDENTIFIED BY '$PW';
+ALTER USER 'iprps'@'localhost' IDENTIFIED BY '$PW';
+GRANT ALL PRIVILEGES ON iprps.* TO 'iprps'@'localhost';
+FLUSH PRIVILEGES;
+SQL
+mariadb -u root iprps < /usr/share/iprps/schema/iprps-core.sql
+install -dm750 -o root -g apache /etc/iprps
+cat > /etc/iprps/db.php << PHP
+<?php
+return ['host' => 'localhost', 'name' => 'iprps', 'user' => 'iprps', 'pass' => '$PW'];
+PHP
+chown root:apache /etc/iprps/db.php
+chmod 640 /etc/iprps/db.php
+touch /var/lib/iprps/db-done

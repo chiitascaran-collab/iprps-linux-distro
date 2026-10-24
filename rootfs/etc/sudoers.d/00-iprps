@@ -1,0 +1,4 @@
+Defaults secure_path="/usr/sbin:/usr/bin"
+Defaults env_keep += XORG_PREFIX
+Defaults env_keep += XORG_CONFIG
+%wheel ALL=(ALL) ALL

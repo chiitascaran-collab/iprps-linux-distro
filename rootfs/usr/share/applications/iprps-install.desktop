@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Install IPRPS OS to This Computer
+Exec=xfce4-terminal --title "IPRPS Installer" -x sudo /usr/sbin/iprps-install
+Icon=drive-harddisk
+Categories=X-IPRPS;System;

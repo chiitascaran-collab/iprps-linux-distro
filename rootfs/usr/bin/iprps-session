@@ -1,0 +1,12 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-session — Session Master Mode
+iprps-open hub/ &
+sleep 2
+[ -d "$HOME/Campaigns/Audio" ] && mpv --player-operation-mode=pseudo-gui --no-video \
+    --shuffle --loop-playlist=inf --title="IPRPS Ambience" "$HOME/Campaigns/Audio" &
+mkdir -p "$HOME/.iprps/player-display"
+firefox --no-remote --profile "$HOME/.iprps/player-display" --kiosk \
+        "http://localhost/iprps/hub/display.php" &
+wait

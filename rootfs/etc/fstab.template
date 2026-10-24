@@ -1,0 +1,7 @@
+# Begin /etc/fstab  (IPRPS template: 1.2 fills the UUIDs from blkid)
+
+# file system        mount-point  type   options                                  dump fsck
+UUID=<ROOT-UUID>  /            ext4   defaults                                 1    1
+UUID=<EFI-UUID>   /boot/efi    vfat   codepage=437,iocharset=iso8859-1,nofail  0    2
+
+# End /etc/fstab

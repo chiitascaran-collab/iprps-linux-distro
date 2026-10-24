@@ -1,0 +1,21 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# Apply the IPRPS wallpaper on every monitor and workspace (once per user)
+IMG=/usr/share/backgrounds/iprps/iprps-default.png
+DONE="$HOME/.config/iprps/wallpaper-done"
+[ -f "$DONE" ] && exit 0
+for i in $(seq 1 30); do
+  props=$(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep last-image)
+  [ -n "$props" ] && break
+  sleep 1
+done
+for m in $(xrandr --listmonitors 2>/dev/null | awk "NR>1{print \$NF}"); do
+  props="$props /backdrop/screen0/monitor$m/workspace0/last-image"
+done
+n=0
+for p in $(echo $props | tr " " "\n" | sort -u); do
+  xfconf-query -c xfce4-desktop -p "$p" -n -t string -s "$IMG" && n=$((n+1))
+  xfconf-query -c xfce4-desktop -p "${p%last-image}image-style" -n -t int -s 5
+done
+[ "$n" -gt 0 ] && mkdir -p "$HOME/.config/iprps" && touch "$DONE"

@@ -1,0 +1,9 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-open <app-folder> — open an IPRPS web app (for example: iprps-open hub)
+APP="${1:-}"
+for svc in httpd php-fpm mariadb; do
+  systemctl is-active --quiet "$svc" || pkexec systemctl start "$svc"
+done
+exec firefox --new-window "http://localhost/iprps/${APP}"

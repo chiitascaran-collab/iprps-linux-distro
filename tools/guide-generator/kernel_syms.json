@@ -1,0 +1,432 @@
+{
+"AUDIT": [
+"linux-pam"
+],
+"MSDOS_FS": [
+"dosfstools"
+],
+"VFAT_FS": [
+"dosfstools"
+],
+"BLK_DEV": [
+"lvm2"
+],
+"BLK_DEV_RAM": [
+"lvm2"
+],
+"MD": [
+"cryptsetup",
+"lvm2"
+],
+"BLK_DEV_DM": [
+"cryptsetup",
+"lvm2"
+],
+"DM_CRYPT": [
+"cryptsetup",
+"lvm2"
+],
+"DM_SNAPSHOT": [
+"lvm2"
+],
+"DM_THIN_PROVISIONING": [
+"lvm2"
+],
+"DM_CACHE": [
+"lvm2"
+],
+"DM_MIRROR": [
+"lvm2"
+],
+"DM_ZERO": [
+"lvm2"
+],
+"DM_DELAY": [
+"lvm2"
+],
+"MAGIC_SYSRQ": [
+"lvm2"
+],
+"SCSI_LOWLEVEL": [
+"parted"
+],
+"SCSI_DEBUG": [
+"parted"
+],
+"USB_SUPPORT": [
+"cups",
+"gutenprint",
+"libusb",
+"xorg7-input-driver"
+],
+"USB": [
+"libusb",
+"xorg7-input-driver"
+],
+"USB_PCI": [
+"libusb"
+],
+"USB_XHCI_HCD": [
+"libusb"
+],
+"USB_EHCI_HCD": [
+"libusb"
+],
+"USB_OHCI_HCD": [
+"libusb"
+],
+"POSIX_MQUEUE": [
+"lsof"
+],
+"NAMESPACES": [
+"bubblewrap",
+"polkit",
+"upower"
+],
+"USER_NS": [
+"bubblewrap",
+"polkit",
+"upower"
+],
+"DRM": [
+"intel-media-driver",
+"mesa",
+"xorg-server"
+],
+"DRM_RADEON": [
+"mesa"
+],
+"DRM_AMDGPU": [
+"mesa"
+],
+"DRM_AMDGPU_SI": [
+"mesa"
+],
+"DRM_AMDGPU_CIK": [
+"mesa"
+],
+"DRM_AMD_DC": [
+"mesa"
+],
+"DRM_NOUVEAU": [
+"mesa"
+],
+"DRM_I915": [
+"intel-media-driver",
+"mesa"
+],
+"DRM_XE": [
+"intel-media-driver",
+"mesa"
+],
+"DRM_XE_DISPLAY": [
+"mesa"
+],
+"DRM_XE_FORCE_PROBE": [
+"intel-media-driver",
+"mesa"
+],
+"DRM_VGEM": [
+"mesa"
+],
+"DRM_VMWGFX": [
+"mesa",
+"xorg-server"
+],
+"DRM_BOCHS": [
+"xorg-server"
+],
+"DRM_VBOXVIDEO": [
+"xorg-server"
+],
+"SYSFB_SIMPLEFB": [
+"xorg-server"
+],
+"DRM_SIMPLEDRM": [
+"xorg-server"
+],
+"INPUT": [
+"libevdev",
+"libinput",
+"xorg7-input-driver"
+],
+"INPUT_EVDEV": [
+"libevdev",
+"xorg7-input-driver"
+],
+"INPUT_MISC": [
+"libevdev",
+"libinput",
+"xorg7-input-driver"
+],
+"INPUT_UINPUT": [
+"libevdev",
+"libinput",
+"xorg7-input-driver"
+],
+"HID_SUPPORT": [
+"xorg7-input-driver"
+],
+"HID": [
+"xorg7-input-driver"
+],
+"HID_WACOM": [
+"xorg7-input-driver"
+],
+"USB_HID": [
+"xorg7-input-driver"
+],
+"SOUND": [
+"alsa-lib"
+],
+"SND": [
+"alsa-lib"
+],
+"TIMERFD": [
+"bluez"
+],
+"EVENTFD": [
+"bluez"
+],
+"EXPERT": [
+"bluez"
+],
+"NET": [
+"NetworkManager",
+"bluez",
+"iptables"
+],
+"BT": [
+"bluez"
+],
+"BT_BREDR": [
+"bluez"
+],
+"BT_RFCOMM": [
+"bluez"
+],
+"BT_RFCOMM_TTY": [
+"bluez"
+],
+"BT_BNEP": [
+"bluez"
+],
+"BT_BNEP_MC_FILTER": [
+"bluez"
+],
+"BT_BNEP_PROTO_FILTER": [
+"bluez"
+],
+"BT_HIDP": [
+"bluez"
+],
+"BT_HCIBTUSB": [
+"bluez"
+],
+"BT_HCIBTSDIO": [
+"bluez"
+],
+"BT_HCIUART": [
+"bluez"
+],
+"RFKILL": [
+"bluez"
+],
+"CRYPTO": [
+"bluez",
+"cryptsetup",
+"keyutils"
+],
+"CRYPTO_USER": [
+"bluez"
+],
+"CRYPTO_AES": [
+"bluez",
+"cryptsetup"
+],
+"CRYPTO_CCM": [
+"bluez"
+],
+"CRYPTO_CMAC": [
+"bluez"
+],
+"CRYPTO_USER_API_HASH": [
+"bluez"
+],
+"CRYPTO_USER_API_SKCIPHER": [
+"bluez",
+"cryptsetup"
+],
+"CRYPTO_USER_API_AEAD": [
+"bluez"
+],
+"NETFILTER": [
+"iptables"
+],
+"NETFILTER_ADVANCED": [
+"iptables"
+],
+"NF_CONNTRACK": [
+"iptables"
+],
+"NETFILTER_XTABLES": [
+"iptables"
+],
+"NETFILTER_XTABLES_LEGACY": [
+"iptables"
+],
+"NETFILTER_XT_TARGET_LOG": [
+"iptables"
+],
+"IP_NF_IPTABLES": [
+"iptables"
+],
+"IP_NF_NAT": [
+"iptables"
+],
+"INET": [
+"NetworkManager"
+],
+"NET_IPIP": [
+"NetworkManager"
+],
+"NET_IPGRE_DEMUX": [
+"NetworkManager"
+],
+"NET_IPGRE": [
+"NetworkManager"
+],
+"IPV6": [
+"NetworkManager"
+],
+"IPV6_SIT": [
+"NetworkManager"
+],
+"IPV6_GRE": [
+"NetworkManager"
+],
+"IPV6_MULTIPLE_TABLES": [
+"NetworkManager"
+],
+"MPTCP": [
+"NetworkManager"
+],
+"MPTCP_IPV6": [
+"NetworkManager"
+],
+"VLAN_8021Q": [
+"NetworkManager"
+],
+"NET_SCHED": [
+"NetworkManager"
+],
+"NET_SCH_SFQ": [
+"NetworkManager"
+],
+"NET_SCH_TBF": [
+"NetworkManager"
+],
+"NET_SCH_FQ_CODEL": [
+"NetworkManager"
+],
+"NET_SCH_INGRESS": [
+"NetworkManager"
+],
+"NETDEVICES": [
+"NetworkManager"
+],
+"NET_CORE": [
+"NetworkManager"
+],
+"BONDING": [
+"NetworkManager"
+],
+"DUMMY": [
+"NetworkManager"
+],
+"NET_TEAM": [
+"NetworkManager"
+],
+"MACVLAN": [
+"NetworkManager"
+],
+"MACVTAP": [
+"NetworkManager"
+],
+"IPVLAN": [
+"NetworkManager"
+],
+"VXLAN": [
+"NetworkManager"
+],
+"VETH": [
+"NetworkManager"
+],
+"NET_VRF": [
+"NetworkManager"
+],
+"UDMABUF": [
+"gtk4"
+],
+"CRYPTO_TWOFISH": [
+"cryptsetup"
+],
+"CRYPTO_XTS": [
+"cryptsetup"
+],
+"CRYPTO_SHA256": [
+"cryptsetup"
+],
+"KEYS": [
+"keyutils"
+],
+"BIG_KEYS": [
+"keyutils"
+],
+"KEY_DH_OPERATIONS": [
+"keyutils"
+],
+"CRYPTO_RSA": [
+"keyutils"
+],
+"CRYPTO_SHA1": [
+"keyutils"
+],
+"ASYMMETRIC_KEY_TYPE": [
+"keyutils"
+],
+"ASYMMETRIC_PUBLIC_KEY_SUBTYPE": [
+"keyutils"
+],
+"SYSTEM_TRUSTED_KEYRING": [
+"keyutils"
+],
+"X509_CERTIFICATE_PARSER": [
+"keyutils"
+],
+"SECONDARY_TRUSTED_KEYRING": [
+"keyutils"
+],
+"SYSTEM_BLACKLIST_KEYRING": [
+"keyutils"
+],
+"FUSE_FS": [
+"fuse3"
+],
+"CUSE": [
+"fuse3"
+],
+"USB_PRINTER": [
+"cups",
+"gutenprint"
+],
+"PARPORT": [
+"cups"
+],
+"PARPORT_PC": [
+"cups"
+],
+"PRINTER": [
+"cups"
+]
+}

@@ -1,0 +1,55 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-install — copy the running IPRPS system to an internal disk
+set -euo pipefail
+[ $EUID -eq 0 ] || { echo "Please run: sudo iprps-install"; exit 1; }
+SRC_ROOT=$(findmnt -no SOURCE /)
+SRC_DISK=$(lsblk -no PKNAME "$SRC_ROOT")
+echo "Disks on this computer (you are running from: $SRC_DISK):"
+lsblk -d -e 7,11 -o NAME,SIZE,MODEL,TRAN | grep -v "^$SRC_DISK "
+read -rp "Install IPRPS OS to which disk (e.g. nvme0n1 or sda)? " T
+TARGET=/dev/$T
+if [ ! -b "$TARGET" ] || [ "$T" = "$SRC_DISK" ]; then echo "That disk can't be used."; exit 1; fi
+echo; echo "WARNING: EVERYTHING on $TARGET will be ERASED."
+read -rp "Type ERASE to continue: " C; [ "$C" = "ERASE" ] || exit 1
+
+umount "${TARGET}"* 2>/dev/null || true
+wipefs --all "$TARGET"
+sfdisk "$TARGET" << PARTS
+label: gpt
+size=512MiB, type=U, name="EFI"
+size=1MiB,   type=21686148-6449-6E6F-744E-656564454649, name="BIOS boot"
+type=L, name="iprps-root"
+PARTS
+partx -u "$TARGET"; sleep 2
+case "$T" in nvme*|mmcblk*) P="${TARGET}p" ;; *) P="$TARGET" ;; esac
+mkfs.vfat -F 32 "${P}1"
+mkfs.ext4 -F "${P}3"
+
+NEW=/mnt/iprps-target
+mkdir -p "$NEW"
+mount "${P}3" "$NEW"
+mkdir -p "$NEW/boot/efi"
+mount "${P}1" "$NEW/boot/efi"
+rsync -aAXH --info=progress2 \
+  --exclude={/dev/*,/proc/*,/sys/*,/run/*,/tmp/*,/mnt/*,/media/*,/lost+found,/swapfile,/boot/efi/*} \
+  / "$NEW/"
+
+ROOT_UUID=$(blkid -s UUID -o value "${P}3")
+EFI_UUID=$(blkid -s UUID -o value "${P}1")
+OLD_UUID=$(blkid -s UUID -o value "$SRC_ROOT")
+cat > "$NEW/etc/fstab" << FSTAB
+UUID=$ROOT_UUID  /          ext4  defaults                                 1 1
+UUID=$EFI_UUID   /boot/efi  vfat  codepage=437,iocharset=iso8859-1,nofail  0 2
+FSTAB
+sed -i "s/$OLD_UUID/$ROOT_UUID/g" "$NEW/boot/grub/grub.cfg"
+
+for d in dev proc sys run; do mount --rbind "/$d" "$NEW/$d"; done
+chroot "$NEW" grub-install --target=x86_64-efi --efi-directory=/boot/efi --removable
+chroot "$NEW" grub-install --target=i386-pc "$TARGET"
+
+rm -f "$NEW/var/lib/iprps/firstboot-done" "$NEW/etc/ssh/ssh_host_"*
+echo uninitialized > "$NEW/etc/machine-id"
+umount -R "$NEW"
+echo; echo "Done. Shut down, remove the USB drive, and start the computer."

@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+[Unit]
+Description=IPRPS first boot: create the first user
+ConditionPathExists=!/var/lib/iprps/setup-done
+After=iprps-firstboot.service systemd-user-sessions.service
+Before=display-manager.service getty@tty1.service
+Conflicts=getty@tty1.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/iprps-setup
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

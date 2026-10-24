@@ -1,0 +1,135 @@
+# Kernel options BLFS 13.1 lists for packages in the IPRPS build (Part 4.5)
+# OPTION  <-  needed by
+ASYMMETRIC_KEY_TYPE                <- keyutils-1.6.3
+ASYMMETRIC_PUBLIC_KEY_SUBTYPE      <- keyutils-1.6.3
+AUDIT                              <- Linux-PAM-1.7.2
+BIG_KEYS                           <- keyutils-1.6.3
+BLK_DEV                            <- LVM2-2.03.42
+BLK_DEV_DM                         <- cryptsetup-2.8.7, LVM2-2.03.42
+BLK_DEV_RAM                        <- LVM2-2.03.42
+BONDING                            <- NetworkManager-1.58.1
+BT                                 <- BlueZ-5.87
+BT_BNEP                            <- BlueZ-5.87
+BT_BNEP_MC_FILTER                  <- BlueZ-5.87
+BT_BNEP_PROTO_FILTER               <- BlueZ-5.87
+BT_BREDR                           <- BlueZ-5.87
+BT_HCIBTSDIO                       <- BlueZ-5.87
+BT_HCIBTUSB                        <- BlueZ-5.87
+BT_HCIUART                         <- BlueZ-5.87
+BT_HIDP                            <- BlueZ-5.87
+BT_RFCOMM                          <- BlueZ-5.87
+BT_RFCOMM_TTY                      <- BlueZ-5.87
+CRYPTO                             <- BlueZ-5.87, cryptsetup-2.8.7, keyutils-1.6.3
+CRYPTO_AES                         <- BlueZ-5.87, cryptsetup-2.8.7
+CRYPTO_CCM                         <- BlueZ-5.87
+CRYPTO_CMAC                        <- BlueZ-5.87
+CRYPTO_RSA                         <- keyutils-1.6.3
+CRYPTO_SHA1                        <- keyutils-1.6.3
+CRYPTO_SHA256                      <- cryptsetup-2.8.7
+CRYPTO_TWOFISH                     <- cryptsetup-2.8.7
+CRYPTO_USER                        <- BlueZ-5.87
+CRYPTO_USER_API_AEAD               <- BlueZ-5.87
+CRYPTO_USER_API_HASH               <- BlueZ-5.87
+CRYPTO_USER_API_SKCIPHER           <- BlueZ-5.87, cryptsetup-2.8.7
+CRYPTO_XTS                         <- cryptsetup-2.8.7
+CUSE                               <- Fuse-3.18.2
+DM_CACHE                           <- LVM2-2.03.42
+DM_CRYPT                           <- cryptsetup-2.8.7, LVM2-2.03.42
+DM_DELAY                           <- LVM2-2.03.42
+DM_MIRROR                          <- LVM2-2.03.42
+DM_SNAPSHOT                        <- LVM2-2.03.42
+DM_THIN_PROVISIONING               <- LVM2-2.03.42
+DM_ZERO                            <- LVM2-2.03.42
+DRM                                <- intel-media-driver-26.2.4, Mesa-26.1.7, Xorg-Server-21.1.24
+DRM_AMDGPU                         <- Mesa-26.1.7
+DRM_AMDGPU_CIK                     <- Mesa-26.1.7
+DRM_AMDGPU_SI                      <- Mesa-26.1.7
+DRM_AMD_DC                         <- Mesa-26.1.7
+DRM_BOCHS                          <- Xorg-Server-21.1.24
+DRM_I915                           <- intel-media-driver-26.2.4, Mesa-26.1.7
+DRM_NOUVEAU                        <- Mesa-26.1.7
+DRM_RADEON                         <- Mesa-26.1.7
+DRM_SIMPLEDRM                      <- Xorg-Server-21.1.24
+DRM_VBOXVIDEO                      <- Xorg-Server-21.1.24
+DRM_VGEM                           <- Mesa-26.1.7
+DRM_VMWGFX                         <- Mesa-26.1.7, Xorg-Server-21.1.24
+DRM_XE                             <- intel-media-driver-26.2.4, Mesa-26.1.7
+DRM_XE_DISPLAY                     <- Mesa-26.1.7
+DRM_XE_FORCE_PROBE                 <- intel-media-driver-26.2.4, Mesa-26.1.7
+DUMMY                              <- NetworkManager-1.58.1
+EVENTFD                            <- BlueZ-5.87
+EXPERT                             <- BlueZ-5.87
+FUSE_FS                            <- Fuse-3.18.2
+HID                                <- Xorg Input Drivers
+HID_SUPPORT                        <- Xorg Input Drivers
+HID_WACOM                          <- Xorg Input Drivers
+INET                               <- NetworkManager-1.58.1
+INPUT                              <- libevdev 1.13.6, libinput-1.31.3, Xorg Input Drivers
+INPUT_EVDEV                        <- libevdev 1.13.6, Xorg Input Drivers
+INPUT_MISC                         <- libevdev 1.13.6, libinput-1.31.3, Xorg Input Drivers
+INPUT_UINPUT                       <- libevdev 1.13.6, libinput-1.31.3, Xorg Input Drivers
+IPV6                               <- NetworkManager-1.58.1
+IPV6_GRE                           <- NetworkManager-1.58.1
+IPV6_MULTIPLE_TABLES               <- NetworkManager-1.58.1
+IPV6_SIT                           <- NetworkManager-1.58.1
+IPVLAN                             <- NetworkManager-1.58.1
+IP_NF_IPTABLES                     <- iptables-1.8.13
+IP_NF_NAT                          <- iptables-1.8.13
+KEYS                               <- keyutils-1.6.3
+KEY_DH_OPERATIONS                  <- keyutils-1.6.3
+MACVLAN                            <- NetworkManager-1.58.1
+MACVTAP                            <- NetworkManager-1.58.1
+MAGIC_SYSRQ                        <- LVM2-2.03.42
+MD                                 <- cryptsetup-2.8.7, LVM2-2.03.42
+MPTCP                              <- NetworkManager-1.58.1
+MPTCP_IPV6                         <- NetworkManager-1.58.1
+MSDOS_FS                           <- dosfstools-4.2
+NAMESPACES                         <- Bubblewrap-0.11.2, Polkit-127, UPower-1.91.3
+NET                                <- NetworkManager-1.58.1, BlueZ-5.87, iptables-1.8.13
+NETDEVICES                         <- NetworkManager-1.58.1
+NETFILTER                          <- iptables-1.8.13
+NETFILTER_ADVANCED                 <- iptables-1.8.13
+NETFILTER_XTABLES                  <- iptables-1.8.13
+NETFILTER_XTABLES_LEGACY           <- iptables-1.8.13
+NETFILTER_XT_TARGET_LOG            <- iptables-1.8.13
+NET_CORE                           <- NetworkManager-1.58.1
+NET_IPGRE                          <- NetworkManager-1.58.1
+NET_IPGRE_DEMUX                    <- NetworkManager-1.58.1
+NET_IPIP                           <- NetworkManager-1.58.1
+NET_SCHED                          <- NetworkManager-1.58.1
+NET_SCH_FQ_CODEL                   <- NetworkManager-1.58.1
+NET_SCH_INGRESS                    <- NetworkManager-1.58.1
+NET_SCH_SFQ                        <- NetworkManager-1.58.1
+NET_SCH_TBF                        <- NetworkManager-1.58.1
+NET_TEAM                           <- NetworkManager-1.58.1
+NET_VRF                            <- NetworkManager-1.58.1
+NF_CONNTRACK                       <- iptables-1.8.13
+PARPORT                            <- Cups-2.4.19
+PARPORT_PC                         <- Cups-2.4.19
+POSIX_MQUEUE                       <- lsof-4.99.7
+PRINTER                            <- Cups-2.4.19
+RFKILL                             <- BlueZ-5.87
+SCSI_DEBUG                         <- parted-3.7
+SCSI_LOWLEVEL                      <- parted-3.7
+SECONDARY_TRUSTED_KEYRING          <- keyutils-1.6.3
+SND                                <- alsa-lib-1.2.16.1
+SOUND                              <- alsa-lib-1.2.16.1
+SYSFB_SIMPLEFB                     <- Xorg-Server-21.1.24
+SYSTEM_BLACKLIST_KEYRING           <- keyutils-1.6.3
+SYSTEM_TRUSTED_KEYRING             <- keyutils-1.6.3
+TIMERFD                            <- BlueZ-5.87
+UDMABUF                            <- GTK-4.22.4
+USB                                <- libusb-1.0.30, Xorg Input Drivers
+USB_EHCI_HCD                       <- libusb-1.0.30
+USB_HID                            <- Xorg Input Drivers
+USB_OHCI_HCD                       <- libusb-1.0.30
+USB_PCI                            <- libusb-1.0.30
+USB_PRINTER                        <- Cups-2.4.19, Gutenprint-5.3.5
+USB_SUPPORT                        <- Cups-2.4.19, Gutenprint-5.3.5, libusb-1.0.30, Xorg Input Drivers
+USB_XHCI_HCD                       <- libusb-1.0.30
+USER_NS                            <- Bubblewrap-0.11.2, Polkit-127, UPower-1.91.3
+VETH                               <- NetworkManager-1.58.1
+VFAT_FS                            <- dosfstools-4.2
+VLAN_8021Q                         <- NetworkManager-1.58.1
+VXLAN                              <- NetworkManager-1.58.1
+X509_CERTIFICATE_PARSER            <- keyutils-1.6.3

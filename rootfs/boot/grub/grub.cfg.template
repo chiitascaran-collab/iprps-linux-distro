@@ -1,0 +1,17 @@
+set default=0
+set timeout=5
+
+insmod part_gpt
+insmod ext2
+insmod all_video
+search --no-floppy --fs-uuid --set=root <ROOT-UUID>
+
+menuentry "IPRPS OS" {
+        linux   /boot/vmlinuz-7.1.8-iprps root=UUID=<ROOT-UUID> ro rootwait quiet
+        initrd  /boot/initrd.img-7.1.8-iprps
+}
+
+menuentry "IPRPS OS (safe graphics)" {
+        linux   /boot/vmlinuz-7.1.8-iprps root=UUID=<ROOT-UUID> ro rootwait nomodeset
+        initrd  /boot/initrd.img-7.1.8-iprps
+}

@@ -1,0 +1,27 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-setup — create the first user on a new IPRPS installation
+clear
+cat << "TXT"
+
+  ============================================
+            Welcome to IPRPS OS
+  ============================================
+
+  Let's create your account. This takes a minute.
+
+TXT
+read -rp "  User name (lowercase, e.g. alex): " U
+until [[ "$U" =~ ^[a-z][a-z0-9_-]{0,30}$ ]] && ! id "$U" &>/dev/null; do
+  read -rp "  Lowercase letters/numbers, starting with a letter: " U
+done
+useradd -m -G users,wheel,audio,video,iprps -s /bin/bash "$U"
+until passwd "$U"; do echo "  Let's try that again."; done
+read -rp "  Computer name [iprps]: " H
+echo "${H:-iprps}" > /etc/hostname
+read -rp "  Time zone, e.g. America/New_York [UTC]: " TZ
+TZ=${TZ:-UTC}
+[ -f "/usr/share/zoneinfo/$TZ" ] && ln -sf "/usr/share/zoneinfo/$TZ" /etc/localtime
+touch /var/lib/iprps/setup-done
+echo; echo "  All set. Starting the desktop..."; sleep 2

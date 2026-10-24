@@ -1,0 +1,26 @@
+[Icon Theme]
+Name=IPRPS
+Comment=IPRPS OS icons
+Inherits=Adwaita,hicolor
+Directories=256x256/places,256x256/apps,256x256/devices
+
+[256x256/places]
+Size=256
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Places
+
+[256x256/apps]
+Size=256
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Applications
+
+[256x256/devices]
+Size=256
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Devices

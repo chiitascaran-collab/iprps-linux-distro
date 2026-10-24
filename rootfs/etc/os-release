@@ -1,0 +1,7 @@
+NAME="IPRPS OS"
+VERSION="1.0"
+ID=iprps-os
+ID_LIKE=lfs
+VERSION_ID=1.0
+PRETTY_NAME="IPRPS OS 1.0"
+HOME_URL="https://infiniteplane.space/"
