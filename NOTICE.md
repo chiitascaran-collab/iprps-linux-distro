@@ -20,6 +20,8 @@ Each IPRPS OS release image contains many independent programs, each under its o
 ## Trademarks
 
 - **Linux®** is the registered trademark of Linus Torvalds in the U.S. and other countries.
+- **Chromium** in Medium and Advanced is the unbranded, prebuilt **ungoogled-chromium** (BSD-3-Clause, with bundled third-party licenses listed in its `credits.html` / `LICENSE` files inside `/opt/chromium`); IPRPS OS doesn't use the Google Chrome name or logo.
+- **Ollama** (MIT) and the bundled **Qwen3.5 4B** model (Apache-2.0, © the Qwen team, Alibaba Cloud) run the IPRPS Oracle in Medium and Advanced. The model's license ships with it as `/usr/share/iprps/ai/LICENSE-qwen3.5.txt`; `iprps-storyteller` is the unmodified model with IPRPS settings and a system prompt (`ai/Modelfile`).
 - **Firefox** is a trademark of the Mozilla Foundation. IPRPS OS builds Firefox **without** official branding, as Mozilla's trademark policy requires for modified builds.
 - **IPRPS**, **Infinite Plane Role Playing System**, **Mythical Legends Publishing** and their logos are trademarks of Mythical Legends Publishing, LLC. The GPL covers the code and text in this repository, not the use of these names and logos.
 - Other names are trademarks of their respective owners. Mention does not imply endorsement.

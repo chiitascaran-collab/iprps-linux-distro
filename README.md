@@ -23,7 +23,7 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | Purpose | Set up and run campaigns | Essential creative and office apps | Everything |
 | RAM | 6 GB minimum | 8 GB (runs on 6 GB, slower) | 16 GB (runs on 6 GB, slower) |
 | Storage | 64 GB | 64 GB | 128 GB |
-| Highlights | Xfce IPRPS Desktop, Firefox, Evince, Parole, mpv, Wi-Fi, sudo, web server + database | + LibreOffice, GIMP, Inkscape, VLC, FFmpeg, printing | + scanning, FontForge, Graphviz, disc tools, upstream creative apps |
+| Highlights | Xfce IPRPS Desktop, Firefox, Evince, Parole, mpv, Wi-Fi, sudo, web server + database | + IPRPS Oracle (local AI), Chromium (default browser, IPRPS apps as windows), LibreOffice, GIMP, Inkscape, VLC, FFmpeg, printing | + scanning, FontForge, Graphviz, disc tools, upstream creative apps |
 
 ## Repository layout
 
@@ -38,6 +38,8 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `docs/archive/` | The original planning guide (written under the earlier name "IPRPS Linux") |
 | `build-host/` | `iprps-enter.sh` / `iprps-leave.sh`: mount the image and enter the build chroot from Debian on WSL |
 | `rootfs/` | Files installed into the system: first-boot setup, installer, Session Master Mode, desktop and menu defaults, systemd units |
+| `apps/oracle/` | The **IPRPS Oracle**: local AI for Session Masters (Medium and Advanced), PHP + JavaScript, Universal Login |
+| `ai/` | Ollama service, the `iprps-storyteller` Modelfile and system prompt, and `iprps-ai-model` (swap in a custom IPRPS model) |
 | `database/` | `iprps-core.sql`, the campaign and player-tracking schema |
 | `kernel/` | Generic kernel adjustment script and the BLFS-required kernel options |
 | `initramfs/` | IPRPS changes to the BLFS `mkinitramfs` script |
