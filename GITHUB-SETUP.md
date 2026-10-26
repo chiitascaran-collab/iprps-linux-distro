@@ -19,7 +19,7 @@ unzip iprps-os-repo.zip -d .
 cd iprps-os
 git init -b main
 git add .
-git commit -m "IPRPS OS: build guide, scripts, licensing and status as of 2026-10-25"
+git commit -m "IPRPS OS: build guide, scripts, licensing and status as of 2026-10-26"
 git remote add origin https://github.com/<your-account>/iprps-os.git
 git push -u origin main
 ```

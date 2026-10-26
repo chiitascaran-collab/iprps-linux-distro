@@ -1,6 +1,6 @@
 # Build status
 
-*Last updated: 2026-10-25*
+*Last updated: 2026-10-26*
 
 ## Progress
 
@@ -20,7 +20,7 @@
 | Part 10 — Stage F (Apache, PHP-FPM, MariaDB) + campaign schema | ✅ Done | PHP 8.5.12 (fixes CVE-2026-109618/109619) with MariaDB support; MariaDB 12.3.3 without a preset root password |
 | Part 11 — Stage G (Lite apps) | ✅ Done | Node.js, Firefox, Poppler, Evince, Parole, mpv |
 | Part 12 — IPRPS apps | ✅ Done (local) | 32 web apps from the live server, cleaned of keys and hosting passwords (`tools/iprps-clean-apps.py`); Universal Login; 16 local databases; apps to be overhauled before release. Session Master Hub still to be written |
-| Parts 13–14 — Release engineering, Lite release | 🔄 In progress | `iprps-db-init` now covers all app databases (placeholder `@IPRPS_DB_PASS@`); 13.4 empties test data |
+| Parts 13–14 — Release engineering, Lite release | 🔄 In progress | First Lite release image built and boot-tested in QEMU (UEFI); first-boot setup reworked into menus with a time-zone list; real-PC (USB, 6 GB) and installer tests pending |
 | Parts 15–16 — Medium and Advanced | ⏳ Not started | |
 
 ## Decisions log

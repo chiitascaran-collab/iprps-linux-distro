@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-26
+
+- **First-boot setup (13.2)** rebuilt as menu screens: a welcome that describes IPRPS OS, the three editions (showing the installed one), hardware and other limits, then account, full name, password (twice, 8+ characters), computer name and a **time-zone menu** (common US/Canadian zones, or region and city); a summary to confirm or change. `IPRPS_SETUP_DRYRUN=1` previews it.
+- **Release fixes (13.4–13.6):** `mount --make-rslave` and a step-by-step unmount (no more "target is busy"), `/etc/iprps/db.php` removed from release copies, edition placeholders explained, a partition wait before the health check, and QEMU overlay tests (full backing path) plus USB-on-a-real-PC notes (BitLocker) for builders without Hyper-V.
+
 ## 2026-10-25
 
 - **Local AI (Medium and Advanced, Part 15):** **Ollama** as a local-only service (Vulkan for AMD/Intel GPUs, NVIDIA libraries removed) with the bundled **iprps-storyteller** model (Qwen3.5 4B, Apache-2.0, plus the IPRPS Modelfile), and the new **IPRPS Oracle** app (`apps/oracle/`): Session Master chat, seven quick generators, campaign memory from the core database with pinned facts, save to NPCs/quests/session log, and **Show players** on the player display. `iprps-ai-model` installs a custom-trained IPRPS model later without changing the app.
