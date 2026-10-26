@@ -22714,121 +22714,356 @@ EOF
 
 ### 13.4 Release cleanup (on a copy of the image)
 
-At a release checkpoint, **copy** the system image and clean the copy. Replace `<edition>` and `<Edition>` everywhere in 13.4 and 13.5 with the edition (`lite` / `Lite`, `medium` / `Medium`, `advanced` / `Advanced`) before pasting: bash reads `<edition>` as "read from a file named edition" and stops. Your build image stays untouched. In WSL, as root, with the build image unmounted (`iprps-leave.sh`):
+At a release checkpoint, a script **copies** the system image to `/root/release/iprps-os-1.0-<edition>.img` and cleans the copy for release. Your build image is never changed, so you keep building the next edition in it afterwards. You only type the edition once, as a word: `lite`, `medium` or `advanced`.
 
-**[DEBIAN ROOT]**
+What it does, in order:
+
+1. **Checks** that the build image is closed (no chroot, not attached, no MariaDB running in Debian, no QEMU using it) and that there's enough free space. It offers to delete old release files for that edition.
+2. **Copies** the image and opens the copy's root file system at `/mnt/rel`, with `/dev`, `/proc`, `/sys` and `/run` connected one-way (`--make-rslave`), so closing it can't affect Debian.
+3. **Web apps and databases** (inside the copy):
+   - puts `@IPRPS_DB_PASS@` back wherever the test password is (from `/root/iprps-dev-db.txt`);
+   - starts MariaDB and **empties every table** in the core `iprps` database and every `iprps_*` app database (test campaigns, Oracle chats, test accounts and logins, app records), keeping the tables;
+   - gives the `iprps` database user a random password nobody knows, stops MariaDB, and removes `/etc/iprps/db.php`.
+
+   At first boot, `iprps-db-init` (13.1) sets the real password.
+4. **App data:** lists files added to the apps' upload, storage and project folders since installation, and asks whether to delete them from the copy (**y**), keep them (**n**) or stop (**q**).
+5. **General cleanup:**
+   - removes the `builder` account and its sudo rules;
+   - removes `/build`, root's files, command histories and temporary files;
+   - removes the SSH host keys, machine ID and first-boot markers (each installation makes its own), plus Ollama's identity key and the logs;
+   - locks root's password;
+   - sets the edition name (`IPRPS OS 1.0 Lite`) in `/etc/os-release`. The first-boot setup (13.2) shows that name.
+
+   It then prints a check list.
+6. **Trims and closes** the copy (`fstrim`, unmount, detach). If anything fails along the way, it undoes the mounts and says so; run it again and it starts from a fresh copy.
+
+**Install the script once. [DEBIAN ROOT]** Copy it from the repository, or create it with the block below:
 
 ```bash
-mkdir -pv /root/release
-cp -v --sparse=always /root/iprps-system.img /root/release/iprps-os-1.0-<edition>.img
-L=$(losetup -fP --show /root/release/iprps-os-1.0-<edition>.img)
-mkdir -pv /mnt/rel && mount -v ${L}p3 /mnt/rel
-for d in dev proc sys run; do mount --rbind /$d /mnt/rel/$d; done
-mount --make-rslave /mnt/rel
-chroot /mnt/rel /bin/bash
+install -vm755 /mnt/g/IPRPS/iprps-os/build-host/iprps-release-clean.sh /root/
 ```
 
-Inside that chroot, **first the databases and web apps** (this needs `/root/iprps-dev-db.txt`, which the general cleanup below deletes): put the placeholder back where the test password is, empty every table in the IPRPS core database and the app databases (test campaigns, Oracle chats, test accounts, sessions and test records; the tables were loaded structure-only, so everything in them is test data), and retire the test password:
-
-**[RELEASE COPY CHROOT]**
-
 ```bash
-DEV=$(awk '{print $2}' /root/iprps-dev-db.txt)
-grep -rlF "$DEV" /srv/www/iprps | xargs -r sed -i "s/$DEV/@IPRPS_DB_PASS@/g"
-grep -rlF "$DEV" /srv/www/iprps | wc -l                  # 0
-install -dm755 -o mariadb -g mariadb /run/mariadb
-mariadbd-safe --user=mariadb >/dev/null 2>&1 &
-until mariadb-admin -u root ping >/dev/null 2>&1; do sleep 1; done
-for db in $(mariadb -u root -N -e "SHOW DATABASES WHERE \`Database\` = 'iprps' OR \`Database\` LIKE 'iprps\\_%'"); do
-  for t in $(mariadb -u root -N -e "SHOW TABLES" "$db"); do
-    mariadb -u root -e "SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE \`$t\`;" "$db"
-  done; echo "emptied $db"
-done
-mariadb -u root -e "ALTER USER 'iprps'@'localhost' IDENTIFIED BY '$(openssl rand -hex 24)';"
-mariadb-admin -u root shutdown; sleep 3
-rm -f /srv/mariadb/*.err /srv/mariadb/*.pid /etc/iprps/db.php
-```
+cat > /root/iprps-release-clean.sh << "EOF"
+#!/bin/bash
+# iprps-release-clean.sh <lite|medium|advanced> - guide 13.4
+# Copies the build image to /root/release/iprps-os-1.0-<edition>.img and cleans the copy
+# for release. The build image itself is never changed. Run as root in Debian (WSL),
+# with the build chroot closed (iprps-leave.sh).
+set -eu
+case "${1:-}" in lite|medium|advanced) ED=$1 ;; *) echo "usage: $0 lite|medium|advanced"; exit 1 ;; esac
+EDC=${ED^}
+SRC=/root/iprps-system.img
+REL=/root/release
+IMG=$REL/iprps-os-1.0-$ED.img
+MNT=/mnt/rel
+INSIDE=/run/iprps-release-inside.sh     # in Debian's /run, which the chroot sees: nothing lands in the image
+LP=""; OK=0
 
-The apps' **data folders** (uploads, projects, `data/`) must also be back to a brand-new user's state: empty, except files an app needs to start (seed data such as `cineforge/data/vault.json` with its keys removed). Decide this per app when the apps are finalized, and check with `find /srv/www/iprps -type f -newer /srv/www/iprps/auth/auth.php -path '*upload*'`.
+say() { printf '\n\033[1;33m== %s\033[0m\n' "$*"; }
+die() { printf '\n\033[1;31mSTOPPED: %s\033[0m\n' "$*" >&2; exit 1; }
 
-Then the general cleanup:
+# Attach partition 3 (the root file system) by its offset: works without udev partition nodes.
+p3_loop() {
+  local s n
+  read -r s n < <(sfdisk -d "$1" | sed -n 's/.*3 : start= *\([0-9]*\), size= *\([0-9]*\).*/\1 \2/p') || true
+  [ -n "${s:-}" ] || return 1
+  losetup -f --show -o $(( s * 512 )) --sizelimit $(( n * 512 )) "$1"
+}
 
-**[RELEASE COPY CHROOT]**
+unmount_all() {
+  cd /
+  for d in run sys proc dev; do
+    findmnt "$MNT/$d" >/dev/null 2>&1 && { umount -R "$MNT/$d" 2>/dev/null || umount -Rl "$MNT/$d"; }
+  done
+  if findmnt "$MNT" >/dev/null 2>&1; then
+    umount "$MNT" || { echo "Still in use:"; fuser -vm "$MNT" || true; return 1; }
+  fi
+  [ -n "$LP" ] && losetup -d "$LP" 2>/dev/null; LP=""
+  rm -f "$INSIDE"
+}
+on_exit() {
+  [ "$OK" = 1 ] && return
+  echo; echo "Undoing the mounts..."
+  if findmnt "$MNT" >/dev/null 2>&1; then
+    chroot "$MNT" mariadb-admin -u root shutdown >/dev/null 2>&1 || true; sleep 2
+  fi
+  unmount_all || true
+  printf '\033[1;31mThe release copy is incomplete. Your build image is unchanged.\nFix the problem above, then run this script again (it starts from a fresh copy).\033[0m\n'
+}
+trap on_exit EXIT
 
-```bash
-userdel -r builder
+# ---------------------------------------------------------------- checks
+say "Checks"
+[ "$(id -u)" = 0 ] || die "run this as root in Debian"
+[ -f "$SRC" ] || die "$SRC not found"
+findmnt /mnt/iprps >/dev/null 2>&1 && die "the build image is open: leave the chroot (exit) and run /root/iprps-leave.sh"
+[ -z "$(losetup -j "$SRC")" ] || die "the build image is still attached ($(losetup -j "$SRC" | cut -d: -f1)): run /root/iprps-leave.sh"
+findmnt "$MNT" >/dev/null 2>&1 && die "$MNT is in use: unmount it first (see 13.4)"
+pgrep -x mariadbd >/dev/null && die "a MariaDB server is running in Debian: stop it first"
+pgrep -af qemu-system | grep -q "$(basename "$SRC")" && die "QEMU is using the build image: shut that VM down"
+for t in sfdisk losetup fstrim; do command -v $t >/dev/null || die "$t is missing (apt install fdisk util-linux)"; done
+mkdir -p "$REL" "$MNT"
+ls "$REL"/iprps-os-1.0-"$ED".* >/dev/null 2>&1 && {
+  echo "Old $ED release files in $REL:"; ls -lh "$REL"/iprps-os-1.0-"$ED".*
+  read -rp "Delete them and start fresh? [y/N] " a; [[ "$a" =~ ^[Yy] ]] || die "kept the old files"
+  rm -f "$REL"/iprps-os-1.0-"$ED".* "$REL"/SHA256SUMS-"$ED"
+}
+NEED=$(du -B1 "$SRC" | cut -f1); AVAIL=$(df -B1 --output=avail "$REL" | tail -1)
+[ "$AVAIL" -gt $(( NEED + 2*1024*1024*1024 )) ] || die "not enough space in $REL: need $(( NEED/1073741824 + 2 )) GB, have $(( AVAIL/1073741824 )) GB"
+echo "OK: build image closed, $(( AVAIL/1073741824 )) GB free."
+
+# ---------------------------------------------------------------- copy and open
+say "1/4 Copying the build image (a few minutes)"
+cp --sparse=always "$SRC" "$IMG"
+LP=$(p3_loop "$IMG") || die "no partition 3 found in $IMG"
+mount "$LP" "$MNT"
+[ -x "$MNT/bin/bash" ] || die "partition 3 doesn't look like the IPRPS system"
+for d in dev proc sys run; do mount --rbind "/$d" "$MNT/$d"; done
+mount --make-rslave "$MNT"
+echo "Copy: $IMG (root file system on $LP)"
+
+# ---------------------------------------------------------------- the cleanup inside the copy
+cat > "$INSIDE" << 'INSIDE_EOF'
+#!/bin/bash
+set -eu
+EDC=$1; DB_UP=0
+say() { printf '\n\033[1;33m== %s\033[0m\n' "$*"; }
+die() { printf '\n\033[1;31mSTOPPED: %s\033[0m\n' "$*" >&2; exit 1; }
+stop_db() {
+  [ "$DB_UP" = 1 ] || return 0
+  mariadb-admin -u root shutdown >/dev/null 2>&1 || true
+  for i in $(seq 30); do pgrep -x mariadbd >/dev/null || break; sleep 1; done
+  DB_UP=0
+}
+trap stop_db EXIT
+
+say "2/4 Web apps and databases"
+if [ -f /root/iprps-dev-db.txt ]; then
+  DEV=$(awk '{print $2}' /root/iprps-dev-db.txt)
+  [ ${#DEV} -ge 8 ] || die "/root/iprps-dev-db.txt doesn't contain the test password"
+  grep -rlF "$DEV" /srv/www/iprps 2>/dev/null | xargs -r sed -i "s/$DEV/@IPRPS_DB_PASS@/g"
+  LEFT=$(grep -rlF "$DEV" /srv/www/iprps 2>/dev/null | wc -l)
+  [ "$LEFT" = 0 ] || die "the test password is still in $LEFT files"
+  echo "Placeholder restored: $(grep -rlF '@IPRPS_DB_PASS@' /srv/www/iprps 2>/dev/null | wc -l) app files use @IPRPS_DB_PASS@."
+else
+  echo "No /root/iprps-dev-db.txt: skipping the placeholder step."
+  LEFT=$(grep -rlE "(pass|password)['\"]? *(=>|=) *['\"][A-Za-z0-9]{20,}['\"]" /srv/www/iprps 2>/dev/null | wc -l)
+  [ "$LEFT" = 0 ] || echo "Note: $LEFT app files still contain a long password value; check them."
+fi
+
+if [ -d /srv/mariadb/mysql ]; then
+  install -dm755 -o mariadb -g mariadb /run/mariadb
+  mariadbd-safe --user=mariadb >/dev/null 2>&1 &
+  DB_UP=1
+  for i in $(seq 120); do mariadb-admin -u root ping >/dev/null 2>&1 && break; sleep 1; done
+  mariadb-admin -u root ping >/dev/null 2>&1 || die "MariaDB didn't start; see: tail /srv/mariadb/*.err"
+  for db in $(mariadb -u root -N -e "SHOW DATABASES WHERE \`Database\` = 'iprps' OR \`Database\` LIKE 'iprps\\_%'"); do
+    for t in $(mariadb -u root -N -e "SHOW TABLES" "$db"); do
+      mariadb -u root -e "SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE \`$t\`;" "$db"
+    done
+    echo "  emptied $db"
+  done
+  if [ "$(mariadb -u root -N -e "SELECT COUNT(*) FROM mysql.user WHERE User='iprps'")" != 0 ]; then
+    mariadb -u root -e "ALTER USER 'iprps'@'localhost' IDENTIFIED BY '$(openssl rand -hex 24)';"
+    echo "  test password of the 'iprps' database user retired"
+  fi
+  stop_db
+  rm -f /srv/mariadb/*.err /srv/mariadb/*.pid
+  echo "MariaDB stopped."
+else
+  echo "No MariaDB data folder: skipping the databases."
+fi
+rm -f /etc/iprps/db.php
+
+if [ -f /srv/www/iprps/auth/auth.php ]; then
+  mapfile -t F < <(find /srv/www/iprps -type f -newer /srv/www/iprps/auth/auth.php \
+      \( -path '*upload*' -o -path '*/storage/*' -o -path '*/projects/*' \) 2>/dev/null)
+  if [ ${#F[@]} -gt 0 ]; then
+    echo; echo "Files added to app data folders while testing (${#F[@]}):"
+    printf '  %s\n' "${F[@]:0:40}"; [ ${#F[@]} -gt 40 ] && echo "  ... and $(( ${#F[@]} - 40 )) more"
+    read -rp "Delete these from the release copy? [y = delete / n = keep / q = stop] " a
+    case "$a" in
+      [Yy]*) rm -f -- "${F[@]}"; echo "Deleted." ;;
+      [Qq]*) die "stopped so you can check the app data" ;;
+      *) echo "Kept." ;;
+    esac
+  else
+    echo "No test files in the app data folders."
+  fi
+fi
+
+say "3/4 General cleanup"
+id builder >/dev/null 2>&1 && { userdel -r builder 2>/dev/null || userdel builder; rm -rf /home/builder; }
 rm -f /etc/sudoers.d/90-builder-build-only /etc/sudoers.d/xorg
 rm -rf /build /root/* /root/.bash_history /home/*/.bash_history /tmp/* /var/tmp/*
 rm -f /etc/ssh/ssh_host_* /etc/resolv.conf
 echo uninitialized > /etc/machine-id
-rm -rf /var/lib/iprps/*-done
-rm -rf /var/lib/ollama/.ollama          # Medium/Advanced: Ollama's identity key (the models stay)
-rm -rf /var/log/journal/*
-passwd -l root
-sed -i 's/^VERSION=.*/VERSION="1.0 <Edition>"/; s/^PRETTY_NAME=.*/PRETTY_NAME="IPRPS OS 1.0 <Edition>"/' /etc/os-release
-sed -i 's/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION="IPRPS OS 1.0 <Edition>"/' /etc/lsb-release
-exit
+rm -rf /var/lib/iprps/*-done /var/lib/ollama/.ollama /var/log/journal/*
+passwd -l root >/dev/null
+sed -i "s/^VERSION=.*/VERSION=\"1.0 $EDC\"/; s/^PRETTY_NAME=.*/PRETTY_NAME=\"IPRPS OS 1.0 $EDC\"/" /etc/os-release
+[ -f /etc/lsb-release ] && sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION=\"IPRPS OS 1.0 $EDC\"/" /etc/lsb-release
+
+echo
+echo "Check:"
+echo "  builder account:   $(id builder >/dev/null 2>&1 && echo 'STILL THERE' || echo removed)"
+echo "  /root:             $( [ -z "$(ls /root)" ] && echo "empty (shell settings kept)" || ls /root | tr '\n' ' ')"
+echo "  first-boot marks:  $(ls /var/lib/iprps/ 2>/dev/null | grep -c done) left (0 expected)"
+echo "  database settings: $( [ -e /etc/iprps/db.php ] && echo 'STILL THERE' || echo removed)"
+echo "  root password:     $(passwd -S root | awk '{print ($2=="L"||$2=="LK")?"locked":"NOT LOCKED"}')"
+echo "  edition:           $(grep ^PRETTY_NAME /etc/os-release)"
+INSIDE_EOF
+chmod 755 "$INSIDE"
+chroot "$MNT" /bin/bash "$INSIDE" "$EDC"
+
+# ---------------------------------------------------------------- close
+say "4/4 Trimming and closing the copy"
+fstrim -v "$MNT" || true
+unmount_all || die "the copy couldn't be unmounted (see the list above); close what uses it and run: umount $MNT; losetup -d \$(losetup -j $IMG | cut -d: -f1)"
+OK=1
+printf '\n\033[1;32mDone: %s is cleaned and closed.\033[0m\nNext (13.5): /root/iprps-release-pack.sh %s\n' "$IMG" "$ED"
+EOF
+chmod 755 /root/iprps-release-clean.sh
 ```
 
-Back in WSL, release the free space and unmount:
+**Run it.** Take the release snapshot first (Part 14), close the build image (`exit` from the chroot, then `/root/iprps-leave.sh`), and in Debian:
 
 **[DEBIAN ROOT]**
 
 ```bash
-cd /root
-fstrim -v /mnt/rel
-for d in run sys proc dev; do umount -R /mnt/rel/$d || umount -Rl /mnt/rel/$d; done
-umount /mnt/rel
-findmnt /mnt/rel || echo "release copy unmounted"
+/root/iprps-release-clean.sh lite
 ```
 
-Keep this window open for 13.5: it uses `$L`. If the last `umount` says **target is busy**, `fuser -vm /mnt/rel` shows what still uses the copy (often another window inside it); close that and repeat `umount /mnt/rel`. Never use `-l` on `/mnt/rel` itself.
+It takes a few minutes, mostly the copy. Expect `emptied iprps`, `emptied iprps_auth` and so on, one line per app database, and a check list ending with:
+
+```
+  builder account:   removed
+  /root:             empty (shell settings kept)
+  first-boot marks:  0 left (0 expected)
+  database settings: removed
+  root password:     locked
+  edition:           PRETTY_NAME="IPRPS OS 1.0 Lite"
+```
+
+then **Done: … is cleaned and closed.**
+
+| It stops with | Do this |
+|---|---|
+| "the build image is open" / "still attached" | `exit` the chroot, run `/root/iprps-leave.sh`, run the script again |
+| "a MariaDB server is running in Debian" | `pgrep -a mariadbd`; stop it (`kill <number>`), then run again |
+| "not enough space" | Free space in `/root` (old release files, `/root/release/*.qcow2` overlays) |
+| "MariaDB didn't start" | Open the copy and read `/srv/mariadb/*.err`, or send the error to your build notes; the build image is unaffected |
+| "the copy couldn't be unmounted" | It lists what uses `/mnt/rel` (usually another window inside it): close that, then `umount /mnt/rel` and `losetup -d` the device it names |
 
 ### 13.5 Shrink, compress and convert
 
-A smaller image writes faster and fits smaller USB sticks; first boot grows it back to fill the drive. With the copy still attached (`$L` from 13.4):
+A second script turns the cleaned copy into the downloads. Smaller images write faster and fit smaller USB sticks; first boot grows the system back to fill the drive.
 
-**[DEBIAN ROOT]**
+What it does: checks and shrinks the root file system to its minimum, then makes partition 3 that size plus 2 GiB of headroom. It cuts the image file off just after it, and rewrites the partition table at the new size, keeping every disk and partition ID, with the backup GPT at the new end. It checks the shrunk file system again, then makes the three downloads and their checksums. Finally it copies them to `G:\IPRPS\release` and verifies each copy against its checksum.
+
+**Install the script once. [DEBIAN ROOT]**
 
 ```bash
-e2fsck -fy ${L}p3
-resize2fs -M ${L}p3
-BLK=$(dumpe2fs -h ${L}p3 2>/dev/null | awk -F: '/^Block count/{gsub(/ /,"",$2); print $2}')
-BSZ=$(dumpe2fs -h ${L}p3 2>/dev/null | awk -F: '/^Block size/{gsub(/ /,"",$2); print $2}')
+install -vm755 /mnt/g/IPRPS/iprps-os/build-host/iprps-release-pack.sh /root/
+```
+
+```bash
+cat > /root/iprps-release-pack.sh << "EOF"
+#!/bin/bash
+# iprps-release-pack.sh <lite|medium|advanced> - guide 13.5
+# Shrinks the cleaned release copy, checks it, and makes the downloads:
+# .img.xz (USB / disk), .vhdx (Hyper-V), .qcow2 (QEMU), SHA256SUMS. Run as root in Debian (WSL)
+# after iprps-release-clean.sh. Output folder: /mnt/g/IPRPS/release (or set IPRPS_RELEASE_OUT).
+set -eu
+case "${1:-}" in lite|medium|advanced) ED=$1 ;; *) echo "usage: $0 lite|medium|advanced"; exit 1 ;; esac
+REL=/root/release
+NAME=iprps-os-1.0-$ED
+IMG=$REL/$NAME.img
+OUT=${IPRPS_RELEASE_OUT:-/mnt/g/IPRPS/release}
+LP=""
+
+say() { printf '\n\033[1;33m== %s\033[0m\n' "$*"; }
+die() { printf '\n\033[1;31mSTOPPED: %s\033[0m\n' "$*" >&2; exit 1; }
+p3_loop() {
+  local s n
+  read -r s n < <(sfdisk -d "$1" | sed -n 's/.*3 : start= *\([0-9]*\), size= *\([0-9]*\).*/\1 \2/p') || true
+  [ -n "${s:-}" ] || return 1
+  losetup -f --show -o $(( s * 512 )) --sizelimit $(( n * 512 )) "$1"
+}
+trap '[ -n "$LP" ] && losetup -d "$LP" 2>/dev/null; true' EXIT
+
+say "Checks"
+[ "$(id -u)" = 0 ] || die "run this as root in Debian"
+[ -f "$IMG" ] || die "$IMG not found: run /root/iprps-release-clean.sh $ED first"
+[ -z "$(losetup -j "$IMG")" ] || die "$IMG is still attached: $(losetup -j "$IMG" | cut -d: -f1) (losetup -d it)"
+for t in sfdisk e2fsck resize2fs dumpe2fs xz qemu-img sha256sum; do command -v $t >/dev/null || die "$t is missing (apt install fdisk e2fsprogs xz-utils qemu-utils)"; done
+mkdir -p "$OUT" || die "can't create $OUT"
+echo "OK. Downloads will be copied to $OUT"
+
+say "1/5 Checking and shrinking the file system"
+LP=$(p3_loop "$IMG") || die "no partition 3 in $IMG"
+set +e; e2fsck -fy "$LP"; RC=$?; set -e
+[ $RC -le 1 ] || die "e2fsck found problems it couldn't fix (code $RC)"
+resize2fs -M "$LP"
+BLK=$(dumpe2fs -h "$LP" 2>/dev/null | awk -F: '/^Block count/{gsub(/ /,"",$2); print $2}')
+BSZ=$(dumpe2fs -h "$LP" 2>/dev/null | awk -F: '/^Block size/{gsub(/ /,"",$2); print $2}')
+losetup -d "$LP"; LP=""
 NEW_MIB=$(( BLK * BSZ / 1048576 + 2048 ))
-losetup -d $L
-IMG=/root/release/iprps-os-1.0-<edition>.img
-echo ", ${NEW_MIB}M" | sfdisk -N 3 $IMG
-END=$(sfdisk -d $IMG | sed -n 's/.*3 : start= *\([0-9]*\), size= *\([0-9]*\).*/\1 \2/p' | awk '{print $1+$2}')
-truncate -s $(( (END + 34) * 512 )) $IMG
-sfdisk --relocate gpt-bak-std $IMG
-sfdisk -l $IMG
+echo ", ${NEW_MIB}M" | sfdisk -q -N 3 "$IMG"
+NPART=$(sfdisk -d "$IMG" | grep -c 'start=')
+TABLE=$(sfdisk -d "$IMG" | grep -v '^last-lba:')      # the partition table, with all its IDs
+END=$(sfdisk -d "$IMG" | sed -n 's/.*3 : start= *\([0-9]*\), size= *\([0-9]*\).*/\1 \2/p' | awk '{print $1+$2}')
+truncate -s $(( (END + 34) * 512 )) "$IMG"
+printf '%s\n' "$TABLE" | sfdisk -q --no-reread "$IMG"    # rewrite it: GPT backup lands at the new end
+[ "$(sfdisk -d "$IMG" | grep -c 'start=')" = "$NPART" ] && sfdisk -d "$IMG" | grep -q '^label: gpt' \
+  || die "the partition table didn't survive the shrink; start again from iprps-release-clean.sh"
+sfdisk -l "$IMG" | sed -n '1,3p;/^Device/,$p'
+
+say "2/5 Health check of the shrunk image"
+LP=$(p3_loop "$IMG") || die "partition 3 missing after shrinking"
+set +e; e2fsck -fn "$LP"; RC=$?; set -e
+losetup -d "$LP"; LP=""
+[ $RC = 0 ] || die "the shrunk file system has errors (code $RC); start again from iprps-release-clean.sh"
+echo "Healthy. Image size: $(du -h --apparent-size "$IMG" | cut -f1)"
+
+cd "$REL"
+rm -f "$NAME.img.xz" "$NAME.vhdx" "$NAME.qcow2" "SHA256SUMS-$ED"
+FREE=$(df -B1 --output=avail "$REL" | tail -1); SZ=$(stat -c %s "$IMG")
+[ "$FREE" -gt $(( SZ * 3 / 2 )) ] || echo "Warning: only $(( FREE/1073741824 )) GB free here; the three files may need about $(( SZ*3/2/1073741824 )) GB."
+
+say "3/5 Compressing for USB sticks (.img.xz) - the long step, often 30-90 minutes"
+xz -T0 -9 -k -v -f "$NAME.img" || { echo "Retrying with 2 threads (less memory)..."; xz -T2 -9 -k -v -f "$NAME.img"; }
+
+say "4/5 Hyper-V (.vhdx) and QEMU (.qcow2) images"
+qemu-img convert -p -O vhdx -o subformat=dynamic "$NAME.img" "$NAME.vhdx"
+qemu-img convert -p -O qcow2 -c "$NAME.img" "$NAME.qcow2"
+sha256sum "$NAME.img.xz" "$NAME.vhdx" "$NAME.qcow2" > "SHA256SUMS-$ED"
+
+say "5/5 Copying to $OUT"
+cp -v "$NAME.img.xz" "$NAME.vhdx" "$NAME.qcow2" "SHA256SUMS-$ED" "$OUT/"
+( cd "$OUT" && sha256sum -c "SHA256SUMS-$ED" ) || die "a copied file doesn't match its checksum: copy it again"
+ls -lh "$OUT"/"$NAME".* "$OUT/SHA256SUMS-$ED"
+printf '\n\033[1;32mDone: the %s release is in %s (copies verified).\033[0m\n' "$ED" "$OUT"
+echo "Keep $IMG and $NAME.qcow2 here until testing (13.6) passes; then delete the copies in $REL to free space."
+EOF
+chmod 755 /root/iprps-release-pack.sh
 ```
 
-The filesystem shrinks to its minimum size, the partition shrinks to that plus 2 GiB of headroom, and the image file is cut off just after it. Finally, the GPT's backup copy is moved to the new end.
-
-**Check that the shrunk image is healthy** before compressing:
+**Run it** right after 13.4:
 
 **[DEBIAN ROOT]**
 
 ```bash
-L=$(losetup -fP --show $IMG); sleep 2; partx -u $L 2>/dev/null; e2fsck -fn ${L}p3; losetup -d $L
+apt install -y fdisk e2fsprogs xz-utils qemu-utils
+/root/iprps-release-pack.sh lite
 ```
 
-It must report no errors. Then produce the downloads:
+- **Step 1** prints `e2fsck` passes and `resize2fs`, then the new partition list with three partitions.
+- **Step 2** prints **Healthy**.
+- **Step 3**, `xz`, is the long one: about 30–90 minutes, with progress shown. If it runs short of memory it retries with fewer threads by itself.
+- At the end, each copied file is checked (`…: OK`) and listed.
 
-**[DEBIAN ROOT]**
-
-```bash
-cd /root/release
-OUT=/mnt/g/IPRPS/release
-xz -T0 -9 -k -v iprps-os-1.0-<edition>.img
-qemu-img convert -p -O vhdx -o subformat=dynamic iprps-os-1.0-<edition>.img iprps-os-1.0-<edition>.vhdx
-qemu-img convert -p -O qcow2 -c iprps-os-1.0-<edition>.img iprps-os-1.0-<edition>.qcow2
-sha256sum iprps-os-1.0-<edition>.img.xz iprps-os-1.0-<edition>.vhdx iprps-os-1.0-<edition>.qcow2 > SHA256SUMS-<edition>
-cp -v iprps-os-1.0-<edition>.img.xz iprps-os-1.0-<edition>.vhdx iprps-os-1.0-<edition>.qcow2 SHA256SUMS-<edition> $OUT/
-ls -lh $OUT/
-```
+To write the downloads somewhere else, run `IPRPS_RELEASE_OUT=/mnt/d/somewhere /root/iprps-release-pack.sh lite`.
 
 | Download | For |
 |---|---|
@@ -22855,7 +23090,8 @@ ls -lh $OUT/
 **[DEBIAN ROOT]**
 
 ```bash
-qemu-img create -f qcow2 -b /root/release/iprps-os-1.0-<edition>.qcow2 -F qcow2 /root/rel-uefi.qcow2 40G
+ED=lite        # or medium / advanced
+qemu-img create -f qcow2 -b /root/release/iprps-os-1.0-$ED.qcow2 -F qcow2 /root/rel-uefi.qcow2 40G
 qemu-system-x86_64 -enable-kvm -m 6G -smp 4 -bios /usr/share/ovmf/OVMF.fd \
   -drive file=/root/rel-uefi.qcow2,format=qcow2,if=virtio \
   -nic user,model=virtio-net-pci,hostfwd=tcp::2222-:22 \
@@ -22890,8 +23126,9 @@ Keep license texts in the image (`/usr/share/licenses/`, `/usr/share/doc/`). The
 
 ```bash
 cd /mnt/g/IPRPS/release
-split -b 1900M -d -a 2 iprps-os-1.0-<edition>.img.xz iprps-os-1.0-<edition>.img.xz.part
-ls -lh iprps-os-1.0-<edition>.img.xz.part*
+ED=lite        # or medium / advanced
+split -b 1900M -d -a 2 iprps-os-1.0-$ED.img.xz iprps-os-1.0-$ED.img.xz.part
+ls -lh iprps-os-1.0-$ED.img.xz.part*
 ```
 
 Users join the parts before writing them. On Linux: `cat iprps-os-1.0-<edition>.img.xz.part* > iprps-os-1.0-<edition>.img.xz`. On Windows (Command Prompt): `copy /b iprps-os-1.0-<edition>.img.xz.part00 + iprps-os-1.0-<edition>.img.xz.part01 iprps-os-1.0-<edition>.img.xz` (list every part, in order). Then they check the result against `SHA256SUMS` before writing it.
@@ -22919,8 +23156,8 @@ ls -l /root/snapshots/iprps-RELEASE-lite.img     # must show 42949672960 bytes
 
 Then re-enter the IPRPS CHROOT and BUILDER windows (0.5). Details and restoring: 0.4.
 
-1. Clean a copy with 13.4 (`<edition>` = `lite`, `<Edition>` = `Lite`).
-2. Shrink, compress and convert it with 13.5.
+1. Clean a copy with 13.4: `/root/iprps-release-clean.sh lite`.
+2. Shrink, compress and convert it with 13.5: `/root/iprps-release-pack.sh lite`.
 3. Run the test matrix in 13.6, including a 6 GB RAM test (Hyper-V lets you set exactly 6 GB).
 4. Publish with 13.8.
 
@@ -27141,7 +27378,7 @@ Then open **IPRPS Oracle** from the menu (or Session Master Mode): it asks for t
 
 Install the Medium IPRPS apps (12.4) using 12.5 and 12.6.
 
-> **Checkpoint:** Take snapshot **`RELEASE-medium`**, then release it as in Part 14 with `VERSION="1.0 Medium"` → `iprps-os-1.0-medium.img.xz`.
+> **Checkpoint:** Take snapshot **`RELEASE-medium`**, then release it as in Part 14: `/root/iprps-release-clean.sh medium`, `/root/iprps-release-pack.sh medium` → `iprps-os-1.0-medium.img.xz`.
 
 **[DEBIAN ROOT]** — snapshot `RELEASE-medium`. First stop any test VM (`poweroff`) and `exit` every chroot window:
 
@@ -27514,7 +27751,7 @@ These popular creative tools aren't in BLFS 13.1. Ship them as their projects' *
 
 Install the Advanced IPRPS apps (12.4).
 
-> **Checkpoint:** Take snapshot **`RELEASE-advanced`**, then release it as in Part 14 with `VERSION="1.0 Advanced"` → `iprps-os-1.0-advanced.img.xz`.
+> **Checkpoint:** Take snapshot **`RELEASE-advanced`**, then release it as in Part 14: `/root/iprps-release-clean.sh advanced`, `/root/iprps-release-pack.sh advanced` → `iprps-os-1.0-advanced.img.xz`.
 
 **[DEBIAN ROOT]** — snapshot `RELEASE-advanced`. First stop any test VM (`poweroff`) and `exit` every chroot window:
 

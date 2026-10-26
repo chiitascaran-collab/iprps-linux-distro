@@ -36,7 +36,7 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `docs/CUSTOMIZING-ICONS.md` | How users and administrators add their own icons on an installed IPRPS OS |
 | `docs/lfs/` | LFS 13.1-systemd companion guides (WSL and Debian editions), checklists, `wget-list-systemd`, `md5sums` |
 | `docs/archive/` | The original planning guide (written under the earlier name "IPRPS Linux") |
-| `build-host/` | `iprps-enter.sh` / `iprps-leave.sh`: mount the image and enter the build chroot from Debian on WSL |
+| `build-host/` | `iprps-enter.sh` / `iprps-leave.sh`: mount the image and enter the build chroot from Debian on WSL; `iprps-release-clean.sh` / `iprps-release-pack.sh`: make the release images (13.4, 13.5) |
 | `rootfs/` | Files installed into the system: first-boot setup, installer, Session Master Mode, desktop and menu defaults, systemd units |
 | `apps/oracle/` | The **IPRPS Oracle**: local AI for Session Masters (Medium and Advanced), PHP + JavaScript, Universal Login |
 | `ai/` | Ollama service, the `iprps-storyteller` Modelfile and system prompt, and `iprps-ai-model` (swap in a custom IPRPS model) |

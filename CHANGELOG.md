@@ -3,6 +3,7 @@
 ## 2026-10-26
 
 - **First-boot setup (13.2)** rebuilt as menu screens: a welcome that describes IPRPS OS, the three editions (showing the installed one), hardware and other limits, then account, full name, password (twice, 8+ characters), computer name and a **time-zone menu** (common US/Canadian zones, or region and city); a summary to confirm or change. `IPRPS_SETUP_DRYRUN=1` previews it.
+- **Release scripts (13.4, 13.5):** `build-host/iprps-release-clean.sh <edition>` (copy, empty databases, retire the test password, app-data review, general cleanup, edition name, safe unmount; undoes its mounts on any error) and `build-host/iprps-release-pack.sh <edition>` (shrink, health check, `.img.xz`/`.vhdx`/`.qcow2`, checksums, verified copy to `G:\IPRPS\release`). No more `<edition>` placeholders to replace. The partition table is now rewritten after shrinking (keeping all IDs), which is more reliable than relocating the backup GPT.
 - **Release fixes (13.4–13.6):** `mount --make-rslave` and a step-by-step unmount (no more "target is busy"), `/etc/iprps/db.php` removed from release copies, edition placeholders explained, a partition wait before the health check, and QEMU overlay tests (full backing path) plus USB-on-a-real-PC notes (BitLocker) for builders without Hyper-V.
 
 ## 2026-10-25
