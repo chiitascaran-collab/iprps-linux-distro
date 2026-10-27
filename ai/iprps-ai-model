@@ -1,0 +1,89 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-ai-model - manage the AI model used by the IPRPS Oracle.
+#
+#   iprps-ai-model status                     what's installed and what the Oracle uses
+#   sudo iprps-ai-model install FILE.gguf     make a custom IPRPS model the Oracle's model
+#   sudo iprps-ai-model install-modelfile F   same, from a complete Ollama Modelfile
+#   sudo iprps-ai-model reset                 back to the model IPRPS OS shipped with
+#   sudo iprps-ai-model pull NAME             download another model (needs internet)
+#   sudo iprps-ai-model remove NAME           delete a model
+set -e
+NAME=iprps-storyteller
+SHARE=/usr/share/iprps/ai
+
+die() { echo "iprps-ai-model: $*" >&2; exit 1; }
+need_root() { [ "$(id -u)" = 0 ] || die "run this with sudo"; }
+need_ollama() {
+  if ! ollama list >/dev/null 2>&1; then
+    [ "$(id -u)" = 0 ] && systemctl start ollama && sleep 2
+    ollama list >/dev/null 2>&1 || die "the Ollama service isn't running (sudo systemctl start ollama)"
+  fi
+}
+
+case "${1:-status}" in
+status)
+  echo "Ollama service: $(systemctl is-active ollama 2>/dev/null || echo unknown)  ($(ollama -v 2>/dev/null | tail -1))"
+  need_ollama
+  echo; echo "Installed models:"; ollama list
+  echo
+  if ollama show "$NAME" >/dev/null 2>&1; then
+    echo "The Oracle uses: $NAME, built from: $(ollama show "$NAME" --modelfile | awk '/^FROM /{print $2; exit}')"
+  else
+    echo "The Oracle's model ($NAME) is missing. Fix it with: sudo iprps-ai-model reset"
+  fi
+  echo; echo "GPU used (from the service log):"
+  journalctl -u ollama -b --no-pager 2>/dev/null | grep -iE 'inference compute|vulkan|no compatible gpu' | tail -3 || true
+  ;;
+
+install)
+  need_root; need_ollama
+  F="${2:-}"; [ -f "$F" ] || die "usage: sudo iprps-ai-model install FILE.gguf"
+  case "$F" in *.gguf|*.GGUF) ;; *) die "expected a .gguf file";; esac
+  MF=$(mktemp)
+  {
+    echo "FROM $(realpath "$F")"
+    echo "PARAMETER temperature 0.85"
+    echo "PARAMETER num_ctx 8192"
+    printf 'SYSTEM """%s"""\n' "$(cat "$SHARE/system-prompt.txt")"
+  } > "$MF"
+  ollama create "$NAME" -f "$MF"
+  rm -f "$MF"
+  echo "Done: the IPRPS Oracle now uses $(basename "$F") (copied into Ollama; the .gguf file can be deleted)."
+  echo "If replies look garbled, the model needs its own chat template: use install-modelfile."
+  ;;
+
+install-modelfile)
+  need_root; need_ollama
+  [ -f "${2:-}" ] || die "usage: sudo iprps-ai-model install-modelfile Modelfile"
+  ( cd "$(dirname "$2")" && ollama create "$NAME" -f "$(basename "$2")" )
+  echo "Done: $NAME rebuilt from $2."
+  ;;
+
+reset)
+  need_root; need_ollama
+  ollama create "$NAME" -f "$SHARE/Modelfile"
+  echo "Done: $NAME is back to the IPRPS OS default."
+  ;;
+
+pull)
+  need_root; need_ollama
+  [ -n "${2:-}" ] || die "usage: sudo iprps-ai-model pull NAME   (see https://ollama.com/library)"
+  ollama pull "$2"
+  echo "Installed $2. Choose it in the Oracle's Model menu."
+  ;;
+
+remove)
+  need_root; need_ollama
+  [ -n "${2:-}" ] || die "usage: sudo iprps-ai-model remove NAME"
+  base=$(awk '/^FROM /{print $2; exit}' "$SHARE/Modelfile")
+  [ "$2" = "$base" ] && die "$2 is the base of $NAME; removing it breaks the Oracle"
+  ollama rm "$2"
+  ;;
+
+*)
+  sed -n '4,12p' "$0" | sed 's/^# \{0,1\}//'
+  exit 1
+  ;;
+esac
