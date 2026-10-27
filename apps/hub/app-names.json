@@ -1,0 +1,42 @@
+{
+  "_comment": "Optional display names and descriptions for apps, by folder name. Apps not listed use their page title or folder name.",
+  "prompt_database": {
+    "name": "Prompt Database"
+  },
+  "expressions": {
+    "name": "Expressions"
+  },
+  "sfx": {
+    "name": "SFX"
+  },
+  "character-development": {
+    "name": "Character Development"
+  },
+  "iprps-writers-studio": {
+    "name": "IPRPS Writers Studio"
+  },
+  "camera-patch-generator": {
+    "name": "Camera Patch Generator"
+  },
+  "reel": {
+    "name": "Reel",
+    "description": "Browser-based audio workstation"
+  },
+  "language": {
+    "name": "Language"
+  },
+  "lighting-generator": {
+    "name": "Lighting Generator"
+  },
+  "iprps_email": {
+    "name": "IPRPS Email"
+  },
+  "oracle": {
+    "name": "IPRPS Oracle",
+    "description": "Local AI for Session Masters"
+  },
+  "writer": {
+    "name": "IPRPS Writer",
+    "description": "Write documents; saves as .docx, .odt, PDF"
+  }
+}

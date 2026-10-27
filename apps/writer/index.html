@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- Copyright (C) 2026 Mythical Legends Publishing, LLC -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPRPS Writer</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="writer.css">
+<script src="../auth/auth-client.js"></script>
+</head>
+<body>
+<header class="bar">
+  <div class="brand"><span class="sigil">✦</span> IPRPS <b>Writer</b></div>
+  <input id="title" class="title" type="text" placeholder="Untitled document" aria-label="Document title" maxlength="200">
+  <span id="saved" class="saved"></span>
+  <div class="spacer"></div>
+  <button id="newDoc" class="ghost">New</button>
+  <label class="ghost filebtn">Open file…<input id="importFile" type="file" accept=".docx,.odt,.txt,.md,.html,.htm" hidden></label>
+  <div class="menu">
+    <button id="exportBtn" class="ghost" aria-haspopup="true">Save as ▾</button>
+    <div id="exportMenu" class="menulist" hidden>
+      <button data-fmt="docx">Word document (.docx)</button>
+      <button data-fmt="odt">OpenDocument (.odt)</button>
+      <button data-fmt="txt">Plain text (.txt)</button>
+      <button data-fmt="html">Web page (.html)</button>
+      <button data-fmt="pdf">PDF / Print…</button>
+    </div>
+  </div>
+  <span id="who" class="who"></span>
+</header>
+
+<div id="banner" class="banner" hidden></div>
+
+<div class="layout">
+  <aside class="side">
+    <div class="sidehead"><h2>My documents</h2></div>
+    <input id="search" type="search" placeholder="Search…" aria-label="Search documents">
+    <ul id="docs" class="docs"></ul>
+  </aside>
+
+  <section class="work">
+    <div class="toolbar" role="toolbar" aria-label="Formatting">
+      <button data-cmd="undo" title="Undo (Ctrl+Z)">↶</button>
+      <button data-cmd="redo" title="Redo (Ctrl+Y)">↷</button>
+      <span class="sep"></span>
+      <select id="block" title="Paragraph style">
+        <option value="p">Normal text</option>
+        <option value="h1">Heading 1</option>
+        <option value="h2">Heading 2</option>
+        <option value="h3">Heading 3</option>
+        <option value="blockquote">Quote</option>
+      </select>
+      <span class="sep"></span>
+      <button data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+      <button data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+      <button data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+      <button data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
+      <span class="sep"></span>
+      <button data-cmd="insertUnorderedList" title="Bulleted list">• ≡</button>
+      <button data-cmd="insertOrderedList" title="Numbered list">1. ≡</button>
+      <span class="sep"></span>
+      <button data-cmd="justifyLeft" title="Align left">⯇≡</button>
+      <button data-cmd="justifyCenter" title="Center">≡</button>
+      <button data-cmd="justifyRight" title="Align right">≡⯈</button>
+      <button data-cmd="justifyFull" title="Justify">☰</button>
+      <span class="sep"></span>
+      <button data-cmd="removeFormat" title="Clear formatting">⌫ꜰ</button>
+      <div class="spacer"></div>
+      <span id="count" class="count"></span>
+    </div>
+    <div class="desk">
+      <article id="page" class="page" contenteditable="true" spellcheck="true" aria-label="Document"></article>
+    </div>
+  </section>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<script src="formats.js"></script>
+<script src="writer.js"></script>
+</body>
+</html>

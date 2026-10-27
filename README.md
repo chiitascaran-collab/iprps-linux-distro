@@ -38,6 +38,8 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `docs/archive/` | The original planning guide (written under the earlier name "IPRPS Linux") |
 | `build-host/` | `iprps-enter.sh` / `iprps-leave.sh`: mount the image and enter the build chroot from Debian on WSL; `iprps-release-clean.sh` / `iprps-release-pack.sh`: make the release images (13.4, 13.5) |
 | `rootfs/` | Files installed into the system: first-boot setup, installer, Session Master Mode, desktop and menu defaults, systemd units |
+| `apps/hub/` | The **Session Master Hub**: home page with the Session Master's apps, **Manage apps** (every app in `/srv/www/iprps`, on/off per account), default apps, and the player display |
+| `apps/writer/` | **IPRPS Writer**: a simple word processor (per-account documents; opens and saves .docx, .odt, .txt, .html; PDF via print) |
 | `apps/oracle/` | The **IPRPS Oracle**: local AI for Session Masters (Medium and Advanced), PHP + JavaScript, Universal Login |
 | `ai/` | Ollama service, the `iprps-storyteller` Modelfile and system prompt, and `iprps-ai-model` (swap in a custom IPRPS model) |
 | `database/` | `iprps-core.sql`, the campaign and player-tracking schema |

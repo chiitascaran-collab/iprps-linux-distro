@@ -37,8 +37,8 @@ This guide builds **IPRPS OS** for distribution: a generic, ready-to-use Linux s
 | Campaign tools | IPRPS Session Master Hub, player display, dice, initiative, session log | + all Medium IPRPS apps | + all IPRPS apps |
 | Audio | Parole (music and ambience); mpv plays ambience in Session Master Mode | + VLC | + upstream audio tools (Part 16) |
 | Video | mpv | + VLC, FFmpeg tools | + upstream video tools |
-| Images | Ristretto (viewer) | + GIMP, Inkscape, ImageMagick | + FontForge, Graphviz, upstream art tools |
-| Documents | Evince (PDF), Mousepad (text) | + LibreOffice, printing (CUPS) | + scanning (SANE) |
+| Images | Ristretto (viewer), **Drawing** (simple painting) | + GIMP, Inkscape, ImageMagick | + FontForge, Graphviz, upstream art tools |
+| Documents | **IPRPS Writer** (.docx/.odt/PDF), Evince (PDF), Mousepad (text) | + LibreOffice, printing (CUPS) | + scanning (SANE) |
 | Discs | — | Xfburn | + cdrdao, libisoburn |
 
 ### How the build is organized
@@ -11271,7 +11271,7 @@ CFLAGS += -I/usr/include/libnl3
 EOF
 ```
 
-**[BUILDER]** — *(Optional — skip if unsure)* If you wish to use WPA Supplicant with NetworkManager-1.58.1, WPA Supplicant build configuration file by running the following command:
+**[BUILDER]** — *(IPRPS: **required**)* If you wish to use WPA Supplicant with NetworkManager-1.58.1, WPA Supplicant build configuration file by running the following command:
 
 ```bash
 cat >> wpa_supplicant/.config << "EOF"
@@ -11302,7 +11302,7 @@ install -v -m644 doc/docbook/wpa_{cli,passphrase,supplicant}.8 /usr/share/man/ma
 install -v -m644 systemd/*.service /usr/lib/systemd/system/
 ```
 
-**[IPRPS CHROOT]** *(root; same folder as BUILDER)* — *(Optional — skip if unsure)* If you have built WPA Supplicant with D-Bus support, you will need to install D-Bus configuration files. Install them by running the following commands as the root user:
+**[IPRPS CHROOT]** *(root; same folder as BUILDER)* — *(IPRPS: **required**)* If you have built WPA Supplicant with D-Bus support, you will need to install D-Bus configuration files. Install them by running the following commands as the root user:
 
 ```bash
 install -v -m644 dbus/fi.w1.wpa_supplicant1.service \
@@ -20044,7 +20044,7 @@ chown -v -R apache:apache /srv/www
 
 **Configure:**
 
-**[IPRPS CHROOT]** *(root; same folder as BUILDER)* — *(Optional — skip if unsure)* If you want the Apache server to start automatically when the system is booted, install the httpd.service unit included in the BLFS Systemd Units package:
+**[IPRPS CHROOT]** *(root; same folder as BUILDER)* — *(IPRPS: **required**)* If you want the Apache server to start automatically when the system is booted, install the httpd.service unit included in the BLFS Systemd Units package:
 
 ```bash
 cd /build/src/blfs-systemd-units-20251204    # the BLFS systemd units folder (kept since Part 2.5)
@@ -20562,6 +20562,7 @@ This schema is the shared foundation for all campaign and player-tracking tools.
 **[IPRPS CHROOT]**
 
 ```bash
+install -vdm755 /usr/share/iprps/schema
 cat > /usr/share/iprps/schema/iprps-core.sql << "EOF"
 -- IPRPS core schema: campaigns, players, characters, sessions and play tracking
 SET NAMES utf8mb4;
@@ -20687,6 +20688,7 @@ CREATE TABLE IF NOT EXISTS session_log (
   FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 EOF
+grep -c "CREATE TABLE" /usr/share/iprps/schema/iprps-core.sql
 ```
 
 Test it now, then drop the test database:
@@ -22333,7 +22335,67 @@ cd ~/src && rm -rf "$(tar -tf mpv-0.41.0.tar.gz | head -1 | cut -d/ -f1)"
 
 
 
-> **Checkpoint:** Firefox opens and shows `http://localhost/` (Apache's test page), and Evince, Parole and mpv launch from the menu. Take snapshot **`G-lite-apps`**.
+### Firefox: IPRPS settings
+
+Firefox normally contacts Mozilla at start-up (telemetry, studies, "what's new" pages, region lookup). Offline, those calls fail one by one, which slows the first start, especially from a USB stick. This settings file (a Firefox **policy**, applied to every user) turns them off and makes the Session Master Hub the home page:
+
+**[IPRPS CHROOT]**
+
+```bash
+install -vdm755 /usr/lib/firefox/distribution
+cat > /usr/lib/firefox/distribution/policies.json << "EOF"
+{
+  "policies": {
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisableDefaultBrowserAgent": true,
+    "DontCheckDefaultBrowser": true,
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
+    "NoDefaultBookmarks": true,
+    "Homepage": { "URL": "http://localhost/iprps/hub/", "StartPage": "homepage" },
+    "UserMessaging": { "WhatsNew": false, "ExtensionRecommendations": false, "FeatureRecommendations": false,
+                       "UrlbarInterventions": false, "SkipOnboarding": true, "MoreFromMozilla": false },
+    "FirefoxHome": { "SponsoredTopSites": false, "SponsoredStories": false }
+  }
+}
+EOF
+python3 -m json.tool /usr/lib/firefox/distribution/policies.json > /dev/null && echo "policies OK"
+```
+
+Check after a boot test: `about:policies` in Firefox lists them as **Active**. (A policy this Firefox version doesn't know is shown under **Errors** and simply ignored.)
+
+### Drawing: a simple painting program
+
+Lite gets **Drawing** (GPL-3.0), a small paint program: pencil, shapes, text, selection, crop, scale and rotate, saving PNG, JPEG or BMP. It isn't in BLFS; it's Python with GTK 3, PyGObject and pycairo, all already in the build, and it builds with Meson. (GIMP and Inkscape come with Medium.)
+
+**[BUILDER]**
+
+```bash
+cd ~/src
+wget -O drawing-1.0.2.tar.gz https://github.com/maoschanz/drawing/archive/refs/tags/1.0.2.tar.gz
+tar -xf drawing-1.0.2.tar.gz && cd drawing-1.0.2
+mkdir build && cd build
+meson setup --prefix=/usr --buildtype=release ..
+ninja
+```
+
+If `meson setup` stops on a missing program (`itstool`, `appstream-util` or `desktop-file-validate`), say which: the first comes with Stage E, the other two are only used by the tests and can be skipped.
+
+**[IPRPS CHROOT]**
+
+```bash
+cd /build/src/drawing-1.0.2/build && ninja install
+glib-compile-schemas /usr/share/glib-2.0/schemas
+gtk-update-icon-cache -qtf /usr/share/icons/hicolor
+update-desktop-database /usr/share/applications
+ls /usr/bin/drawing /usr/share/applications/*drawing*.desktop
+python3 -c "import gi; gi.require_version('Gtk','3.0'); from gi.repository import Gtk; import cairo; print('Drawing dependencies OK')"
+```
+
+Clean up the source folder as usual. Test: **Applications → Graphics → Drawing** opens a blank canvas; draw, then **Save** as PNG.
+
+> **Checkpoint:** Firefox opens and shows `http://localhost/` (Apache's test page), and Evince, Parole, mpv and Drawing launch from the menu. Take snapshot **`G-lite-apps`**.
 
 **[DEBIAN ROOT]** — snapshot `G-lite-apps`. First stop any test VM (`poweroff`) and `exit` every chroot window:
 
@@ -22466,11 +22528,12 @@ update-desktop-database /usr/share/applications
 
 | App | What it does | Status | Lite | Medium | Advanced |
 |---|---|---|---|---|---|
-| **Session Master Hub** | Campaigns, player roster, characters, XP, attendance, quests, NPCs | **To build** (schema in 10.2) | ✔ | ✔ | ✔ |
+| **Session Master Hub** | Home page with the Session Master's apps and **Manage apps** (12.6); campaigns, player roster, characters, XP, attendance, quests, NPCs to come | **Home page and app manager exist** (`hub/`); campaign tools to build (schema in 10.2) | ✔ | ✔ | ✔ |
+| **IPRPS Writer** | Word processor in the Hub: headings, bold/italic, lists, alignment; documents saved per account; opens and saves `.docx`, `.odt`, `.txt`, `.html`, prints to PDF | Exists (`writer/`, 12.6) | ✔ | ✔ | ✔ |
 | **Initiative and Combat Tracker** | Turn order, HP, conditions; feeds the player display | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
 | **Dice Roller** | IPRPS dice mechanics; logs rolls to the session log | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
 | **Session Log and Recap** | Timeline of notes, rolls, loot and XP; exports recaps | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
-| **Player Display** | Full-screen handouts, maps and initiative for players | **To build** (`hub/display.php`) | ✔ | ✔ | ✔ |
+| **Player Display** | Full-screen handouts, maps and initiative for players | **Exists** (`hub/display.php`, shows text sent to it); maps and initiative to build | ✔ | ✔ | ✔ |
 | **Infinite Plane Universal Login** | Single sign-on for the local IPRPS apps | Exists | ✔ | ✔ | ✔ |
 | **IPRPS Welcome** | First-run tour; settings for API keys and color scheme | **To build** | ✔ | ✔ | ✔ |
 | **IPRPS Media Player** | Music, ambience, CDs and DVDs; IPRPS radio | Exists (Electron + libVLC) | — | ✔ | ✔ |
@@ -22634,7 +22697,72 @@ Only `/srv/www/iprps` gets the test password; the staging copy keeps the placeho
 
 > **Pro tip:** Moving apps from Windows/XAMPP: Linux filenames are **case-sensitive** (`Config.php` ≠ `config.php`), `D:\xampp\...` paths must become `/srv/www/iprps/...`, and the database host is `localhost` (the socket; there is no port with `skip-networking`). Shell scripts need Linux line endings: `sed -i 's/\r$//' file.sh`.
 
-### 12.6 Desktop (non-web) apps
+### 12.6 The Session Master Hub: home page and app manager
+
+The Hub (`/srv/www/iprps/hub/`, opened by the **Session Master Hub** launcher and by Session Master Mode) starts with its home page: a grid of the Session Master's apps, plus **Manage apps**, which lists **every app in the IPRPS folder** with an on/off switch. Each Session Master has their own choice (saved per Universal Login account, in the `hub_app_prefs` table of the core database); apps stay installed whether they're switched on or off. The campaign tools (campaigns, players, characters, initiative, session log) join the Hub later.
+
+**The default apps** (every edition) are listed in `hub/default-apps.json`:
+
+| Folder | App |
+|---|---|
+| `writer` | IPRPS Writer |
+| `prompt_database` | Prompt Database |
+| `expressions` | Expressions |
+| `sfx` | SFX |
+| `character-development` | Character Development |
+| `iprps-writers-studio` | IPRPS Writers Studio |
+| `camera-patch-generator` | Camera Patch Generator |
+| `reel` | Reel |
+| `language` | Language |
+| `lighting-generator` | Lighting Generator |
+| `iprps_email` | IPRPS Email |
+
+The Hub lists any folder in `/srv/www/iprps` with an `index.php` or `index.html` (except `auth`, `hub` and helper folders such as `sql`). Display names come from `hub/app-names.json`, then the app's page title, then the folder name; icons from the app's own `favicon`/`icon`/`logo` file, then the IPRPS icon theme (an icon named after the folder), then the app's initials. A default app that isn't installed is named under **Manage apps**, so a missing or misnamed folder is easy to spot.
+
+**Install it, with IPRPS Writer. [DEBIAN ROOT]** From the repository (`apps/hub/`, `apps/writer/`):
+
+```bash
+R=/mnt/g/IPRPS/iprps-os
+cp -rv $R/apps/hub $R/apps/writer /mnt/iprps/srv/www/iprps/
+```
+
+**[IPRPS CHROOT]**
+
+```bash
+for d in hub writer; do
+  chown -R root:apache /srv/www/iprps/$d
+  find /srv/www/iprps/$d -type d -exec chmod 755 {} + ; find /srv/www/iprps/$d -type f -exec chmod 644 {} +
+done
+cat > /usr/share/applications/iprps-writer.desktop << "EOF"
+[Desktop Entry]
+Type=Application
+Name=IPRPS Writer
+GenericName=Word Processor
+Comment=Write documents; save them as Word, OpenDocument or PDF
+Exec=iprps-open writer/
+Icon=accessories-text-editor
+Terminal=false
+Categories=X-IPRPS;Office;WordProcessor;
+Keywords=write;document;word;docx;odt;
+EOF
+update-desktop-database /usr/share/applications
+ls /srv/www/iprps/hub
+for a in $(python3 -c "import json; print(' '.join(json.load(open('/srv/www/iprps/hub/default-apps.json'))['apps']))"); do
+  [ -f /srv/www/iprps/$a/index.php ] || [ -f /srv/www/iprps/$a/index.html ] && echo "  ok       $a" || echo "  MISSING  $a"
+done
+```
+
+`ls` shows `api.php`, `app-names.json`, `default-apps.json`, `display.php`, `hub-icon.svg`, `hub.css`, `hub.js` and `index.html`. The loop checks the ten default apps: each `MISSING` is a folder that isn't installed or has another name. Correct the name in `default-apps.json` (and `app-names.json`), or install the app. The Hub needs no database setup: it creates its table on first use.
+
+**IPRPS Writer** (`/srv/www/iprps/writer/`) is a simple word processor that runs in the browser like the other IPRPS apps (in its own window in Medium and Advanced): headings, bold, italic, underline, lists, alignment, a word count, and a printed-page look. Documents save automatically to the Session Master's account (table `writer_docs` in the core database, created on first use) and are listed on the left. **Open file…** imports `.docx`, `.odt`, `.txt` and `.html` (or drag a file onto the page); **Save as** writes `.docx` (Word), `.odt` (LibreOffice), `.txt` or `.html` to Downloads, or prints/makes a PDF (**Ctrl+P**). It keeps text, headings, bold/italic/underline/strikethrough, lists and alignment; pictures, tables and fonts in imported files are not kept. It's also on the Hub by default and in the menu (**IPRPS Writer**, also under Office).
+
+`display.php` is the **player display** for Session Master Mode (12.2): full screen on a second screen or projector, showing what's sent to it (from the IPRPS Oracle in Medium and Advanced, and later from the Hub's own tools).
+
+**Test** (fresh test copy): open **Session Master Hub** from the menu, sign in once. The ten apps appear as tiles and open in a new window. **Manage apps** lists every app; switch one off and one on, **Save**, and the grid changes; **Reset to defaults** brings back the ten. A second account keeps its own choice.
+
+> **Pro tip:** To change the defaults for every new Session Master on a computer, edit `/srv/www/iprps/hub/default-apps.json` (folder names, in the order they should appear) with `sudo`. Accounts that already saved their own choice keep it; apps installed later follow the defaults until the account saves again.
+
+### 12.7 Desktop (non-web) apps
 
 Install desktop apps under `/opt/iprps/<app>/`, with a launcher in `/usr/share/applications/` (`Categories=X-IPRPS;AudioVideo;` for the Media Player). The **IPRPS Media Player** is an Electron app using libVLC: VLC must be installed (Medium), and Electron's own runtime needs GTK 3, NSS and ALSA, which are already in the build.
 
@@ -22837,7 +22965,7 @@ You are running IPRPS OS ${ED:-(development build)}.
 
 LITE - the essentials. 6 GB RAM minimum, 64 GB storage.
  Session Master Hub, dice, initiative, session log, player display,
- Firefox, PDF viewer, text editor, music and ambience, Wi-Fi.
+ IPRPS Writer, Drawing, Firefox, PDF viewer, music, ambience, Wi-Fi.
 
 MEDIUM - creative and office. 8 GB minimum, 16 GB recommended.
  Lite, plus the IPRPS Oracle (local AI for Session Masters, works
@@ -27799,7 +27927,7 @@ Then open **IPRPS Oracle** from the menu (or Session Master Mode): it asks for t
 
 > **Side note:** **Updating Ollama.** Repeat steps 2 and 3 (the `rm -rf /usr/lib/ollama` comes first) and restart the service: `systemctl restart ollama`. The models in `/var/lib/ollama` stay. Users can download other models with `sudo iprps-ai-model pull <name>` (from **https://ollama.com/library**, needs internet) and choose them in the Oracle's **Model** menu; IPRPS's prompts are written for `iprps-storyteller`.
 
-Install the Medium IPRPS apps (12.4) using 12.5 and 12.6.
+Install the Medium IPRPS apps (12.4) using 12.5 and 12.7; they appear in every Session Master's **Manage apps** list (12.6) automatically.
 
 > **Checkpoint:** Take snapshot **`RELEASE-medium`**, then release it as in Part 14: `/root/iprps-release-clean.sh medium`, `/root/iprps-release-pack.sh medium` → `iprps-os-1.0-medium.img.xz`.
 
@@ -28290,6 +28418,8 @@ This is planned for IPRPS 1.1. The 1.0 images already run directly from a USB st
 | Boot shows many "Failed to preset all unit … Read-only file system" lines | The release image's `/etc/machine-id` said `uninitialized` (first boot), so systemd tried to reset all services | 13.4: the release script now leaves it **empty**. On an affected image it's harmless (the reset failed); new releases don't show it |
 | "Driver 'pcspkr' is already registered, aborting" at boot | Two PC-speaker drivers | Harmless; 4.9 blacklists them (`/etc/modprobe.d/iprps-blacklist.conf`) |
 | Advanced Network Configuration doesn't list Wi-Fi networks | NetworkManager's editor can't scan | 9.9: **Wi-Fi and Network Connections** opens the scanning window |
+| Wi-Fi menu greyed out; log shows "Failed to D-Bus activate wpa_supplicant service"; `wpa_supplicant -u` prints its help | wpa_supplicant built **without** D-Bus support, or its D-Bus files not installed | Rebuild wpa_supplicant with the three `CONFIG_CTRL_IFACE_DBUS…` lines and install the `dbus/` files (both **required** for IPRPS), then `systemctl restart NetworkManager` |
+| First boot: "iprps-core.sql: No such file or directory" (iprps-db-init) | The core schema wasn't saved (10.2), usually because `/usr/share/iprps/schema` didn't exist | Run 10.2 again (it creates the folder now), then `systemctl restart iprps-db-init` |
 | `http://localhost/iprps/` doesn't load | Apache or PHP-FPM stopped | `systemctl status httpd php-fpm`; `journalctl -u httpd -u php-fpm` |
 | PHP can't reach MariaDB | Socket path mismatch, or `php-fpm` stopped | `grep default_socket /etc/php.ini` must show `/run/mariadb/mariadb.sock`; `systemctl status php-fpm mariadb` |
 | First-boot setup screen doesn't appear | Setup already marked done | Remove `/var/lib/iprps/setup-done` on the image before release (13.4 does this) |
