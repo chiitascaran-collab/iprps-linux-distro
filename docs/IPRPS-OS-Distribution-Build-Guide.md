@@ -32,7 +32,8 @@ This guide builds **IPRPS OS** for distribution: a generic, ready-to-use Linux s
 | RAM | 6 GB minimum | 8 GB minimum, 16 GB recommended | 16 GB recommended |
 | Storage | 64 GB or more | 64 GB or more | 128 GB or more |
 | Desktop | IPRPS Desktop (Xfce) | Same | Same |
-| Web browser | Firefox (unbranded) | Same | Same |
+| Local AI | — | **IPRPS Oracle** (Ollama, one bundled storyteller model) | Same as Medium |
+| Web browser | Firefox (unbranded) | Chromium (ungoogled, default; IPRPS apps open as their own windows) + Firefox | Same as Medium |
 | Campaign tools | IPRPS Session Master Hub, player display, dice, initiative, session log | + all Medium IPRPS apps | + all IPRPS apps |
 | Audio | Parole (music and ambience); mpv plays ambience in Session Master Mode | + VLC | + upstream audio tools (Part 16) |
 | Video | mpv | + VLC, FFmpeg tools | + upstream video tools |
@@ -4835,7 +4836,7 @@ done
 
 > **Side note:** **Why SimpleDRM.** Debian's configuration uses the old EFI framebuffer (`FB_EFI`), which gives console text but nothing X can use. **SimpleDRM** turns the firmware's display into a real DRM device (`/dev/dri/card0`) on every UEFI PC and VM. When a GPU's own driver loads, it takes over; when it can't (a too-new GPU, or QEMU's virtio-gpu, which fails with error -22), X still has a screen instead of "no screens found". Check after building: `grep -E '^CONFIG_DRM_SIMPLEDRM=y' .config`.
 
-Enable anything reported that you need: `scripts/config --module NAME` for drivers, or `--enable NAME` for features. Then run `make olddefconfig` and the check again. Options that remain off after `olddefconfig` depend on something else being off, and some are only needed for test suites (for example `SCSI_DEBUG` and `DUMMY`), which is fine. Appendix C lists every option with the packages that need it.
+Enable anything reported that you need: `scripts/config --module NAME` for drivers, or `--enable NAME` for features. Then run `make olddefconfig` and the check again. Options that remain off after `olddefconfig` depend on something else being off, and some are only needed for test suites (for example `SCSI_DEBUG` and `DUMMY`), which is fine. Appendix D lists every option with the packages that need it.
 
 ### 4.6 Build and install
 
@@ -5357,11 +5358,43 @@ grep -n 'drivers/{mmc,hid}' /usr/sbin/mkinitramfs
 
 ```bash
 grep -n 'udevadm' /usr/share/mkinitramfs/init.in
-sed -i '0,/udevadm settle/s//udevadm settle\nmodprobe -a -q virtio_pci virtio_blk virtio_scsi nvme ahci sd_mod usb_storage uas xhci_pci ehci_pci ohci_pci sdhci_pci sdhci_acpi mmc_block hv_vmbus hv_storvsc vmw_pvscsi ata_piix 2>\/dev\/null\nudevadm settle/' /usr/share/mkinitramfs/init.in
+sed -i '0,/udevadm settle/s//udevadm settle\nmodprobe -a -q virtio_pci virtio_blk virtio_scsi nvme ahci sd_mod usb_storage uas xhci_pci ehci_pci ohci_pci sdhci_pci sdhci_acpi mmc_block hv_vmbus hv_storvsc vmw_pvscsi ata_piix usbhid hid_generic 2>\/dev\/null\nudevadm settle/' /usr/share/mkinitramfs/init.in
 grep -n -A2 'udevadm settle' /usr/share/mkinitramfs/init.in | head -6
 ```
 
 The last `grep` must show `udevadm settle`, then the `modprobe -a -q ...` line, then `udevadm settle` again.
+
+**IPRPS addition: USB in the initramfs: the USB core, keyboards, and waiting for USB drives.** BLFS's `mkinitramfs` copies the USB *host* and *storage* drivers but not the USB **core** (`usbcore`, `usb-common`), which Debian's kernel configuration builds as modules: without it, the initramfs has no USB at all, so a PC booting from a USB stick can't find the stick and a USB keyboard is dead. This adds `drivers/usb/core` and `drivers/usb/common`. It also stops `mkinitramfs` from copying the **whole firmware collection** into the initramfs (BLFS's `cp -a /usr/lib/firmware`), which made it over 1 GB: slow to load from USB and heavy on RAM. Drivers load their firmware from the root file system once it's mounted, and the CPU microcode is added separately. The keyboard driver (`usbhid`) is added to the drivers loaded at boot (images built before this change lacked it, so a USB keyboard was dead in the initramfs shell). And a USB stick's disk appears a few seconds *after* its drivers load. BLFS's initramfs checks for the root file system only once, so on real PCs booting from USB it stops with "The device /dev/disk/by-uuid/... does not exist" (QEMU's virtual disks are instant, so VM tests don't show this). This makes it wait up to 30 seconds for the root device, checking every second:
+
+**[IPRPS CHROOT]**
+
+```bash
+grep -q '^cp -a /usr/lib/firmware' /usr/sbin/mkinitramfs && \
+sed -i 's|^cp -a /usr/lib/firmware \$WDIR/usr/lib$|# IPRPS: no firmware in the initramfs (over 1 GB); drivers load it from the root file system|' /usr/sbin/mkinitramfs
+grep -q 'usb/{host,storage,core,common}' /usr/sbin/mkinitramfs || \
+sed -i 's|drivers/usb/{host,storage}|drivers/usb/{host,storage,core,common}|' /usr/sbin/mkinitramfs
+grep -q 'usbhid' /usr/share/mkinitramfs/init.in || \
+sed -i 's/ ata_piix 2>/ ata_piix usbhid hid_generic 2>/' /usr/share/mkinitramfs/init.in
+grep -q 'Waiting for the root device' /usr/share/mkinitramfs/init.in || \
+sed -i 's|^   while \[ ! -b "\$device" \] ; do$|   n=0\n   while [ ! -b "$device" ] \&\& [ $n -lt 30 ] ; do\n      [ $n = 0 ] \&\& echo "Waiting for the root device (USB drives can take a few seconds)..."\n      sleep 1; udevadm settle; n=$((n+1))\n   done\n\n&|' /usr/share/mkinitramfs/init.in
+grep -n 'usb/{\|IPRPS: no firmware' /usr/sbin/mkinitramfs
+grep -n 'usbhid' /usr/share/mkinitramfs/init.in
+grep -n -B1 -A5 '^   n=0' /usr/share/mkinitramfs/init.in
+```
+
+The first `grep` shows the `# IPRPS: no firmware` line and `drivers/usb/{host,storage,core,common}` in `mkinitramfs`. The second shows the `modprobe` line, now ending in `usbhid hid_generic`. The third shows `n=0`, a `while … -lt 30` loop with the "Waiting for the root device" message, then BLFS's own `while [ ! -b "$device" ]` loop.
+
+**IPRPS addition: quiet the PC speaker.** Debian's kernel configuration has two PC-speaker drivers, and both try to load ("Driver 'pcspkr' is already registered" at boot). Neither is needed (sound goes through the sound card), so both are switched off, which also ends the console beep:
+
+**[IPRPS CHROOT]**
+
+```bash
+cat > /etc/modprobe.d/iprps-blacklist.conf << "EOF"
+# IPRPS OS: no PC-speaker drivers (they conflict, and the beep isn't wanted)
+blacklist pcspkr
+blacklist snd_pcsp
+EOF
+```
 
 **Create the initramfs** for the new kernel, as root. The kernel version name must match the folder in `/usr/lib/modules` (`ls /usr/lib/modules`):
 
@@ -5373,7 +5406,7 @@ mkinitramfs 7.1.8-iprps
 ls -lh /boot/initrd.img-7.1.8-iprps
 ```
 
-It bundles the storage and filesystem modules, plus the Intel and AMD microcode at the front of the file.
+Expect roughly 50–150 MB. Over 1 GB means the firmware collection got in (see the USB/firmware step above). It bundles the storage and filesystem modules, plus the Intel and AMD microcode at the front of the file.
 
 ### 4.10 GRUB: one menu for every machine
 
@@ -19297,6 +19330,19 @@ The final count is about **60** (24 `iprps-*` names, 31 standard names and 5 lin
 
 > **Side note:** `Type=Scalable` with `MinSize=16` lets GTK scale the 256-pixel icons down for the panel and menus. There's no plain `folder` icon, so ordinary folders keep Adwaita's look; add a `folder.png` and link it as `places/folder` to change that.
 
+**If the icons don't show up in a test boot**, check the build image. **[IPRPS CHROOT]**
+
+```bash
+ls /usr/share/iprps/icons/*.png | wc -l                                  # 24
+find /usr/share/icons/IPRPS -xtype l | wc -l                             # 0 broken links
+ls /usr/share/icons/IPRPS/256x256/*/ | wc -l                             # about 60
+ls -l /usr/share/icons/IPRPS/index.theme /usr/share/icons/IPRPS/icon-theme.cache
+grep IconThemeName /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml   # value="IPRPS"
+grep icon-theme /etc/lightdm/lightdm-gtk-greeter.conf                    # IPRPS
+```
+
+Any wrong answer: install the icons again (9.2 step 3) and rerun the block above; it starts with `rm -rf` of the theme, so it's safe to repeat. If everything is right, the test copy is probably older than the change (make a fresh one), or the test user has an icon setting of its own (next note). Appendix C.6 shows users and administrators how to add their own icons later.
+
 > **Side note:** Users who logged in before the theme existed may keep their own saved setting. Change it for them, in their desktop session, with `xfconf-query -c xsettings -p /Net/IconThemeName -s IPRPS`.
 
 ### 9.4 Login screen (LightDM)
@@ -19460,6 +19506,346 @@ bash -n /usr/bin/iprps-folders && echo "script OK"
 ```
 
 If `groupadd` says the group exists, that's fine.
+
+### 9.9 Wi-Fi Networks window
+
+NetworkManager's **Advanced Network Configuration** (`nm-connection-editor`) has no scanning: choosing Wi-Fi gives an empty SSID box to type into. IPRPS adds a **Wi-Fi Networks** window, and the menu's Advanced Network Configuration entry opens it:
+
+- it **scans** as it opens and every 20 seconds, listing each network once with its signal, its security and which one is connected;
+- **double-click** (or **Connect**) joins a network, asking for the password when needed; saved networks reconnect without asking;
+- **Advanced settings…** opens NetworkManager's editor **for the selected network**, with its name and security type already filled in, for IP addresses, DNS, proxies or enterprise (802.1X) sign-in;
+- **Hidden network…** joins a network that doesn't broadcast its name; **All connections…** opens the full editor (wired, VPN, saved networks).
+
+It uses `nmcli` (no administrator password: 13.2's polkit rule allows the person at the computer to manage connections) and GTK 3 through PyGObject, both already in the build. The panel's network icon (nm-applet) also lists networks with a left click.
+
+**[IPRPS CHROOT]**
+
+```bash
+cat > /usr/bin/iprps-wifi << "EOF"
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+"""IPRPS Wi-Fi Networks: scan, connect, and open NetworkManager's advanced settings
+for the chosen network. Uses nmcli; no root needed (polkit rule 10-iprps.rules)."""
+import subprocess, threading, re, sys
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib, Pango
+
+NMCLI = 'nmcli'
+RESCAN_SECONDS = 20
+
+
+def nmcli(*args, timeout=40):
+    p = subprocess.run([NMCLI, *args], capture_output=True, text=True, timeout=timeout)
+    return p.returncode, p.stdout, (p.stderr or p.stdout).strip()
+
+
+def split_terse(line):
+    """Split one line of `nmcli -t -e yes` output on unescaped colons."""
+    out, cur, esc = [], '', False
+    for ch in line:
+        if esc: cur += ch; esc = False
+        elif ch == '\\': esc = True
+        elif ch == ':': out.append(cur); cur = ''
+        else: cur += ch
+    out.append(cur)
+    return out
+
+
+def scan(rescan=True):
+    """Return (networks, error). Networks: one entry per SSID, strongest signal."""
+    rc, out, err = nmcli('-t', '-e', 'yes', '-f', 'IN-USE,SSID,SIGNAL,SECURITY', 'device', 'wifi', 'list',
+                         '--rescan', 'yes' if rescan else 'no')
+    if rc != 0:
+        return [], err or 'Wi-Fi scan failed'
+    nets = {}
+    for line in out.splitlines():
+        f = split_terse(line)
+        if len(f) < 4 or not f[1]:
+            continue                       # hidden networks have no name
+        inuse, ssid, signal, sec = f[0] == '*', f[1], int(f[2] or 0), f[3]
+        n = nets.get(ssid)
+        if n is None or signal > n['signal'] or inuse:
+            nets[ssid] = {'ssid': ssid, 'signal': signal, 'security': sec, 'active': inuse or (n or {}).get('active', False)}
+    return sorted(nets.values(), key=lambda n: (not n['active'], -n['signal'], n['ssid'].lower())), None
+
+
+def saved_profiles():
+    """SSID -> connection UUID for saved Wi-Fi profiles."""
+    rc, out, _ = nmcli('-t', '-e', 'yes', '-f', 'UUID,TYPE', 'connection', 'show')
+    res = {}
+    if rc != 0:
+        return res
+    for line in out.splitlines():
+        uuid, typ = (split_terse(line) + ['', ''])[:2]
+        if typ != '802-11-wireless':
+            continue
+        rc2, ssid, _ = nmcli('-g', '802-11-wireless.ssid', 'connection', 'show', uuid)
+        if rc2 == 0 and ssid.strip():
+            res[ssid.strip()] = uuid
+    return res
+
+
+def bars(sig):
+    return '▂▄▆█'[:max(1, min(4, (sig + 24) // 25))].ljust(4, '·')
+
+
+def is_enterprise(sec):
+    return '802.1X' in sec or 'EAP' in sec
+
+
+class WifiWindow(Gtk.Window):
+    def __init__(self):
+        super().__init__(title='Wi-Fi Networks')
+        self.set_default_size(460, 520)
+        self.set_icon_name('network-wireless')
+        self.busy = False
+        self.note = ''
+
+        hb = Gtk.HeaderBar(title='Wi-Fi Networks', show_close_button=True)
+        self.set_titlebar(hb)
+        self.refresh_btn = Gtk.Button.new_from_icon_name('view-refresh', Gtk.IconSize.BUTTON)
+        self.refresh_btn.set_tooltip_text('Scan again')
+        self.refresh_btn.connect('clicked', lambda *_: self.refresh(True))
+        hb.pack_start(self.refresh_btn)
+        self.spinner = Gtk.Spinner()
+        hb.pack_start(self.spinner)
+
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8, margin=12)
+        self.add(box)
+        self.status = Gtk.Label(xalign=0, wrap=True)
+        box.pack_start(self.status, False, False, 0)
+
+        self.store = Gtk.ListStore(str, str, str, str, bool)   # ssid, label, bars, security, active
+        self.view = Gtk.TreeView(model=self.store, headers_visible=False, activate_on_single_click=False)
+        r = Gtk.CellRendererText(ellipsize=Pango.EllipsizeMode.END)
+        col = Gtk.TreeViewColumn('Network', r, markup=1); col.set_expand(True)
+        self.view.append_column(col)
+        self.view.append_column(Gtk.TreeViewColumn('Security', Gtk.CellRendererText(foreground='#888'), text=3))
+        self.view.append_column(Gtk.TreeViewColumn('Signal', Gtk.CellRendererText(family='monospace'), text=2))
+        self.view.connect('row-activated', lambda *_: self.connect_selected())
+        self.view.get_selection().connect('changed', lambda *_: self.update_buttons())
+        sw = Gtk.ScrolledWindow(); sw.add(self.view)
+        box.pack_start(sw, True, True, 0)
+
+        row = Gtk.Box(spacing=6)
+        self.connect_btn = Gtk.Button(label='Connect')
+        self.connect_btn.get_style_context().add_class('suggested-action')
+        self.connect_btn.connect('clicked', lambda *_: self.connect_selected())
+        self.adv_btn = Gtk.Button(label='Advanced settings…')
+        self.adv_btn.set_tooltip_text('IP addresses, DNS, proxy, enterprise (802.1X) security and more, for the selected network')
+        self.adv_btn.connect('clicked', lambda *_: self.advanced_selected())
+        hidden = Gtk.Button(label='Hidden network…')
+        hidden.connect('clicked', lambda *_: self.connect_hidden())
+        allc = Gtk.Button(label='All connections…')
+        allc.set_tooltip_text('NetworkManager\'s connection editor: wired, VPN, saved networks')
+        allc.connect('clicked', lambda *_: self.run_editor([]))
+        for b in (self.connect_btn, self.adv_btn):
+            row.pack_start(b, False, False, 0)
+        for b in (allc, hidden):
+            row.pack_end(b, False, False, 0)
+        box.pack_start(row, False, False, 0)
+
+        self.update_buttons()
+        self.refresh(True)
+        GLib.timeout_add_seconds(RESCAN_SECONDS, self.auto_refresh)
+
+    # -------------------------------------------------------------- scanning
+    def auto_refresh(self):
+        if not self.busy:
+            self.refresh(True, quiet=True)
+        return True
+
+    def refresh(self, rescan, quiet=False):
+        if self.busy:
+            return
+        self.busy = True
+        self.spinner.start()
+        if not quiet:
+            self.status.set_text('Scanning for Wi-Fi networks…')
+
+        def work():
+            rc, out, _ = nmcli('radio', 'wifi')
+            if out.strip() == 'disabled':
+                GLib.idle_add(self.show_radio_off); return
+            nets, err = scan(rescan)
+            GLib.idle_add(self.show_networks, nets, err)
+        threading.Thread(target=work, daemon=True).start()
+
+    def show_radio_off(self):
+        self.busy = False; self.spinner.stop()
+        d = Gtk.MessageDialog(transient_for=self, modal=True, message_type=Gtk.MessageType.QUESTION,
+                              buttons=Gtk.ButtonsType.YES_NO, text='Wi-Fi is turned off')
+        d.format_secondary_text('Turn Wi-Fi on and scan for networks?')
+        if d.run() == Gtk.ResponseType.YES:
+            nmcli('radio', 'wifi', 'on')
+            GLib.timeout_add_seconds(3, lambda: (self.refresh(True), False)[1])
+        d.destroy()
+        self.status.set_text('Wi-Fi is off.')
+
+    def show_networks(self, nets, err):
+        self.busy = False; self.spinner.stop()
+        sel = self.selected()
+        self.store.clear()
+        if err:
+            self.status.set_text(f'Couldn\'t scan: {err}\nIs there a Wi-Fi adapter? (Try "nmcli device" in a terminal.)')
+            return
+        for n in nets:
+            name = GLib.markup_escape_text(n['ssid'])
+            label = f'<b>{name}</b>  <small>connected</small>' if n['active'] else name
+            sec = '🔒 ' + n['security'] if n['security'] not in ('', '--') else 'open'
+            self.store.append([n['ssid'], label, bars(n['signal']), sec, n['active']])
+        self.status.set_text(self.note or (f'{len(nets)} networks found. Double-click one to connect.' if nets else
+                             'No networks found. Move closer to the router, or press refresh.'))
+        self.note = ''
+        if sel:
+            for i, r in enumerate(self.store):
+                if r[0] == sel['ssid']:
+                    self.view.get_selection().select_path(Gtk.TreePath(i))
+        self.update_buttons()
+
+    def selected(self):
+        m, it = self.view.get_selection().get_selected()
+        if not it:
+            return None
+        return {'ssid': m[it][0], 'security': m[it][3], 'active': m[it][4]}
+
+    def update_buttons(self):
+        s = self.selected()
+        self.connect_btn.set_sensitive(bool(s) and not s['active'])
+        self.adv_btn.set_sensitive(bool(s))
+
+    # -------------------------------------------------------------- actions
+    def ask_password(self, ssid):
+        d = Gtk.Dialog(title='Wi-Fi password', transient_for=self, modal=True)
+        d.add_buttons('Cancel', Gtk.ResponseType.CANCEL, 'Connect', Gtk.ResponseType.OK)
+        d.set_default_response(Gtk.ResponseType.OK)
+        a = d.get_content_area(); a.set_spacing(8); a.set_border_width(12)
+        a.add(Gtk.Label(label=f'Password for “{ssid}”:', xalign=0))
+        e = Gtk.Entry(visibility=False, activates_default=True); a.add(e)
+        show = Gtk.CheckButton(label='Show password')
+        show.connect('toggled', lambda b: e.set_visibility(b.get_active())); a.add(show)
+        d.show_all()
+        pw = e.get_text() if d.run() == Gtk.ResponseType.OK else None
+        d.destroy()
+        return pw
+
+    def message(self, text, detail='', error=False):
+        d = Gtk.MessageDialog(transient_for=self, modal=True,
+                              message_type=Gtk.MessageType.ERROR if error else Gtk.MessageType.INFO,
+                              buttons=Gtk.ButtonsType.OK, text=text)
+        if detail: d.format_secondary_text(detail)
+        d.run(); d.destroy()
+
+    def run_nmcli_async(self, args, done_text, ssid):
+        self.spinner.start(); self.status.set_text(f'Connecting to “{ssid}”…')
+
+        def work():
+            rc, out, err = nmcli(*args, timeout=90)
+            GLib.idle_add(self.after_connect, rc, err, done_text, ssid)
+        threading.Thread(target=work, daemon=True).start()
+
+    def after_connect(self, rc, err, done_text, ssid):
+        self.spinner.stop()
+        if rc == 0:
+            self.status.set_text(done_text); self.note = done_text
+        else:
+            msg = re.sub(r'^Error:\s*', '', err.splitlines()[-1] if err else 'unknown error')
+            self.message(f'Couldn\'t connect to “{ssid}”', msg +
+                         ('\n\nIf the password is right, try Advanced settings….' if 'Secrets' in msg or 'password' in msg.lower() else ''),
+                         error=True)
+            self.status.set_text('Not connected.')
+        self.refresh(False)
+
+    def connect_selected(self):
+        s = self.selected()
+        if not s or s['active']:
+            return
+        ssid, sec = s['ssid'], s['security']
+        if is_enterprise(sec):
+            self.message('This network uses enterprise (802.1X) sign-in',
+                         'Use Advanced settings… to enter the user name, certificates and method your organisation gave you.')
+            return self.advanced_selected()
+        saved = saved_profiles().get(ssid)
+        if saved:
+            return self.run_nmcli_async(['connection', 'up', saved], f'Connected to “{ssid}”.', ssid)
+        args = ['device', 'wifi', 'connect', ssid]
+        if sec != 'open':
+            pw = self.ask_password(ssid)
+            if pw is None:
+                return
+            args += ['password', pw]
+        self.run_nmcli_async(args, f'Connected to “{ssid}”. It will reconnect automatically.', ssid)
+
+    def connect_hidden(self):
+        d = Gtk.Dialog(title='Hidden network', transient_for=self, modal=True)
+        d.add_buttons('Cancel', Gtk.ResponseType.CANCEL, 'Connect', Gtk.ResponseType.OK)
+        a = d.get_content_area(); a.set_spacing(8); a.set_border_width(12)
+        a.add(Gtk.Label(label='Network name (SSID):', xalign=0)); n = Gtk.Entry(); a.add(n)
+        a.add(Gtk.Label(label='Password (leave empty for an open network):', xalign=0))
+        p = Gtk.Entry(visibility=False, activates_default=True); a.add(p)
+        d.set_default_response(Gtk.ResponseType.OK); d.show_all()
+        ok = d.run() == Gtk.ResponseType.OK
+        ssid, pw = n.get_text().strip(), p.get_text()
+        d.destroy()
+        if ok and ssid:
+            args = ['device', 'wifi', 'connect', ssid, 'hidden', 'yes'] + (['password', pw] if pw else [])
+            self.run_nmcli_async(args, f'Connected to “{ssid}”.', ssid)
+
+    def run_editor(self, args):
+        try:
+            subprocess.Popen(['nm-connection-editor', *args])
+        except FileNotFoundError:
+            self.message('NetworkManager\'s connection editor isn\'t installed.', error=True)
+
+    def advanced_selected(self):
+        """Open the advanced editor for the selected network, creating its profile first if needed."""
+        s = self.selected()
+        if not s:
+            return
+        ssid, sec = s['ssid'], s['security']
+        uuid = saved_profiles().get(ssid)
+        if not uuid:
+            args = ['connection', 'add', 'type', 'wifi', 'ifname', '*', 'con-name', ssid, 'ssid', ssid]
+            if is_enterprise(sec):
+                args += ['wifi-sec.key-mgmt', 'wpa-eap', '802-1x.eap', 'peap', '802-1x.phase2-auth', 'mschapv2']
+            elif 'WPA3' in sec and 'WPA2' not in sec:
+                args += ['wifi-sec.key-mgmt', 'sae']
+            elif 'WPA' in sec:
+                args += ['wifi-sec.key-mgmt', 'wpa-psk']
+            elif 'WEP' in sec:
+                args += ['wifi-sec.key-mgmt', 'none']
+            rc, out, err = nmcli(*args)
+            m = re.search(r'\(([0-9a-f-]{36})\)', out)
+            if rc != 0 or not m:
+                return self.message('Couldn\'t prepare the network\'s settings', err, error=True)
+            uuid = m.group(1)
+        self.status.set_text(f'Opening advanced settings for “{ssid}”…')
+        self.run_editor(['--edit', uuid])
+
+
+def main():
+    if subprocess.run(['which', NMCLI], capture_output=True).returncode != 0:
+        print('nmcli not found: NetworkManager is required', file=sys.stderr); sys.exit(1)
+    w = WifiWindow(); w.connect('destroy', Gtk.main_quit); w.show_all(); Gtk.main()
+
+
+if __name__ == '__main__':
+    main()
+EOF
+chmod 755 /usr/bin/iprps-wifi
+python3 -m py_compile /usr/bin/iprps-wifi && echo "iprps-wifi OK"
+F=/usr/share/applications/nm-connection-editor.desktop
+ls -l $F
+sed -i 's|^Exec=.*|Exec=iprps-wifi|; s|^Name=.*|Name=Wi-Fi and Network Connections|' $F
+grep -q '^Keywords=' $F || echo 'Keywords=wifi;wireless;network;internet;connection;' >> $F
+grep -E '^(Name|Exec|Keywords)=' $F
+update-desktop-database /usr/share/applications
+rm -rf /usr/bin/__pycache__
+```
+
+`ls` must find the file (it comes with network-manager-applet, Stage E). The menu entry is then called **Wi-Fi and Network Connections** and opens the new window; NetworkManager's own editor stays one click away.
 
 > **Checkpoint:** Create a test user (`useradd -m -G users,wheel test`, then `passwd test`), boot-test a copy (1.4), log in as `test`, and confirm the theme, panel, wallpaper and IPRPS menu. Back in the chroot, delete it with `userdel -r test`. Take snapshot **`desktop-iprps`**.
 
@@ -20882,7 +21268,8 @@ EOF
 **[BUILDER]** — If the geolocation APIs are needed:
 
 ```bash
-echo "AIzaSyDxKL42zsPjbke5O8_rPVpVrLrJ8aeE9rQ" > google-key
+# IPRPS: skip this step. The key belongs to the LFS project and must not be
+# built into IPRPS OS; Firefox works without geolocation.
 ```
 
 > **Side note (BLFS):** If you are compiling this package in chroot you must ensure that /dev/shm is mounted. If you do not do this, the Python configuration will fail with a traceback report referencing /usr/lib/pythonN.N/multiprocessing/synchronize.py. As the root user, run: mountpoint -q /dev/shm || mount -t tmpfs devshm /dev/shm
@@ -21978,19 +22365,25 @@ Then re-enter the IPRPS CHROOT and BUILDER windows (0.5). Details and restoring:
 
 ### 12.2 Launch helpers
 
-**`iprps-open`** starts the local services if needed, then opens an app:
+**`iprps-open`** starts the local services if needed, then opens an app. Where Chromium is installed (Medium and Advanced, Part 15), each app opens in **its own window**, without tabs or address bar, like a desktop program; in Lite it opens in a Firefox window. Every app window shares one browser profile, so the Universal Login signs you in once for all of them:
 
 **[IPRPS CHROOT]**
 
 ```bash
 cat > /usr/bin/iprps-open << "EOF"
 #!/bin/bash
-# iprps-open <app-folder> — open an IPRPS web app (for example: iprps-open hub)
-APP="${1:-}"
+# iprps-open <app-folder> - open an IPRPS web app (for example: iprps-open hub)
+# Medium/Advanced: its own window (Chromium app mode). Lite: a Firefox window.
+APP="${1:-}"; APP="${APP%/}"
+URL="http://localhost/iprps/${APP:+$APP/}"
 for svc in httpd php-fpm mariadb; do
   systemctl is-active --quiet "$svc" || pkexec systemctl start "$svc"
 done
-exec firefox --new-window "http://localhost/iprps/${APP}"
+if command -v chromium >/dev/null; then
+  exec chromium --app="$URL"
+else
+  exec firefox --new-window "$URL"
+fi
 EOF
 chmod 755 /usr/bin/iprps-open
 ```
@@ -22002,14 +22395,36 @@ chmod 755 /usr/bin/iprps-open
 ```bash
 cat > /usr/bin/iprps-session << "EOF"
 #!/bin/bash
-# iprps-session — Session Master Mode
-iprps-open hub/ &
+# iprps-session - Session Master Mode: the Hub, ambience, and the player display
+W=/srv/www/iprps
+note() { command -v notify-send >/dev/null && notify-send -i iprps-logo "Session Master Mode" "$1"; }
+if [ -d "$W/hub" ]; then
+  iprps-open hub/ &
+else
+  note "The Session Master Hub isn't installed in this version yet."
+fi
 sleep 2
 [ -d "$HOME/Campaigns/Audio" ] && mpv --player-operation-mode=pseudo-gui --no-video \
     --shuffle --loop-playlist=inf --title="IPRPS Ambience" "$HOME/Campaigns/Audio" &
-mkdir -p "$HOME/.iprps/player-display"
-firefox --no-remote --profile "$HOME/.iprps/player-display" --kiosk \
-        "http://localhost/iprps/hub/display.php" &
+# Medium/Advanced: load the Oracle's AI model now, so its first answer is quick
+command -v ollama >/dev/null && curl -s -m 2 http://127.0.0.1:11434/api/generate \
+    -d '{"model":"iprps-storyteller","keep_alive":"60m"}' >/dev/null &
+# The player display: only if a display page is installed
+PAGE=""
+[ -f "$W/oracle/display.php" ] && PAGE=oracle/display.php
+[ -f "$W/hub/display.php" ] && PAGE=hub/display.php
+if [ -n "$PAGE" ]; then
+  mkdir -p "$HOME/.iprps/player-display"
+  SCREENS=$(xrandr --listactivemonitors 2>/dev/null | awk 'NR==1{print $2}')
+  if [ "${SCREENS:-1}" -ge 2 ]; then
+    # Second screen or projector: full screen there (drag it over if needed; Alt+F4 closes it)
+    firefox --no-remote --profile "$HOME/.iprps/player-display" --kiosk "http://localhost/iprps/$PAGE" &
+  else
+    # One screen: a normal window, so it can't cover the desktop
+    firefox --no-remote --profile "$HOME/.iprps/player-display" --new-window "http://localhost/iprps/$PAGE" &
+    note "Player display opened in a window. With a second screen or projector connected, it opens full screen there."
+  fi
+fi
 wait
 EOF
 chmod 755 /usr/bin/iprps-session
@@ -22017,7 +22432,7 @@ chmod 755 /usr/bin/iprps-session
 
 > **Side note:** Ambience plays in a small **IPRPS Ambience** window (mpv), shuffled and looping, from *Campaigns/Audio*. With that window selected: **Space** pauses, **9** and **0** lower and raise the volume, **>** skips to the next track, and **q** stops it. For browsing music or playing a single track, use **Parole** from the menu.
 
-> **Pro tip:** The player display runs in its own Firefox profile, so it opens as a separate full-screen window. Drag it to the second monitor or projector, and press **Alt+F4** to close it. Players see only what the Session Master reveals there: maps, handouts and the initiative order.
+> **Pro tip:** The player display runs in its own Firefox profile. With a **second screen or projector** connected it opens **full screen** (kiosk); with one screen it opens as a normal window, so it can never hide the desktop. It only opens when a display page is installed (the Hub's, or the Oracle's in Medium and Advanced). Drag it to the second monitor or projector, and press **Alt+F4** to close it. Players see only what the Session Master reveals there: maps, handouts and the initiative order. Until the Hub's own display page exists, Session Master Mode uses the IPRPS Oracle's display (Medium and Advanced), which shows anything sent with **Show players**; both read the same `display_items` table.
 
 ### 12.3 Menu launchers
 
@@ -22061,6 +22476,7 @@ update-desktop-database /usr/share/applications
 | **IPRPS Media Player** | Music, ambience, CDs and DVDs; IPRPS radio | Exists (Electron + libVLC) | — | ✔ | ✔ |
 | **Genesis Character Engine** | AI character reference sheets | Exists (needs internet + API key) | — | ✔ | ✔ |
 | **Infinite Plane Writing Assistant** | Writing help for campaigns and lore | Exists (needs internet + API key) | — | ✔ | ✔ |
+| **IPRPS Oracle** | Local AI for the Session Master: chat, quick generators (NPC, location, loot, encounter, plot hook, names, read-aloud), campaign memory, save to the campaign, show on the player display | Exists (`oracle/`, Part 15) | — | ✔ | ✔ |
 | **Soundboard** | One-click sound effects and ambience during play | **To build** | — | ✔ | ✔ |
 | **IPRPS File Viewer** | Open and validate `.iprps`, `.ipai`, `.srpatch` and `.capstone` files | **To build** | — | ✔ | ✔ |
 | **Lookbook Studio** | Visual lookbooks for campaigns and settings | Exists | — | — | ✔ |
@@ -22074,22 +22490,149 @@ update-desktop-database /usr/share/applications
 
 > **Warning:** Apps that call online AI services need internet access and each user's **own** API keys. Never ship keys in the image. The planned **IPRPS Welcome** app stores each user's keys in one protected place.
 
-### 12.5 Installing a web app
+### 12.5 Installing the web apps
 
-The pattern is the same for every web app. As root, from the app's release folder:
+The IPRPS web apps come from the **live web server** (the real, current versions), not from a local XAMPP copy. They go through a **cleaning step** before they enter the image: the server files contain hosting database passwords and API keys, which must never end up in a distributable image or on GitHub.
+
+The path: **web server → `D:\IPRPS-OS\Server` (Windows) → cleaned copy in `/build/src/iprps-apps` → `/srv/www/iprps` in the image.**
+
+**1. Download the apps and the database structure (Windows).**
+
+- With FileZilla or WinSCP (SFTP), download the **`auth`** folder and **every IPRPS app folder** from the web root into `D:\IPRPS-OS\Server`.
+- In the host's **phpMyAdmin**, export every database the apps use: **Export → Custom → SQL → Output: Structure only** (untick "Data"), saved as `D:\IPRPS-OS\Server\sql\<server-name>.sql`. Structure only means tables without any real users or records.
+
+> **Warning:** `D:\IPRPS-OS\Server` holds live keys and hosting passwords. Never copy it into the Git repository or upload it anywhere. Only the cleaned copy goes into the image. Files ending in `.json` or `.env` on the live server can be downloadable by anyone; block them with a `.htaccess` (`<FilesMatch "\.(env|ini|sql|bak)$"> Require all denied </FilesMatch>`) and rotate any key that was reachable.
+
+**2. Find the secrets and databases (DEBIAN ROOT).** This scan shows only the first characters of each match, so it is safe to share:
+
+**[DEBIAN ROOT]**
+
+```bash
+cd /mnt/d/IPRPS-OS/Server
+grep -rIho -E 'dbs[0-9]{6,}' --include='*.php' --include='*.env' --include='*.json' . | sort | uniq -c
+grep -rIno -E "sk-ant-|sk-proj-|AIzaSy[0-9A-Za-z_-]{2}|xai-[A-Za-z0-9]{2}|[a-z0-9.-]*hosting-data\.io|db[su][0-9]{6,}|['\"](pass|password|DB_PASS)['\"]\s*(=>|=|,)\s*['\"][^'\"]{0,3}" \
+  --include='*.php' --include='*.js' --include='*.json' --include='*.env' . | sort -u
+```
+
+**3. The database map.** Each server database gets a local name; one local database user, **`iprps`**, owns them all:
+
+| Server database | Apps | Local database |
+|---|---|---|
+| dbs15863785 | auth (Universal Login) | `iprps_auth` |
+| dbs15389281, dbs15389600, dbs15389670 | cerebrum | `iprps_cerebrum1`, `2`, `3` |
+| dbs15994502 | character-development, sfx | `iprps_character` |
+| dbs15968534 | cookbook | `iprps_cookbook` |
+| dbs15215034 | infinite-plane-story | `iprps_story` |
+| dbs15234695 | interstellar | `iprps_interstellar` |
+| dbs15614716 | iprps-crt, prompt_database | `iprps_crt` |
+| dbs16050888 | iprps-video | `iprps_video` |
+| dbs15250527 | language | `iprps_language` |
+| dbs15926577 | lookbook_studio | `iprps_lookbook` |
+| dbs15772721 | radiostation | `iprps_radio` |
+| dbs15792286 | storyboard-to-screen | `iprps_storyboard` |
+| dbs15780226 | story-node-video | `iprps_storynode` |
+| dbs15783496 | story-to-screen | `iprps_storytoscreen` |
+
+New apps or databases: add a line to this table and to `DB_MAP` in the cleaning script.
+
+**4. Make the clean copy (DEBIAN ROOT).** `iprps-clean-apps.py` (in the repository's `tools/`) never changes the source. In the copy it leaves out `_old`/backup files and Windows clutter, renames folders with spaces or capitals (`Cerebrum` → `cerebrum`, `camera patch generator` → `camera-patch-generator`, `ComicBookBuilder` → `comic-book-builder`), points every database setting at `localhost`, the local database name and user `iprps`, replaces every database password with the placeholder **`@IPRPS_DB_PASS@`**, and removes API keys and stored passwords. It writes a report.
+
+**[DEBIAN ROOT]**
+
+```bash
+cp /mnt/c/Users/<you>/Downloads/iprps-clean-apps.py /root/
+python3 -I /root/iprps-clean-apps.py /mnt/d/IPRPS-OS/Server /build/src/iprps-apps
+find /build/src/iprps-apps -name '*.log' -exec truncate -s 0 {} +
+cp /build/src/iprps-clean-report.txt /mnt/c/Users/<you>/Downloads/
+mkdir -p /build/src/iprps-sql && cp -v /mnt/d/IPRPS-OS/Server/sql/*.sql /build/src/iprps-sql/
+```
+
+Read the report. **"STILL LOOKS SECRET" must be 0** (empty logs fix the usual leftovers). Files where it changed the database user but found no password use an unusual form: open them (`grep -n -i pass <file> | cut -c1-60` shows the line without the value) and replace the password text with `@IPRPS_DB_PASS@` by hand.
+
+**5. Install (IPRPS CHROOT).** Root owns everything and Apache only reads it, except the folders the apps write to:
 
 **[IPRPS CHROOT]**
 
 ```bash
-install -vdm755 /srv/www/iprps/<app>
-cp -rv ./* /srv/www/iprps/<app>/
-chown -R root:apache /srv/www/iprps/<app>
-find /srv/www/iprps/<app> -type d -exec chmod 755 {} \; -o -type f -exec chmod 644 {} \;
+rm -rf /srv/www/iprps/*
+cp -r /build/src/iprps-apps/. /srv/www/iprps/
+chown -R root:apache /srv/www/iprps
+find /srv/www/iprps -type d -exec chmod 755 {} +
+find /srv/www/iprps -type f -exec chmod 644 {} +
+cd /srv/www/iprps
+W="lookbook_studio/data cineforge/projects cineforge/data radiostation/uploads radiostation/logs iprps-crt/uploads iprps-video/api/uploads multicharacter/data cookbook/uploads cookbook/data story-map-builder/data story-to-screen/storage story-node-video/storage iprps-writers-studio/uploads iprps-writers-studio/data iprps_email/uploads iprps_email/data"
+for d in $W; do [ -d "$d" ] && chown -R apache:apache "$d"; done
+for d in $W; do sudo -u apache test -w "$d" && echo "OK   $d" || echo "FAIL $d"; done
+chown root:apache auth/auth-config.php && chmod 640 auth/auth-config.php
 ```
 
-Folders the app writes to (uploads, cache) get `chown -R apache:apache` on **those folders only**. Apps read their database settings from `/etc/iprps/db.php`, which first boot creates (Part 14).
+To find an app's writable folders: `find /srv/www/iprps -type d \( -iname 'upload*' -o -iname cache -o -iname tmp -o -iname logs -o -iname data -o -iname 'output*' -o -iname storage -o -iname projects \)`.
 
-> **Pro tip:** Moving apps from Windows/XAMPP: Linux filenames are **case-sensitive**, `D:\xampp\...` paths must become `/srv/www/iprps/...`, and the database host is `localhost` over the socket.
+The **Universal Login** lives in `/srv/www/iprps/auth/` (`auth.php`, `auth-check.php`, `auth-client.js`, `login.html` and the cleaned `auth-config.php`). Every app includes `../auth/auth-client.js`, so `auth` must sit next to the apps. `auth.php` creates its `ip_users` and `ip_sessions` tables itself; the export adds the other three.
+
+**6. Create the user, the databases and their tables (IPRPS CHROOT).** The test password is saved in `/root/iprps-dev-db.txt` (root only); 13.4 removes it.
+
+**[IPRPS CHROOT]**
+
+```bash
+install -vdm755 -o mariadb -g mariadb /run/mariadb
+mariadbd-safe --user=mariadb >/dev/null 2>&1 &
+until mariadb-admin -u root ping >/dev/null 2>&1; do sleep 1; done; echo "MariaDB is up"
+[ -f /root/iprps-dev-db.txt ] || { echo "iprps $(openssl rand -hex 16)" > /root/iprps-dev-db.txt; chmod 600 /root/iprps-dev-db.txt; }
+P=$(awk '{print $2}' /root/iprps-dev-db.txt)
+mariadb -u root -e "CREATE USER IF NOT EXISTS 'iprps'@'localhost' IDENTIFIED BY '$P';
+ALTER USER 'iprps'@'localhost' IDENTIFIED BY '$P';
+GRANT ALL PRIVILEGES ON \`iprps\\_%\`.* TO 'iprps'@'localhost';
+FLUSH PRIVILEGES;"
+while read s l; do
+  mariadb -u root -e "CREATE DATABASE IF NOT EXISTS \`$l\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+  f=/build/src/iprps-sql/$s.sql
+  if [ -f "$f" ]; then
+    sed -E -e '/^CREATE DATABASE/d' -e '/^USE /d' -e 's/DEFINER=`[^`]+`@`[^`]+`//g' "$f" | mariadb -u root "$l" \
+      && echo "OK      $l ($(mariadb -u root -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$l'") tables)"
+  else
+    echo "no SQL  $l (the app may create its tables itself)"
+  fi
+done << "EOF"
+dbs15863785 iprps_auth
+dbs15389281 iprps_cerebrum1
+dbs15389600 iprps_cerebrum2
+dbs15389670 iprps_cerebrum3
+dbs15994502 iprps_character
+dbs15968534 iprps_cookbook
+dbs15215034 iprps_story
+dbs15234695 iprps_interstellar
+dbs15614716 iprps_crt
+dbs16050888 iprps_video
+dbs15250527 iprps_language
+dbs15926577 iprps_lookbook
+dbs15772721 iprps_radio
+dbs15792286 iprps_storyboard
+dbs15780226 iprps_storynode
+dbs15783496 iprps_storytoscreen
+EOF
+mariadb -u iprps -p"$P" -e "SHOW DATABASES LIKE 'iprps%';"
+```
+
+The `until … ping` line waits for the server: MariaDB can take more than a few seconds to start, and commands sent too early fail with "Can't connect … socket". The `sed` strips hosting-specific lines (`CREATE DATABASE`, `USE`, `DEFINER` owners). Run the loop only once per database: loading an export twice fails with "table already exists" (harmless). `iprps_auth` has **5 tables**; the last command, as user `iprps`, must list all 16.
+
+**7. Put the test password into the installed apps, enable the services, stop MariaDB (IPRPS CHROOT):**
+
+**[IPRPS CHROOT]**
+
+```bash
+grep -rl '@IPRPS_DB_PASS@' /srv/www/iprps | xargs -r sed -i "s/@IPRPS_DB_PASS@/$P/g"
+grep -rl '@IPRPS_DB_PASS@' /srv/www/iprps | wc -l      # 0
+systemctl enable httpd php-fpm mariadb
+mariadb-admin -u root shutdown; sleep 3; pgrep -a mariadbd || echo "MariaDB stopped"
+rm -fv /srv/mariadb/$(hostname).*
+```
+
+Only `/srv/www/iprps` gets the test password; the staging copy keeps the placeholder. At release, 13.4 puts the placeholder back and first boot (`iprps-db-init`, 13.1) writes each computer's own password.
+
+**8. Test.** Fresh test copy, log in, Firefox: register at `http://localhost/iprps/auth/login.html`, then open apps (`/iprps/cookbook/`, `/iprps/prompt_database/`…) without logging in again. Errors: `tail -15 /var/log/httpd/error_log` over SSH. AI features stay off until API keys are entered in each app's settings (they were removed on purpose).
+
+> **Pro tip:** Moving apps from Windows/XAMPP: Linux filenames are **case-sensitive** (`Config.php` ≠ `config.php`), `D:\xampp\...` paths must become `/srv/www/iprps/...`, and the database host is `localhost` (the socket; there is no port with `skip-networking`). Shell scripts need Linux line endings: `sed -i 's/\r$//' file.sh`.
 
 ### 12.6 Desktop (non-web) apps
 
@@ -22171,24 +22714,31 @@ EOF
 systemctl enable iprps-firstboot.service
 ```
 
-**The database password, unique per installation:**
+**The database password, unique per installation.** The web apps (12.5) share one database user, `iprps`, for the core `iprps` database and all `iprps_*` app databases; their settings hold the placeholder `@IPRPS_DB_PASS@`. At first boot this script gives `iprps` a new random password, writes it into every app (replacing the placeholder) and into `/etc/iprps/db.php`. The backslashes in its `GRANT … iprps\\_%` line are deliberate: they give MariaDB a literal `` `iprps\_%` ``, meaning every database whose name starts with `iprps_`.
 
 **[IPRPS CHROOT]**
 
 ```bash
 cat > /usr/sbin/iprps-db-init << "EOF"
 #!/bin/bash
-# iprps-db-init — create the IPRPS database and a unique random application password
+# iprps-db-init - first boot: a unique database password for this computer
 set -e
-PW=$(head -c 48 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24)
+PW=$(head -c 48 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 32)
+PH='@IPRPS_DB_PASS@'
+# MariaDB's first start can be slow (USB drives, first boot): wait for it, up to 3 minutes
+for i in $(seq 180); do mariadb-admin -u root ping >/dev/null 2>&1 && break; sleep 1; done
+mariadb-admin -u root ping >/dev/null 2>&1 || { echo "iprps-db-init: MariaDB isn't answering; will retry at next boot" >&2; exit 1; }
 mariadb -u root << SQL
 CREATE DATABASE IF NOT EXISTS iprps CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS 'iprps'@'localhost' IDENTIFIED BY '$PW';
 ALTER USER 'iprps'@'localhost' IDENTIFIED BY '$PW';
 GRANT ALL PRIVILEGES ON iprps.* TO 'iprps'@'localhost';
+GRANT ALL PRIVILEGES ON \`iprps\\_%\`.* TO 'iprps'@'localhost';
 FLUSH PRIVILEGES;
 SQL
 mariadb -u root iprps < /usr/share/iprps/schema/iprps-core.sql
+# The web apps: replace the placeholder with this computer's password
+grep -rlF "$PH" /srv/www/iprps 2>/dev/null | xargs -r sed -i "s/$PH/$PW/g"
 install -dm750 -o root -g apache /etc/iprps
 cat > /etc/iprps/db.php << PHP
 <?php
@@ -22196,9 +22746,10 @@ return ['host' => 'localhost', 'name' => 'iprps', 'user' => 'iprps', 'pass' => '
 PHP
 chown root:apache /etc/iprps/db.php
 chmod 640 /etc/iprps/db.php
-touch /var/lib/iprps/db-done
+install -dm755 /var/lib/iprps && touch /var/lib/iprps/db-done
 EOF
 chmod 755 /usr/sbin/iprps-db-init
+bash -n /usr/sbin/iprps-db-init && echo "script OK"
 cat > /usr/lib/systemd/system/iprps-db-init.service << "EOF"
 [Unit]
 Description=IPRPS first boot: create the campaign database
@@ -22209,6 +22760,7 @@ Requires=mariadb.service
 [Service]
 Type=oneshot
 ExecStart=/usr/sbin/iprps-db-init
+TimeoutStartSec=300
 RemainAfterExit=yes
 
 [Install]
@@ -22219,37 +22771,234 @@ systemctl enable iprps-db-init.service
 
 ### 13.2 First boot: create the user (text-mode setup)
 
-The release images contain **no user accounts**. On first boot, before the login screen appears, a short setup screen asks for a user name, password, computer name and time zone:
+The release images contain **no user accounts**. On first boot, before the login screen appears, a short setup runs in menu screens (`whiptail`, from newt, built in Stage E): a **welcome** describing IPRPS OS, **the editions** (with the one installed), **good to know** (hardware and other limits), then the user name, full name, password (typed twice, at least 8 characters), computer name and a **time zone menu** (common US and Canadian zones first, or any region and city), and a summary to confirm or change. It reads the edition from `VERSION` in `/etc/os-release`, which 13.4 sets.
+
+**[IPRPS CHROOT]**
+
+```bash
+command -v whiptail
+```
+
+It must print `/usr/bin/whiptail`. Then:
 
 **[IPRPS CHROOT]**
 
 ```bash
 cat > /usr/sbin/iprps-setup << "EOF"
 #!/bin/bash
-# iprps-setup — create the first user on a new IPRPS installation
-clear
-cat << "TXT"
+# iprps-setup - first boot: welcome, edition overview, and the first user account
+# Menus use whiptail (from newt). IPRPS_SETUP_DRYRUN=1 shows the screens without changing anything.
+export NEWT_COLORS='
+root=white,blue
+window=white,black
+border=yellow,black
+title=yellow,black
+textbox=white,black
+button=black,yellow
+actbutton=black,yellow
+compactbutton=white,black
+listbox=white,black
+actlistbox=black,yellow
+actsellistbox=black,yellow
+entry=white,blue
+label=white,black
+checkbox=white,black
+roottext=yellow,blue
+'
+DRY=${IPRPS_SETUP_DRYRUN:-}
+BT="IPRPS OS - first-time setup"
+W=(--backtitle "$BT")
+msg() { whiptail "${W[@]}" "$@" >&2; }      # message boxes: always on screen, even inside $( )
+H=$(tput lines 2>/dev/null || echo 25); C=$(tput cols 2>/dev/null || echo 80)
+TH=$(( H > 30 ? 26 : H - 2 )); TW=$(( C > 90 ? 78 : C - 4 ))
 
-  ============================================
-            Welcome to IPRPS OS
-  ============================================
+. /etc/os-release 2>/dev/null
+ED=${VERSION#* }; [ "$ED" = "$VERSION" ] && ED=""
 
-  Let's create your account. This takes a minute.
+# ---------------------------------------------------------------- 1. welcome
+msg --title " Welcome to IPRPS OS ${VERSION:-} " --ok-button "Continue" --msgbox "\
+IPRPS OS is a complete operating system for tabletop role-playing: \
+built for Session Masters, Storytellers and players of the Infinite Plane \
+Role Playing System (IPRPS) by Mythical Legends Publishing.
 
+It gives you a fast desktop with your campaign tools ready: the \
+Session Master Hub, dice and initiative, the session log, a player \
+display for a second screen or projector, ambience and music, and the \
+IPRPS apps - all running on this computer, with or without internet.
+
+IPRPS OS is free software (GNU GPL v2), built from Linux From Scratch.
+
+This setup takes about a minute: you'll create your account, name \
+this computer and choose your time zone." $TH $TW
+
+# ---------------------------------------------------------------- 2. editions, 3. good to know
+read -r -d '' EDITIONS << TXT
+You are running IPRPS OS ${ED:-(development build)}.
+
+LITE - the essentials. 6 GB RAM minimum, 64 GB storage.
+ Session Master Hub, dice, initiative, session log, player display,
+ Firefox, PDF viewer, text editor, music and ambience, Wi-Fi.
+
+MEDIUM - creative and office. 8 GB minimum, 16 GB recommended.
+ Lite, plus the IPRPS Oracle (local AI for Session Masters, works
+ without internet), Chromium, LibreOffice, GIMP, Inkscape, VLC,
+ printing, and more IPRPS apps.
+
+ADVANCED - everything. 16 GB recommended, 128 GB storage.
+ Medium, plus scanning, FontForge, Graphviz, disc tools, more
+ creative tools, and all IPRPS apps.
 TXT
-read -rp "  User name (lowercase, e.g. alex): " U
-until [[ "$U" =~ ^[a-z][a-z0-9_-]{0,30}$ ]] && ! id "$U" &>/dev/null; do
-  read -rp "  Lowercase letters/numbers, starting with a letter: " U
+[ "$ED" = "Lite" ] && EDITIONS+=$'\n\nLite has no office suite or local AI: those come with Medium and Advanced.'
+msg --title " The IPRPS OS editions " --ok-button "Continue" --msgbox "$EDITIONS" $TH $TW
+
+read -r -d '' LIMITS << TXT
+Before you start:
+
+ * Runs on 64-bit Intel and AMD PCs, not on ARM computers or Apple
+   Silicon Macs. Secure Boot must be turned off to start it.
+
+ * NVIDIA graphics use the open-source driver: fine for the desktop,
+   but without NVIDIA acceleration for games or the local AI.
+
+ * Most Wi-Fi works; a few chips (some Broadcom) aren't supported.
+
+ * New versions arrive as new IPRPS OS releases. There is no app
+   store or package manager for adding other software.
+
+ * Apps that use online AI services need internet and your own
+   API key. Everything else works offline.
+TXT
+[ "$ED" = "Lite" ] && LIMITS+=$'\n\n * On 6 GB computers, keep a few programs open at a time.'
+msg --title " Good to know " --ok-button "Continue" --msgbox "$LIMITS" $TH $TW
+
+# ---------------------------------------------------------------- 3. account, computer name, time zone
+ask_user() {
+  local u="${1:-}"
+  while :; do
+    u=$(whiptail "${W[@]}" --title " Your account " --inputbox \
+      "Choose a user name.\n\nLowercase letters, numbers, - and _ only, starting with a letter (for example: alex)." \
+      12 64 "$u" 3>&1 1>&2 2>&3) || continue
+    if [[ ! "$u" =~ ^[a-z][a-z0-9_-]{0,30}$ ]]; then
+      msg --title " User name " --msgbox "\"$u\" can't be used. Use lowercase letters and numbers, starting with a letter." 9 64
+    elif id "$u" &>/dev/null; then
+      msg --title " User name " --msgbox "\"$u\" is a system name. Please choose another." 8 64
+    else
+      echo "$u"; return
+    fi
+  done
+}
+
+ask_fullname() {
+  whiptail "${W[@]}" --title " Your account " --inputbox \
+    "Your full name, as shown on the login screen (optional):" 10 64 "${1:-}" 3>&1 1>&2 2>&3 || true
+}
+
+ask_password() {
+  local p1 p2
+  while :; do
+    p1=$(whiptail "${W[@]}" --title " Password " --passwordbox \
+      "Choose a password for $1 (at least 8 characters).\nYou'll also use it for administrator (sudo) tasks." 11 64 3>&1 1>&2 2>&3) || continue
+    p2=$(whiptail "${W[@]}" --title " Password " --passwordbox "Type the password again:" 9 64 3>&1 1>&2 2>&3) || continue
+    if [ ${#p1} -lt 8 ]; then
+      msg --title " Password " --msgbox "That password is too short: use at least 8 characters." 8 64
+    elif [ "$p1" != "$p2" ]; then
+      msg --title " Password " --msgbox "The two passwords don't match. Let's try again." 8 64
+    else
+      printf '%s' "$p1"; return
+    fi
+  done
+}
+
+ask_hostname() {
+  local h="${1:-iprps}"
+  while :; do
+    h=$(whiptail "${W[@]}" --title " Computer name " --inputbox \
+      "A name for this computer on your network:" 10 64 "$h" 3>&1 1>&2 2>&3) || { h=iprps; continue; }
+    [[ "$h" =~ ^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$ ]] && { echo "$h"; return; }
+    msg --title " Computer name " --msgbox "Use letters, numbers and dashes only (no spaces)." 8 64
+  done
+}
+
+ask_timezone() {
+  local cur="${1:-America/New_York}" region z args=() Z=/usr/share/zoneinfo
+  while :; do
+    region=$(whiptail "${W[@]}" --title " Time zone " --default-item "US & Canada" --menu \
+      "Where are you?" 20 60 11 \
+      "US & Canada" "Common US and Canadian time zones" \
+      "America"     "North, Central and South America" \
+      "Europe"      "" \
+      "Africa"      "" \
+      "Asia"        "" \
+      "Australia"   "" \
+      "Pacific"     "Pacific islands, New Zealand" \
+      "Atlantic"    "Atlantic islands" \
+      "Indian"      "Indian Ocean" \
+      "Antarctica"  "" \
+      "UTC"         "Coordinated Universal Time" 3>&1 1>&2 2>&3) || continue
+    case "$region" in
+      UTC) echo UTC; return ;;
+      "US & Canada")
+        z=$(whiptail "${W[@]}" --title " Time zone: US & Canada " --notags --default-item "$cur" --menu \
+          "Choose your time zone:" 20 60 11 \
+          America/New_York    "Eastern (New York, Toronto)" \
+          America/Chicago     "Central (Chicago, Winnipeg)" \
+          America/Denver      "Mountain (Denver, Edmonton)" \
+          America/Phoenix     "Arizona (Phoenix, no daylight saving)" \
+          America/Los_Angeles "Pacific (Los Angeles, Vancouver)" \
+          America/Anchorage   "Alaska (Anchorage)" \
+          Pacific/Honolulu    "Hawaii (Honolulu)" \
+          America/Halifax     "Atlantic (Halifax)" \
+          America/St_Johns    "Newfoundland (St. John's)" \
+          America/Regina      "Saskatchewan (Regina)" \
+          America/Puerto_Rico "Puerto Rico" 3>&1 1>&2 2>&3) || continue ;;
+      *)
+        args=()
+        while IFS= read -r f; do
+          args+=("$region/$f" "$(echo "$f" | sed 's|_| |g; s|/| / |g')")
+        done < <(cd "$Z/$region" 2>/dev/null && find . -type f | sed 's|^\./||' | LC_ALL=C sort)
+        [ ${#args[@]} -eq 0 ] && { msg --msgbox "No time zones found for $region." 8 50; continue; }
+        z=$(whiptail "${W[@]}" --title " Time zone: $region " --notags --default-item "$cur" --menu \
+          "Choose the city nearest you (type its first letter to jump):" 22 64 14 "${args[@]}" 3>&1 1>&2 2>&3) || continue ;;
+    esac
+    [ -n "$z" ] && { echo "$z"; return; }
+  done
+}
+
+U=""; FN=""; HN="iprps"; TZ="America/New_York"
+while :; do
+  U=$(ask_user "$U")
+  FN=$(ask_fullname "$FN")
+  P=$(ask_password "$U")
+  HN=$(ask_hostname "$HN")
+  TZ=$(ask_timezone "$TZ")
+  whiptail "${W[@]}" --title " Ready " --yes-button "Create account" --no-button "Change something" --yesno "\
+User name:      $U
+Full name:      ${FN:-(none)}
+Computer name:  $HN
+Time zone:      $TZ ($(TZ=$TZ date '+%a %H:%M'))
+
+Create this account and start IPRPS OS?" 14 64 && break
 done
-useradd -m -G users,wheel,audio,video,iprps -s /bin/bash "$U"
-until passwd "$U"; do echo "  Let's try that again."; done
-read -rp "  Computer name [iprps]: " H
-echo "${H:-iprps}" > /etc/hostname
-read -rp "  Time zone, e.g. America/New_York [UTC]: " TZ
-TZ=${TZ:-UTC}
-[ -f "/usr/share/zoneinfo/$TZ" ] && ln -sf "/usr/share/zoneinfo/$TZ" /etc/localtime
+
+# ---------------------------------------------------------------- 4. apply
+if [ -n "$DRY" ]; then
+  msg --msgbox "Dry run: nothing was changed.\n\n$U / $HN / $TZ" 10 50; exit 0
+fi
+if ! id "$U" &>/dev/null; then
+  useradd -m -G users,wheel,audio,video,iprps -s /bin/bash -c "$FN" "$U" || {
+    msg --msgbox "The account couldn't be created. Setup will start again." 8 60; exec "$0"; }
+fi
+until printf '%s:%s\n' "$U" "$P" | chpasswd 2>/tmp/iprps-setup.err; do
+  msg --title " Password " --msgbox "That password was refused:\n\n$(tail -2 /tmp/iprps-setup.err)\n\nPlease choose another." 12 64
+  P=$(ask_password "$U")
+done
+rm -f /tmp/iprps-setup.err
+echo "$HN" > /etc/hostname
+sed -i "/^127\.0\.1\.1/d" /etc/hosts; echo "127.0.1.1 $HN" >> /etc/hosts
+ln -sf "/usr/share/zoneinfo/$TZ" /etc/localtime
+unset P
 touch /var/lib/iprps/setup-done
-echo; echo "  All set. Starting the desktop..."; sleep 2
+msg --title " All set " --msgbox "Welcome, ${FN:-$U}!\n\nThe login screen appears next. Sign in as \"$U\".\n\nTip: Session Master Mode is in the IPRPS menu." 12 60
 EOF
 chmod 755 /usr/sbin/iprps-setup
 cat > /usr/lib/systemd/system/iprps-setup.service << "EOF"
@@ -22266,6 +23015,7 @@ ExecStart=/usr/sbin/iprps-setup
 StandardInput=tty
 StandardOutput=tty
 TTYPath=/dev/tty1
+Environment=TERM=linux
 TTYReset=yes
 TTYVHangup=yes
 RemainAfterExit=yes
@@ -22276,7 +23026,34 @@ EOF
 systemctl enable iprps-setup.service
 ```
 
+> **Pro tip:** Preview the screens any time without changing anything: `sudo IPRPS_SETUP_DRYRUN=1 iprps-setup` in a terminal or on a text console.
+
 > **Side note:** The new user is in the `wheel` group, so they have **sudo**. The root account is locked in release images (13.4), which is the same model Ubuntu and many other distros use.
+
+**Administrator prompts use the user's own password.** Graphical programs ask for permission through **polkit** (saving Wi-Fi settings, starting the web services from the IPRPS menu, mounting disks). polkit's default asks for **root's** password, and root is locked in release images, so those prompts could never succeed. This rule makes the members of `wheel` the administrators (they type their own password), and lets the person at the computer manage network connections, such as saving a Wi-Fi network, without any prompt:
+
+**[IPRPS CHROOT]**
+
+```bash
+install -vdm700 /etc/polkit-1/rules.d
+cat > /etc/polkit-1/rules.d/10-iprps.rules << "EOF"
+// IPRPS OS: root is locked; the members of "wheel" (the first user) are the administrators
+polkit.addAdminRule(function(action, subject) {
+    return ["unix-group:wheel"];
+});
+// The person at the computer may manage network connections (Wi-Fi) without a password
+polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.freedesktop.NetworkManager.") == 0 &&
+        subject.local && subject.active && subject.isInGroup("users")) {
+        return polkit.Result.YES;
+    }
+});
+EOF
+chmod 644 /etc/polkit-1/rules.d/10-iprps.rules
+ls -l /etc/polkit-1/rules.d/
+```
+
+The file name starts with `10-` so it's read before other admin rules (such as AccountsService's `40-adm.rules`).
 
 ### 13.3 The installer: from USB drive to internal disk
 
@@ -22336,7 +23113,7 @@ chroot "$NEW" grub-install --target=x86_64-efi --efi-directory=/boot/efi --remov
 chroot "$NEW" grub-install --target=i386-pc "$TARGET"
 
 rm -f "$NEW/var/lib/iprps/firstboot-done" "$NEW/etc/ssh/ssh_host_"*
-echo uninitialized > "$NEW/etc/machine-id"
+: > "$NEW/etc/machine-id"        # empty: a new ID at first boot, without systemd's preset reset
 umount -R "$NEW"
 echo; echo "Done. Shut down, remove the USB drive, and start the computer."
 EOF
@@ -22355,91 +23132,361 @@ EOF
 
 ### 13.4 Release cleanup (on a copy of the image)
 
-At a release checkpoint, **copy** the system image and clean the copy. Your build image stays untouched. In WSL, as root, with the build image unmounted (`iprps-leave.sh`):
+At a release checkpoint, a script **copies** the system image to `/root/release/iprps-os-1.0-<edition>.img` and cleans the copy for release. Your build image is never changed, so you keep building the next edition in it afterwards. You only type the edition once, as a word: `lite`, `medium` or `advanced`.
 
-**[DEBIAN ROOT]**
+What it does, in order:
+
+1. **Checks** that the build image is closed (no chroot, not attached, no MariaDB running in Debian, no QEMU using it) and that there's enough free space. It offers to delete old release files for that edition.
+2. **Copies** the image and opens the copy's root file system at `/mnt/rel`, with `/dev`, `/proc`, `/sys` and `/run` connected one-way (`--make-rslave`), so closing it can't affect Debian.
+3. **Web apps and databases** (inside the copy):
+   - puts `@IPRPS_DB_PASS@` back wherever the test password is (from `/root/iprps-dev-db.txt`);
+   - starts MariaDB and **empties every table** in the core `iprps` database and every `iprps_*` app database (test campaigns, Oracle chats, test accounts and logins, app records), keeping the tables;
+   - gives the `iprps` database user a random password nobody knows, stops MariaDB, and removes `/etc/iprps/db.php`.
+
+   At first boot, `iprps-db-init` (13.1) sets the real password.
+4. **App data:** lists files added to the apps' upload, storage and project folders since installation, and asks whether to delete them from the copy (**y**), keep them (**n**) or stop (**q**).
+5. **General cleanup:**
+   - removes the `builder` account and its sudo rules;
+   - removes `/build`, root's files, command histories and temporary files;
+   - removes the SSH host keys and first-boot markers (each installation makes its own), plus Ollama's identity key and the logs;
+   - empties `/etc/machine-id`, so each computer gets its own ID at first boot. It's left **empty**, not `uninitialized`: `uninitialized` tells systemd "first boot", which resets every service to systemd's default presets (and would switch off IPRPS's own services);
+   - removes broken service links (left behind by packages that were rebuilt or removed), listing them;
+   - locks root's password;
+   - sets the edition name (`IPRPS OS 1.0 Lite`) in `/etc/os-release`. The first-boot setup (13.2) shows that name.
+
+   It then prints a check list.
+6. **Trims and closes** the copy (`fstrim`, unmount, detach). If anything fails along the way, it undoes the mounts and says so; run it again and it starts from a fresh copy.
+
+**Install the script once. [DEBIAN ROOT]** Copy it from the repository, or create it with the block below:
 
 ```bash
-mkdir -pv /root/release
-cp -v --sparse=always /root/iprps-system.img /root/release/iprps-os-1.0-<edition>.img
-L=$(losetup -fP --show /root/release/iprps-os-1.0-<edition>.img)
-mkdir -pv /mnt/rel && mount -v ${L}p3 /mnt/rel
-for d in dev proc sys run; do mount --rbind /$d /mnt/rel/$d; done
-chroot /mnt/rel /bin/bash
+install -vm755 /mnt/g/IPRPS/iprps-os/build-host/iprps-release-clean.sh /root/
 ```
 
-Inside that chroot:
-
-**[RELEASE COPY CHROOT]**
-
 ```bash
-userdel -r builder
+cat > /root/iprps-release-clean.sh << "EOF"
+#!/bin/bash
+# iprps-release-clean.sh <lite|medium|advanced> - guide 13.4
+# Copies the build image to /root/release/iprps-os-1.0-<edition>.img and cleans the copy
+# for release. The build image itself is never changed. Run as root in Debian (WSL),
+# with the build chroot closed (iprps-leave.sh).
+set -eu
+case "${1:-}" in lite|medium|advanced) ED=$1 ;; *) echo "usage: $0 lite|medium|advanced"; exit 1 ;; esac
+EDC=${ED^}
+SRC=/root/iprps-system.img
+REL=/root/release
+IMG=$REL/iprps-os-1.0-$ED.img
+MNT=/mnt/rel
+INSIDE=/run/iprps-release-inside.sh     # in Debian's /run, which the chroot sees: nothing lands in the image
+LP=""; OK=0
+
+say() { printf '\n\033[1;33m== %s\033[0m\n' "$*"; }
+die() { printf '\n\033[1;31mSTOPPED: %s\033[0m\n' "$*" >&2; exit 1; }
+
+# Attach partition 3 (the root file system) by its offset: works without udev partition nodes.
+p3_loop() {
+  local s n
+  read -r s n < <(sfdisk -d "$1" | sed -n 's/.*3 : start= *\([0-9]*\), size= *\([0-9]*\).*/\1 \2/p') || true
+  [ -n "${s:-}" ] || return 1
+  losetup -f --show -o $(( s * 512 )) --sizelimit $(( n * 512 )) "$1"
+}
+
+unmount_all() {
+  cd /
+  for d in run sys proc dev; do
+    findmnt "$MNT/$d" >/dev/null 2>&1 && { umount -R "$MNT/$d" 2>/dev/null || umount -Rl "$MNT/$d"; }
+  done
+  if findmnt "$MNT" >/dev/null 2>&1; then
+    umount "$MNT" || { echo "Still in use:"; fuser -vm "$MNT" || true; return 1; }
+  fi
+  [ -n "$LP" ] && losetup -d "$LP" 2>/dev/null; LP=""
+  rm -f "$INSIDE"
+}
+on_exit() {
+  [ "$OK" = 1 ] && return
+  echo; echo "Undoing the mounts..."
+  if findmnt "$MNT" >/dev/null 2>&1; then
+    chroot "$MNT" mariadb-admin -u root shutdown >/dev/null 2>&1 || true; sleep 2
+  fi
+  unmount_all || true
+  printf '\033[1;31mThe release copy is incomplete. Your build image is unchanged.\nFix the problem above, then run this script again (it starts from a fresh copy).\033[0m\n'
+}
+trap on_exit EXIT
+
+# ---------------------------------------------------------------- checks
+say "Checks"
+[ "$(id -u)" = 0 ] || die "run this as root in Debian"
+[ -f "$SRC" ] || die "$SRC not found"
+findmnt /mnt/iprps >/dev/null 2>&1 && die "the build image is open: leave the chroot (exit) and run /root/iprps-leave.sh"
+[ -z "$(losetup -j "$SRC")" ] || die "the build image is still attached ($(losetup -j "$SRC" | cut -d: -f1)): run /root/iprps-leave.sh"
+findmnt "$MNT" >/dev/null 2>&1 && die "$MNT is in use: unmount it first (see 13.4)"
+pgrep -x mariadbd >/dev/null && die "a MariaDB server is running in Debian: stop it first"
+pgrep -af qemu-system | grep -q "$(basename "$SRC")" && die "QEMU is using the build image: shut that VM down"
+for t in sfdisk losetup fstrim; do command -v $t >/dev/null || die "$t is missing (apt install fdisk util-linux)"; done
+mkdir -p "$REL" "$MNT"
+ls "$REL"/iprps-os-1.0-"$ED".* >/dev/null 2>&1 && {
+  echo "Old $ED release files in $REL:"; ls -lh "$REL"/iprps-os-1.0-"$ED".*
+  read -rp "Delete them and start fresh? [y/N] " a; [[ "$a" =~ ^[Yy] ]] || die "kept the old files"
+  rm -f "$REL"/iprps-os-1.0-"$ED".* "$REL"/SHA256SUMS-"$ED"
+}
+NEED=$(du -B1 "$SRC" | cut -f1); AVAIL=$(df -B1 --output=avail "$REL" | tail -1)
+[ "$AVAIL" -gt $(( NEED + 2*1024*1024*1024 )) ] || die "not enough space in $REL: need $(( NEED/1073741824 + 2 )) GB, have $(( AVAIL/1073741824 )) GB"
+echo "OK: build image closed, $(( AVAIL/1073741824 )) GB free."
+
+# ---------------------------------------------------------------- copy and open
+say "1/4 Copying the build image (a few minutes)"
+cp --sparse=always "$SRC" "$IMG"
+LP=$(p3_loop "$IMG") || die "no partition 3 found in $IMG"
+mount "$LP" "$MNT"
+[ -x "$MNT/bin/bash" ] || die "partition 3 doesn't look like the IPRPS system"
+for d in dev proc sys run; do mount --rbind "/$d" "$MNT/$d"; done
+mount --make-rslave "$MNT"
+echo "Copy: $IMG (root file system on $LP)"
+
+# ---------------------------------------------------------------- the cleanup inside the copy
+cat > "$INSIDE" << 'INSIDE_EOF'
+#!/bin/bash
+set -eu
+EDC=$1; DB_UP=0
+say() { printf '\n\033[1;33m== %s\033[0m\n' "$*"; }
+die() { printf '\n\033[1;31mSTOPPED: %s\033[0m\n' "$*" >&2; exit 1; }
+stop_db() {
+  [ "$DB_UP" = 1 ] || return 0
+  mariadb-admin -u root shutdown >/dev/null 2>&1 || true
+  for i in $(seq 30); do pgrep -x mariadbd >/dev/null || break; sleep 1; done
+  DB_UP=0
+}
+trap stop_db EXIT
+
+say "2/4 Web apps and databases"
+if [ -f /root/iprps-dev-db.txt ]; then
+  DEV=$(awk '{print $2}' /root/iprps-dev-db.txt)
+  [ ${#DEV} -ge 8 ] || die "/root/iprps-dev-db.txt doesn't contain the test password"
+  grep -rlF "$DEV" /srv/www/iprps 2>/dev/null | xargs -r sed -i "s/$DEV/@IPRPS_DB_PASS@/g"
+  LEFT=$(grep -rlF "$DEV" /srv/www/iprps 2>/dev/null | wc -l)
+  [ "$LEFT" = 0 ] || die "the test password is still in $LEFT files"
+  echo "Placeholder restored: $(grep -rlF '@IPRPS_DB_PASS@' /srv/www/iprps 2>/dev/null | wc -l) app files use @IPRPS_DB_PASS@."
+else
+  echo "No /root/iprps-dev-db.txt: skipping the placeholder step."
+  LEFT=$(grep -rlE "(pass|password)['\"]? *(=>|=) *['\"][A-Za-z0-9]{20,}['\"]" /srv/www/iprps 2>/dev/null | wc -l)
+  [ "$LEFT" = 0 ] || echo "Note: $LEFT app files still contain a long password value; check them."
+fi
+
+if [ -d /srv/mariadb/mysql ]; then
+  install -dm755 -o mariadb -g mariadb /run/mariadb
+  mariadbd-safe --user=mariadb >/dev/null 2>&1 &
+  DB_UP=1
+  for i in $(seq 120); do mariadb-admin -u root ping >/dev/null 2>&1 && break; sleep 1; done
+  mariadb-admin -u root ping >/dev/null 2>&1 || die "MariaDB didn't start; see: tail /srv/mariadb/*.err"
+  for db in $(mariadb -u root -N -e "SHOW DATABASES WHERE \`Database\` = 'iprps' OR \`Database\` LIKE 'iprps\\_%'"); do
+    for t in $(mariadb -u root -N -e "SHOW TABLES" "$db"); do
+      mariadb -u root -e "SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE \`$t\`;" "$db"
+    done
+    echo "  emptied $db"
+  done
+  if [ "$(mariadb -u root -N -e "SELECT COUNT(*) FROM mysql.user WHERE User='iprps'")" != 0 ]; then
+    mariadb -u root -e "ALTER USER 'iprps'@'localhost' IDENTIFIED BY '$(openssl rand -hex 24)';"
+    echo "  test password of the 'iprps' database user retired"
+  fi
+  stop_db
+  rm -f /srv/mariadb/*.err /srv/mariadb/*.pid
+  echo "MariaDB stopped."
+else
+  echo "No MariaDB data folder: skipping the databases."
+fi
+rm -f /etc/iprps/db.php
+
+if [ -f /srv/www/iprps/auth/auth.php ]; then
+  mapfile -t F < <(find /srv/www/iprps -type f -newer /srv/www/iprps/auth/auth.php \
+      \( -path '*upload*' -o -path '*/storage/*' -o -path '*/projects/*' \) 2>/dev/null)
+  if [ ${#F[@]} -gt 0 ]; then
+    echo; echo "Files added to app data folders while testing (${#F[@]}):"
+    printf '  %s\n' "${F[@]:0:40}"; [ ${#F[@]} -gt 40 ] && echo "  ... and $(( ${#F[@]} - 40 )) more"
+    read -rp "Delete these from the release copy? [y = delete / n = keep / q = stop] " a
+    case "$a" in
+      [Yy]*) rm -f -- "${F[@]}"; echo "Deleted." ;;
+      [Qq]*) die "stopped so you can check the app data" ;;
+      *) echo "Kept." ;;
+    esac
+  else
+    echo "No test files in the app data folders."
+  fi
+fi
+
+say "3/4 General cleanup"
+id builder >/dev/null 2>&1 && { userdel -r builder 2>/dev/null || userdel builder; rm -rf /home/builder; }
 rm -f /etc/sudoers.d/90-builder-build-only /etc/sudoers.d/xorg
 rm -rf /build /root/* /root/.bash_history /home/*/.bash_history /tmp/* /var/tmp/*
 rm -f /etc/ssh/ssh_host_* /etc/resolv.conf
-echo uninitialized > /etc/machine-id
-rm -rf /var/lib/iprps/*-done
-rm -rf /var/log/journal/*
-passwd -l root
-sed -i 's/^VERSION=.*/VERSION="1.0 <Edition>"/; s/^PRETTY_NAME=.*/PRETTY_NAME="IPRPS OS 1.0 <Edition>"/' /etc/os-release
-sed -i 's/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION="IPRPS OS 1.0 <Edition>"/' /etc/lsb-release
-exit
+: > /etc/machine-id      # empty: a fresh ID at first boot, but not "first boot" (no systemd preset reset)
+BROKEN=$(find /etc/systemd/system /etc/systemd/user -xtype l 2>/dev/null || true)
+if [ -n "$BROKEN" ]; then echo "Removing broken service links:"; echo "$BROKEN" | sed 's/^/  /'; echo "$BROKEN" | xargs -r rm -f; fi
+rm -rf /var/lib/iprps/*-done /var/lib/ollama/.ollama /var/log/journal/*
+passwd -l root >/dev/null
+sed -i "s/^VERSION=.*/VERSION=\"1.0 $EDC\"/; s/^PRETTY_NAME=.*/PRETTY_NAME=\"IPRPS OS 1.0 $EDC\"/" /etc/os-release
+[ -f /etc/lsb-release ] && sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION=\"IPRPS OS 1.0 $EDC\"/" /etc/lsb-release
+
+echo
+echo "Check:"
+echo "  builder account:   $(id builder >/dev/null 2>&1 && echo 'STILL THERE' || echo removed)"
+echo "  /root:             $( [ -z "$(ls /root)" ] && echo "empty (shell settings kept)" || ls /root | tr '\n' ' ')"
+echo "  first-boot marks:  $(ls /var/lib/iprps/ 2>/dev/null | grep -c done) left (0 expected)"
+echo "  database settings: $( [ -e /etc/iprps/db.php ] && echo 'STILL THERE' || echo removed)"
+echo "  root password:     $(passwd -S root | awk '{print ($2=="L"||$2=="LK")?"locked":"NOT LOCKED"}')"
+echo "  machine ID:        $( [ -s /etc/machine-id ] && echo 'NOT EMPTY' || echo 'empty (new ID at first boot)')"
+echo "  edition:           $(grep ^PRETTY_NAME /etc/os-release)"
+INSIDE_EOF
+chmod 755 "$INSIDE"
+chroot "$MNT" /bin/bash "$INSIDE" "$EDC"
+
+# ---------------------------------------------------------------- close
+say "4/4 Trimming and closing the copy"
+fstrim -v "$MNT" || true
+unmount_all || die "the copy couldn't be unmounted (see the list above); close what uses it and run: umount $MNT; losetup -d \$(losetup -j $IMG | cut -d: -f1)"
+OK=1
+printf '\n\033[1;32mDone: %s is cleaned and closed.\033[0m\nNext (13.5): /root/iprps-release-pack.sh %s\n' "$IMG" "$ED"
+EOF
+chmod 755 /root/iprps-release-clean.sh
 ```
 
-Back in WSL, release the free space and unmount:
+**Run it.** Take the release snapshot first (Part 14), close the build image (`exit` from the chroot, then `/root/iprps-leave.sh`), and in Debian:
 
 **[DEBIAN ROOT]**
 
 ```bash
-fstrim -v /mnt/rel
-umount -R /mnt/rel
+/root/iprps-release-clean.sh lite
 ```
+
+It takes a few minutes, mostly the copy. Expect `emptied iprps`, `emptied iprps_auth` and so on, one line per app database, and a check list ending with:
+
+```
+  builder account:   removed
+  /root:             empty (shell settings kept)
+  first-boot marks:  0 left (0 expected)
+  database settings: removed
+  root password:     locked
+  edition:           PRETTY_NAME="IPRPS OS 1.0 Lite"
+```
+
+then **Done: … is cleaned and closed.**
+
+| It stops with | Do this |
+|---|---|
+| "the build image is open" / "still attached" | `exit` the chroot, run `/root/iprps-leave.sh`, run the script again |
+| "a MariaDB server is running in Debian" | `pgrep -a mariadbd`; stop it (`kill <number>`), then run again |
+| "not enough space" | Free space in `/root` (old release files, `/root/release/*.qcow2` overlays) |
+| "MariaDB didn't start" | Open the copy and read `/srv/mariadb/*.err`, or send the error to your build notes; the build image is unaffected |
+| "the copy couldn't be unmounted" | It lists what uses `/mnt/rel` (usually another window inside it): close that, then `umount /mnt/rel` and `losetup -d` the device it names |
 
 ### 13.5 Shrink, compress and convert
 
-A smaller image writes faster and fits smaller USB sticks; first boot grows it back to fill the drive. With the copy still attached (`$L` from 13.4):
+A second script turns the cleaned copy into the downloads. Smaller images write faster and fit smaller USB sticks; first boot grows the system back to fill the drive.
 
-**[DEBIAN ROOT]**
+What it does: checks and shrinks the root file system to its minimum, then makes partition 3 that size plus 2 GiB of headroom. It cuts the image file off just after it, and rewrites the partition table at the new size, keeping every disk and partition ID, with the backup GPT at the new end. It checks the shrunk file system again, then makes the three downloads and their checksums. Finally it copies them to `G:\IPRPS\release` and verifies each copy against its checksum.
+
+**Install the script once. [DEBIAN ROOT]**
 
 ```bash
-e2fsck -fy ${L}p3
-resize2fs -M ${L}p3
-BLK=$(dumpe2fs -h ${L}p3 2>/dev/null | awk -F: '/^Block count/{gsub(/ /,"",$2); print $2}')
-BSZ=$(dumpe2fs -h ${L}p3 2>/dev/null | awk -F: '/^Block size/{gsub(/ /,"",$2); print $2}')
+install -vm755 /mnt/g/IPRPS/iprps-os/build-host/iprps-release-pack.sh /root/
+```
+
+```bash
+cat > /root/iprps-release-pack.sh << "EOF"
+#!/bin/bash
+# iprps-release-pack.sh <lite|medium|advanced> - guide 13.5
+# Shrinks the cleaned release copy, checks it, and makes the downloads:
+# .img.xz (USB / disk), .vhdx (Hyper-V), .qcow2 (QEMU), SHA256SUMS. Run as root in Debian (WSL)
+# after iprps-release-clean.sh. Output folder: /mnt/g/IPRPS/release (or set IPRPS_RELEASE_OUT).
+set -eu
+case "${1:-}" in lite|medium|advanced) ED=$1 ;; *) echo "usage: $0 lite|medium|advanced"; exit 1 ;; esac
+REL=/root/release
+NAME=iprps-os-1.0-$ED
+IMG=$REL/$NAME.img
+OUT=${IPRPS_RELEASE_OUT:-/mnt/g/IPRPS/release}
+LP=""
+
+say() { printf '\n\033[1;33m== %s\033[0m\n' "$*"; }
+die() { printf '\n\033[1;31mSTOPPED: %s\033[0m\n' "$*" >&2; exit 1; }
+p3_loop() {
+  local s n
+  read -r s n < <(sfdisk -d "$1" | sed -n 's/.*3 : start= *\([0-9]*\), size= *\([0-9]*\).*/\1 \2/p') || true
+  [ -n "${s:-}" ] || return 1
+  losetup -f --show -o $(( s * 512 )) --sizelimit $(( n * 512 )) "$1"
+}
+trap '[ -n "$LP" ] && losetup -d "$LP" 2>/dev/null; true' EXIT
+
+say "Checks"
+[ "$(id -u)" = 0 ] || die "run this as root in Debian"
+[ -f "$IMG" ] || die "$IMG not found: run /root/iprps-release-clean.sh $ED first"
+[ -z "$(losetup -j "$IMG")" ] || die "$IMG is still attached: $(losetup -j "$IMG" | cut -d: -f1) (losetup -d it)"
+for t in sfdisk e2fsck resize2fs dumpe2fs xz qemu-img sha256sum; do command -v $t >/dev/null || die "$t is missing (apt install fdisk e2fsprogs xz-utils qemu-utils)"; done
+mkdir -p "$OUT" || die "can't create $OUT"
+echo "OK. Downloads will be copied to $OUT"
+
+say "1/5 Checking and shrinking the file system"
+LP=$(p3_loop "$IMG") || die "no partition 3 in $IMG"
+set +e; e2fsck -fy "$LP"; RC=$?; set -e
+[ $RC -le 1 ] || die "e2fsck found problems it couldn't fix (code $RC)"
+resize2fs -M "$LP"
+BLK=$(dumpe2fs -h "$LP" 2>/dev/null | awk -F: '/^Block count/{gsub(/ /,"",$2); print $2}')
+BSZ=$(dumpe2fs -h "$LP" 2>/dev/null | awk -F: '/^Block size/{gsub(/ /,"",$2); print $2}')
+losetup -d "$LP"; LP=""
 NEW_MIB=$(( BLK * BSZ / 1048576 + 2048 ))
-losetup -d $L
-IMG=/root/release/iprps-os-1.0-<edition>.img
-echo ", ${NEW_MIB}M" | sfdisk -N 3 $IMG
-END=$(sfdisk -d $IMG | sed -n 's/.*3 : start= *\([0-9]*\), size= *\([0-9]*\).*/\1 \2/p' | awk '{print $1+$2}')
-truncate -s $(( (END + 34) * 512 )) $IMG
-sfdisk --relocate gpt-bak-std $IMG
-sfdisk -l $IMG
+echo ", ${NEW_MIB}M" | sfdisk -q -N 3 "$IMG"
+NPART=$(sfdisk -d "$IMG" | grep -c 'start=')
+TABLE=$(sfdisk -d "$IMG" | grep -v '^last-lba:')      # the partition table, with all its IDs
+END=$(sfdisk -d "$IMG" | sed -n 's/.*3 : start= *\([0-9]*\), size= *\([0-9]*\).*/\1 \2/p' | awk '{print $1+$2}')
+truncate -s $(( (END + 34) * 512 )) "$IMG"
+printf '%s\n' "$TABLE" | sfdisk -q --no-reread "$IMG"    # rewrite it: GPT backup lands at the new end
+[ "$(sfdisk -d "$IMG" | grep -c 'start=')" = "$NPART" ] && sfdisk -d "$IMG" | grep -q '^label: gpt' \
+  || die "the partition table didn't survive the shrink; start again from iprps-release-clean.sh"
+sfdisk -l "$IMG" | sed -n '1,3p;/^Device/,$p'
+
+say "2/5 Health check of the shrunk image"
+LP=$(p3_loop "$IMG") || die "partition 3 missing after shrinking"
+set +e; e2fsck -fn "$LP"; RC=$?; set -e
+losetup -d "$LP"; LP=""
+[ $RC = 0 ] || die "the shrunk file system has errors (code $RC); start again from iprps-release-clean.sh"
+echo "Healthy. Image size: $(du -h --apparent-size "$IMG" | cut -f1)"
+
+cd "$REL"
+rm -f "$NAME.img.xz" "$NAME.vhdx" "$NAME.qcow2" "SHA256SUMS-$ED"
+FREE=$(df -B1 --output=avail "$REL" | tail -1); SZ=$(stat -c %s "$IMG")
+[ "$FREE" -gt $(( SZ * 3 / 2 )) ] || echo "Warning: only $(( FREE/1073741824 )) GB free here; the three files may need about $(( SZ*3/2/1073741824 )) GB."
+
+say "3/5 Compressing for USB sticks (.img.xz) - the long step, often 30-90 minutes"
+xz -T0 -9 -k -v -f "$NAME.img" || { echo "Retrying with 2 threads (less memory)..."; xz -T2 -9 -k -v -f "$NAME.img"; }
+
+say "4/5 Hyper-V (.vhdx) and QEMU (.qcow2) images"
+qemu-img convert -p -O vhdx -o subformat=dynamic "$NAME.img" "$NAME.vhdx"
+qemu-img convert -p -O qcow2 -c "$NAME.img" "$NAME.qcow2"
+sha256sum "$NAME.img.xz" "$NAME.vhdx" "$NAME.qcow2" > "SHA256SUMS-$ED"
+
+say "5/5 Copying to $OUT"
+cp -v "$NAME.img.xz" "$NAME.vhdx" "$NAME.qcow2" "SHA256SUMS-$ED" "$OUT/"
+( cd "$OUT" && sha256sum -c "SHA256SUMS-$ED" ) || die "a copied file doesn't match its checksum: copy it again"
+ls -lh "$OUT"/"$NAME".* "$OUT/SHA256SUMS-$ED"
+printf '\n\033[1;32mDone: the %s release is in %s (copies verified).\033[0m\n' "$ED" "$OUT"
+echo "Keep $IMG and $NAME.qcow2 here until testing (13.6) passes; then delete the copies in $REL to free space."
+EOF
+chmod 755 /root/iprps-release-pack.sh
 ```
 
-The filesystem shrinks to its minimum size, the partition shrinks to that plus 2 GiB of headroom, and the image file is cut off just after it. Finally, the GPT's backup copy is moved to the new end.
-
-**Check that the shrunk image is healthy** before compressing:
+**Run it** right after 13.4:
 
 **[DEBIAN ROOT]**
 
 ```bash
-L=$(losetup -fP --show $IMG); e2fsck -fn ${L}p3; losetup -d $L
+apt install -y fdisk e2fsprogs xz-utils qemu-utils
+/root/iprps-release-pack.sh lite
 ```
 
-It must report no errors. Then produce the downloads:
+- **Step 1** prints `e2fsck` passes and `resize2fs`, then the new partition list with three partitions.
+- **Step 2** prints **Healthy**.
+- **Step 3**, `xz`, is the long one: about 30–90 minutes, with progress shown. If it runs short of memory it retries with fewer threads by itself.
+- At the end, each copied file is checked (`…: OK`) and listed.
 
-**[DEBIAN ROOT]**
-
-```bash
-cd /root/release
-OUT=/mnt/g/IPRPS/release
-xz -T0 -9 -k -v iprps-os-1.0-<edition>.img
-qemu-img convert -p -O vhdx -o subformat=dynamic iprps-os-1.0-<edition>.img iprps-os-1.0-<edition>.vhdx
-qemu-img convert -p -O qcow2 -c iprps-os-1.0-<edition>.img iprps-os-1.0-<edition>.qcow2
-sha256sum iprps-os-1.0-<edition>.img.xz iprps-os-1.0-<edition>.vhdx iprps-os-1.0-<edition>.qcow2 > SHA256SUMS-<edition>
-cp -v iprps-os-1.0-<edition>.img.xz iprps-os-1.0-<edition>.vhdx iprps-os-1.0-<edition>.qcow2 SHA256SUMS-<edition> $OUT/
-ls -lh $OUT/
-```
+To write the downloads somewhere else, run `IPRPS_RELEASE_OUT=/mnt/d/somewhere /root/iprps-release-pack.sh lite`.
 
 | Download | For |
 |---|---|
@@ -22460,6 +23507,23 @@ ls -lh $OUT/
 | 6 GB RAM machine or VM (Lite) | Desktop + Firefox + Hub usable; `free -h` shows swap |
 | `iprps-install` to a second disk | Installed system boots without the USB drive |
 | `systemctl --failed` | Shows nothing |
+
+**Without Hyper-V** (Windows 11 Home, for example), run the VM tests in QEMU on an **overlay**: a small file on top of the release `.qcow2` that leaves it unchanged and acts as a 40 GB disk, so first boot has room to grow. The backing file needs its **full path**:
+
+**[DEBIAN ROOT]**
+
+```bash
+ED=lite        # or medium / advanced
+qemu-img create -f qcow2 -b /root/release/iprps-os-1.0-$ED.qcow2 -F qcow2 /root/rel-uefi.qcow2 40G
+qemu-system-x86_64 -enable-kvm -m 6G -smp 4 -bios /usr/share/ovmf/OVMF.fd \
+  -drive file=/root/rel-uefi.qcow2,format=qcow2,if=virtio \
+  -nic user,model=virtio-net-pci,hostfwd=tcp::2222-:22 \
+  -audio none -vga virtio -display none -vnc 127.0.0.1:0 -monitor stdio
+```
+
+For the BIOS test, use a second overlay and leave out the `-bios` line. For the installer test, add an empty disk (`qemu-img create -f qcow2 /root/rel-target.qcow2 64G`, a second `-drive` line), install to `/dev/vdb`, then boot that disk alone. Delete the overlays afterwards (`rm /root/rel-*.qcow2`); keep the release `.qcow2` while they exist.
+
+> **Warning:** **Testing on a real Windows PC from USB.** Write the `.img.xz` to a USB stick with Rufus (DD mode) or balenaEtcher, turn Secure Boot off and pick the stick in the boot menu. **Before** changing Secure Boot, run `manage-bde -status C:` in an administrator PowerShell: if BitLocker is on, save the recovery key (`manage-bde -protectors -get C:`), because Windows asks for it after the change. Don't run the installer on a PC whose Windows you want to keep; turn Secure Boot back on afterwards.
 
 ### 13.7 Source code and licenses
 
@@ -22485,8 +23549,9 @@ Keep license texts in the image (`/usr/share/licenses/`, `/usr/share/doc/`). The
 
 ```bash
 cd /mnt/g/IPRPS/release
-split -b 1900M -d -a 2 iprps-os-1.0-<edition>.img.xz iprps-os-1.0-<edition>.img.xz.part
-ls -lh iprps-os-1.0-<edition>.img.xz.part*
+ED=lite        # or medium / advanced
+split -b 1900M -d -a 2 iprps-os-1.0-$ED.img.xz iprps-os-1.0-$ED.img.xz.part
+ls -lh iprps-os-1.0-$ED.img.xz.part*
 ```
 
 Users join the parts before writing them. On Linux: `cat iprps-os-1.0-<edition>.img.xz.part* > iprps-os-1.0-<edition>.img.xz`. On Windows (Command Prompt): `copy /b iprps-os-1.0-<edition>.img.xz.part00 + iprps-os-1.0-<edition>.img.xz.part01 iprps-os-1.0-<edition>.img.xz` (list every part, in order). Then they check the result against `SHA256SUMS` before writing it.
@@ -22514,8 +23579,8 @@ ls -l /root/snapshots/iprps-RELEASE-lite.img     # must show 42949672960 bytes
 
 Then re-enter the IPRPS CHROOT and BUILDER windows (0.5). Details and restoring: 0.4.
 
-1. Clean a copy with 13.4 (`<edition>` = `lite`, `<Edition>` = `Lite`).
-2. Shrink, compress and convert it with 13.5.
+1. Clean a copy with 13.4: `/root/iprps-release-clean.sh lite`.
+2. Shrink, compress and convert it with 13.5: `/root/iprps-release-pack.sh lite`.
 3. Run the test matrix in 13.6, including a 6 GB RAM test (Hyper-V lets you set exactly 6 GB).
 4. Publish with 13.8.
 
@@ -26388,9 +27453,355 @@ usermod -aG lpadmin builder
 
 Add `lpadmin` to the groups in `iprps-setup` (13.2) so new users can add printers: change `-G users,wheel,audio,video,iprps` to `-G users,wheel,audio,video,iprps,lpadmin`.
 
+### Chromium (Medium and Advanced)
+
+Medium and Advanced add **Chromium** as the **default web browser**, and as the engine that runs each IPRPS app in its own window (`iprps-open`, 12.2). Firefox stays installed, and Lite keeps Firefox only: on 6 GB machines one browser is enough.
+
+IPRPS uses **ungoogled-chromium**, a prebuilt, open-source Chromium **without Google's services and telemetry**, unbranded, and BSD-licensed like Chromium itself. It isn't built from source here on purpose: BLFS has no Chromium, one build needs about 16 GB of RAM, over 100 GB of disk and roughly a day, and since September 2026 Chromium releases every two weeks, with weekly security fixes. A prebuilt release keeps IPRPS current with a few minutes' work per update.
+
+**1. Download (Windows).** From **https://github.com/ungoogled-software/ungoogled-chromium-portablelinux/releases**, download the newest **x86_64 Linux `.tar.xz`** (for example `ungoogled-chromium_155.0.8059.84-1_linux.tar.xz`; use the exact name shown). GitHub lists each file's **SHA-256** next to it; note it down.
+
+**2. Copy it in and check it. [DEBIAN ROOT]**
+
+```bash
+cp -v /mnt/c/Users/<you>/Downloads/ungoogled-chromium_*_linux.tar.xz /build/src/
+sha256sum /build/src/ungoogled-chromium_*_linux.tar.xz
+```
+
+The `sha256sum` output must match GitHub's value exactly.
+
+**3. Install into `/opt/chromium`. [IPRPS CHROOT]**
+
+```bash
+rm -rf /opt/chromium && install -vdm755 /opt/chromium
+tar -xf /build/src/ungoogled-chromium_*_linux.tar.xz -C /opt/chromium --strip-components=1
+ls -l /opt/chromium/chrome
+S=$(ls /opt/chromium/chrome[-_]sandbox 2>/dev/null) && chown root:root "$S" && chmod 4755 "$S" && ls -l "$S"
+ldd /opt/chromium/chrome | grep 'not found' || echo "all libraries found"
+```
+
+- `chrome` must exist; if `ls` fails, the archive has a different folder layout: `tar -tf <file> | head` shows it, and the `--strip-components` number may need changing.
+- The sandbox helper gets the setuid bit (`-rwsr-xr-x`): Chromium's security sandbox relies on it when user namespaces aren't available.
+- `ldd` must print **all libraries found**. A missing library (often `libcups.so.2`, from the Medium printing packages) means a package from Stage H isn't built yet.
+
+**4. The `chromium` command, the menu entry and its icon. [IPRPS CHROOT]**
+
+```bash
+cat > /usr/bin/chromium << "EOF"
+#!/bin/sh
+# chromium - IPRPS wrapper for ungoogled-chromium in /opt/chromium
+FLAGS=""
+[ -r /etc/iprps/chromium-flags.conf ] && FLAGS=$(grep -v '^\s*#' /etc/iprps/chromium-flags.conf | tr '\n' ' ')
+exec /opt/chromium/chrome $FLAGS "$@"
+EOF
+chmod 755 /usr/bin/chromium
+install -vdm755 /etc/iprps
+cat > /etc/iprps/chromium-flags.conf << "EOF"
+# Extra command-line flags for every Chromium start, one per line.
+# Hardware video decoding (VA-API, after Mesa's rebuild with libva in this stage):
+--enable-features=AcceleratedVideoDecodeLinuxGL
+EOF
+install -vdm755 /usr/share/icons/hicolor/256x256/apps
+L=$(ls /opt/chromium/product_logo_256.png 2>/dev/null) && install -v -m644 "$L" /usr/share/icons/hicolor/256x256/apps/chromium.png
+cat > /usr/share/applications/chromium.desktop << "EOF"
+[Desktop Entry]
+Type=Application
+Name=Chromium
+GenericName=Web Browser
+Comment=Browse the web
+Exec=chromium %U
+Icon=chromium
+Terminal=false
+Categories=Network;WebBrowser;
+MimeType=text/html;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+StartupWMClass=Chromium
+Actions=new-window;incognito;
+
+[Desktop Action new-window]
+Name=New Window
+Exec=chromium --new-window
+
+[Desktop Action incognito]
+Name=New Incognito Window
+Exec=chromium --incognito
+EOF
+gtk-update-icon-cache -qtf /usr/share/icons/hicolor
+update-desktop-database /usr/share/applications
+```
+
+If `product_logo_256.png` isn't in the archive, `find /opt/chromium -name 'product_logo*'` shows what is there; any of them works as the icon.
+
+**5. IPRPS settings for every user (policies). [IPRPS CHROOT]** Chromium reads system-wide settings from `/etc/chromium/policies/managed/`. This one sets the IPRPS Hub as the home page, a private search engine, no promotional tabs or usage statistics, no background running after the window closes (saves memory), and an **IPRPS bookmarks folder** with every installed app, built from the folders in `/srv/www/iprps`:
+
+```bash
+install -vdm755 /etc/chromium/policies/managed
+python3 - << "PY"
+import json, os
+root = '/srv/www/iprps'
+apps = sorted(d for d in os.listdir(root) if os.path.isdir(os.path.join(root, d)) and d != 'auth')
+marks = [{"toplevel_name": "IPRPS"},
+         {"name": "Sign in (Universal Login)", "url": "http://localhost/iprps/auth/login.html"}]
+marks += [{"name": a.replace('_', ' ').replace('-', ' ').title(), "url": f"http://localhost/iprps/{a}/"} for a in apps]
+policy = {
+    "HomepageLocation": "http://localhost/iprps/hub/",
+    "HomepageIsNewTabPage": False,
+    "ShowHomeButton": True,
+    "BookmarkBarEnabled": True,
+    "ManagedBookmarks": marks,
+    "DefaultSearchProviderEnabled": True,
+    "DefaultSearchProviderName": "DuckDuckGo",
+    "DefaultSearchProviderSearchURL": "https://duckduckgo.com/?q={searchTerms}",
+    "MetricsReportingEnabled": False,
+    "PromotionalTabsEnabled": False,
+    "BackgroundModeEnabled": False,
+    "DefaultBrowserSettingEnabled": False,
+}
+json.dump(policy, open('/etc/chromium/policies/managed/iprps.json', 'w'), indent=2)
+print(len(apps), "apps in the IPRPS bookmarks folder")
+PY
+python3 -m json.tool /etc/chromium/policies/managed/iprps.json > /dev/null && echo "policy file OK"
+```
+
+Run this block again whenever apps are added or renamed, to refresh the bookmarks. Users see these settings as "managed by your organization"; the IPRPS bookmarks folder and the search engine can't be removed by users, everything else stays theirs to change. `DefaultBrowserSettingEnabled: false` only stops Chromium from asking; IPRPS sets the default below.
+
+**6. Make Chromium the default browser. [IPRPS CHROOT]** For the system's link handling (`xdg-open`) and for Xfce's "Web Browser" setting:
+
+```bash
+cat > /etc/xdg/mimeapps.list << "EOF"
+[Default Applications]
+text/html=chromium.desktop
+application/xhtml+xml=chromium.desktop
+x-scheme-handler/http=chromium.desktop
+x-scheme-handler/https=chromium.desktop
+EOF
+ls /usr/share/xfce4/helpers/ | grep -i chrom
+install -vdm755 /etc/xdg/xfce4
+grep -q '^WebBrowser=' /etc/xdg/xfce4/helpers.rc 2>/dev/null && \
+  sed -i 's/^WebBrowser=.*/WebBrowser=chromium/' /etc/xdg/xfce4/helpers.rc || echo 'WebBrowser=chromium' >> /etc/xdg/xfce4/helpers.rc
+cat /etc/xdg/xfce4/helpers.rc
+```
+
+The `ls` should show a `chromium.desktop` helper (it comes with Xfce's exo). If it doesn't, Xfce's setting falls back to the first browser it finds, while links opened with `xdg-open` still follow `mimeapps.list`. Users can change the default in **Settings → Default Applications**.
+
+**7. Test** (fresh test copy, log in): the panel's web-browser button and links open Chromium; the **IPRPS** bookmarks folder is on its bookmark bar; `chrome://policy` lists the IPRPS settings as active; and an IPRPS menu launcher (or `iprps-open cookbook` in a terminal) opens the app **in its own window**, already signed in after one login.
+
+> **Side note:** **What "ungoogled" changes.** No Google sign-in, sync or Safe Browsing (Safe Browsing needs Google's service; Firefox's own protection remains available), no usage statistics, and the Chrome Web Store isn't built in: extensions are installed by downloading their `.crx` file and dragging it onto `chrome://extensions` with **Developer mode** on. IPRPS's own apps don't need any extensions.
+
+> **Pro tip:** **Updating Chromium.** Each IPRPS release ships the newest ungoogled-chromium. Between releases, an administrator updates it in a minute with steps 1–3 (download, check, `rm -rf /opt/chromium`, unpack, sandbox permission); the settings in steps 4–6 stay in place. Check the releases page about every two weeks.
+
+### Local AI: Ollama and the IPRPS Oracle (Medium and Advanced)
+
+Medium and Advanced include a **local AI** for Session Masters: the **IPRPS Oracle**, an app in Session Master Mode that improvises NPCs, scenes, locations, loot, encounters, plot hooks and names, answers questions about the campaign, and sends descriptions to the players' screen. It runs **entirely on the computer**: no internet, no account, no API key, and nothing leaves the machine.
+
+| Part | What it is | Size |
+|---|---|---|
+| **Ollama** | The service that runs AI models (MIT license), `/usr/bin/ollama` + `/usr/lib/ollama` | about 0.3–0.6 GB (after removing the NVIDIA libraries) |
+| **iprps-storyteller** | The Oracle's model: **Qwen3.5 4B** (Apache-2.0) plus the IPRPS Modelfile (Session Master voice, BTN/AR terminology) | about 3.4 GB |
+| **IPRPS Oracle** | The app, `/srv/www/iprps/oracle`, with the Universal Login | under 100 KB |
+
+It needs about **5 GB of free memory** while answering, so 8 GB machines work (16 GB is comfortable). Graphics cards help through **Vulkan** (AMD and Intel, with Mesa's drivers from Stage B); without a usable GPU it runs on the processor, more slowly. **NVIDIA** acceleration needs NVIDIA's own driver, which IPRPS OS can't ship; it runs on the processor there.
+
+Later, a **custom-trained IPRPS model** replaces the bundled one with one command (`iprps-ai-model install`, below); the app keeps working unchanged because it always asks for the model named `iprps-storyteller`.
+
+**Before you start:** unzip the newest IPRPS OS repository over your local copy (`G:\IPRPS\iprps-os`, E.3). It contains the app (`apps/oracle/`) and the AI files (`ai/`).
+
+**1. Check the Vulkan drivers. [IPRPS CHROOT]**
+
+```bash
+ls /usr/share/vulkan/icd.d/
+ls /usr/lib/libvulkan.so.1
+```
+
+Expect `radeon_icd.x86_64.json` (AMD), `intel_icd.x86_64.json` (Intel) and `lvp_icd.x86_64.json` (software). They come from Mesa, built in Stage B after the Vulkan loader and glslang. The service below switches the software driver off, because it's slower than Ollama's own processor code.
+
+**2. Download Ollama (Windows).** Download **https://ollama.com/download/ollama-linux-amd64.tar.zst** (the standard Linux build; not the `-rocm` one). Its SHA-256 is in **`sha256sum.txt`** on the newest release at **https://github.com/ollama/ollama/releases**. Note the version number shown there.
+
+**[DEBIAN ROOT]**
+
+```bash
+cp -v /mnt/c/Users/<you>/Downloads/ollama-linux-amd64.tar.zst /build/src/
+sha256sum /build/src/ollama-linux-amd64.tar.zst
+```
+
+The checksum must match the `ollama-linux-amd64.tar.zst` line in `sha256sum.txt`.
+
+**3. Install it. [IPRPS CHROOT]**
+
+```bash
+rm -rf /usr/lib/ollama
+tar --zstd -xf /build/src/ollama-linux-amd64.tar.zst -C /usr
+find /usr/lib/ollama -maxdepth 1 -iname '*cuda*' -exec rm -rf {} +
+ls /usr/lib/ollama
+du -sh /usr/lib/ollama
+ollama -v
+```
+
+- The `find` removes the NVIDIA (CUDA) libraries, which are over a gigabyte and can't work without NVIDIA's driver. What's left: the processor libraries (`libggml-cpu-*`) and the Vulkan library.
+- `ollama -v` prints the version and a warning that it can't connect to a running Ollama; that's expected, the service isn't running yet.
+
+**4. The service. [IPRPS CHROOT]** A system user `ollama` owns the models in `/var/lib/ollama`; the service listens on this computer only (`127.0.0.1`), keeps one model in memory at a time and frees it after 15 minutes without use:
+
+```bash
+getent group render >/dev/null || groupadd -r render
+getent group ollama >/dev/null || groupadd -r ollama
+id ollama >/dev/null 2>&1 || useradd -r -g ollama -G video,render -d /var/lib/ollama -s /bin/false -c "Ollama AI service" ollama
+install -vdm755 -o ollama -g ollama /var/lib/ollama /var/lib/ollama/models
+cat > /etc/systemd/system/ollama.service << "EOF"
+[Unit]
+Description=Ollama local AI service (IPRPS Oracle)
+Documentation=https://docs.ollama.com/
+After=network.target
+
+[Service]
+Type=simple
+User=ollama
+Group=ollama
+SupplementaryGroups=video render
+Environment=HOME=/var/lib/ollama
+# This computer only; the IPRPS Oracle reaches it through Apache and PHP.
+Environment=OLLAMA_HOST=127.0.0.1:11434
+Environment=OLLAMA_MODELS=/var/lib/ollama/models
+# One model at a time, one request at a time: fits 8 GB machines.
+Environment=OLLAMA_MAX_LOADED_MODELS=1
+Environment=OLLAMA_NUM_PARALLEL=1
+Environment=OLLAMA_CONTEXT_LENGTH=8192
+# Free the memory 15 minutes after the last request.
+Environment=OLLAMA_KEEP_ALIVE=15m
+# Never use Mesa's software Vulkan driver (slower than the CPU code).
+Environment=VK_LOADER_DRIVERS_DISABLE=lvp_icd*
+EnvironmentFile=-/etc/iprps/ollama.conf
+ExecStart=/usr/bin/ollama serve
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/ollama
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable ollama
+```
+
+Settings for one computer (for example `OLLAMA_KEEP_ALIVE=60m`) go into `/etc/iprps/ollama.conf`, one `NAME=value` per line, without editing the service file.
+
+**5. The AI files and the `iprps-ai-model` tool. [DEBIAN ROOT]**
+
+```bash
+R=/mnt/g/IPRPS/iprps-os
+install -vdm755 /mnt/iprps/usr/share/iprps/ai
+install -vm644 $R/ai/Modelfile $R/ai/system-prompt.txt /mnt/iprps/usr/share/iprps/ai/
+install -vm755 $R/ai/iprps-ai-model /mnt/iprps/usr/bin/
+```
+
+**6. Put the model into the image. [DEBIAN ROOT]** The download runs in Debian (it has internet and nothing else to configure): a temporary copy of Ollama on a separate port saves the model straight into the image's `/var/lib/ollama/models`, then builds `iprps-storyteller` from the IPRPS Modelfile. Keep this window open until the end of the block.
+
+```bash
+apt install -y zstd
+rm -rf /root/ollama-host && mkdir -p /root/ollama-host
+tar --zstd -xf /build/src/ollama-linux-amd64.tar.zst -C /root/ollama-host
+export OLLAMA_HOST=127.0.0.1:11500
+OLLAMA_MODELS=/mnt/iprps/var/lib/ollama/models /root/ollama-host/bin/ollama serve > /root/ollama-host.log 2>&1 &
+sleep 5
+/root/ollama-host/bin/ollama pull qwen3.5:4b
+/root/ollama-host/bin/ollama create iprps-storyteller -f /mnt/iprps/usr/share/iprps/ai/Modelfile
+/root/ollama-host/bin/ollama list
+/root/ollama-host/bin/ollama show qwen3.5:4b --license > /mnt/iprps/usr/share/iprps/ai/LICENSE-qwen3.5.txt
+head -3 /mnt/iprps/usr/share/iprps/ai/LICENSE-qwen3.5.txt
+/root/ollama-host/bin/ollama run iprps-storyteller "In two sentences, describe a smugglers' tavern."
+pkill -f 'ollama-host/bin/ollama serve'; unset OLLAMA_HOST
+du -sh /mnt/iprps/var/lib/ollama/models
+```
+
+- `ollama pull` downloads about 3.4 GB; `ollama list` must show **qwen3.5:4b** and **iprps-storyteller:latest**.
+- The license file must start with the Apache License header; it ships with the model, as Apache-2.0 requires.
+- The test answer may first print a "Thinking…" section (the Oracle app switches thinking off). Answers in Debian are slow; that's the processor of a WSL machine, not the target computer.
+- If `pull` says the model isn't found, its name changed: check **https://ollama.com/library/qwen3.5** for the 4B tag, and change both the `pull` line and the `FROM` line of `ai/Modelfile`.
+
+Then give the model files to the service user:
+
+**[IPRPS CHROOT]**
+
+```bash
+chown -R ollama:ollama /var/lib/ollama
+ls -l /var/lib/ollama/models
+```
+
+**7. Let AI replies stream. [IPRPS CHROOT]** Apache normally collects a PHP page's whole output before sending it. For the Oracle's answers (which appear word by word), add a rule **before** BLFS's general PHP rule that sends each piece at once and allows long answers:
+
+```bash
+grep -q 'iprps/oracle/api' /etc/httpd/httpd.conf || awk '
+  /^ProxyPassMatch .*\.php/ && !done {
+    print "ProxyPassMatch ^/(iprps/oracle/api\\.php)$ fcgi://127.0.0.1:9000/srv/www/$1 flushpackets=on timeout=900"; done = 1 }
+  { print }' /etc/httpd/httpd.conf > /tmp/httpd.conf && cat /tmp/httpd.conf > /etc/httpd/httpd.conf
+grep -n '^ProxyPassMatch' /etc/httpd/httpd.conf
+httpd -t
+```
+
+`grep` must list the **oracle** line **first**, then BLFS's `.php` line; `httpd -t` must say `Syntax OK`.
+
+**8. Install the IPRPS Oracle app. [DEBIAN ROOT]**
+
+```bash
+R=/mnt/g/IPRPS/iprps-os
+cp -rv $R/apps/oracle /mnt/iprps/srv/www/iprps/
+install -vDm644 $R/apps/oracle/oracle-icon.svg /mnt/iprps/usr/share/icons/hicolor/scalable/apps/iprps-oracle.svg
+```
+
+**[IPRPS CHROOT]**
+
+```bash
+chown -R root:apache /srv/www/iprps/oracle
+find /srv/www/iprps/oracle -type d -exec chmod 755 {} + ; find /srv/www/iprps/oracle -type f -exec chmod 644 {} +
+ls -A /srv/www/iprps/oracle
+cat > /usr/share/applications/iprps-oracle.desktop << "EOF"
+[Desktop Entry]
+Type=Application
+Name=IPRPS Oracle
+GenericName=Session Master AI
+Comment=Local AI for Session Masters: NPCs, scenes, loot, encounters and campaign memory
+Exec=iprps-open oracle/
+Icon=iprps-oracle
+Terminal=false
+Categories=X-IPRPS;
+EOF
+gtk-update-icon-cache -qtf /usr/share/icons/hicolor
+update-desktop-database /usr/share/applications
+```
+
+`ls -A` lists `api.php`, `config.php`, `display.php`, `index.html`, `markdown.js`, `oracle.css`, `oracle.js`, `oracle-icon.svg`, `prompts.php` and `.user.ini` (which turns PHP's output buffering off for this folder). The Oracle needs **no database setup**: on first use it creates its tables (`oracle_messages`, `oracle_memory`, `display_items`) in the IPRPS core database, using the password `iprps-db-init` writes to `/etc/iprps/db.php` (13.1). It reads the campaign memory from the core tables the Session Master Hub fills: `campaigns`, `sessions` (recap, Session Master notes), `session_log`, `npcs`, `quests` and `characters`.
+
+**9. Test** (fresh test copy, `-m 8G`, log in):
+
+**[TEST VM]** (terminal)
+
+```bash
+systemctl status ollama --no-pager | head -5
+iprps-ai-model status
+```
+
+The service is **active (running)**; the status lists `iprps-storyteller` "built from: qwen3.5:4b", and the log line shows which compute device was found (in QEMU: the processor).
+
+Then open **IPRPS Oracle** from the menu (or Session Master Mode): it asks for the Universal Login once, the top bar shows **Ollama** in green, and the model menu shows `iprps-storyteller`. Click **NPC**: the first answer takes longer (the model loads), then text appears word by word. Try **Show players**, then open **Player display ↗**: the text appears full-screen. With a campaign chosen (create one in the Hub, or `INSERT INTO campaigns (name) VALUES ('Test')` in `mariadb -u root iprps`), **Save NPC** adds it to the campaign, and **What the Oracle knows** shows it.
+
+| What the Session Master does | Where it goes |
+|---|---|
+| Chat, generators | `oracle_messages` (per user and campaign; **Clear this chat** deletes them) |
+| **Pin to memory** / **Pin** | `oracle_memory`: facts the Oracle always gets for that campaign |
+| **Save NPC**, **Save quest**, **Add to log** | The campaign's `npcs`, `quests`, and the latest session's `session_log` |
+| **Show players**, **Clear display** | `display_items`, shown by the player display |
+
+> **Side note:** **Speed.** On a recent 4–8 core processor, the 4B model writes roughly a sentence every one to three seconds; a Vulkan GPU is several times faster. Session Master Mode loads the model when it starts, so the first question at the table doesn't wait for it. Inside QEMU everything is slower.
+
+> **Pro tip:** **A custom IPRPS model.** When the trained IPRPS storyteller model exists (as a `.gguf` file, the format Ollama imports), one command makes it the Oracle's model on any IPRPS OS computer: `sudo iprps-ai-model install iprps-storyteller-v1.Q4_K_M.gguf`. It keeps the IPRPS system prompt (`/usr/share/iprps/ai/system-prompt.txt`); a model that needs its own chat template comes with a Modelfile instead: `sudo iprps-ai-model install-modelfile Modelfile`. `sudo iprps-ai-model reset` returns to the shipped model. To ship the custom model in a release instead, change the `FROM` line of `ai/Modelfile` to the `.gguf` file's path and repeat step 6 with that file instead of the `pull`. The license of the model it was trained from still applies.
+
+> **Side note:** **Updating Ollama.** Repeat steps 2 and 3 (the `rm -rf /usr/lib/ollama` comes first) and restart the service: `systemctl restart ollama`. The models in `/var/lib/ollama` stay. Users can download other models with `sudo iprps-ai-model pull <name>` (from **https://ollama.com/library**, needs internet) and choose them in the Oracle's **Model** menu; IPRPS's prompts are written for `iprps-storyteller`.
+
 Install the Medium IPRPS apps (12.4) using 12.5 and 12.6.
 
-> **Checkpoint:** Take snapshot **`RELEASE-medium`**, then release it as in Part 14 with `VERSION="1.0 Medium"` → `iprps-1.0-medium.img.xz`.
+> **Checkpoint:** Take snapshot **`RELEASE-medium`**, then release it as in Part 14: `/root/iprps-release-clean.sh medium`, `/root/iprps-release-pack.sh medium` → `iprps-os-1.0-medium.img.xz`.
 
 **[DEBIAN ROOT]** — snapshot `RELEASE-medium`. First stop any test VM (`poweroff`) and `exit` every chroot window:
 
@@ -26763,7 +28174,7 @@ These popular creative tools aren't in BLFS 13.1. Ship them as their projects' *
 
 Install the Advanced IPRPS apps (12.4).
 
-> **Checkpoint:** Take snapshot **`RELEASE-advanced`**, then release it as in Part 14 with `VERSION="1.0 Advanced"` → `iprps-1.0-advanced.img.xz`.
+> **Checkpoint:** Take snapshot **`RELEASE-advanced`**, then release it as in Part 14: `/root/iprps-release-clean.sh advanced`, `/root/iprps-release-pack.sh advanced` → `iprps-os-1.0-advanced.img.xz`.
 
 **[DEBIAN ROOT]** — snapshot `RELEASE-advanced`. First stop any test VM (`poweroff`) and `exit` every chroot window:
 
@@ -26839,6 +28250,8 @@ This is planned for IPRPS 1.1. The 1.0 images already run directly from a USB st
 | `iprps-leave.sh` says "Still in use" | A chroot window or shell is still inside the image | `exit` in every chroot window, `cd /` in Debian, run it again |
 | QEMU: "gtk initialization failed" | No window support in your WSL | Use Hyper-V, or QEMU with `-display none -vnc 127.0.0.1:0` (1.4) |
 | GRUB: "attempt to read or write outside of disk" | The test copy is incomplete | Copy again and wait for `COPY COMPLETE`; `ls -l` must show 42949672960 bytes |
+| Boot stops: "device /dev/disk/by-uuid/... does not exist" (initramfs shell), **real PC from USB** | USB core missing from the initramfs (no USB at all; the keyboard is dead too), or the stick appeared after the initramfs looked | 4.9 "wait for USB drives", then `mkinitramfs` again. Right now: `ls /dev/disk/by-uuid/` until the UUID appears, then `exit`; or add `rootdelay=10` to the `linux` line in GRUB (`e`, then Ctrl+X) |
+| The keyboard doesn't work in the initramfs shell (USB keyboard) | USB core or keyboard driver missing from the initramfs | 4.9 "USB in the initramfs", then `mkinitramfs` again and remake the release |
 | Boot stops: "device /dev/disk/by-uuid/... does not exist" (initramfs shell) | Storage driver not loaded in the initramfs | 4.9 storage-driver fix, then `mkinitramfs` again. Right now: `modprobe virtio_pci virtio_blk` (QEMU) and `exit` |
 | Emergency mode: "Timed out waiting for device /dev/87E8-..." or "Duplicate entry in /etc/fstab" | Old fstab from the USB build | Write the clean two-line fstab (1.2) |
 | Boot waits 90 s: "Timed out waiting for device ... wlan0" | `wpa_supplicant@wlan0` enabled | `systemctl disable wpa_supplicant@wlan0.service` (NetworkManager handles Wi-Fi) |
@@ -26851,6 +28264,10 @@ This is planned for IPRPS 1.1. The 1.0 images already run directly from a USB st
 | `make install` / `cmake --install`: "Permission denied", "Maybe need administrative privileges" | Installed from the BUILDER window | Run it in IPRPS CHROOT, in the same folder |
 | A server started in the chroot (`mariadbd-safe ... &`) | Background process: the prompt returns at once | Press Enter; stop it (`mariadb-admin -u root shutdown`) before leaving the chroot |
 | Icon theme count is 36 instead of about 60 | The 24 icons weren't in `/usr/share/iprps/icons` | Install them (9.2), `rm -rf /usr/share/icons/IPRPS`, run 9.3's block again |
+| `ERROR 2002 … Can't connect to local server through socket` right after `mariadbd-safe … &` | The server wasn't ready yet | Wait for it: `until mariadb-admin -u root ping >/dev/null 2>&1; do sleep 1; done`, then rerun what failed |
+| `ERROR 1045 … Access denied for user 'iprps'@'localhost'` | The `iprps` user wasn't created (or another password) | Rerun 12.5 step 6's `CREATE USER … ALTER USER … GRANT` with the password from `/root/iprps-dev-db.txt` |
+| Web apps show only the IPRPS login, or "Sign in required" | Normal: the Universal Login is working | Register at `/iprps/auth/login.html`; apps then let you in |
+| A web app says it can't reach its database | Placeholder not filled in, or MariaDB not running | `grep -rl '@IPRPS_DB_PASS@' /srv/www/iprps`; `systemctl status mariadb php-fpm` |
 | `wget` → 404 Not Found | The download moved | Check the newest BLFS development book for the current address, or Debian's archive copy (`deb.debian.org/debian/pool/main/...`) with the same MD5 |
 | git.kernel.org → 400 Bad Request | Snapshot downloads are blocked | Use cdn.kernel.org release tarballs (4.7) |
 | `configure` stops; then `make install`: "No rule to make target 'install'" | A required dependency is missing, so no Makefile was created | Read the end of the `configure` output for the missing package; build it first |
@@ -26862,11 +28279,204 @@ This is planned for IPRPS 1.1. The 1.0 images already run directly from a USB st
 | Generic kernel: "VFS: Unable to mount root fs" | initramfs missing or for another kernel | `mkinitramfs 7.1.8-iprps` in `/boot`; check the `initrd` line in `grub.cfg` |
 | Black screen on a real PC | Graphics driver or firmware issue | Choose **IPRPS OS (safe graphics)** in GRUB; check `dmesg` for firmware errors |
 | Wi-Fi missing on a real PC | Firmware not loaded | `dmesg \| grep -i firmware`; the file should be under `/usr/lib/firmware` |
+| The Oracle says "The local AI service (Ollama) is not running" | Service stopped or failed | `systemctl status ollama`; `journalctl -u ollama -b` |
+| The Oracle says no model is installed, or `iprps-storyteller` is missing | Step 6 skipped, or the models aren't owned by `ollama` | `sudo iprps-ai-model status`; `chown -R ollama:ollama /var/lib/ollama`; `sudo iprps-ai-model reset` |
+| Oracle answers appear all at once instead of word by word | Apache's streaming rule missing or after the general PHP rule | `grep -n '^ProxyPassMatch' /etc/httpd/httpd.conf` (Part 15, step 7); `ls -A /srv/www/iprps/oracle/.user.ini` |
+| Oracle answers are very slow | No usable GPU, or too little free memory | `sudo iprps-ai-model status` (compute device); close other programs; 8 GB is the minimum |
+| First boot: "database could not be created", apps can't log in | MariaDB's first start was slower than `iprps-db-init` waited (slow USB stick) | Fixed in 13.1 (waits up to 3 minutes). On an affected computer: `sudo systemctl restart iprps-db-init`, or reboot (it runs again until it succeeds) |
+| Saving Wi-Fi (or another admin task) asks for a password and rejects it | polkit asks for **root's** password, and root is locked | 13.2 polkit rule (`/etc/polkit-1/rules.d/10-iprps.rules`); users then type their own password, and Wi-Fi needs none |
+| Session Master Mode: closing the browser leaves a white full-screen page | The full-screen player display stayed open on a single screen (and in Lite no display page exists yet) | 12.2 `iprps-session` update (full screen only with two screens); right now press **Alt+F4** |
+| Everything is slow when running from a USB stick | USB 2 sticks (and ports) have very slow small reads and writes | Use a USB 3 stick in a USB 3 (often blue) port, or install to the internal disk; the first boot is the slowest (disk growth, swap, database) |
+| Boot shows many "Failed to preset all unit … Read-only file system" lines | The release image's `/etc/machine-id` said `uninitialized` (first boot), so systemd tried to reset all services | 13.4: the release script now leaves it **empty**. On an affected image it's harmless (the reset failed); new releases don't show it |
+| "Driver 'pcspkr' is already registered, aborting" at boot | Two PC-speaker drivers | Harmless; 4.9 blacklists them (`/etc/modprobe.d/iprps-blacklist.conf`) |
+| Advanced Network Configuration doesn't list Wi-Fi networks | NetworkManager's editor can't scan | 9.9: **Wi-Fi and Network Connections** opens the scanning window |
 | `http://localhost/iprps/` doesn't load | Apache or PHP-FPM stopped | `systemctl status httpd php-fpm`; `journalctl -u httpd -u php-fpm` |
 | PHP can't reach MariaDB | Socket path mismatch, or `php-fpm` stopped | `grep default_socket /etc/php.ini` must show `/run/mariadb/mariadb.sock`; `systemctl status php-fpm mariadb` |
 | First-boot setup screen doesn't appear | Setup already marked done | Remove `/var/lib/iprps/setup-done` on the image before release (13.4 does this) |
 
-## Appendix C — Kernel Options Required by BLFS Packages
+## Appendix C — Useful Commands
+
+Quick reference for moving files around, testing in QEMU, and customizing icons. `<you>` is your Windows user name (the folder under `C:\Users`); replace it, angle brackets included.
+
+### C.1 Windows ↔ Debian (WSL)
+
+Windows drives appear in Debian under `/mnt`: `C:\Users\<you>\Downloads` is `/mnt/c/Users/<you>/Downloads`, and the G: drive is `/mnt/g`.
+
+**[DEBIAN ROOT]**
+
+```bash
+# Windows -> Debian: one file, a whole folder, or all PNGs of a folder
+cp -v /mnt/c/Users/<you>/Downloads/picture.png /build/src/
+cp -rv "/mnt/c/Users/<you>/Downloads/My Folder" /build/src/
+cp -v /mnt/c/Users/<you>/Downloads/iprps-icons/*.png /build/src/iprps-icons/
+
+# Debian -> Windows
+cp -v /build/src/somefile.log /mnt/c/Users/<you>/Downloads/
+
+# Find a file on the Windows side when you're not sure of its folder
+find /mnt/c/Users/<you> -maxdepth 3 -iname '*rpg-vault*' 2>/dev/null
+
+# Open the current Debian folder in Windows Explorer
+explorer.exe .
+```
+
+Put quotes around Windows paths with spaces. In **Windows Explorer**, Debian's files are under `\\wsl.localhost\Debian\` (for example `\\wsl.localhost\Debian\build\src`); you can drag files there too.
+
+**[WINDOWS POWERSHELL]**
+
+```powershell
+# Run one Debian command from PowerShell (here: copy a file into /build/src as root)
+wsl -d Debian -u root cp -v /mnt/c/Users/<you>/Downloads/picture.png /build/src/
+```
+
+### C.2 Debian ↔ the build image (chroot)
+
+Debian's `/build` is connected into the chroot by `iprps-enter.sh`, so **`/build/src` is the same folder on both sides** (and `~/src` for BUILDER). Put files there from Debian, then use them in IPRPS CHROOT or BUILDER.
+
+**[DEBIAN ROOT]**
+
+```bash
+findmnt /mnt/iprps/build || echo "build is NOT connected"
+ls /mnt/iprps/build/src | head        # what the chroot sees in /build/src
+cp -v /some/file /mnt/iprps/root/      # copy straight into the image (any path under /mnt/iprps)
+```
+
+If `/build` isn't connected, copy into `/mnt/iprps/build/src/` instead, and reconnect next session (leave the chroot, `iprps-leave.sh`, `iprps-enter.sh`).
+
+### C.3 The local Git repository
+
+The repository lives on the G: drive (`/mnt/g/IPRPS/iprps-os`).
+
+**[DEBIAN ROOT]**
+
+```bash
+cd /mnt/g/IPRPS/iprps-os
+cp -v /mnt/c/Users/<you>/Downloads/iprps-icons/*.png artwork/icons/
+ls artwork/icons/*.png | wc -l        # 24
+git status
+git add -A && git commit -m "Add the IPRPS icons" && git push
+```
+
+### C.4 Debian ↔ a running test VM (SSH)
+
+Start QEMU with `hostfwd=tcp::2222-:22` (1.4). Debian needs the SSH client once: `apt install openssh-client`.
+
+**[DEBIAN ROOT]**
+
+```bash
+ssh -p 2222 builder@localhost                              # log in (then su - for root)
+scp -P 2222 /build/src/file.png builder@localhost:~/       # Debian -> VM (builder's home)
+scp -P 2222 builder@localhost:~/.xsession-errors /root/    # VM -> Debian
+ssh-keygen -R "[localhost]:2222"                           # after "REMOTE HOST IDENTIFICATION HAS CHANGED"
+```
+
+Note the capital `-P` for `scp` (lowercase `-p` for `ssh`). From a Windows file, chain both: `cp` it to Debian first (C.1), then `scp` it into the VM.
+
+**[TEST VM]** (over SSH, as builder) to change desktop settings of the logged-in session:
+
+```bash
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+xfconf-query -c xsettings -p /Net/IconThemeName              # show
+xfconf-query -c xsettings -p /Net/IconThemeName -s IPRPS     # set
+cat /proc/cmdline                                            # proves you're in the VM, not the chroot
+```
+
+**Reading a stopped test copy** (for example to copy a panel layout out of it), read-only:
+
+**[DEBIAN ROOT]**
+
+```bash
+L=$(losetup -fP --show -r /root/iprps-test.img)
+mkdir -p /mnt/iprps-test && mount -o ro ${L}p3 /mnt/iprps-test
+ls /mnt/iprps-test/home/builder
+umount /mnt/iprps-test && losetup -d $L
+```
+
+### C.5 QEMU and RealVNC
+
+**[DEBIAN ROOT]**
+
+```bash
+pgrep -a qemu || echo "No QEMU running"
+qemu-system-x86_64 -enable-kvm -m 6G -smp 4 \
+  -bios /usr/share/ovmf/OVMF.fd \
+  -drive file=/root/iprps-test.img,format=raw,if=virtio \
+  -nic user,model=virtio-net-pci,hostfwd=tcp::2222-:22 \
+  -audio none \
+  -vga virtio \
+  -display none -vnc 127.0.0.1:0 \
+  -monitor stdio
+```
+
+In **RealVNC Viewer** on Windows, connect to **`localhost:5900`** (accept the "unencrypted connection" warning). RealVNC's **View → Scaling** fits a large VM screen into the window. QEMU's VNC doesn't share the clipboard: to copy text out of the VM, use SSH (C.4).
+
+At the **`(qemu)`** prompt in QEMU's Debian window:
+
+| Command | What it does |
+|---|---|
+| `sendkey ctrl-alt-f2` | Switch the VM to text console 2 (`f3`, `f4`… for others) |
+| `sendkey ctrl-alt-f1` (or `f7`) | Back to the graphical screen |
+| `sendkey ctrl-alt-delete` | Restart the VM |
+| `system_powerdown` | Ask the VM to shut down cleanly (like pressing the power button) |
+| `screendump /mnt/c/Users/<you>/Downloads/vm.png -f png` | Save a screenshot of the VM to Windows |
+| `info status` | Running or paused |
+| `quit` | Stop the VM at once (like pulling the plug) |
+
+**Boot to text mode once:** in the GRUB menu press `e`, add ` systemd.unit=multi-user.target` to the end of the `linux` line, press **Ctrl+X**. **More memory:** `-m 8G` instead of `-m 6G`. **Problems:** see the table in 1.4.
+
+### C.6 Custom icons: changing icons on an installed IPRPS OS
+
+This section is for **users and administrators of a finished IPRPS OS** (installed, or running from the USB image or a Live ISO), not for the build. Commands run in a **terminal on the IPRPS OS computer** (Applications → Terminal).
+
+**1. Make the icons.** PNG, **256×256**, transparent background (an SVG works too). Use lowercase names with dashes, no spaces. To replace a standard icon, name your file after the **standard name** it should replace (9.3's table lists them, for example `user-home.png`, `user-trash.png`, `folder-documents.png`, `utilities-terminal.png`).
+
+**2. Get them onto the computer.** Copy them to a USB stick on any computer; plug it in, and it opens in the file manager. Copy the files into your **Downloads** folder.
+
+**3a. Just for you (no administrator rights).** Your own icon theme, layered on top of IPRPS:
+
+```bash
+T=~/.local/share/icons/MyIcons
+mkdir -p $T/256x256/places $T/256x256/apps $T/256x256/devices
+cp -v ~/Downloads/user-home.png $T/256x256/places/          # one line per icon: places = folders,
+cp -v ~/Downloads/utilities-terminal.png $T/256x256/apps/   # apps = programs and menu categories,
+cp -v ~/Downloads/drive-harddisk.png $T/256x256/devices/    # devices = drives
+printf '%s\n' '[Icon Theme]' 'Name=MyIcons' 'Inherits=IPRPS,Adwaita,hicolor' \
+  'Directories=256x256/places,256x256/apps,256x256/devices' '' \
+  '[256x256/places]' 'Size=256' 'MinSize=16' 'MaxSize=512' 'Type=Scalable' '' \
+  '[256x256/apps]' 'Size=256' 'MinSize=16' 'MaxSize=512' 'Type=Scalable' '' \
+  '[256x256/devices]' 'Size=256' 'MinSize=16' 'MaxSize=512' 'Type=Scalable' > $T/index.theme
+gtk-update-icon-cache -f $T
+xfconf-query -c xsettings -p /Net/IconThemeName -s MyIcons
+```
+
+The last line switches your desktop to **MyIcons** at once (or choose it in **Settings → Appearance → Icons**). Everything you didn't replace still comes from IPRPS. To undo: choose **IPRPS** again, and delete `~/.local/share/icons/MyIcons`.
+
+**One program's icon only:** right-click a panel launcher → **Properties** → click the icon and pick your PNG. For a menu entry, copy its launcher and point it at your icon:
+
+```bash
+mkdir -p ~/.local/share/applications
+cp /usr/share/applications/org.xfce.mousepad.desktop ~/.local/share/applications/
+sed -i 's|^Icon=.*|Icon=/home/'"$USER"'/Downloads/my-editor.png|' ~/.local/share/applications/org.xfce.mousepad.desktop
+```
+
+(Keep the icon somewhere permanent, such as `~/.local/share/icons/`, rather than Downloads.)
+
+**3b. For every user on the computer (administrator, with `sudo`).** Add or replace icons in the IPRPS theme itself:
+
+```bash
+sudo install -v -m644 ~/Downloads/folder-documents.png /usr/share/iprps/icons/
+ls -l /usr/share/icons/IPRPS/256x256/places/folder-documents.png     # a link to that file
+sudo install -v -m644 ~/Downloads/my-new-icon.png /usr/share/icons/IPRPS/256x256/apps/
+sudo gtk-update-icon-cache -f /usr/share/icons/IPRPS
+```
+
+The first line replaces one of the 24 IPRPS icons in place: name your file exactly like the IPRPS icon it replaces (`folder-documents.png`, `trash.png`, `terminal.png`…, the first column of 9.3's table), and every standard name linked to it changes too. The third adds a brand-new icon under its own name, usable as `Icon=my-new-icon` in launchers. Log out and back in to see the change everywhere. An IPRPS OS update (a new image) brings back the original icons, so keep your custom PNGs on a USB stick.
+
+**On a Live ISO or Live USB:** changes live in memory and disappear at shutdown. Keep your icons and the commands above on a USB stick and run them again in each session, or install IPRPS OS to keep them for good.
+
+> **Pro tip:** If an icon doesn't change, look for broken links with `find <theme folder> -xtype l` (it should print nothing), confirm the active theme with `xfconf-query -c xsettings -p /Net/IconThemeName`, and log out and back in: the panel and file manager load icons when they start.
+
+## Appendix D — Kernel Options Required by BLFS Packages
 
 | Option | Needed by |
 |---|---|
@@ -27004,7 +28614,7 @@ This is planned for IPRPS 1.1. The 1.0 images already run directly from a USB st
 | `VXLAN` | NetworkManager-1.58.1 |
 | `X509_CERTIFICATE_PARSER` | keyutils-1.6.3 |
 
-## Appendix D — Package Lists by Edition
+## Appendix E — Package Lists by Edition
 
 ### Lite (312 BLFS packages, Stages A–G)
 
@@ -27021,4 +28631,4 @@ SANE-1.4.0, Libspiro-20220722, FontForge-20251009, Libao-1.2.0, Cdrdao-1.2.6, li
 
 ---
 
-*Credits: Built with Linux From Scratch and Beyond Linux From Scratch 13.1 (https://www.linuxfromscratch.org/). BLFS commands are reproduced from the book under its MIT-licensed command terms; BLFS text is under a Creative Commons license. IPRPS design, scripts and explanations are original to this guide. "Linux" is a registered trademark of Linus Torvalds. Firefox is a trademark of the Mozilla Foundation; IPRPS ships an unbranded build.*
+*Credits: Built with Linux From Scratch and Beyond Linux From Scratch 13.1 (https://www.linuxfromscratch.org/). BLFS commands are reproduced from the book under its MIT-licensed command terms; BLFS text is under a Creative Commons license. IPRPS design, scripts and explanations are original to this guide. "Linux" is a registered trademark of Linus Torvalds. Firefox is a trademark of the Mozilla Foundation; IPRPS ships an unbranded build. Medium and Advanced include ungoogled-chromium, an unbranded Chromium (BSD license), Ollama (MIT license) and the Qwen3.5 4B model (Apache-2.0, by the Qwen team).*
