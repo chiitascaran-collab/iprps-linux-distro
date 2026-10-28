@@ -2,6 +2,7 @@
   "_comment": "Apps shown in the Session Master Hub by default (folder names in /srv/www/iprps). Each Session Master can change their own list with Manage apps.",
   "apps": [
     "writer",
+    "table",
     "prompt_database",
     "expressions",
     "sfx",

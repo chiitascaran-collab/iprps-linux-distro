@@ -1,0 +1,24 @@
+{
+  "_about": "IPRPS Table dice buttons. Copy this file to /etc/iprps-table/presets.json to change it; the Table uses that copy first. kind is one of: check, initiative, trinity, dual, convergence, rps, expr (any dice, with optional band A or B for a single d20). Restart the Table after editing: sudo systemctl restart iprps-table",
+  "presets": [
+    { "id": "check",      "label": "Skill check",          "kind": "check",       "help": "1d20 + Skill Shift (Skill ÷ 10) + Attribute Shift (Attribute − 10). Band from the d20." },
+    { "id": "init",       "label": "Initiative",           "kind": "initiative",  "help": "1d20 + DEX modifier (DEX − 10)." },
+    { "id": "reaction",   "label": "Reaction",             "kind": "expr", "expr": "1d20", "band": "B", "help": "Placeholder: 1d20 read on the Effectiveness bands. Appearance and Status tiers modify reaction rolls: put your table's reaction rule here." },
+    { "id": "trinity",    "label": "Trinity Hand",         "kind": "trinity",     "help": "Mode 2: 1d3 Velocity + 1d20 Impact + 1d12 Guard. More Impact dice = Hydra Hand." },
+    { "id": "dual",       "label": "Dual-Die attack",      "kind": "dual",        "help": "Mode 4: 1d20 + shifts vs Guard; on a hit, 1d6 Impact severity." },
+    { "id": "conv",       "label": "Infinite Convergence", "kind": "convergence", "help": "Mode 5: choose a Blur level. Maximum die results explode." },
+    { "id": "rps",        "label": "RPS stance",           "kind": "rps",         "help": "Mode 3: Rock beats Scissors, Scissors beats Paper, Paper beats Rock." }
+  ],
+  "weapons": [
+    { "name": "Unarmed",    "expr": "1d6-1" },
+    { "name": "Knife",      "expr": "1d6" },
+    { "name": "Shortsword", "expr": "1d6+1" },
+    { "name": "Longsword",  "expr": "2d6" },
+    { "name": "Greatsword", "expr": "3d6" },
+    { "name": "Warhammer",  "expr": "2d6+1" },
+    { "name": "Bow",        "expr": "1d6+1" },
+    { "name": "Crossbow",   "expr": "2d6" },
+    { "name": "Pistol",     "expr": "2d6" },
+    { "name": "Rifle",      "expr": "3d6+2" }
+  ]
+}

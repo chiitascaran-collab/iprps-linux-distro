@@ -18,7 +18,7 @@ This guide builds **IPRPS OS** for distribution: a generic, ready-to-use Linux s
 | Users tailor their own installs later | Nothing machine-specific is built in. `sudo`, compilers and source tarballs stay on the system |
 | RAM: 6 GB minimum, 16 GB recommended | Lightweight **Xfce** desktop for every edition, a database tuned for small memory, and a swap file sized at first boot |
 | Wireless and sudo must be installed | **NetworkManager** with Wi-Fi (wpa_supplicant), Bluetooth (BlueZ) and **sudo** are in every edition |
-| A desktop customized for IPRPS | The **IPRPS Desktop**: Xfce with IPRPS branding, a Session Master menu, Session Master Mode and a player display |
+| A desktop customized for IPRPS | The **IPRPS Desktop**: Xfce with IPRPS branding, a Session Master menu, Session Master Mode, a player display, and the **IPRPS Table** for players' phones, tablets and laptops on the same network |
 | Audio, video, image and document apps | Chosen per edition (Part 1) |
 | Exclusive IPRPS apps for Session Masters and Storytellers | Served by a built-in local **web server (Apache + PHP)** and **database (MariaDB)**, with a campaign and player-tracking database included |
 | Downloadable from GitHub and/or a download site | One compressed disk image per edition (USB stick or internal disk), optional VM images, checksums and source archives (13.8) |
@@ -11237,6 +11237,8 @@ cd "$(tar -tf wpa_supplicant-2.12.tar.gz | head -1 | cut -d/ -f1)" && pwd
 
 > **Warning:** **IPRPS change.** Don't enable `wpa_supplicant@wlan0`. NetworkManager (Stage D) manages Wi-Fi and starts wpa_supplicant when needed. If you enabled it already: `systemctl disable wpa_supplicant@wlan0.service` in IPRPS CHROOT.
 
+> **Warning:** **IPRPS check: Wi-Fi drivers and D-Bus.** Write the **whole** `.config` from this section (all the `CONFIG_...=y` lines, including `CONFIG_DRIVER_NL80211=y`, `CONFIG_LIBNL32=y` and `CONFIG_CTRL_IFACE_DBUS_NEW=y`), not only the D-Bus lines: without the others, wpa_supplicant builds but says **"No drivers enabled"** and Wi-Fi stays greyed out. Before `make install`, check: `./wpa_supplicant -h | grep -A4 '^drivers:'` lists `nl80211` and `wext`, and `ldd wpa_supplicant | grep -c libnl` prints `2` or more. If not, fix `.config`, run `make clean`, and build again.
+
 **Build and install:**
 
 **[BUILDER]** — First you will need to create an initial configuration file for the build process. You can read wpa_supplicant/README and wpa_supplicant/defconfig for the explanation of the following options as well as other options that can be used. Create a build…
@@ -22446,7 +22448,7 @@ Then re-enter the IPRPS CHROOT and BUILDER windows (0.5). Details and restoring:
 | `/usr/share/iprps/` | Schema, icons, branding, shared assets |
 | `/etc/iprps/` | Settings written at first boot (database credentials), readable by Apache only |
 | `/usr/bin/iprps-*` | Command-line helpers and launchers |
-| `/opt/iprps/` | Desktop (non-web) IPRPS apps, such as the Media Player |
+| `/opt/iprps/` | Desktop (non-web) IPRPS apps, such as the Media Player, and the IPRPS Table service (12.7) |
 | `~/Campaigns/` | Each user's campaign files, handouts, maps and audio |
 
 ### 12.2 Launch helpers
@@ -22474,7 +22476,7 @@ EOF
 chmod 755 /usr/bin/iprps-open
 ```
 
-**`iprps-session`** is **Session Master Mode**. It opens the Session Master Hub, starts the ambience player, and opens a full-screen **player display** for a second monitor or projector:
+**`iprps-session`** is **Session Master Mode**. It opens the Session Master Hub, starts the ambience player, and opens a full-screen **player display** for a second monitor or projector. On a computer with **one screen** it opens the **IPRPS Table** console instead (12.7), so the players follow on their own phones, tablets and laptops:
 
 **[IPRPS CHROOT]**
 
@@ -22505,8 +22507,12 @@ if [ -n "$PAGE" ]; then
   if [ "${SCREENS:-1}" -ge 2 ]; then
     # Second screen or projector: full screen there (drag it over if needed; Alt+F4 closes it)
     firefox --no-remote --profile "$HOME/.iprps/player-display" --kiosk "http://localhost/iprps/$PAGE" &
+  elif [ -x /usr/bin/iprps-table ]; then
+    # One screen: the players follow on their own phones, tablets and laptops (IPRPS Table, 12.7)
+    iprps-table &
+    note "One screen: open the table, and players join on their own devices. With a second screen or projector, the player display opens there."
   else
-    # One screen: a normal window, so it can't cover the desktop
+    # One screen, no IPRPS Table: a normal window, so it can't cover the desktop
     firefox --no-remote --profile "$HOME/.iprps/player-display" --new-window "http://localhost/iprps/$PAGE" &
     note "Player display opened in a window. With a second screen or projector connected, it opens full screen there."
   fi
@@ -22518,7 +22524,7 @@ chmod 755 /usr/bin/iprps-session
 
 > **Side note:** Ambience plays in a small **IPRPS Ambience** window (mpv), shuffled and looping, from *Campaigns/Audio*. With that window selected: **Space** pauses, **9** and **0** lower and raise the volume, **>** skips to the next track, and **q** stops it. For browsing music or playing a single track, use **Parole** from the menu.
 
-> **Pro tip:** The player display runs in its own Firefox profile. With a **second screen or projector** connected it opens **full screen** (kiosk); with one screen it opens as a normal window, so it can never hide the desktop. It only opens when a display page is installed (the Hub's, or the Oracle's in Medium and Advanced). Drag it to the second monitor or projector, and press **Alt+F4** to close it. Players see only what the Session Master reveals there: maps, handouts and the initiative order. Until the Hub's own display page exists, Session Master Mode uses the IPRPS Oracle's display (Medium and Advanced), which shows anything sent with **Show players**; both read the same `display_items` table.
+> **Pro tip:** The player display runs in its own Firefox profile. With a **second screen or projector** connected it opens **full screen** (kiosk); with one screen, Session Master Mode opens the **IPRPS Table** (12.7) instead (or, without the Table, the display as a normal window), so it can never hide the desktop. It only opens when a display page is installed (the Hub's, or the Oracle's in Medium and Advanced). Drag it to the second monitor or projector, and press **Alt+F4** to close it. Players see only what the Session Master reveals there: maps, handouts and the initiative order. Until the Hub's own display page exists, Session Master Mode uses the IPRPS Oracle's display (Medium and Advanced), which shows anything sent with **Show players**; both read the same `display_items` table.
 
 ### 12.3 Menu launchers
 
@@ -22557,6 +22563,7 @@ update-desktop-database /usr/share/applications
 | **Initiative and Combat Tracker** | Turn order, HP, conditions; feeds the player display | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
 | **Dice Roller** | IPRPS dice mechanics; logs rolls to the session log | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
 | **Session Log and Recap** | Timeline of notes, rolls, loot and XP; exports recaps | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
+| **IPRPS Table** | LAN play: players join from phones, tablets and laptops on the same network; chat (everyone, players only, private), images and audio, IPRPS dice, and the Session Master pushes pictures, video, text and sound to everyone, groups or single players | Exists (`/opt/iprps/table`, 12.7) | ✔ | ✔ | ✔ |
 | **Player Display** | Full-screen handouts, maps and initiative for players | **Exists** (`hub/display.php`, shows text sent to it); maps and initiative to build | ✔ | ✔ | ✔ |
 | **Infinite Plane Universal Login** | Single sign-on for the local IPRPS apps | Exists | ✔ | ✔ | ✔ |
 | **IPRPS Welcome** | First-run tour; settings for API keys and color scheme | **To build** | ✔ | ✔ | ✔ |
@@ -22730,6 +22737,7 @@ The Hub (`/srv/www/iprps/hub/`, opened by the **Session Master Hub** launcher an
 | Folder | App |
 |---|---|
 | `writer` | IPRPS Writer |
+| `table` | IPRPS Table (opens the LAN play console, 12.7) |
 | `prompt_database` | Prompt Database |
 | `expressions` | Expressions |
 | `sfx` | SFX |
@@ -22776,17 +22784,125 @@ for a in $(python3 -c "import json; print(' '.join(json.load(open('/srv/www/iprp
 done
 ```
 
-`ls` shows `api.php`, `app-names.json`, `default-apps.json`, `display.php`, `hub-icon.svg`, `hub.css`, `hub.js` and `index.html`. The loop checks the ten default apps: each `MISSING` is a folder that isn't installed or has another name. Correct the name in `default-apps.json` (and `app-names.json`), or install the app. The Hub needs no database setup: it creates its table on first use.
+`ls` shows `api.php`, `app-names.json`, `default-apps.json`, `display.php`, `hub-icon.svg`, `hub.css`, `hub.js` and `index.html`. The loop checks the default apps: each `MISSING` is a folder that isn't installed or has another name. Correct the name in `default-apps.json` (and `app-names.json`), or install the app. The Hub needs no database setup: it creates its table on first use.
 
 **IPRPS Writer** (`/srv/www/iprps/writer/`) is a simple word processor that runs in the browser like the other IPRPS apps (in its own window in Medium and Advanced): headings, bold, italic, underline, lists, alignment, a word count, and a printed-page look. Documents save automatically to the Session Master's account (table `writer_docs` in the core database, created on first use) and are listed on the left. **Open file…** imports `.docx`, `.odt`, `.txt` and `.html` (or drag a file onto the page); **Save as** writes `.docx` (Word), `.odt` (LibreOffice), `.txt` or `.html` to Downloads, or prints/makes a PDF (**Ctrl+P**). It keeps text, headings, bold/italic/underline/strikethrough, lists and alignment; pictures, tables and fonts in imported files are not kept. It's also on the Hub by default and in the menu (**IPRPS Writer**, also under Office).
 
 `display.php` is the **player display** for Session Master Mode (12.2): full screen on a second screen or projector, showing what's sent to it (from the IPRPS Oracle in Medium and Advanced, and later from the Hub's own tools).
 
-**Test** (fresh test copy): open **Session Master Hub** from the menu, sign in once. The ten apps appear as tiles and open in a new window. **Manage apps** lists every app; switch one off and one on, **Save**, and the grid changes; **Reset to defaults** brings back the ten. A second account keeps its own choice.
+**Test** (fresh test copy): open **Session Master Hub** from the menu, sign in once. The default apps appear as tiles and open in a new window (**IPRPS Table** after 12.7). **Manage apps** lists every app; switch one off and one on, **Save**, and the grid changes; **Reset to defaults** brings back the defaults. A second account keeps its own choice.
 
 > **Pro tip:** To change the defaults for every new Session Master on a computer, edit `/srv/www/iprps/hub/default-apps.json` (folder names, in the order they should appear) with `sudo`. Accounts that already saved their own choice keep it; apps installed later follow the defaults until the account saves again.
 
-### 12.7 Desktop (non-web) apps
+### 12.7 IPRPS Table: LAN play on phones, tablets and laptops
+
+Many computers, especially older desktops, have **one display output**, so a second-screen player display isn't possible. The **IPRPS Table** replaces it with the players' own devices: any phone, tablet, laptop or desktop **on the same network** opens a web page on the Session Master's computer and joins the campaign. No app to install and no internet needed: it all runs on the IPRPS OS computer.
+
+| Who | What they get |
+|---|---|
+| **Session Master** (console, on the IPRPS OS computer only) | Opens and closes the table; join code, links and a QR code; who is at the table (online or away, phone/tablet/computer, address, last seen); **groups** of players; **push** images, video clips and text cards to everyone, a group or selected players, and **play sound** (music, ambience, effects, looping or not) on their devices; messages to everyone, a group, selected players or one player; dice with secret rolls; copy buttons; paste images; remove a player; new join code; lock the table |
+| **Players** (any browser) | The campaign's chat; messages **to everyone**, **players only**, **private to the Session Master** or **private to another player**, with images and audio files attached (pasting an image works too); what the Session Master pushes, full width at the top; a **dice toolbar** with the IPRPS rolls; who else is at the table |
+
+**The dice toolbar** (players and Session Master): d4, d6, d8, d10, d12, d20, d100 in one tap; any expression (`2d6+3`, `4d6kh3` keeps the highest three, `1d6!` explodes, `d%`); and **IPRPS ▾**: **Skill check** (1d20 + Skill Shift + Attribute Shift, with the Band A or B result and an optional BTN), **Initiative** (1d20 + DEX modifier), **Reaction**, **Trinity Hand** (1d3 Velocity + 1d20 Impact + 1d12 Guard; more Impact dice for a Hydra Hand), **Dual-Die attack** (vs Guard, then the 1d6 Impact severity), **Infinite Convergence** (Blur 0–6, maximum results explode, skill capped by the Blur level), **RPS stance**, and **weapon damage** (Unarmed to Rifle, with an optional AR). Players choose who sees each roll: everyone, only the Session Master, or only themselves; the Session Master can roll in secret. Every roll is made on the Session Master's computer, so nobody can fake one.
+
+> **Note:** The buttons come from `/opt/iprps/table/dice-presets.json`. To change them (the **Reaction** roll is a placeholder: 1d20 read on the Effectiveness bands), copy it to `/etc/iprps-table/presets.json` (`sudo install -Dm644 /opt/iprps/table/dice-presets.json /etc/iprps-table/presets.json`), edit it, and run `sudo systemctl restart iprps-table`. The console's **Session** box shows which file is in use.
+
+**Privacy.** The Session Master sees messages to everyone and to the Session Master. **Players only** messages and private messages between players stay between the players. Files follow their message: an image sent privately to one player can be opened by that player only. Players can share images and audio up to 15 MB; the Session Master can also share video, up to 1 GB per file.
+
+**Safety.** The Table listens on port **7777** of every network the computer is on, but answers other devices only while the Session Master has the table **open**, and only with the join code. The console (`http://localhost:7777/sm/`) opens on the Session Master's own computer only. It runs as its own account, `iprps-table`, which can write nowhere but `/var/lib/iprps-table`. Closing the table disconnects everyone; chat, players and media are kept for next time (**Session → New session** clears the chat; **Reset everything** also removes players and media and makes a new code). After a restart the table is always closed.
+
+**1. Copy the Table into the image. [DEBIAN ROOT]** From the repository (`apps/table/` is the server, `apps/table-tile/` its Hub tile):
+
+```bash
+R=/mnt/g/IPRPS/iprps-os
+mkdir -p /mnt/iprps/opt/iprps
+cp -rv $R/apps/table /mnt/iprps/opt/iprps/table
+cp -rv $R/apps/table-tile /mnt/iprps/srv/www/iprps/table
+```
+
+**2. The service, the menu launcher and Hub tile. [IPRPS CHROOT]** Node.js is in every edition (Stage G):
+
+```bash
+node --version
+getent group iprps-table >/dev/null || groupadd -r iprps-table
+getent passwd iprps-table >/dev/null || useradd -r -g iprps-table -d /var/lib/iprps-table -s /sbin/nologin -c "IPRPS Table" iprps-table
+chown -R root:root /opt/iprps/table
+find /opt/iprps/table -type d -exec chmod 755 {} + ; find /opt/iprps/table -type f -exec chmod 644 {} +
+chown -R root:apache /srv/www/iprps/table
+find /srv/www/iprps/table -type d -exec chmod 755 {} + ; find /srv/www/iprps/table -type f -exec chmod 644 {} +
+install -v -Dm644 /opt/iprps/table/public/table-icon.svg /usr/share/iprps/icons/iprps-table.svg
+cat > /usr/lib/systemd/system/iprps-table.service << "EOF"
+[Unit]
+Description=IPRPS Table (LAN play for the Session Master)
+After=network.target
+
+[Service]
+User=iprps-table
+Group=iprps-table
+ExecStart=/usr/bin/node /opt/iprps/table/server.js
+StateDirectory=iprps-table
+StateDirectoryMode=0750
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+LockPersonality=yes
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target
+EOF
+cat > /usr/bin/iprps-table << "EOF"
+#!/bin/bash
+# iprps-table - open the IPRPS Table Session Master console (LAN play)
+URL=http://localhost:7777/sm/
+systemctl is-active --quiet iprps-table || pkexec systemctl start iprps-table
+for i in $(seq 1 20); do curl -s -o /dev/null -m 1 http://localhost:7777/api/info && break; sleep 0.5; done
+if command -v chromium >/dev/null; then
+  exec chromium --app="$URL"
+else
+  exec firefox --new-window "$URL"
+fi
+EOF
+chmod 755 /usr/bin/iprps-table
+cat > /usr/share/applications/iprps-table.desktop << "EOF"
+[Desktop Entry]
+Type=Application
+Name=IPRPS Table
+GenericName=LAN Play
+Comment=Players join from their phones, tablets and laptops: chat, dice, pictures and sound
+Exec=iprps-table
+Icon=/usr/share/iprps/icons/iprps-table.svg
+Terminal=false
+Categories=X-IPRPS;Game;
+Keywords=lan;party;players;phone;tablet;dice;chat;
+EOF
+update-desktop-database /usr/share/applications
+systemctl enable iprps-table
+```
+
+`node --version` prints `v24.19.0`, and `systemctl enable` creates the link in `multi-user.target.wants`. The service starts at every boot (about 50 MB of memory) with the table **closed**.
+
+The Hub's default apps include **IPRPS Table** (`table` in `hub/default-apps.json`); its tile opens the console. **Session Master Mode** (12.2) opens the Table's console instead of a player display window when the computer has **one screen**.
+
+> **Warning:** IPRPS OS has no firewall by default. If you add one, allow **TCP 7777** from the local network, or players can't connect.
+
+**3. Test. [TEST VM]** In a fresh test copy, open **IPRPS Table** from the menu: the console shows **Closed**. Click **Open the table**: a join code, the computer's address (`http://<address>:7777/`) and a QR code appear. A player page needs another device on the same network; in a QEMU test VM, the guest's own address works instead: open a second Firefox window at the address shown (for example `http://10.0.2.15:7777/`), join with the code, and the player appears in the console as **online**. Send a message each way, roll **IPRPS ▾ → Skill check**, then in the console **Add media…** an image and click **Show**: it appears at the top of the player page. On real hardware, scan the QR code with a phone on the same Wi-Fi.
+
+> **Side note:** Phones and tablets block sound until the player touches the page once: when the Session Master starts music, players who haven't touched the page see **Tap to turn on the table sound**. Recording audio in the browser needs a secure (https) connection, which the Table doesn't have on a home network, so players attach audio **files** (a phone's voice-memo app can make one).
+
+> **Pro tip:** Guest Wi-Fi networks often stop devices from seeing each other ("client isolation"). If players can't open the address, put everyone on the main network, or turn on a phone's hotspot and connect the Session Master's computer and the players to it.
+
+> **Pro tip:** The upload limits can be changed without editing the program: `sudo systemctl edit iprps-table`, add `[Service]` and lines such as `Environment=IPRPS_TABLE_PLAYER_MB=25`, `Environment=IPRPS_TABLE_SM_MB=2048` or `Environment=IPRPS_TABLE_MEDIA_GB=20` (all media together), save, then `sudo systemctl restart iprps-table`.
+
+### 12.8 Desktop (non-web) apps
 
 Install desktop apps under `/opt/iprps/<app>/`, with a launcher in `/usr/share/applications/` (`Categories=X-IPRPS;AudioVideo;` for the Media Player). The **IPRPS Media Player** is an Electron app using libVLC: VLC must be installed (Medium), and Electron's own runtime needs GTK 3, NSS and ALSA, which are already in the build.
 
@@ -23473,7 +23589,7 @@ rm -f /etc/ssh/ssh_host_* /etc/resolv.conf
 : > /etc/machine-id      # empty: a fresh ID at first boot, but not "first boot" (no systemd preset reset)
 BROKEN=$(find /etc/systemd/system /etc/systemd/user -xtype l 2>/dev/null || true)
 if [ -n "$BROKEN" ]; then echo "Removing broken service links:"; echo "$BROKEN" | sed 's/^/  /'; echo "$BROKEN" | xargs -r rm -f; fi
-rm -rf /var/lib/iprps/*-done /var/lib/ollama/.ollama /var/log/journal/*
+rm -rf /var/lib/iprps/*-done /var/lib/ollama/.ollama /var/log/journal/* /var/lib/iprps-table/*   # IPRPS Table test chat, players, media
 passwd -l root >/dev/null
 sed -i "s/^VERSION=.*/VERSION=\"1.0 $EDC\"/; s/^PRETTY_NAME=.*/PRETTY_NAME=\"IPRPS OS 1.0 $EDC\"/" /etc/os-release
 [ -f /etc/lsb-release ] && sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION=\"IPRPS OS 1.0 $EDC\"/" /etc/lsb-release
@@ -23484,6 +23600,7 @@ echo "  builder account:   $(id builder >/dev/null 2>&1 && echo 'STILL THERE' ||
 echo "  /root:             $( [ -z "$(ls /root)" ] && echo "empty (shell settings kept)" || ls /root | tr '\n' ' ')"
 echo "  first-boot marks:  $(ls /var/lib/iprps/ 2>/dev/null | grep -c done) left (0 expected)"
 echo "  database settings: $( [ -e /etc/iprps/db.php ] && echo 'STILL THERE' || echo removed)"
+echo "  IPRPS Table data:  $( [ -n "$(ls -A /var/lib/iprps-table 2>/dev/null)" ] && echo 'STILL THERE' || echo 'empty')"
 echo "  root password:     $(passwd -S root | awk '{print ($2=="L"||$2=="LK")?"locked":"NOT LOCKED"}')"
 echo "  machine ID:        $( [ -s /etc/machine-id ] && echo 'NOT EMPTY' || echo 'empty (new ID at first boot)')"
 echo "  edition:           $(grep ^PRETTY_NAME /etc/os-release)"
@@ -27947,7 +28064,7 @@ Then open **IPRPS Oracle** from the menu (or Session Master Mode): it asks for t
 
 > **Side note:** **Updating Ollama.** Repeat steps 2 and 3 (the `rm -rf /usr/lib/ollama` comes first) and restart the service: `systemctl restart ollama`. The models in `/var/lib/ollama` stay. Users can download other models with `sudo iprps-ai-model pull <name>` (from **https://ollama.com/library**, needs internet) and choose them in the Oracle's **Model** menu; IPRPS's prompts are written for `iprps-storyteller`.
 
-Install the Medium IPRPS apps (12.4) using 12.5 and 12.7; they appear in every Session Master's **Manage apps** list (12.6) automatically.
+Install the Medium IPRPS apps (12.4) using 12.5 and 12.8; they appear in every Session Master's **Manage apps** list (12.6) automatically.
 
 > **Checkpoint:** Take snapshot **`RELEASE-medium`**, then release it as in Part 14: `/root/iprps-release-clean.sh medium`, `/root/iprps-release-pack.sh medium` → `iprps-os-1.0-medium.img.xz`.
 
@@ -28433,6 +28550,11 @@ This is planned for IPRPS 1.1. The 1.0 images already run directly from a USB st
 | Oracle answers are very slow | No usable GPU, or too little free memory | `sudo iprps-ai-model status` (compute device); close other programs; 8 GB is the minimum |
 | First boot: "database could not be created", apps can't log in | MariaDB's first start was slower than `iprps-db-init` waited (slow USB stick) | Fixed in 13.1 (waits up to 3 minutes). On an affected computer: `sudo systemctl restart iprps-db-init`, or reboot (it runs again until it succeeds) |
 | Saving Wi-Fi (or another admin task) asks for a password and rejects it | polkit asks for **root's** password, and root is locked | 13.2 polkit rule (`/etc/polkit-1/rules.d/10-iprps.rules`); users then type their own password, and Wi-Fi needs none |
+| IPRPS Table: players' phones can't open `http://<address>:7777/` | The table isn't open; the phone is on another network (mobile data, guest Wi-Fi with client isolation); a firewall blocks TCP 7777 | Click **Open the table**; put the phone on the same Wi-Fi as the Session Master's computer (turn off mobile data to check), or use a phone hotspot for everyone; allow TCP 7777 (12.7) |
+| IPRPS Table: "The Session Master console only opens on the Session Master's computer" | The console was opened from another device, or with the computer's network address instead of `localhost` | Open it from the menu (**IPRPS Table**) or at `http://localhost:7777/sm/` on the IPRPS OS computer |
+| IPRPS Table: the Hub tile says the service isn't running | `iprps-table.service` is stopped or failed | `systemctl status iprps-table` and `journalctl -u iprps-table -b`; check `node --version` and that `/opt/iprps/table/server.js` exists, then `sudo systemctl restart iprps-table` (12.7) |
+| IPRPS Table: "That join code is not right" | A new code was made, or a typo | Read the code in the console (letters and numbers, no O/0 or I/1 confusion); scanning the QR code fills it in |
+| IPRPS Table: no music on a phone | Phones block sound until the page is touched once | Tap **Tap to turn on the table sound**; check the phone's volume |
 | Session Master Mode: closing the browser leaves a white full-screen page | The full-screen player display stayed open on a single screen (and in Lite no display page exists yet) | 12.2 `iprps-session` update (full screen only with two screens); right now press **Alt+F4** |
 | Everything is slow when running from a USB stick | USB 2 sticks (and ports) have very slow small reads and writes | Use a USB 3 stick in a USB 3 (often blue) port, or install to the internal disk; the first boot is the slowest (disk growth, swap, database) |
 | Boot shows many "Failed to preset all unit … Read-only file system" lines | The release image's `/etc/machine-id` said `uninitialized` (first boot), so systemd tried to reset all services | 13.4: the release script now leaves it **empty**. On an affected image it's harmless (the reset failed); new releases don't show it |

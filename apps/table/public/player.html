@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- Copyright (C) 2026 Mythical Legends Publishing, LLC -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0e1a">
+<title>IPRPS Table</title>
+<link rel="icon" href="/assets/table-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/table.css">
+</head>
+<body data-role="player" class="playerpage">
+<header class="bar">
+  <div class="brand"><span class="sigil">✦</span> <span id="campaign">IPRPS Table</span></div>
+  <span id="conn" class="conn" title="Connection">●</span>
+  <div class="spacer"></div>
+  <button id="meBtn" class="ghost me" title="Your character"></button>
+  <button id="playersBtn" class="ghost">Table <span id="count" class="count"></span></button>
+</header>
+
+<button id="soundBtn" class="soundbtn" hidden>🔊 Tap to turn on the table sound</button>
+
+<section id="stage" class="stage" hidden aria-live="polite">
+  <div class="stagehead"><span id="stageTitle" class="stagetitle">From the Session Master</span><button id="stageMin" class="ghost small">Hide</button></div>
+  <div id="stageBody" class="stagebody"></div>
+</section>
+<button id="stageShow" class="stageshow" hidden>Show the Session Master's screen</button>
+
+<main class="pmain">
+  <section class="feedcol">
+    <div id="feed" class="feed" aria-live="polite"></div>
+    <div id="dice"></div>
+    <div id="composer"></div>
+  </section>
+  <aside id="side" class="side">
+    <div class="sidehead"><h2>At the table</h2><button id="sideClose" class="ghost small closeside">Close</button></div>
+    <ul id="roster" class="roster"></ul>
+    <p class="fine">Pick a name in “To” to send a private message. Private messages between players are not shown to the Session Master.</p>
+    <button id="leaveBtn" class="ghost small danger leave">Leave the table</button>
+  </aside>
+</main>
+
+<div id="overlay" class="overlay" hidden><div class="ovbox"><h2 id="ovTitle">The table is closed</h2><p id="ovText"></p><button id="ovBtn" class="gold">Back to the join page</button></div></div>
+<audio id="bgm" preload="auto"></audio>
+<script src="/assets/common.js"></script>
+<script src="/assets/player.js"></script>
+</body>
+</html>

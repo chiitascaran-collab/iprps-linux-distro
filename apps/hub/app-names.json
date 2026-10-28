@@ -38,5 +38,9 @@
   "writer": {
     "name": "IPRPS Writer",
     "description": "Write documents; saves as .docx, .odt, PDF"
+  },
+  "table": {
+    "name": "IPRPS Table",
+    "description": "LAN play: players join from phones, tablets and laptops"
   }
 }

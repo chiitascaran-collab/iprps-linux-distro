@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- Copyright (C) 2026 Mythical Legends Publishing, LLC -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPRPS Table · Session Master</title>
+<link rel="icon" href="/assets/table-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/table.css">
+</head>
+<body data-role="sm" class="smpage">
+<header class="bar">
+  <div class="brand"><span class="sigil">✦</span> IPRPS <b>Table</b> <small>Session Master</small></div>
+  <input id="tname" class="tname" maxlength="80" aria-label="Campaign name" title="Campaign name: players see it">
+  <span id="tstate" class="pill">Closed</span>
+  <button id="openBtn" class="gold">Open the table</button>
+  <label class="check" title="When locked, no new players can join. Players already at the table can rejoin."><input type="checkbox" id="lockBox"> Lock</label>
+  <div class="spacer"></div>
+  <span id="conn" class="conn" title="Connection">●</span>
+</header>
+
+<main class="smgrid">
+  <aside class="smleft">
+    <section class="card" id="joinCard">
+      <h2>Players join here</h2>
+      <div class="codebox"><span>Join code</span><b id="code">——————</b><button id="newCode" class="ghost small" title="Make a new code: the old one stops working">New code</button></div>
+      <div id="addrs" class="addrs"></div>
+      <div id="qr" class="qr" title="Scan with a phone camera"></div>
+      <p class="fine" id="joinHelp">Open the table, then players on the same network open the address above (or scan the code) on any phone, tablet or computer.</p>
+    </section>
+
+    <section class="card">
+      <h2>At the table <span id="count" class="count"></span></h2>
+      <div class="rowbtns"><button id="selAll" class="ghost small">Select all</button><button id="selNone" class="ghost small">Select none</button><span id="selCount" class="fine"></span></div>
+      <ul id="roster" class="roster smroster"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Groups</h2>
+      <div class="rowbtns"><input id="gname" placeholder="Group name" maxlength="40"><button id="gmake" class="ghost small">Make from selected</button></div>
+      <ul id="groups" class="groups"></ul>
+    </section>
+  </aside>
+
+  <section class="feedcol">
+    <div id="feed" class="feed" aria-live="polite"></div>
+    <div id="dice"></div>
+    <div id="composer"></div>
+    <p class="fine pad">You see messages to everyone and to you. Players-only messages and private messages between players stay between them.</p>
+  </section>
+
+  <aside class="smright">
+    <section class="card">
+      <h2>Push to screens</h2>
+      <div class="target" id="target">
+        <label><input type="radio" name="tg" value="all" checked> Everyone</label>
+        <label><input type="radio" name="tg" value="sel"> Selected players</label>
+        <label><input type="radio" name="tg" value="group"> Group <select id="tgGroup"></select></label>
+      </div>
+      <div class="rowbtns">
+        <label class="ghost filebtn">Add media…<input id="mfile" type="file" multiple accept="image/png,image/jpeg,image/gif,image/webp,audio/*,video/mp4,video/webm,video/ogg" hidden></label>
+        <button id="clearStage" class="ghost small">Clear screens</button>
+      </div>
+      <div id="uploads"></div>
+      <ul id="library" class="library"></ul>
+      <details class="textcard">
+        <summary>Show a text card</summary>
+        <input id="cardTitle" placeholder="Title (optional)" maxlength="120">
+        <textarea id="cardText" rows="4" maxlength="4000" placeholder="Read-aloud text, a clue, a riddle…"></textarea>
+        <button id="cardBtn" class="gold">Show on screens</button>
+      </details>
+    </section>
+    <section class="card">
+      <h2>Table sound</h2>
+      <div class="rowbtns"><label class="check"><input type="checkbox" id="loop" checked> Loop</label>
+        <label class="check">Volume <input type="range" id="vol" min="0" max="1" step="0.05" value="0.8"></label></div>
+      <div class="rowbtns"><button id="stopAudio" class="ghost">■ Stop sound</button></div>
+      <p id="nowPlaying" class="fine">Use ♪ Play on an audio track above.</p>
+    </section>
+    <section class="card">
+      <h2>Session</h2>
+      <div class="rowbtns"><button id="newSession" class="ghost small">New session (clear chat)</button><button id="resetAll" class="ghost small danger">Reset everything</button></div>
+      <p class="fine" id="presetsFrom"></p>
+    </section>
+  </aside>
+</main>
+<script src="/assets/qr.js"></script>
+<script src="/assets/common.js"></script>
+<script src="/assets/sm.js"></script>
+</body>
+</html>
