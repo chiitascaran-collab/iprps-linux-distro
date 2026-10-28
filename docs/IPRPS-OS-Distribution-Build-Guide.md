@@ -20517,6 +20517,30 @@ sed -i 's/DirectoryIndex index.html/DirectoryIndex index.php index.html/' /etc/h
 grep -n '^ *DirectoryIndex' /etc/httpd/httpd.conf
 ```
 
+**Apache and PHP: only real `.php` files go to PHP.** BLFS connects PHP with a `ProxyPassMatch` line, which forwards *every* address ending in `.php` to PHP-FPM without checking the file exists. With `DirectoryIndex index.php index.html`, an app whose start page is `index.html` (the Session Master Hub, IPRPS Writer, the Oracle) then shows PHP's **"File not found."** instead of its page. Replace that line with Apache's standard `FilesMatch` handler, which checks first. It also passes long answers through as they're written (`flushpackets`, used by the IPRPS Oracle), and allows up to 15 minutes per request:
+
+**[IPRPS CHROOT]**
+
+```bash
+sed -i '/^ProxyPassMatch .*fcgi:\/\/127\.0\.0\.1:9000/d' /etc/httpd/httpd.conf
+install -vdm755 /etc/httpd/extra
+cat > /etc/httpd/extra/iprps-php.conf << "EOF"
+# IPRPS OS: PHP through PHP-FPM, only for .php files that exist
+# (so a folder whose start page is index.html works), streaming long answers.
+<FilesMatch "\.php$">
+    SetHandler "proxy:fcgi://127.0.0.1:9000"
+</FilesMatch>
+<Proxy "fcgi://127.0.0.1:9000">
+    ProxySet flushpackets=on timeout=900
+</Proxy>
+EOF
+grep -q 'extra/iprps-php.conf' /etc/httpd/httpd.conf || echo 'Include /etc/httpd/extra/iprps-php.conf' >> /etc/httpd/httpd.conf
+grep -n 'ProxyPassMatch\|iprps-php' /etc/httpd/httpd.conf
+httpd -t
+```
+
+`grep` must show only the `Include` line (no `ProxyPassMatch`), and `httpd -t` must say `Syntax OK`. The modules this uses (`mod_proxy`, `mod_proxy_fcgi`) are the ones BLFS's PHP setup already switched on.
+
 **MariaDB: already local-only and small.** BLFS's `/etc/my.cnf` uses `skip-networking` (no network port at all) and a 128 MB buffer pool, which suits 6 GB machines. Add two more memory savers:
 
 **[IPRPS CHROOT]**
@@ -27857,18 +27881,14 @@ chown -R ollama:ollama /var/lib/ollama
 ls -l /var/lib/ollama/models
 ```
 
-**7. Let AI replies stream. [IPRPS CHROOT]** Apache normally collects a PHP page's whole output before sending it. For the Oracle's answers (which appear word by word), add a rule **before** BLFS's general PHP rule that sends each piece at once and allows long answers:
+**7. Let AI replies stream. [IPRPS CHROOT]** Nothing to add: 10.1's PHP rule (`/etc/httpd/extra/iprps-php.conf`) already passes answers through as they're written. Check that it's in place:
 
 ```bash
-grep -q 'iprps/oracle/api' /etc/httpd/httpd.conf || awk '
-  /^ProxyPassMatch .*\.php/ && !done {
-    print "ProxyPassMatch ^/(iprps/oracle/api\\.php)$ fcgi://127.0.0.1:9000/srv/www/$1 flushpackets=on timeout=900"; done = 1 }
-  { print }' /etc/httpd/httpd.conf > /tmp/httpd.conf && cat /tmp/httpd.conf > /etc/httpd/httpd.conf
-grep -n '^ProxyPassMatch' /etc/httpd/httpd.conf
-httpd -t
+grep -n 'flushpackets' /etc/httpd/extra/iprps-php.conf
+grep -c '^ProxyPassMatch' /etc/httpd/httpd.conf
 ```
 
-`grep` must list the **oracle** line **first**, then BLFS's `.php` line; `httpd -t` must say `Syntax OK`.
+Expect the `ProxySet flushpackets=on timeout=900` line, and **0**. On an image built before that change, do 10.1's "only real `.php` files go to PHP" step now; it replaces the older Oracle-only `ProxyPassMatch` rule as well.
 
 **8. Install the IPRPS Oracle app. [DEBIAN ROOT]**
 
@@ -28409,7 +28429,7 @@ This is planned for IPRPS 1.1. The 1.0 images already run directly from a USB st
 | Wi-Fi missing on a real PC | Firmware not loaded | `dmesg \| grep -i firmware`; the file should be under `/usr/lib/firmware` |
 | The Oracle says "The local AI service (Ollama) is not running" | Service stopped or failed | `systemctl status ollama`; `journalctl -u ollama -b` |
 | The Oracle says no model is installed, or `iprps-storyteller` is missing | Step 6 skipped, or the models aren't owned by `ollama` | `sudo iprps-ai-model status`; `chown -R ollama:ollama /var/lib/ollama`; `sudo iprps-ai-model reset` |
-| Oracle answers appear all at once instead of word by word | Apache's streaming rule missing or after the general PHP rule | `grep -n '^ProxyPassMatch' /etc/httpd/httpd.conf` (Part 15, step 7); `ls -A /srv/www/iprps/oracle/.user.ini` |
+| Oracle answers appear all at once instead of word by word | 10.1's PHP rule (`flushpackets`) missing | `cat /etc/httpd/extra/iprps-php.conf` (10.1); `ls -A /srv/www/iprps/oracle/.user.ini` |
 | Oracle answers are very slow | No usable GPU, or too little free memory | `sudo iprps-ai-model status` (compute device); close other programs; 8 GB is the minimum |
 | First boot: "database could not be created", apps can't log in | MariaDB's first start was slower than `iprps-db-init` waited (slow USB stick) | Fixed in 13.1 (waits up to 3 minutes). On an affected computer: `sudo systemctl restart iprps-db-init`, or reboot (it runs again until it succeeds) |
 | Saving Wi-Fi (or another admin task) asks for a password and rejects it | polkit asks for **root's** password, and root is locked | 13.2 polkit rule (`/etc/polkit-1/rules.d/10-iprps.rules`); users then type their own password, and Wi-Fi needs none |
@@ -28420,6 +28440,7 @@ This is planned for IPRPS 1.1. The 1.0 images already run directly from a USB st
 | Advanced Network Configuration doesn't list Wi-Fi networks | NetworkManager's editor can't scan | 9.9: **Wi-Fi and Network Connections** opens the scanning window |
 | Wi-Fi menu greyed out; log shows "Failed to D-Bus activate wpa_supplicant service"; `wpa_supplicant -u` prints its help | wpa_supplicant built **without** D-Bus support, or its D-Bus files not installed | Rebuild wpa_supplicant with the three `CONFIG_CTRL_IFACE_DBUS…` lines and install the `dbus/` files (both **required** for IPRPS), then `systemctl restart NetworkManager` |
 | First boot: "iprps-core.sql: No such file or directory" (iprps-db-init) | The core schema wasn't saved (10.2), usually because `/usr/share/iprps/schema` didn't exist | Run 10.2 again (it creates the folder now), then `systemctl restart iprps-db-init` |
+| An app (the Hub, Writer, the Oracle) shows only **"File not found."** | Its start page is `index.html`, and Apache sent the request for `index.php` to PHP without checking it exists (BLFS's `ProxyPassMatch`) | 10.1 "only real `.php` files go to PHP", then `systemctl restart httpd` |
 | `http://localhost/iprps/` doesn't load | Apache or PHP-FPM stopped | `systemctl status httpd php-fpm`; `journalctl -u httpd -u php-fpm` |
 | PHP can't reach MariaDB | Socket path mismatch, or `php-fpm` stopped | `grep default_socket /etc/php.ini` must show `/run/mariadb/mariadb.sock`; `systemctl status php-fpm mariadb` |
 | First-boot setup screen doesn't appear | Setup already marked done | Remove `/var/lib/iprps/setup-done` on the image before release (13.4 does this) |

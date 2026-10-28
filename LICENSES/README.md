@@ -8,13 +8,13 @@ Reference copies of the licenses that apply to IPRPS OS and to the main componen
 | [GPL-3.0-only.txt](GPL-3.0-only.txt) | GNU tools such as Bash, Coreutils, GCC (with the GCC runtime exception), GIMP, Krita |
 | [LGPL-2.1-only.txt](LGPL-2.1-only.txt) | glibc, systemd libraries, GTK, GLib and many libraries |
 | [LGPL-3.0-only.txt](LGPL-3.0-only.txt) | some GNU and GNOME libraries |
-| [MIT.txt](MIT.txt) | LFS/BLFS book commands; X.Org, Mesa, many libraries |
+| [MIT.txt](MIT.txt) | LFS/BLFS book commands; X.Org, Mesa, Ollama (Medium and Advanced), many libraries |
 | [BSD-2-Clause.txt](BSD-2-Clause.txt) | various libraries |
-| [BSD-3-Clause.txt](BSD-3-Clause.txt) | OpenSSH parts, various libraries |
+| [BSD-3-Clause.txt](BSD-3-Clause.txt) | Chromium (ungoogled-chromium, Medium and Advanced), OpenSSH parts, various libraries |
 | [ISC.txt](ISC.txt) | sudo and others |
 | [Zlib.txt](Zlib.txt) | zlib |
 | [MPL-2.0.txt](MPL-2.0.txt) | Firefox, NSS, LibreOffice |
-| [Apache-2.0.txt](Apache-2.0.txt) | Apache HTTP Server, OpenSSL 3, Rust parts |
+| [Apache-2.0.txt](Apache-2.0.txt) | Apache HTTP Server, OpenSSL 3, Rust parts, the Qwen3.5 4B AI model (Medium and Advanced) |
 | [LLVM-exception.txt](LLVM-exception.txt) | LLVM/Clang (Apache-2.0 WITH LLVM-exception) |
 | [GCC-exception-3.1.txt](GCC-exception-3.1.txt) | GCC runtime libraries |
 | [PHP-3.01.txt](PHP-3.01.txt) | PHP |
