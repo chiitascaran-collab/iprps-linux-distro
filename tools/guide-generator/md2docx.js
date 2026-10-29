@@ -2,8 +2,9 @@ const fs = require('fs');
 const {
   Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell,
   WidthType, ShadingType, BorderStyle, LevelFormat, ExternalHyperlink, TableOfContents, Footer, Header,
-  PageNumber, PageBreak,
+  PageNumber, PageBreak, ImageRun,
 } = require('docx');
+const path = require('path');
 
 const src = fs.readFileSync(process.argv[2], 'utf8').split('\n');
 const OUT = process.argv[3];
@@ -172,6 +173,20 @@ while (i < src.length) {
   if (/^- \[ \] /.test(line)) { P({ numbering: { reference: 'checks', level: 0 }, spacing: { after: 60 }, children: inline(line.slice(6)) }); i++; continue; }
   if (/^- /.test(line)) { P({ numbering: { reference: 'bullets', level: 0 }, spacing: { after: 60 }, children: inline(line.slice(2)) }); i++; continue; }
   if (/^\d+\. /.test(line)) { if (/^1\. /.test(line)) numInst++; P({ numbering: { reference: 'numbers', level: 0, instance: numInst }, spacing: { after: 60 }, children: inline(line.replace(/^\d+\. /, '')) }); i++; continue; }
+  // ![caption](image.png "w=4.5")  ->  a centered picture (PNG or JPEG), width in inches, with an italic caption
+  const im = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"w=([\d.]+)")?\)\s*$/.exec(line);
+  if (im) {
+    const file = path.resolve(path.dirname(process.argv[2]), im[2]);
+    const data = fs.readFileSync(file);
+    let w, h;
+    if (data[0] === 0x89) { w = data.readUInt32BE(16); h = data.readUInt32BE(20); }
+    else { let o = 2; while (o < data.length) { const m = data[o + 1], len = data.readUInt16BE(o + 2); if (m >= 0xC0 && m <= 0xC3) { h = data.readUInt16BE(o + 5); w = data.readUInt16BE(o + 7); break; } o += 2 + len; } }
+    const inch = Math.min(parseFloat(im[3] || '6.5'), 6.75), pw = Math.round(inch * 96), ph = Math.round(pw * h / w);
+    P({ alignment: AlignmentType.CENTER, keepNext: !!im[1], spacing: { before: 120, after: im[1] ? 60 : 200, line: 240, lineRule: 'auto' },
+        children: [new ImageRun({ type: data[0] === 0x89 ? 'png' : 'jpg', data, transformation: { width: pw, height: ph }, altText: { title: im[1] || 'Image', description: im[1] || 'Image', name: path.basename(file) } })] });
+    if (im[1]) P({ alignment: AlignmentType.CENTER, spacing: { after: 220 }, children: [new TextRun({ text: im[1], italics: true, size: 18, color: '64748B' })] });
+    i++; continue;
+  }
   if (line.trim() === '') { i++; continue; }
   // paragraph (join following non-empty plain lines)
   const buf = [line]; i++;
@@ -182,8 +197,8 @@ while (i < src.length) {
 }
 
 const doc = new Document({
-  creator: 'LFS Companion Guide',
-  title: 'Building Your Own Linux Distribution with Linux From Scratch 13.1-systemd',
+  creator: process.env.DOC_CREATOR || 'Mythical Legends Publishing, LLC',
+  title: ((src.find(l => /^# /.test(l)) || '# Document').slice(2).trim()),
   features: { updateFields: true },
   styles: {
     default: { document: { run: { font: FONT, size: 21 }, paragraph: { spacing: { line: 288 } } } },

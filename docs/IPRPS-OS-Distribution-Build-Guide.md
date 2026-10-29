@@ -774,7 +774,7 @@ MD5 sum of `libtasn1-4.21.0.tar.gz`: `2ee1d9f3aa66f1e308c46a283aa9a8c2` (check w
 
 ```bash
 cd ~/src && tar -xf libtasn1-4.21.0.tar.gz
-cd "$(tar -tf libtasn1-4.21.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libtasn1-4.21.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -801,7 +801,7 @@ make -C doc/reference install-data-local
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libtasn1-4.21.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libtasn1-4.21.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -827,7 +827,7 @@ MD5 sum of `p11-kit-0.26.5.tar.xz`: `308306e889850bff08fae74ae7897a21` (check wi
 
 ```bash
 cd ~/src && tar -xf p11-kit-0.26.5.tar.xz
-cd "$(tar -tf p11-kit-0.26.5.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf p11-kit-0.26.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -878,7 +878,7 @@ ln -sfv ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf p11-kit-0.26.5.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf p11-kit-0.26.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -903,7 +903,7 @@ MD5 sum of `make-ca-1.16.1.tar.gz`: `bf9cea2d24fc5344d4951b49f275c595` (check wi
 
 ```bash
 cd ~/src && tar -xf make-ca-1.16.1.tar.gz
-cd "$(tar -tf make-ca-1.16.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf make-ca-1.16.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -993,7 +993,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf make-ca-1.16.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf make-ca-1.16.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -1016,7 +1016,7 @@ MD5 sum of `libunistring-1.4.2.tar.xz`: `e033195d90d0803063f3fecc77148124` (chec
 
 ```bash
 cd ~/src && tar -xf libunistring-1.4.2.tar.xz
-cd "$(tar -tf libunistring-1.4.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libunistring-1.4.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -1039,7 +1039,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libunistring-1.4.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libunistring-1.4.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -1064,7 +1064,7 @@ MD5 sum of `libidn2-2.3.8.tar.gz`: `a8e113e040d57a523684e141970eea7a` (check wit
 
 ```bash
 cd ~/src && tar -xf libidn2-2.3.8.tar.gz
-cd "$(tar -tf libidn2-2.3.8.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libidn2-2.3.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -1085,7 +1085,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libidn2-2.3.8.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libidn2-2.3.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -1110,7 +1110,7 @@ MD5 sum of `libpsl-0.23.3.tar.gz`: `596df43f3c2a8f1d4a677b032ccbc820` (check wit
 
 ```bash
 cd ~/src && tar -xf libpsl-0.23.3.tar.gz
-cd "$(tar -tf libpsl-0.23.3.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libpsl-0.23.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -1135,7 +1135,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libpsl-0.23.3.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libpsl-0.23.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -1161,7 +1161,7 @@ MD5 sum of `wget-1.25.0.tar.gz`: `c70ba58b36f944e8ba1d655ace552881` (check with 
 
 ```bash
 cd ~/src && tar -xf wget-1.25.0.tar.gz
-cd "$(tar -tf wget-1.25.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf wget-1.25.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -1195,7 +1195,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf wget-1.25.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf wget-1.25.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -1219,7 +1219,7 @@ MD5 sum of `Linux-PAM-1.7.2.tar.xz`: `934c26eca3fada956356a30489e86291` (check w
 
 ```bash
 cd ~/src && tar -xf Linux-PAM-1.7.2.tar.xz
-cd "$(tar -tf Linux-PAM-1.7.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf Linux-PAM-1.7.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -1360,7 +1360,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf Linux-PAM-1.7.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf Linux-PAM-1.7.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -1385,7 +1385,7 @@ MD5 sum of `shadow-4.20.2.tar.xz`: `f52e717bd330818c67bd57c897ec5a8e` (check wit
 
 ```bash
 cd ~/src && tar -xf shadow-4.20.2.tar.xz
-cd "$(tar -tf shadow-4.20.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf shadow-4.20.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -1611,7 +1611,7 @@ if [ -f /etc/limits ]; then mv -v /etc/limits{,.NOUSE}; fi
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf shadow-4.20.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf shadow-4.20.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -1637,7 +1637,7 @@ MD5 sum of `systemd-261.2.tar.gz`: `e3f04ccc83a28ec5e80c5432bb8329f5` (check wit
 
 ```bash
 cd ~/src && tar -xf systemd-261.2.tar.gz
-cd "$(tar -tf systemd-261.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf systemd-261.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -1787,7 +1787,7 @@ systemctl --user daemon-reload
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf systemd-261.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf systemd-261.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -1808,7 +1808,7 @@ MD5 sum of `sudo-1.9.17p2.tar.gz`: `dcbf46f739ae06b076e1a11cbb271a10` (check wit
 
 ```bash
 cd ~/src && tar -xf sudo-1.9.17p2.tar.gz
-cd "$(tar -tf sudo-1.9.17p2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf sudo-1.9.17p2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -1879,7 +1879,7 @@ chmod 644 /etc/pam.d/sudo
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf sudo-1.9.17p2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf sudo-1.9.17p2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -1900,7 +1900,7 @@ MD5 sum of `icu4c-78.3-sources.tgz`: `a7b736b570ef0e180c96a31715a00c78` (check w
 
 ```bash
 cd ~/src && tar -xf icu4c-78.3-sources.tgz
-cd "$(tar -tf icu4c-78.3-sources.tgz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf icu4c-78.3-sources.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -1933,7 +1933,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf icu4c-78.3-sources.tgz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf icu4c-78.3-sources.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -1957,7 +1957,7 @@ MD5 sum of `libxml2-2.15.3.tar.xz`: `b7b0123654f86ebf630a5cbedaafdece` (check wi
 
 ```bash
 cd ~/src && tar -xf libxml2-2.15.3.tar.xz
-cd "$(tar -tf libxml2-2.15.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libxml2-2.15.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2020,7 +2020,7 @@ sed "s/--static/--shared/" -i /usr/bin/xml2-config
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libxml2-2.15.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libxml2-2.15.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2043,7 +2043,7 @@ MD5 sum of `nghttp2-1.70.0.tar.xz`: `3df2b4b51caa13b76032bfd2d11d4ab2` (check wi
 
 ```bash
 cd ~/src && tar -xf nghttp2-1.70.0.tar.xz
-cd "$(tar -tf nghttp2-1.70.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf nghttp2-1.70.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2067,7 +2067,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf nghttp2-1.70.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf nghttp2-1.70.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2091,7 +2091,7 @@ MD5 sum of `curl-8.21.0.tar.xz`: `230131079987135cbe1eadb77a04af57` (check with 
 
 ```bash
 cd ~/src && tar -xf curl-8.21.0.tar.xz
-cd "$(tar -tf curl-8.21.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf curl-8.21.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2124,7 +2124,7 @@ cp -v -R docs -T /usr/share/doc/curl-8.21.0
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf curl-8.21.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf curl-8.21.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2145,7 +2145,7 @@ MD5 sum of `libarchive-3.8.9.tar.xz`: `535e3afec5f61d493f0b1b9e8bcf7539` (check 
 
 ```bash
 cd ~/src && tar -xf libarchive-3.8.9.tar.xz
-cd "$(tar -tf libarchive-3.8.9.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libarchive-3.8.9.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2174,7 +2174,7 @@ ln -sfv bsdunzip /usr/bin/unzip
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libarchive-3.8.9.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libarchive-3.8.9.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2195,7 +2195,7 @@ MD5 sum of `libuv-v1.52.1.tar.gz`: `db711bbe3822dd4fe51fad0cd78baa57` (check wit
 
 ```bash
 cd ~/src && tar -xf libuv-v1.52.1.tar.gz
-cd "$(tar -tf libuv-v1.52.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libuv-v1.52.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2231,7 +2231,7 @@ install -Dm644 docs/build/man/libuv.1 /usr/share/man/man1
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libuv-v1.52.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libuv-v1.52.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2254,7 +2254,7 @@ MD5 sum of `cmake-4.4.2.tar.gz`: `6911f0379d901db23619413f092b99ef` (check with 
 
 ```bash
 cd ~/src && tar -xf cmake-4.4.2.tar.gz
-cd "$(tar -tf cmake-4.4.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cmake-4.4.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2283,7 +2283,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cmake-4.4.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cmake-4.4.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2305,7 +2305,7 @@ MD5 sum of `libssh2-1.11.1.tar.gz`: `38857d10b5c5deb198d6989dacace2e6` (check wi
 
 ```bash
 cd ~/src && tar -xf libssh2-1.11.1.tar.gz
-cd "$(tar -tf libssh2-1.11.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libssh2-1.11.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2334,7 +2334,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libssh2-1.11.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libssh2-1.11.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2358,7 +2358,7 @@ MD5 sum of `llvm-project-22.1.8.src.tar.xz`: `69065494ebcb1150b2a329c1b3db7584` 
 
 ```bash
 cd ~/src && tar -xf llvm-project-22.1.8.src.tar.xz
-cd "$(tar -tf llvm-project-22.1.8.src.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf llvm-project-22.1.8.src.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2433,7 +2433,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf llvm-project-22.1.8.src.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf llvm-project-22.1.8.src.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2457,7 +2457,7 @@ MD5 sum of `rustc-1.97.1-src.tar.xz`: `c6fc3febcd3b1235cf4f00c3e05559b3` (check 
 
 ```bash
 cd ~/src && tar -xf rustc-1.97.1-src.tar.xz
-cd "$(tar -tf rustc-1.97.1-src.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf rustc-1.97.1-src.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2609,7 +2609,7 @@ source /etc/profile.d/rustc.sh
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf rustc-1.97.1-src.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf rustc-1.97.1-src.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2634,7 +2634,7 @@ MD5 sum of `git-2.55.0.tar.xz`: `758c02a1b621cc0868ee0a0d99573e6b` (check with `
 
 ```bash
 cd ~/src && tar -xf git-2.55.0.tar.xz
-cd "$(tar -tf git-2.55.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf git-2.55.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2719,7 +2719,7 @@ sed -i '/^\* link:/s|howto/|&html/|' /usr/share/doc/git-2.55.0/howto-index.adoc
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf git-2.55.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf git-2.55.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2740,7 +2740,7 @@ MD5 sum of `openssh-10.5p1.tar.gz`: `a95119f402dfa0166c9dd1237239085c` (check wi
 
 ```bash
 cd ~/src && tar -xf openssh-10.5p1.tar.gz
-cd "$(tar -tf openssh-10.5p1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf openssh-10.5p1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2825,7 +2825,7 @@ make install-sshd
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf openssh-10.5p1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf openssh-10.5p1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2846,7 +2846,7 @@ MD5 sum of `cpio-2.15.tar.bz2`: `3394d444ca1905ea56c94b628b706a0b` (check with `
 
 ```bash
 cd ~/src && tar -xf cpio-2.15.tar.bz2
-cd "$(tar -tf cpio-2.15.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cpio-2.15.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2900,7 +2900,7 @@ install -v -m644 doc/cpio.{pdf,ps,dvi} \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cpio-2.15.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cpio-2.15.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2921,7 +2921,7 @@ MD5 sum of `which-2.25.tar.gz`: `60140cb2637634e4f4e68c2e98c6a07b` (check with `
 
 ```bash
 cd ~/src && tar -xf which-2.25.tar.gz
-cd "$(tar -tf which-2.25.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf which-2.25.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -2955,7 +2955,7 @@ chown -v root:root /usr/bin/which
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf which-2.25.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf which-2.25.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -2976,7 +2976,7 @@ MD5 sum of `nano-9.2.tar.xz`: `9bb0f37945afa964d16bffd9e4da3106` (check with `md
 
 ```bash
 cd ~/src && tar -xf nano-9.2.tar.xz
-cd "$(tar -tf nano-9.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf nano-9.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3017,7 +3017,7 @@ set regexp
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf nano-9.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf nano-9.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3038,7 +3038,7 @@ MD5 sum of `zip30.tar.gz`: `7b74551e63f8ee6aab6fbc86676c0d37` (check with `md5su
 
 ```bash
 cd ~/src && tar -xf zip30.tar.gz
-cd "$(tar -tf zip30.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf zip30.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3058,7 +3058,7 @@ make prefix=/usr MANDIR=/usr/share/man/man1 -f unix/Makefile install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf zip30.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf zip30.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3079,7 +3079,7 @@ MD5 sum of `dosfstools-4.2.tar.gz`: `49c8e457327dc61efab5b115a27b087a` (check wi
 
 ```bash
 cd ~/src && tar -xf dosfstools-4.2.tar.gz
-cd "$(tar -tf dosfstools-4.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf dosfstools-4.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3103,7 +3103,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf dosfstools-4.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf dosfstools-4.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3124,7 +3124,7 @@ MD5 sum of `libaio-0.3.113.tar.gz`: `7d5be185f20eeaae15e267419950aaf7` (check wi
 
 ```bash
 cd ~/src && tar -xf libaio-0.3.113.tar.gz
-cd "$(tar -tf libaio-0.3.113.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libaio-0.3.113.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** **IPRPS download fix.** libaio's original download server is gone. The download command above uses Debian's copy of the same release; its MD5 matches the BLFS book exactly.
@@ -3160,7 +3160,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libaio-0.3.113.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libaio-0.3.113.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3183,7 +3183,7 @@ MD5 sum of `LVM2.2.03.42.tgz`: `1cfc17fcbdc5103492b4504c5ddaa274` (check with `m
 
 ```bash
 cd ~/src && tar -xf LVM2.2.03.42.tgz
-cd "$(tar -tf LVM2.2.03.42.tgz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf LVM2.2.03.42.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3251,7 +3251,7 @@ sed -e '/locking_dir =/{s/#//;s/var/run/}' \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf LVM2.2.03.42.tgz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf LVM2.2.03.42.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3274,7 +3274,7 @@ MD5 sum of `parted-3.7.tar.xz`: `b56ec0cf7bc89d61da1585f88fc8ef5e` (check with `
 
 ```bash
 cd ~/src && tar -xf parted-3.7.tar.xz
-cd "$(tar -tf parted-3.7.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf parted-3.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3328,7 +3328,7 @@ install -v -m644 doc/FAT doc/API doc/parted.{pdf,ps,dvi} \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf parted-3.7.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf parted-3.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3350,7 +3350,7 @@ MD5 sum of `efivar-39.tar.gz`: `a8fc3e79336cd6e738ab44f9bc96a5aa` (check with `m
 
 ```bash
 cd ~/src && tar -xf efivar-39.tar.gz
-cd "$(tar -tf efivar-39.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf efivar-39.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3385,7 +3385,7 @@ install -vm644 docs/*.3      /usr/share/man/man3
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf efivar-39.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf efivar-39.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3406,7 +3406,7 @@ MD5 sum of `popt-1.19.tar.gz`: `eaa2135fddb6eb03f2c87ee1823e5a78` (check with `m
 
 ```bash
 cd ~/src && tar -xf popt-1.19.tar.gz
-cd "$(tar -tf popt-1.19.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf popt-1.19.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3441,7 +3441,7 @@ install -v -m644 doxygen/html/* /usr/share/doc/popt-1.19
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf popt-1.19.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf popt-1.19.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3464,7 +3464,7 @@ MD5 sum of `efibootmgr-18.tar.gz`: `e170147da25e1d5f72721ffc46fe4e06` (check wit
 
 ```bash
 cd ~/src && tar -xf efibootmgr-18.tar.gz
-cd "$(tar -tf efibootmgr-18.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf efibootmgr-18.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3493,7 +3493,7 @@ mountpoint /sys/firmware/efi/efivars ||
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf efibootmgr-18.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf efibootmgr-18.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3516,7 +3516,7 @@ MD5 sum of `pciutils-3.15.0.tar.gz`: `20b8e936cce9784444961088c8801f68` (check w
 
 ```bash
 cd ~/src && tar -xf pciutils-3.15.0.tar.gz
-cd "$(tar -tf pciutils-3.15.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pciutils-3.15.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3550,7 +3550,7 @@ chmod -v 755 /usr/lib/libpci.so
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pciutils-3.15.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pciutils-3.15.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3571,7 +3571,7 @@ MD5 sum of `libusb-1.0.30.tar.bz2`: `b0b0bacc2c6919515db8e863f0517db8` (check wi
 
 ```bash
 cd ~/src && tar -xf libusb-1.0.30.tar.bz2
-cd "$(tar -tf libusb-1.0.30.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libusb-1.0.30.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3609,7 +3609,7 @@ install -v -m644    doc/api-1.0/* \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libusb-1.0.30.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libusb-1.0.30.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3633,7 +3633,7 @@ MD5 sum of `usbutils-019.tar.xz`: `67a8eb4782540058d0648f83ecabdf6c` (check with
 
 ```bash
 cd ~/src && tar -xf usbutils-019.tar.xz
-cd "$(tar -tf usbutils-019.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf usbutils-019.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3660,7 +3660,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf usbutils-019.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf usbutils-019.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3683,7 +3683,7 @@ MD5 sum of `rsync-3.5.0.tar.gz`: `418db7651d1acf55364b0834234dbbfb` (check with 
 
 ```bash
 cd ~/src && tar -xf rsync-3.5.0.tar.gz
-cd "$(tar -tf rsync-3.5.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf rsync-3.5.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3774,7 +3774,7 @@ systemctl start rsyncd.socket
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf rsync-3.5.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf rsync-3.5.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3795,7 +3795,7 @@ MD5 sum of `libtirpc-1.3.7.tar.bz2`: `74f97df306b8d6149d3d9898a1d44c6e` (check w
 
 ```bash
 cd ~/src && tar -xf libtirpc-1.3.7.tar.bz2
-cd "$(tar -tf libtirpc-1.3.7.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libtirpc-1.3.7.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3822,7 +3822,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libtirpc-1.3.7.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libtirpc-1.3.7.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3845,7 +3845,7 @@ MD5 sum of `lsof-4.99.7.tar.gz`: `46647a774bb8ba630eb738c3aa1b5275` (check with 
 
 ```bash
 cd ~/src && tar -xf lsof-4.99.7.tar.gz
-cd "$(tar -tf lsof-4.99.7.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf lsof-4.99.7.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3872,7 +3872,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf lsof-4.99.7.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf lsof-4.99.7.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3893,7 +3893,7 @@ MD5 sum of `duktape-2.7.0.tar.xz`: `b3200b02ab80125b694bae887d7c1ca6` (check wit
 
 ```bash
 cd ~/src && tar -xf duktape-2.7.0.tar.xz
-cd "$(tar -tf duktape-2.7.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf duktape-2.7.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3914,7 +3914,7 @@ make -f Makefile.sharedlibrary INSTALL_PREFIX=/usr install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf duktape-2.7.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf duktape-2.7.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3935,7 +3935,7 @@ MD5 sum of `docutils-0.23.tar.gz`: `39d10acfd1fc81b87f5de84418b88be9` (check wit
 
 ```bash
 cd ~/src && tar -xf docutils-0.23.tar.gz
-cd "$(tar -tf docutils-0.23.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf docutils-0.23.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -3963,7 +3963,7 @@ pip3 install --no-index --find-links dist --no-user docutils
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf docutils-0.23.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf docutils-0.23.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -3987,7 +3987,7 @@ MD5 sum of `libxslt-1.1.45.tar.xz`: `84bb3f6ba7f5ee98af5dcd72e828c73e` (check wi
 
 ```bash
 cd ~/src && tar -xf libxslt-1.1.45.tar.xz
-cd "$(tar -tf libxslt-1.1.45.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libxslt-1.1.45.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -4011,7 +4011,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libxslt-1.1.45.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libxslt-1.1.45.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -4037,7 +4037,7 @@ MD5 sum of `glib-2.88.3.tar.xz`: `b61c04cfbf55b0d24fbe64e4ac9e9d56` (check with 
 
 ```bash
 cd ~/src && tar -xf glib-2.88.3.tar.xz
-cd "$(tar -tf glib-2.88.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf glib-2.88.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -4126,7 +4126,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf glib-2.88.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf glib-2.88.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -4151,7 +4151,7 @@ MD5 sum of `polkit-127.tar.gz`: `2cc95f1b02fc1de6c9e52db986642ec4` (check with `
 
 ```bash
 cd ~/src && tar -xf polkit-127.tar.gz
-cd "$(tar -tf polkit-127.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf polkit-127.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** **IPRPS change.** Manual pages and tests are switched off: the man pages need extra documentation tools, and the tests can't run in the chroot.
@@ -4195,7 +4195,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf polkit-127.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf polkit-127.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -4218,7 +4218,7 @@ MD5 sum of `docbook-xml-4.5.zip`: `03083e288e87a7e829e437358da7ef9e` (check with
 
 ```bash
 cd ~/src && tar -xf docbook-xml-4.5.zip
-cd "$(tar -tf docbook-xml-4.5.zip | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf docbook-xml-4.5.zip | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -4306,7 +4306,7 @@ done
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf docbook-xml-4.5.zip | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf docbook-xml-4.5.zip | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -4328,7 +4328,7 @@ MD5 sum of `cracklib-2.10.3.tar.xz`: `e8ea2b86de774fc09fdd0f2829680b19` (check w
 
 ```bash
 cd ~/src && tar -xf cracklib-2.10.3.tar.xz
-cd "$(tar -tf cracklib-2.10.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cracklib-2.10.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** **IPRPS change.** BLFS adds `$(hostname)` to the extra-words list. Inside the WSL chroot that would be your Windows PC's name, so this guide adds `iprps`, the system's hostname.
@@ -4378,7 +4378,7 @@ python3 -c 'import cracklib; cracklib.test()'
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cracklib-2.10.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cracklib-2.10.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -4403,7 +4403,7 @@ MD5 sum of `docbook-xsl-nons-1.79.2.tar.bz2`: `2666d1488d6ced1551d15f31d7ed8c38`
 
 ```bash
 cd ~/src && tar -xf docbook-xsl-nons-1.79.2.tar.bz2
-cd "$(tar -tf docbook-xsl-nons-1.79.2.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf docbook-xsl-nons-1.79.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -4484,7 +4484,7 @@ xmlcatalog --noout --add "rewriteURI"                             \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf docbook-xsl-nons-1.79.2.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf docbook-xsl-nons-1.79.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -4505,7 +4505,7 @@ MD5 sum of `hwdata-0.410.tar.gz`: `07f1de937ff5b830280f6157221164eb` (check with
 
 ```bash
 cd ~/src && tar -xf hwdata-0.410.tar.gz
-cd "$(tar -tf hwdata-0.410.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf hwdata-0.410.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -4525,7 +4525,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf hwdata-0.410.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf hwdata-0.410.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -4549,7 +4549,7 @@ MD5 sum of `libpwquality-1.4.5.tar.bz2`: `6b70e355269aef0b9ddb2b9d17936f21` (che
 
 ```bash
 cd ~/src && tar -xf libpwquality-1.4.5.tar.bz2
-cd "$(tar -tf libpwquality-1.4.5.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libpwquality-1.4.5.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -4603,7 +4603,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libpwquality-1.4.5.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libpwquality-1.4.5.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -4626,7 +4626,7 @@ MD5 sum of `shared-mime-info-2.5.1.tar.gz`: `5f8baa7bac254ea9e65782f754a2880b` (
 
 ```bash
 cd ~/src && tar -xf shared-mime-info-2.5.1.tar.gz
-cd "$(tar -tf shared-mime-info-2.5.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf shared-mime-info-2.5.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -4662,7 +4662,7 @@ ninja test
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf shared-mime-info-2.5.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf shared-mime-info-2.5.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5515,7 +5515,7 @@ MD5 sum of `mako-1.4.1.tar.gz`: `9c09a897c23a34df7ba614ec2d7229e1` (check with `
 
 ```bash
 cd ~/src && tar -xf mako-1.4.1.tar.gz
-cd "$(tar -tf mako-1.4.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf mako-1.4.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -5535,7 +5535,7 @@ pip3 install --no-index --find-links dist --no-user Mako
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf mako-1.4.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf mako-1.4.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5556,7 +5556,7 @@ MD5 sum of `cython-3.2.9.tar.gz`: `775ad752cdb021193f3ef323228388d5` (check with
 
 ```bash
 cd ~/src && tar -xf cython-3.2.9.tar.gz
-cd "$(tar -tf cython-3.2.9.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cython-3.2.9.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -5576,7 +5576,7 @@ pip3 install --no-index --find-links dist --no-user Cython
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cython-3.2.9.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cython-3.2.9.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5597,7 +5597,7 @@ MD5 sum of `yaml-0.2.5.tar.gz`: `bb15429d8fb787e7d3f1c83ae129a999` (check with `
 
 ```bash
 cd ~/src && tar -xf yaml-0.2.5.tar.gz
-cd "$(tar -tf yaml-0.2.5.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf yaml-0.2.5.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -5618,7 +5618,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf yaml-0.2.5.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf yaml-0.2.5.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5641,7 +5641,7 @@ MD5 sum of `pyyaml-6.0.3.tar.gz`: `dbc6f815cd75160ccf12e470be1c8d6e` (check with
 
 ```bash
 cd ~/src && tar -xf pyyaml-6.0.3.tar.gz
-cd "$(tar -tf pyyaml-6.0.3.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pyyaml-6.0.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -5661,7 +5661,7 @@ pip3 install --no-index --find-links dist --no-user PyYAML
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pyyaml-6.0.3.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pyyaml-6.0.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5684,7 +5684,7 @@ MD5 sum of `cbindgen-0.29.4.tar.gz`: `7e790e024bc678ad1b4431b0350679e9` (check w
 
 ```bash
 cd ~/src && tar -xf cbindgen-0.29.4.tar.gz
-cd "$(tar -tf cbindgen-0.29.4.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cbindgen-0.29.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -5704,7 +5704,7 @@ install -Dm755 target/release/cbindgen /usr/bin/
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cbindgen-0.29.4.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cbindgen-0.29.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5727,7 +5727,7 @@ MD5 sum of `SPIRV-Headers-vulkan-sdk-1.4.357.0.tar.gz`: `085dd07d487c165c0ca7713
 
 ```bash
 cd ~/src && tar -xf SPIRV-Headers-vulkan-sdk-1.4.357.0.tar.gz
-cd "$(tar -tf SPIRV-Headers-vulkan-sdk-1.4.357.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf SPIRV-Headers-vulkan-sdk-1.4.357.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -5751,7 +5751,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf SPIRV-Headers-vulkan-sdk-1.4.357.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf SPIRV-Headers-vulkan-sdk-1.4.357.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5774,7 +5774,7 @@ MD5 sum of `SPIRV-Tools-vulkan-sdk-1.4.357.0.tar.gz`: `c357eec1e33bc95e650aa4c8e
 
 ```bash
 cd ~/src && tar -xf SPIRV-Tools-vulkan-sdk-1.4.357.0.tar.gz
-cd "$(tar -tf SPIRV-Tools-vulkan-sdk-1.4.357.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf SPIRV-Tools-vulkan-sdk-1.4.357.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -5804,7 +5804,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf SPIRV-Tools-vulkan-sdk-1.4.357.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf SPIRV-Tools-vulkan-sdk-1.4.357.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5827,7 +5827,7 @@ MD5 sum of `glslang-16.5.0.tar.gz`: `79e949d6d50cc167e7d5307afb04c41a` (check wi
 
 ```bash
 cd ~/src && tar -xf glslang-16.5.0.tar.gz
-cd "$(tar -tf glslang-16.5.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf glslang-16.5.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -5856,7 +5856,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf glslang-16.5.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf glslang-16.5.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5878,7 +5878,7 @@ MD5 sum of `libpng-1.6.58.tar.xz`: `c6c372a9d7754c66e0b77a8d34987a3b` (check wit
 
 ```bash
 cd ~/src && tar -xf libpng-1.6.58.tar.xz
-cd "$(tar -tf libpng-1.6.58.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libpng-1.6.58.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -5906,7 +5906,7 @@ install -vDm644 README libpng-manual.txt -t /usr/share/doc/libpng-1.6.58
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libpng-1.6.58.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libpng-1.6.58.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5931,7 +5931,7 @@ MD5 sum of `freetype-2.14.3.tar.xz`: `5e78e6fdce5a61d3075e4c25e9852f84` (check w
 
 ```bash
 cd ~/src && tar -xf freetype-2.14.3.tar.xz
-cd "$(tar -tf freetype-2.14.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf freetype-2.14.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -5973,7 +5973,7 @@ rm -v /usr/share/doc/freetype-2.14.3/freetype-config.1
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf freetype-2.14.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf freetype-2.14.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -5996,7 +5996,7 @@ MD5 sum of `fontconfig-2.18.3.tar.xz`: `ce819e229ca6fb7d1be47a192d6681a3` (check
 
 ```bash
 cd ~/src && tar -xf fontconfig-2.18.3.tar.xz
-cd "$(tar -tf fontconfig-2.18.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf fontconfig-2.18.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6033,7 +6033,7 @@ install -v -m644 doc/*.{pdf,sgml,txt,html} \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf fontconfig-2.18.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf fontconfig-2.18.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6054,7 +6054,7 @@ MD5 sum of `util-macros-1.20.2.tar.xz`: `5f683a1966834b0a6ae07b3680bcb863` (chec
 
 ```bash
 cd ~/src && tar -xf util-macros-1.20.2.tar.xz
-cd "$(tar -tf util-macros-1.20.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf util-macros-1.20.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6074,7 +6074,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf util-macros-1.20.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf util-macros-1.20.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6097,7 +6097,7 @@ MD5 sum of `xorgproto-2025.1.tar.xz`: `15534fa6fb13a6a70afe7561c1424f3c` (check 
 
 ```bash
 cd ~/src && tar -xf xorgproto-2025.1.tar.xz
-cd "$(tar -tf xorgproto-2025.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xorgproto-2025.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6122,7 +6122,7 @@ mv -v $XORG_PREFIX/share/doc/xorgproto{,-2025.1}
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xorgproto-2025.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xorgproto-2025.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6145,7 +6145,7 @@ MD5 sum of `libXau-1.0.12.tar.xz`: `4c9f81acf00b62e5de56a912691bd737` (check wit
 
 ```bash
 cd ~/src && tar -xf libXau-1.0.12.tar.xz
-cd "$(tar -tf libXau-1.0.12.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libXau-1.0.12.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6166,7 +6166,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libXau-1.0.12.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libXau-1.0.12.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6189,7 +6189,7 @@ MD5 sum of `libXdmcp-1.1.5.tar.xz`: `ce0af51de211e4c99a111e64ae1df290` (check wi
 
 ```bash
 cd ~/src && tar -xf libXdmcp-1.1.5.tar.xz
-cd "$(tar -tf libXdmcp-1.1.5.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libXdmcp-1.1.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6210,7 +6210,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libXdmcp-1.1.5.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libXdmcp-1.1.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6231,7 +6231,7 @@ MD5 sum of `xcb-proto-1.17.0.tar.xz`: `c415553d2ee1a8cea43c3234a079b53f` (check 
 
 ```bash
 cd ~/src && tar -xf xcb-proto-1.17.0.tar.xz
-cd "$(tar -tf xcb-proto-1.17.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xcb-proto-1.17.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6257,7 +6257,7 @@ rm -f $XORG_PREFIX/lib/pkgconfig/xcb-proto.pc
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xcb-proto-1.17.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xcb-proto-1.17.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6281,7 +6281,7 @@ MD5 sum of `libxcb-1.17.0.tar.xz`: `96565523e9f9b701fcb35d31f1d4086e` (check wit
 
 ```bash
 cd ~/src && tar -xf libxcb-1.17.0.tar.xz
-cd "$(tar -tf libxcb-1.17.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libxcb-1.17.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6310,7 +6310,7 @@ chown -Rv root:root $XORG_PREFIX/share/doc/libxcb-1.17.0
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libxcb-1.17.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libxcb-1.17.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6495,7 +6495,7 @@ MD5 sum of `libdrm-2.4.134.tar.xz`: `0e70607bb5c2f7ecbc411e6a2fab8b22` (check wi
 
 ```bash
 cd ~/src && tar -xf libdrm-2.4.134.tar.xz
-cd "$(tar -tf libdrm-2.4.134.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libdrm-2.4.134.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6523,7 +6523,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libdrm-2.4.134.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libdrm-2.4.134.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6547,7 +6547,7 @@ MD5 sum of `rust-bindgen-0.72.1.tar.gz`: `49be3303557d072ce4c6987b2989be3c` (che
 
 ```bash
 cd ~/src && tar -xf rust-bindgen-0.72.1.tar.gz
-cd "$(tar -tf rust-bindgen-0.72.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf rust-bindgen-0.72.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6576,7 +6576,7 @@ bindgen --generate-shell-completions zsh  \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf rust-bindgen-0.72.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf rust-bindgen-0.72.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6599,7 +6599,7 @@ MD5 sum of `SPIRV-LLVM-Translator-22.1.5.tar.gz`: `8bdf03a2f7d90da52e358ac78b3e9
 
 ```bash
 cd ~/src && tar -xf SPIRV-LLVM-Translator-22.1.5.tar.gz
-cd "$(tar -tf SPIRV-LLVM-Translator-22.1.5.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf SPIRV-LLVM-Translator-22.1.5.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6628,7 +6628,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf SPIRV-LLVM-Translator-22.1.5.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf SPIRV-LLVM-Translator-22.1.5.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6651,7 +6651,7 @@ MD5 sum of `Vulkan-Headers-vulkan-sdk-1.4.357.0.tar.gz`: `64a23bb12e95a2017004d7
 
 ```bash
 cd ~/src && tar -xf Vulkan-Headers-vulkan-sdk-1.4.357.0.tar.gz
-cd "$(tar -tf Vulkan-Headers-vulkan-sdk-1.4.357.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf Vulkan-Headers-vulkan-sdk-1.4.357.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6675,7 +6675,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf Vulkan-Headers-vulkan-sdk-1.4.357.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf Vulkan-Headers-vulkan-sdk-1.4.357.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6698,7 +6698,7 @@ MD5 sum of `wayland-1.26.0.tar.xz`: `64c593ccf6820635765a952ec5f34fbb` (check wi
 
 ```bash
 cd ~/src && tar -xf wayland-1.26.0.tar.xz
-cd "$(tar -tf wayland-1.26.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf wayland-1.26.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6725,7 +6725,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf wayland-1.26.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf wayland-1.26.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6749,7 +6749,7 @@ MD5 sum of `Vulkan-Loader-vulkan-sdk-1.4.357.0.tar.gz`: `ce35f16bee47e9faf0a50d6
 
 ```bash
 cd ~/src && tar -xf Vulkan-Loader-vulkan-sdk-1.4.357.0.tar.gz
-cd "$(tar -tf Vulkan-Loader-vulkan-sdk-1.4.357.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf Vulkan-Loader-vulkan-sdk-1.4.357.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6788,7 +6788,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf Vulkan-Loader-vulkan-sdk-1.4.357.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf Vulkan-Loader-vulkan-sdk-1.4.357.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6811,7 +6811,7 @@ MD5 sum of `wayland-protocols-1.49.tar.xz`: `5685f769a227f2d4143d983ad07edaba` (
 
 ```bash
 cd ~/src && tar -xf wayland-protocols-1.49.tar.xz
-cd "$(tar -tf wayland-protocols-1.49.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf wayland-protocols-1.49.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6835,7 +6835,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf wayland-protocols-1.49.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf wayland-protocols-1.49.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6862,7 +6862,7 @@ Additional reference: https://archive.mesa3d.org/demos/
 
 ```bash
 cd ~/src && tar -xf mesa-26.1.7.tar.xz
-cd "$(tar -tf mesa-26.1.7.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf mesa-26.1.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS release override.** BLFS warns that `-D video-codecs=all` enables patent-encumbered video codecs, which matters when distributing. The command below already has that option removed; Mesa then uses its default, royalty-free codec set.
@@ -6917,7 +6917,7 @@ cp -rv ../docs -T /usr/share/doc/mesa-26.1.7
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf mesa-26.1.7.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf mesa-26.1.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6940,7 +6940,7 @@ MD5 sum of `libepoxy-1.5.10.tar.xz`: `10c635557904aed5239a4885a7c4efb7` (check w
 
 ```bash
 cd ~/src && tar -xf libepoxy-1.5.10.tar.xz
-cd "$(tar -tf libepoxy-1.5.10.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libepoxy-1.5.10.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -6964,7 +6964,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libepoxy-1.5.10.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libepoxy-1.5.10.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -6985,7 +6985,7 @@ MD5 sum of `libxcvt-0.1.3.tar.xz`: `7fb9c51d33a680f724f34da41768b1d0` (check wit
 
 ```bash
 cd ~/src && tar -xf libxcvt-0.1.3.tar.xz
-cd "$(tar -tf libxcvt-0.1.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libxcvt-0.1.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -7009,7 +7009,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libxcvt-0.1.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libxcvt-0.1.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7030,7 +7030,7 @@ MD5 sum of `pixman-0.46.4.tar.gz`: `c08173c8e1d2cc79428d931c13ffda59` (check wit
 
 ```bash
 cd ~/src && tar -xf pixman-0.46.4.tar.gz
-cd "$(tar -tf pixman-0.46.4.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pixman-0.46.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -7054,7 +7054,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pixman-0.46.4.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pixman-0.46.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7077,7 +7077,7 @@ MD5 sum of `xbitmaps-1.1.4.tar.xz`: `793992635c45250028eaec226af416fc` (check wi
 
 ```bash
 cd ~/src && tar -xf xbitmaps-1.1.4.tar.xz
-cd "$(tar -tf xbitmaps-1.1.4.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xbitmaps-1.1.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -7097,7 +7097,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xbitmaps-1.1.4.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xbitmaps-1.1.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7120,7 +7120,7 @@ MD5 sum of `xcb-util-0.4.1.tar.xz`: `34d749eab0fd0ffd519ac64798d79847` (check wi
 
 ```bash
 cd ~/src && tar -xf xcb-util-0.4.1.tar.xz
-cd "$(tar -tf xcb-util-0.4.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xcb-util-0.4.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -7141,7 +7141,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xcb-util-0.4.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xcb-util-0.4.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7281,7 +7281,7 @@ MD5 sum of `xcursor-themes-1.0.7.tar.xz`: `070993be1f010b09447ea24bab2c9846` (ch
 
 ```bash
 cd ~/src && tar -xf xcursor-themes-1.0.7.tar.xz
-cd "$(tar -tf xcursor-themes-1.0.7.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xcursor-themes-1.0.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -7304,7 +7304,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xcursor-themes-1.0.7.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xcursor-themes-1.0.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7425,7 +7425,7 @@ MD5 sum of `xorg-server-21.1.24.tar.xz`: `19c2d104a6c9ba85b4896ef75b2d1084` (che
 
 ```bash
 cd ~/src && tar -xf xorg-server-21.1.24.tar.xz
-cd "$(tar -tf xorg-server-21.1.24.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xorg-server-21.1.24.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -7460,7 +7460,7 @@ mkdir -pv /etc/X11/xorg.conf.d
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xorg-server-21.1.24.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xorg-server-21.1.24.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7483,7 +7483,7 @@ MD5 sum of `xkeyboard-config-2.48.tar.xz`: `575106aff79b589abe4aff6c4bff4782` (c
 
 ```bash
 cd ~/src && tar -xf xkeyboard-config-2.48.tar.xz
-cd "$(tar -tf xkeyboard-config-2.48.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xkeyboard-config-2.48.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -7519,7 +7519,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xkeyboard-config-2.48.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xkeyboard-config-2.48.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7540,7 +7540,7 @@ MD5 sum of `mtdev-1.1.7.tar.bz2`: `483ed7fdf7c1e7b7375c05a62848cce7` (check with
 
 ```bash
 cd ~/src && tar -xf mtdev-1.1.7.tar.bz2
-cd "$(tar -tf mtdev-1.1.7.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf mtdev-1.1.7.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -7561,7 +7561,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf mtdev-1.1.7.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf mtdev-1.1.7.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7582,7 +7582,7 @@ cd ~/src
 wget https://www.freedesktop.org/software/libevdev/libevdev-1.13.6.tar.xz
 md5sum libevdev-1.13.6.tar.xz          # must print 4202ff132e3efe95fe9ca2c4f8f119f7
 tar -xf libevdev-1.13.6.tar.xz
-cd "$(tar -tf libevdev-1.13.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libevdev-1.13.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 *Kernel settings — for reference only, not commands. The generic kernel (Part 4) already includes them.* Enable the following options in the kernel configuration and recompile the kernel if necessary:
@@ -7627,7 +7627,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libevdev-1.13.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libevdev-1.13.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 #### Xorg Evdev Driver-2.11.0
@@ -7641,7 +7641,7 @@ cd ~/src
 wget https://www.x.org/pub/individual/driver/xf86-input-evdev-2.11.0.tar.xz
 md5sum xf86-input-evdev-2.11.0.tar.xz          # must print faa89be0ef86aebd6fd0a03eed23839c
 tar -xf xf86-input-evdev-2.11.0.tar.xz
-cd "$(tar -tf xf86-input-evdev-2.11.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xf86-input-evdev-2.11.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **[BUILDER]** — Install Xorg Evdev Driver by running the following commands:
@@ -7660,7 +7660,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xf86-input-evdev-2.11.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xf86-input-evdev-2.11.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 #### libinput-1.31.3
@@ -7674,7 +7674,7 @@ cd ~/src
 wget https://gitlab.freedesktop.org/libinput/libinput/-/archive/1.31.3/libinput-1.31.3.tar.gz
 md5sum libinput-1.31.3.tar.gz          # must print 022aa3838b0cf8b932c0e4a4dbeac150
 tar -xf libinput-1.31.3.tar.gz
-cd "$(tar -tf libinput-1.31.3.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libinput-1.31.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 *Kernel settings — for reference only, not commands. The generic kernel (Part 4) already includes them.* If you wish to run the standard test suite, enable the following option in the kernel configuration and recompile the kernel if necessary:
@@ -7719,7 +7719,7 @@ cp -rv Documentation/* /usr/share/doc/libinput-1.31.3/html
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libinput-1.31.3.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libinput-1.31.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 #### Xorg Libinput Driver-1.5.0
@@ -7733,7 +7733,7 @@ cd ~/src
 wget https://www.x.org/pub/individual/driver/xf86-input-libinput-1.5.0.tar.xz
 md5sum xf86-input-libinput-1.5.0.tar.xz          # must print f8d0fb6987d843e688d597c2b66ec824
 tar -xf xf86-input-libinput-1.5.0.tar.xz
-cd "$(tar -tf xf86-input-libinput-1.5.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xf86-input-libinput-1.5.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **[BUILDER]** — Install Xorg Libinput Driver by running the following commands:
@@ -7752,7 +7752,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xf86-input-libinput-1.5.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xf86-input-libinput-1.5.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 #### Xorg Synaptics Driver-1.10.0
@@ -7766,7 +7766,7 @@ cd ~/src
 wget https://www.x.org/pub/individual/driver/xf86-input-synaptics-1.10.0.tar.xz
 md5sum xf86-input-synaptics-1.10.0.tar.xz          # must print 017383c13a0d0f4cb320be477ab25513
 tar -xf xf86-input-synaptics-1.10.0.tar.xz
-cd "$(tar -tf xf86-input-synaptics-1.10.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xf86-input-synaptics-1.10.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **[BUILDER]** — Install Xorg Synaptics Driver by running the following commands:
@@ -7785,7 +7785,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xf86-input-synaptics-1.10.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xf86-input-synaptics-1.10.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 #### Xorg Wacom Driver-1.2.4
@@ -7799,7 +7799,7 @@ cd ~/src
 wget https://github.com/linuxwacom/xf86-input-wacom/releases/download/xf86-input-wacom-1.2.4/xf86-input-wacom-1.2.4.tar.bz2
 md5sum xf86-input-wacom-1.2.4.tar.bz2          # must print e22300fe7cf162fa2b1a6e64ef7341f3
 tar -xf xf86-input-wacom-1.2.4.tar.bz2
-cd "$(tar -tf xf86-input-wacom-1.2.4.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xf86-input-wacom-1.2.4.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 *Kernel settings — for reference only, not commands. The generic kernel (Part 4) already includes them.* To use a Wacom tablet with USB interface, enable the following options in your kernel configuration and recompile. Note that other configuration options could be required for tablet with a serial or bluetooth interface:
@@ -7832,7 +7832,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xf86-input-wacom-1.2.4.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xf86-input-wacom-1.2.4.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7856,7 +7856,7 @@ MD5 sum of `xinit-1.4.4.tar.xz`: `e7430a710261c9129b1280f26cb159a5` (check with 
 
 ```bash
 cd ~/src && tar -xf xinit-1.4.4.tar.xz
-cd "$(tar -tf xinit-1.4.4.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xinit-1.4.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -7878,7 +7878,7 @@ ldconfig
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xinit-1.4.4.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xinit-1.4.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7901,7 +7901,7 @@ MD5 sum of `graphite2-1.3.14.tgz`: `1bccb985a7da01092bfb53bb5041e836` (check wit
 
 ```bash
 cd ~/src && tar -xf graphite2-1.3.14.tgz
-cd "$(tar -tf graphite2-1.3.14.tgz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf graphite2-1.3.14.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -7962,7 +7962,7 @@ cp      -v -f    doc/{GTF,manual}.pdf \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf graphite2-1.3.14.tgz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf graphite2-1.3.14.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -7985,7 +7985,7 @@ MD5 sum of `harfbuzz-14.3.1.tar.xz`: `4baccda978c92e5f27702ed8b3ceefa7` (check w
 
 ```bash
 cd ~/src && tar -xf harfbuzz-14.3.1.tar.xz
-cd "$(tar -tf harfbuzz-14.3.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf harfbuzz-14.3.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8012,7 +8012,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf harfbuzz-14.3.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf harfbuzz-14.3.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8036,7 +8036,7 @@ MD5 sum of `libva-2.24.1.tar.gz`: `6de86c7c9d47963108c52a51af9ac191` (check with
 
 ```bash
 cd ~/src && tar -xf libva-2.24.1.tar.gz
-cd "$(tar -tf libva-2.24.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libva-2.24.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8059,7 +8059,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libva-2.24.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libva-2.24.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8082,7 +8082,7 @@ MD5 sum of `luit-20250912.tgz`: `d03e636d2f919bb21e77aec16a53247d` (check with `
 
 ```bash
 cd ~/src && tar -xf luit-20250912.tgz
-cd "$(tar -tf luit-20250912.tgz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf luit-20250912.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8103,7 +8103,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf luit-20250912.tgz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf luit-20250912.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8126,7 +8126,7 @@ MD5 sum of `twm-1.0.13.1.tar.xz`: `2a337b776c904eab5b874eddc0124d4f` (check with
 
 ```bash
 cd ~/src && tar -xf twm-1.0.13.1.tar.xz
-cd "$(tar -tf twm-1.0.13.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf twm-1.0.13.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8148,7 +8148,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf twm-1.0.13.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf twm-1.0.13.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8171,7 +8171,7 @@ MD5 sum of `xclock-1.2.1.tar.xz`: `73ae5b4b4b839e13891f9c7d6970b150` (check with
 
 ```bash
 cd ~/src && tar -xf xclock-1.2.1.tar.xz
-cd "$(tar -tf xclock-1.2.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xclock-1.2.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8192,7 +8192,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xclock-1.2.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xclock-1.2.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8215,7 +8215,7 @@ MD5 sum of `xterm-411.tgz`: `08193f9b11db32c37aad00be4e386933` (check with `md5s
 
 ```bash
 cd ~/src && tar -xf xterm-411.tgz
-cd "$(tar -tf xterm-411.tgz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xterm-411.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8259,7 +8259,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xterm-411.tgz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xterm-411.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8307,7 +8307,7 @@ MD5 sum of `alsa-lib-1.2.16.1.tar.bz2`: `c14c9f94f78f76924c13668954997a33` (chec
 
 ```bash
 cd ~/src && tar -xf alsa-lib-1.2.16.1.tar.bz2
-cd "$(tar -tf alsa-lib-1.2.16.1.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf alsa-lib-1.2.16.1.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8345,7 +8345,7 @@ install -v -m644 doc/doxygen/html/search/* \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf alsa-lib-1.2.16.1.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf alsa-lib-1.2.16.1.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8368,7 +8368,7 @@ MD5 sum of `alsa-utils-1.2.16.tar.bz2`: `570a1627d47b70ad683ef9f2429ddfca` (chec
 
 ```bash
 cd ~/src && tar -xf alsa-utils-1.2.16.tar.bz2
-cd "$(tar -tf alsa-utils-1.2.16.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf alsa-utils-1.2.16.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8419,7 +8419,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf alsa-utils-1.2.16.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf alsa-utils-1.2.16.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8443,7 +8443,7 @@ MD5 sum of `alsa-plugins-1.2.12.tar.bz2`: `71fce75baa38efab4e32e40db0a33716` (ch
 
 ```bash
 cd ~/src && tar -xf alsa-plugins-1.2.12.tar.bz2
-cd "$(tar -tf alsa-plugins-1.2.12.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf alsa-plugins-1.2.12.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8470,7 +8470,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf alsa-plugins-1.2.12.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf alsa-plugins-1.2.12.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8494,7 +8494,7 @@ MD5 sum of `cairo-1.18.4.tar.xz`: `db575fb41bbda127e0147e401f36f8ac` (check with
 
 ```bash
 cd ~/src && tar -xf cairo-1.18.4.tar.xz
-cd "$(tar -tf cairo-1.18.4.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cairo-1.18.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8518,7 +8518,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cairo-1.18.4.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cairo-1.18.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8539,7 +8539,7 @@ MD5 sum of `fribidi-1.0.16.tar.xz`: `333ad150991097a627755b752b87f9ff` (check wi
 
 ```bash
 cd ~/src && tar -xf fribidi-1.0.16.tar.xz
-cd "$(tar -tf fribidi-1.0.16.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf fribidi-1.0.16.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8563,7 +8563,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf fribidi-1.0.16.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf fribidi-1.0.16.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8587,7 +8587,7 @@ MD5 sum of `pango-1.58.2.tar.xz`: `7b5640fd9adfa24554a88b2b9a6cd3f3` (check with
 
 ```bash
 cd ~/src && tar -xf pango-1.58.2.tar.xz
-cd "$(tar -tf pango-1.58.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pango-1.58.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8630,7 +8630,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pango-1.58.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pango-1.58.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8654,7 +8654,7 @@ MD5 sum of `graphviz-15.1.1.tar.bz2`: `ec7f236467bcaeb57b69601d4913c5b7` (check 
 
 ```bash
 cd ~/src && tar -xf graphviz-15.1.1.tar.bz2
-cd "$(tar -tf graphviz-15.1.1.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf graphviz-15.1.1.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8689,7 +8689,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf graphviz-15.1.1.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf graphviz-15.1.1.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8713,7 +8713,7 @@ MD5 sum of `vala-0.56.19.tar.xz`: `a2dc825de503fad703584cfb0ed50302` (check with
 
 ```bash
 cd ~/src && tar -xf vala-0.56.19.tar.xz
-cd "$(tar -tf vala-0.56.19.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf vala-0.56.19.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8734,7 +8734,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf vala-0.56.19.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf vala-0.56.19.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8758,7 +8758,7 @@ MD5 sum of `libical-4.0.5.tar.gz`: `9896781cc82bad3b9a2c6c1ee8177347` (check wit
 
 ```bash
 cd ~/src && tar -xf libical-4.0.5.tar.gz
-cd "$(tar -tf libical-4.0.5.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libical-4.0.5.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8812,7 +8812,7 @@ cp -vr apidocs/html/* /usr/share/doc/libical-4.0.5/html
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libical-4.0.5.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libical-4.0.5.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8835,7 +8835,7 @@ MD5 sum of `bluez-5.87.tar.xz`: `6c6f8445ec3d2fa3cc570a671ccea9fa` (check with `
 
 ```bash
 cd ~/src && tar -xf bluez-5.87.tar.xz
-cd "$(tar -tf bluez-5.87.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf bluez-5.87.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8917,7 +8917,7 @@ systemctl enable --global obex
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf bluez-5.87.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf bluez-5.87.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8939,7 +8939,7 @@ MD5 sum of `cdparanoia-III-10.2.src.tgz`: `b304bbe8ab63373924a744eac9ebc652` (ch
 
 ```bash
 cd ~/src && tar -xf cdparanoia-III-10.2.src.tgz
-cd "$(tar -tf cdparanoia-III-10.2.src.tgz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cdparanoia-III-10.2.src.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -8965,7 +8965,7 @@ rm -fv /usr/lib/libcdda_*.a
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cdparanoia-III-10.2.src.tgz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cdparanoia-III-10.2.src.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -8988,7 +8988,7 @@ MD5 sum of `gstreamer-1.28.6.tar.xz`: `3d16d7912727ea85ab90b9e5f3bc6e8a` (check 
 
 ```bash
 cd ~/src && tar -xf gstreamer-1.28.6.tar.xz
-cd "$(tar -tf gstreamer-1.28.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gstreamer-1.28.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9023,7 +9023,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gstreamer-1.28.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gstreamer-1.28.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9044,7 +9044,7 @@ MD5 sum of `iso-codes-v4.20.1.tar.gz`: `a8f16a62662ec13e55ca255a7c036ee3` (check
 
 ```bash
 cd ~/src && tar -xf iso-codes-v4.20.1.tar.gz
-cd "$(tar -tf iso-codes-v4.20.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf iso-codes-v4.20.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9068,7 +9068,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf iso-codes-v4.20.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf iso-codes-v4.20.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9091,7 +9091,7 @@ MD5 sum of `libgudev-238.tar.xz`: `46da30a1c69101c3a13fa660d9ab7b73` (check with
 
 ```bash
 cd ~/src && tar -xf libgudev-238.tar.xz
-cd "$(tar -tf libgudev-238.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libgudev-238.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9115,7 +9115,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libgudev-238.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libgudev-238.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9137,7 +9137,7 @@ MD5 sum of `nasm-3.02.tar.xz`: `31ba022fff8de3065b5bc5ad5559188c` (check with `m
 
 ```bash
 cd ~/src && tar -xf nasm-3.02.tar.xz
-cd "$(tar -tf nasm-3.02.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf nasm-3.02.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9172,7 +9172,7 @@ cp -v doc/*.{txt,ps,pdf} /usr/share/doc/nasm-3.02
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf nasm-3.02.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf nasm-3.02.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9193,7 +9193,7 @@ MD5 sum of `yasm-1.3.0.tar.gz`: `fc9e586751ff789b34b1f21d572d96af` (check with `
 
 ```bash
 cd ~/src && tar -xf yasm-1.3.0.tar.gz
-cd "$(tar -tf yasm-1.3.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf yasm-1.3.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9223,7 +9223,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf yasm-1.3.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf yasm-1.3.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9247,7 +9247,7 @@ MD5 sum of `libjpeg-turbo-3.2.0.tar.gz`: `a80f9f1c735b57d3cdd66daed1ba6bb4` (che
 
 ```bash
 cd ~/src && tar -xf libjpeg-turbo-3.2.0.tar.gz
-cd "$(tar -tf libjpeg-turbo-3.2.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libjpeg-turbo-3.2.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9277,7 +9277,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libjpeg-turbo-3.2.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libjpeg-turbo-3.2.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9298,7 +9298,7 @@ MD5 sum of `libogg-1.3.6.tar.xz`: `529275432dff072f63d4ed0f1f961384` (check with
 
 ```bash
 cd ~/src && tar -xf libogg-1.3.6.tar.xz
-cd "$(tar -tf libogg-1.3.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libogg-1.3.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9321,7 +9321,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libogg-1.3.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libogg-1.3.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9344,7 +9344,7 @@ MD5 sum of `libvorbis-1.3.7.tar.xz`: `50902641d358135f06a8392e61c9ac77` (check w
 
 ```bash
 cd ~/src && tar -xf libvorbis-1.3.7.tar.xz
-cd "$(tar -tf libvorbis-1.3.7.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libvorbis-1.3.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9366,7 +9366,7 @@ install -v -m644 doc/Vorbis* /usr/share/doc/libvorbis-1.3.7
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libvorbis-1.3.7.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libvorbis-1.3.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9390,7 +9390,7 @@ MD5 sum of `gst-plugins-base-1.28.6.tar.xz`: `cd0b2bd13e8196d5bfb20459c12a5d9b` 
 
 ```bash
 cd ~/src && tar -xf gst-plugins-base-1.28.6.tar.xz
-cd "$(tar -tf gst-plugins-base-1.28.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gst-plugins-base-1.28.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9421,7 +9421,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gst-plugins-base-1.28.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gst-plugins-base-1.28.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9442,7 +9442,7 @@ MD5 sum of `flac-1.5.0.tar.xz`: `0bb45bcf74338b00efeec121fff27367` (check with `
 
 ```bash
 cd ~/src && tar -xf flac-1.5.0.tar.xz
-cd "$(tar -tf flac-1.5.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf flac-1.5.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9465,7 +9465,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf flac-1.5.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf flac-1.5.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9486,7 +9486,7 @@ MD5 sum of `opus-1.6.1.tar.gz`: `67cafc438c430aa74eeb605eef670886` (check with `
 
 ```bash
 cd ~/src && tar -xf opus-1.6.1.tar.gz
-cd "$(tar -tf opus-1.6.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf opus-1.6.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9512,7 +9512,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf opus-1.6.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf opus-1.6.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9535,7 +9535,7 @@ MD5 sum of `libsndfile-1.2.2.tar.xz`: `04e2e6f726da7c5dc87f8cf72f250d04` (check 
 
 ```bash
 cd ~/src && tar -xf libsndfile-1.2.2.tar.xz
-cd "$(tar -tf libsndfile-1.2.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libsndfile-1.2.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9569,7 +9569,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libsndfile-1.2.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libsndfile-1.2.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9590,7 +9590,7 @@ MD5 sum of `Class-Inspector-1.36.tar.gz`: `084c3aeec023639d21ecbaf7d4460b21` (ch
 
 ```bash
 cd ~/src && tar -xf Class-Inspector-1.36.tar.gz
-cd "$(tar -tf Class-Inspector-1.36.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf Class-Inspector-1.36.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9612,7 +9612,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf Class-Inspector-1.36.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf Class-Inspector-1.36.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9633,7 +9633,7 @@ MD5 sum of `File-ShareDir-Install-0.14.tar.gz`: `bac4d924f3d863b00648ab56ec0dcbd
 
 ```bash
 cd ~/src && tar -xf File-ShareDir-Install-0.14.tar.gz
-cd "$(tar -tf File-ShareDir-Install-0.14.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf File-ShareDir-Install-0.14.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9655,7 +9655,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf File-ShareDir-Install-0.14.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf File-ShareDir-Install-0.14.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9678,7 +9678,7 @@ MD5 sum of `File-ShareDir-1.118.tar.gz`: `0084f730f4e3d4d89703d92b3ea82f54` (che
 
 ```bash
 cd ~/src && tar -xf File-ShareDir-1.118.tar.gz
-cd "$(tar -tf File-ShareDir-1.118.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf File-ShareDir-1.118.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9700,7 +9700,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf File-ShareDir-1.118.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf File-ShareDir-1.118.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9723,7 +9723,7 @@ MD5 sum of `XML-Parser-2.59.tar.gz`: `f483e6b8541d60a84e4bf50803e476bc` (check w
 
 ```bash
 cd ~/src && tar -xf XML-Parser-2.59.tar.gz
-cd "$(tar -tf XML-Parser-2.59.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf XML-Parser-2.59.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9745,7 +9745,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf XML-Parser-2.59.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf XML-Parser-2.59.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9769,7 +9769,7 @@ MD5 sum of `speex-1.2.1.tar.gz`: `fe7bf610883ff202092b92c72fe0fe3e` (check with 
 
 ```bash
 cd ~/src && tar -xf speex-1.2.1.tar.gz
-cd "$(tar -tf speex-1.2.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf speex-1.2.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** This section builds **two** packages, Speex and then SpeexDSP: each has its own `make install`, in its own folder (`/build/src/speex-1.2.1`, then `/build/src/speexdsp-1.2.1`). Clean up both: `cd ~/src && rm -rf speex-1.2.1 speexdsp-1.2.1`.
@@ -9813,7 +9813,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf speex-1.2.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf speex-1.2.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9837,7 +9837,7 @@ MD5 sum of `pulseaudio-17.0.tar.xz`: `c4a3596a26ff4b9dcd0c394dd1d4f8ee` (check w
 
 ```bash
 cd ~/src && tar -xf pulseaudio-17.0.tar.xz
-cd "$(tar -tf pulseaudio-17.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pulseaudio-17.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9877,7 +9877,7 @@ rm /usr/share/dbus-1/system.d/pulseaudio-system.conf
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pulseaudio-17.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pulseaudio-17.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9898,7 +9898,7 @@ MD5 sum of `sbc-2.2.tar.xz`: `f3f1a4e69249241801bc8ddd6050de23` (check with `md5
 
 ```bash
 cd ~/src && tar -xf sbc-2.2.tar.xz
-cd "$(tar -tf sbc-2.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf sbc-2.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9919,7 +9919,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf sbc-2.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf sbc-2.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9942,7 +9942,7 @@ MD5 sum of `glu-9.0.3.tar.xz`: `06a4fff9179a98ea32ef41b6d83f6b19` (check with `m
 
 ```bash
 cd ~/src && tar -xf glu-9.0.3.tar.xz
-cd "$(tar -tf glu-9.0.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf glu-9.0.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -9970,7 +9970,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf glu-9.0.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf glu-9.0.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -9993,7 +9993,7 @@ MD5 sum of `v4l-utils-1.32.0.tar.xz`: `c484b0320a757bd08a785cad7b32147a` (check 
 
 ```bash
 cd ~/src && tar -xf v4l-utils-1.32.0.tar.xz
-cd "$(tar -tf v4l-utils-1.32.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf v4l-utils-1.32.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -10038,7 +10038,7 @@ done
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf v4l-utils-1.32.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf v4l-utils-1.32.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10062,7 +10062,7 @@ MD5 sum of `pipewire-1.6.8.tar.bz2`: `9ae75812a76951c93210a26272c90ef3` (check w
 
 ```bash
 cd ~/src && tar -xf pipewire-1.6.8.tar.bz2
-cd "$(tar -tf pipewire-1.6.8.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pipewire-1.6.8.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -10089,7 +10089,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pipewire-1.6.8.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pipewire-1.6.8.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10112,7 +10112,7 @@ MD5 sum of `lua-5.4.8.tar.gz`: `81cf5265b8634967d8a7480d238168ce` (check with `m
 
 ```bash
 cd ~/src && tar -xf lua-5.4.8.tar.gz
-cd "$(tar -tf lua-5.4.8.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf lua-5.4.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -10169,7 +10169,7 @@ install -v -m644 -D lua.pc /usr/lib/pkgconfig/lua.pc
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf lua-5.4.8.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf lua-5.4.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10194,7 +10194,7 @@ MD5 sum of `wireplumber-0.5.15.tar.bz2`: `dba978afa67ba317d99ef03285ad4733` (che
 
 ```bash
 cd ~/src && tar -xf wireplumber-0.5.15.tar.bz2
-cd "$(tar -tf wireplumber-0.5.15.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf wireplumber-0.5.15.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -10242,7 +10242,7 @@ systemctl enable --global wireplumber
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf wireplumber-0.5.15.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf wireplumber-0.5.15.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10289,7 +10289,7 @@ MD5 sum of `iptables-1.8.13.tar.xz`: `81b5edf500e2672bfbc744581ff7dc3e` (check w
 
 ```bash
 cd ~/src && tar -xf iptables-1.8.13.tar.xz
-cd "$(tar -tf iptables-1.8.13.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf iptables-1.8.13.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** **IPRPS:** install the unit, but don't write the firewall script or enable `iptables` yet. The firewall policy is decided at release time (Part 13).
@@ -10595,7 +10595,7 @@ make install-iptables
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf iptables-1.8.13.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf iptables-1.8.13.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10616,7 +10616,7 @@ MD5 sum of `libndp-1.9.tar.gz`: `9d486750569e7025e5d0afdcc509b93c` (check with `
 
 ```bash
 cd ~/src && tar -xf libndp-1.9.tar.gz
-cd "$(tar -tf libndp-1.9.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libndp-1.9.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -10640,7 +10640,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libndp-1.9.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libndp-1.9.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10661,7 +10661,7 @@ MD5 sum of `slang-2.3.3.tar.bz2`: `69015c8300088373eb65ffcc6ed4db8c` (check with
 
 ```bash
 cd ~/src && tar -xf slang-2.3.3.tar.bz2
-cd "$(tar -tf slang-2.3.3.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf slang-2.3.3.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -10688,7 +10688,7 @@ make install_doc_dir=/usr/share/doc/slang-2.3.3   \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf slang-2.3.3.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf slang-2.3.3.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10711,7 +10711,7 @@ MD5 sum of `newt-0.52.25.tar.gz`: `4857119244d34d18c67c5c6d6e2d746c` (check with
 
 ```bash
 cd ~/src && tar -xf newt-0.52.25.tar.gz
-cd "$(tar -tf newt-0.52.25.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf newt-0.52.25.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** **IPRPS fixes.** newt's pagure.io download is gone; this uses Debian's copy of the same release (it's xz-compressed inside, which `tar` detects automatically, so the MD5 differs from the book). `--with-gpm-support` is removed because GPM isn't part of IPRPS OS.
@@ -10739,7 +10739,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf newt-0.52.25.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf newt-0.52.25.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10760,7 +10760,7 @@ MD5 sum of `nspr-4.40.tar.gz`: `0c3c871158cc9af694f1f7d2b799ffd8` (check with `m
 
 ```bash
 cd ~/src && tar -xf nspr-4.40.tar.gz
-cd "$(tar -tf nspr-4.40.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf nspr-4.40.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -10789,7 +10789,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf nspr-4.40.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf nspr-4.40.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10814,7 +10814,7 @@ MD5 sum of `nss-3.126.tar.gz`: `0ca322cec564a53ac5a59ce130d96f46` (check with `m
 
 ```bash
 cd ~/src && tar -xf nss-3.126.tar.gz
-cd "$(tar -tf nss-3.126.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf nss-3.126.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -10862,7 +10862,7 @@ ln -sfv ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf nss-3.126.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf nss-3.126.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10885,7 +10885,7 @@ MD5 sum of `pycairo-1.29.1.tar.gz`: `fc7c3b4104e88df7dea34af4314b9d12` (check wi
 
 ```bash
 cd ~/src && tar -xf pycairo-1.29.1.tar.gz
-cd "$(tar -tf pycairo-1.29.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pycairo-1.29.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -10909,7 +10909,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pycairo-1.29.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pycairo-1.29.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10933,7 +10933,7 @@ MD5 sum of `pygobject-3.56.3.tar.gz`: `7fe8fa9ff801a010eca0f0c79f59232b` (check 
 
 ```bash
 cd ~/src && tar -xf pygobject-3.56.3.tar.gz
-cd "$(tar -tf pygobject-3.56.3.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pygobject-3.56.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -10964,7 +10964,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pygobject-3.56.3.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pygobject-3.56.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -10989,7 +10989,7 @@ MD5 sum of `NetworkManager-1.58.1.tar.xz`: `7b06b1dd7b56adffc1dbbf3d04bedf8e` (c
 
 ```bash
 cd ~/src && tar -xf NetworkManager-1.58.1.tar.xz
-cd "$(tar -tf NetworkManager-1.58.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf NetworkManager-1.58.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11108,7 +11108,7 @@ systemctl disable NetworkManager-wait-online
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf NetworkManager-1.58.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf NetworkManager-1.58.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11129,7 +11129,7 @@ MD5 sum of `libnl-3.12.0.tar.gz`: `f9112ca215807fe65eecd583d8f180cc` (check with
 
 ```bash
 cd ~/src && tar -xf libnl-3.12.0.tar.gz
-cd "$(tar -tf libnl-3.12.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libnl-3.12.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11209,7 +11209,7 @@ tar -xf ../libnl-doc-3.12.0.tar.gz --strip-components=1 --no-same-owner \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libnl-3.12.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libnl-3.12.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11232,7 +11232,7 @@ MD5 sum of `wpa_supplicant-2.12.tar.gz`: `3f1af56655ebca941d2035358331bbc9` (che
 
 ```bash
 cd ~/src && tar -xf wpa_supplicant-2.12.tar.gz
-cd "$(tar -tf wpa_supplicant-2.12.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf wpa_supplicant-2.12.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS change.** Don't enable `wpa_supplicant@wlan0`. NetworkManager (Stage D) manages Wi-Fi and starts wpa_supplicant when needed. If you enabled it already: `systemctl disable wpa_supplicant@wlan0.service` in IPRPS CHROOT.
@@ -11362,7 +11362,7 @@ update_config=1
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf wpa_supplicant-2.12.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf wpa_supplicant-2.12.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11385,7 +11385,7 @@ MD5 sum of `iw-6.17.tar.xz`: `7323e43843f30068ffb6079e15e8e11a` (check with `md5
 
 ```bash
 cd ~/src && tar -xf iw-6.17.tar.xz
-cd "$(tar -tf iw-6.17.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf iw-6.17.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11406,7 +11406,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf iw-6.17.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf iw-6.17.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11470,7 +11470,7 @@ MD5 sum of `at-spi2-core-2.60.6.tar.xz`: `1082626c9a82694b7900f8283b20dfac` (che
 
 ```bash
 cd ~/src && tar -xf at-spi2-core-2.60.6.tar.xz
-cd "$(tar -tf at-spi2-core-2.60.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf at-spi2-core-2.60.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11497,7 +11497,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf at-spi2-core-2.60.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf at-spi2-core-2.60.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11518,7 +11518,7 @@ MD5 sum of `lcms2-2.19.1.tar.gz`: `541978f73749499e9e0277bfe5a3c868` (check with
 
 ```bash
 cd ~/src && tar -xf lcms2-2.19.1.tar.gz
-cd "$(tar -tf lcms2-2.19.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf lcms2-2.19.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11542,7 +11542,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf lcms2-2.19.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf lcms2-2.19.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11565,7 +11565,7 @@ MD5 sum of `libaom-3.14.1.tar.gz`: `4a689bbc27ec095d253ed8d241077ad5` (check wit
 
 ```bash
 cd ~/src && tar -xf libaom-3.14.1.tar.gz
-cd "$(tar -tf libaom-3.14.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libaom-3.14.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11599,7 +11599,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libaom-3.14.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libaom-3.14.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11622,7 +11622,7 @@ MD5 sum of `libde265-1.1.1.tar.gz`: `e9a8ccb8185b5191e712b8a5fa1d1bfc` (check wi
 
 ```bash
 cd ~/src && tar -xf libde265-1.1.1.tar.gz
-cd "$(tar -tf libde265-1.1.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libde265-1.1.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11648,7 +11648,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libde265-1.1.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libde265-1.1.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11672,7 +11672,7 @@ MD5 sum of `x265_4.2.tar.gz`: `0a7edcf495aba9f320047d61647d610b` (check with `md
 
 ```bash
 cd ~/src && tar -xf x265_4.2.tar.gz
-cd "$(tar -tf x265_4.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf x265_4.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11706,7 +11706,7 @@ rm -vf /usr/lib/libx265.a
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf x265_4.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf x265_4.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11729,7 +11729,7 @@ MD5 sum of `libheif-1.23.1.tar.gz`: `26fd31d0591ab927ef1a638de64cb2da` (check wi
 
 ```bash
 cd ~/src && tar -xf libheif-1.23.1.tar.gz
-cd "$(tar -tf libheif-1.23.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libheif-1.23.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11757,7 +11757,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libheif-1.23.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libheif-1.23.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11780,7 +11780,7 @@ MD5 sum of `brotli-1.2.0.tar.gz`: `8fbfae9a5ecbc278ae7f761ecb6d1285` (check with
 
 ```bash
 cd ~/src && tar -xf brotli-1.2.0.tar.gz
-cd "$(tar -tf brotli-1.2.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf brotli-1.2.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11826,7 +11826,7 @@ pip3 install --no-index --find-links dist --no-user Brotli
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf brotli-1.2.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf brotli-1.2.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11847,7 +11847,7 @@ MD5 sum of `giflib-6.1.3.tar.gz`: `a70e90ff780e9ebee9cb84b82bbd46a7` (check with
 
 ```bash
 cd ~/src && tar -xf giflib-6.1.3.tar.gz
-cd "$(tar -tf giflib-6.1.3.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf giflib-6.1.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11870,7 +11870,7 @@ rm -fv /usr/lib/libgif.a
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf giflib-6.1.3.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf giflib-6.1.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11893,7 +11893,7 @@ MD5 sum of `highway-1.4.0.tar.gz`: `9d335797777e17f827c7980b8313a34b` (check wit
 
 ```bash
 cd ~/src && tar -xf highway-1.4.0.tar.gz
-cd "$(tar -tf highway-1.4.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf highway-1.4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11921,7 +11921,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf highway-1.4.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf highway-1.4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -11944,7 +11944,7 @@ MD5 sum of `libjxl-0.12.0.tar.gz`: `a0fd3ac7b474525dadb99bbcb5d814f9` (check wit
 
 ```bash
 cd ~/src && tar -xf libjxl-0.12.0.tar.gz
-cd "$(tar -tf libjxl-0.12.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libjxl-0.12.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -11976,7 +11976,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libjxl-0.12.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libjxl-0.12.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12000,7 +12000,7 @@ MD5 sum of `cargo-c-0.10.24.tar.gz`: `b6247bf8f5eac962f001ee8a37f1c25f` (check w
 
 ```bash
 cd ~/src && tar -xf cargo-c-0.10.24.tar.gz
-cd "$(tar -tf cargo-c-0.10.24.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cargo-c-0.10.24.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12037,7 +12037,7 @@ unset LIB{SSH2,SQLITE3}_SYS_USE_PKG_CONFIG
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cargo-c-0.10.24.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cargo-c-0.10.24.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12061,7 +12061,7 @@ MD5 sum of `librsvg-2.62.3.tar.xz`: `bf6d56ffe4cfa5426cf1a67bcabdf5ce` (check wi
 
 ```bash
 cd ~/src && tar -xf librsvg-2.62.3.tar.xz
-cd "$(tar -tf librsvg-2.62.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf librsvg-2.62.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12099,7 +12099,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf librsvg-2.62.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf librsvg-2.62.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12120,7 +12120,7 @@ MD5 sum of `libseccomp-2.6.1.tar.gz`: `33a3a5d4c526a739515ff4dc53cdc192` (check 
 
 ```bash
 cd ~/src && tar -xf libseccomp-2.6.1.tar.gz
-cd "$(tar -tf libseccomp-2.6.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libseccomp-2.6.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12141,7 +12141,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libseccomp-2.6.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libseccomp-2.6.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12167,7 +12167,7 @@ MD5 sum of `glycin-2.1.5.tar.xz`: `d9224a846ad1ed964d07e1ebb48d4458` (check with
 
 ```bash
 cd ~/src && tar -xf glycin-2.1.5.tar.xz
-cd "$(tar -tf glycin-2.1.5.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf glycin-2.1.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS: build glycin in two passes.** Its SVG loader needs gdk-pixbuf, which comes next and itself uses glycin. **Pass 1 (here):** add `-D loaders=glycin-heif,glycin-image-rs,glycin-jxl` to the `meson setup` line (check the option name with `grep -n "option(" ../meson_options.txt ../meson.options 2>/dev/null`; in glycin 2.1 `glycin-loaders` is only an on/off switch). Install, and **keep the folder**. **Pass 2** comes right after gdk-pixbuf. Without pass 2, every SVG icon fails and the LightDM login screen crashes ("Unsupported image format").
@@ -12220,7 +12220,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf glycin-2.1.5.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf glycin-2.1.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12244,7 +12244,7 @@ MD5 sum of `gdk-pixbuf-2.44.7.tar.xz`: `2a12da2133476b7b36fbfcadd7133315` (check
 
 ```bash
 cd ~/src && tar -xf gdk-pixbuf-2.44.7.tar.xz
-cd "$(tar -tf gdk-pixbuf-2.44.7.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gdk-pixbuf-2.44.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS checkpoint.** gdk-pixbuf must be built **after glycin pass 1 is installed**: its PNG/JPEG/GIF/TIFF loaders are switched off and glycin does all image loading. After `ninja install`, `ldd /usr/lib/libgdk_pixbuf-2.0.so.0 | grep glycin` must show `libglycin-2.so.0`. If it doesn't, gdk-pixbuf can't read any image: rebuild it.
@@ -12295,7 +12295,7 @@ gdk-pixbuf-query-loaders --update-cache
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gdk-pixbuf-2.44.7.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gdk-pixbuf-2.44.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 ### glycin — second pass (IPRPS)
@@ -12360,7 +12360,7 @@ MD5 sum of `libxkbcommon-1.13.2.tar.gz`: `07f838f575d62c267cfc53eaf5ee739b` (che
 
 ```bash
 cd ~/src && tar -xf libxkbcommon-1.13.2.tar.gz
-cd "$(tar -tf libxkbcommon-1.13.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libxkbcommon-1.13.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12393,7 +12393,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libxkbcommon-1.13.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libxkbcommon-1.13.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12418,7 +12418,7 @@ MD5 sum of `gtk-3.24.52.tar.xz`: `4dfad1e56bf8ad25dfab58add17e7146` (check with 
 
 ```bash
 cd ~/src && tar -xf gtk-3.24.52.tar.xz
-cd "$(tar -tf gtk-3.24.52.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gtk-3.24.52.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12494,7 +12494,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gtk-3.24.52.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gtk-3.24.52.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12517,7 +12517,7 @@ MD5 sum of `startup-notification-0.12.tar.gz`: `2cd77326d4dcaed9a5a23a1232fb38e9
 
 ```bash
 cd ~/src && tar -xf startup-notification-0.12.tar.gz
-cd "$(tar -tf startup-notification-0.12.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf startup-notification-0.12.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12540,7 +12540,7 @@ install -v -m644 -D doc/startup-notification.txt \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf startup-notification-0.12.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf startup-notification-0.12.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12564,7 +12564,7 @@ MD5 sum of `libxfce4util-4.20.1.tar.bz2`: `8e30b7735333f74d80c379e15d9da145` (ch
 
 ```bash
 cd ~/src && tar -xf libxfce4util-4.20.1.tar.bz2
-cd "$(tar -tf libxfce4util-4.20.1.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libxfce4util-4.20.1.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12585,7 +12585,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libxfce4util-4.20.1.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libxfce4util-4.20.1.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12608,7 +12608,7 @@ MD5 sum of `xfconf-4.20.0.tar.bz2`: `ca596ff0a9be7fa655bb09cb05458644` (check wi
 
 ```bash
 cd ~/src && tar -xf xfconf-4.20.0.tar.bz2
-cd "$(tar -tf xfconf-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfconf-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12629,7 +12629,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfconf-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfconf-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12653,7 +12653,7 @@ MD5 sum of `libxfce4ui-4.20.2.tar.bz2`: `ce54074a9ed7964b4a3274e8ac74d949` (chec
 
 ```bash
 cd ~/src && tar -xf libxfce4ui-4.20.2.tar.bz2
-cd "$(tar -tf libxfce4ui-4.20.2.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libxfce4ui-4.20.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12674,7 +12674,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libxfce4ui-4.20.2.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libxfce4ui-4.20.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12697,7 +12697,7 @@ MD5 sum of `exo-4.20.0.tar.bz2`: `f059ec3d8686d4b322c42d19ebec0366` (check with 
 
 ```bash
 cd ~/src && tar -xf exo-4.20.0.tar.bz2
-cd "$(tar -tf exo-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf exo-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12718,7 +12718,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf exo-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf exo-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12741,7 +12741,7 @@ MD5 sum of `lxml-6.1.1.tar.gz`: `6bbd3674ecba1340b08c9180afef1829` (check with `
 
 ```bash
 cd ~/src && tar -xf lxml-6.1.1.tar.gz
-cd "$(tar -tf lxml-6.1.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf lxml-6.1.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12761,7 +12761,7 @@ pip3 install --no-index --find-links dist --no-user lxml
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf lxml-6.1.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf lxml-6.1.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12785,7 +12785,7 @@ MD5 sum of `itstool-2.0.7.tar.gz`: `e759b258617a912acce630de3fa43957` (check wit
 
 ```bash
 cd ~/src && tar -xf itstool-2.0.7.tar.gz
-cd "$(tar -tf itstool-2.0.7.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf itstool-2.0.7.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12812,7 +12812,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf itstool-2.0.7.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf itstool-2.0.7.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12833,7 +12833,7 @@ MD5 sum of `pathspec-1.1.1.tar.gz`: `c762d0a00d6cfc9de003e02d5072b26a` (check wi
 
 ```bash
 cd ~/src && tar -xf pathspec-1.1.1.tar.gz
-cd "$(tar -tf pathspec-1.1.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pathspec-1.1.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12853,7 +12853,7 @@ pip3 install --no-index --find-links dist --no-user pathspec
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pathspec-1.1.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pathspec-1.1.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12874,7 +12874,7 @@ MD5 sum of `vcs_versioning-2.2.4.tar.gz`: `4379f311792d41c845f9b86975b1be18` (ch
 
 ```bash
 cd ~/src && tar -xf vcs_versioning-2.2.4.tar.gz
-cd "$(tar -tf vcs_versioning-2.2.4.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf vcs_versioning-2.2.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12904,7 +12904,7 @@ HOME= testenv/bin/python3 -m pytest
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf vcs_versioning-2.2.4.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf vcs_versioning-2.2.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12927,7 +12927,7 @@ MD5 sum of `setuptools_scm-10.1.2.tar.gz`: `fc7dfeae0b61636e3705547acc9f3276` (c
 
 ```bash
 cd ~/src && tar -xf setuptools_scm-10.1.2.tar.gz
-cd "$(tar -tf setuptools_scm-10.1.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf setuptools_scm-10.1.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12955,7 +12955,7 @@ TZ=UTC HOME= testenv/bin/python3 -m pytest
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf setuptools_scm-10.1.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf setuptools_scm-10.1.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -12978,7 +12978,7 @@ MD5 sum of `pluggy-1.6.0.tar.gz`: `54391218af778acb006c2d915085d469` (check with
 
 ```bash
 cd ~/src && tar -xf pluggy-1.6.0.tar.gz
-cd "$(tar -tf pluggy-1.6.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pluggy-1.6.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -12998,7 +12998,7 @@ pip3 install --no-index --find-links dist --no-user pluggy
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pluggy-1.6.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pluggy-1.6.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13019,7 +13019,7 @@ MD5 sum of `poetry_core-2.4.1.tar.gz`: `6c4fb726467b1e270892f51c54c392ba` (check
 
 ```bash
 cd ~/src && tar -xf poetry_core-2.4.1.tar.gz
-cd "$(tar -tf poetry_core-2.4.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf poetry_core-2.4.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13047,7 +13047,7 @@ testenv/bin/python -m pytest
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf poetry_core-2.4.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf poetry_core-2.4.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13070,7 +13070,7 @@ MD5 sum of `tomlkit-0.15.1.tar.gz`: `8e5245fd4099c9a6f99774b24a4591ae` (check wi
 
 ```bash
 cd ~/src && tar -xf tomlkit-0.15.1.tar.gz
-cd "$(tar -tf tomlkit-0.15.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf tomlkit-0.15.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13098,7 +13098,7 @@ testenv/bin/python -m pytest
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf tomlkit-0.15.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf tomlkit-0.15.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13119,7 +13119,7 @@ MD5 sum of `trove_classifiers-2026.6.1.19.tar.gz`: `fb231b2e9492a5d34fb9bec0250f
 
 ```bash
 cd ~/src && tar -xf trove_classifiers-2026.6.1.19.tar.gz
-cd "$(tar -tf trove_classifiers-2026.6.1.19.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf trove_classifiers-2026.6.1.19.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13145,7 +13145,7 @@ pip3 install --no-index --find-links dist --no-user trove-classifiers
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf trove_classifiers-2026.6.1.19.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf trove_classifiers-2026.6.1.19.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13168,7 +13168,7 @@ MD5 sum of `hatchling-1.32.0.tar.gz`: `e5870c28ce4403c12b3d9a4a4f8866fe` (check 
 
 ```bash
 cd ~/src && tar -xf hatchling-1.32.0.tar.gz
-cd "$(tar -tf hatchling-1.32.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf hatchling-1.32.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13188,7 +13188,7 @@ pip3 install --no-index --find-links dist --no-user hatchling
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf hatchling-1.32.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf hatchling-1.32.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13211,7 +13211,7 @@ MD5 sum of `pygments-2.20.0.tar.gz`: `358297d0a1db8e4beff8eebc0620960e` (check w
 
 ```bash
 cd ~/src && tar -xf pygments-2.20.0.tar.gz
-cd "$(tar -tf pygments-2.20.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pygments-2.20.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13239,7 +13239,7 @@ testenv/bin/python -m pytest
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pygments-2.20.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pygments-2.20.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13262,7 +13262,7 @@ MD5 sum of `gtk-doc-1.36.1.tar.xz`: `819b11aa730cf5108f1df3f0eec91cf9` (check wi
 
 ```bash
 cd ~/src && tar -xf gtk-doc-1.36.1.tar.xz
-cd "$(tar -tf gtk-doc-1.36.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gtk-doc-1.36.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13296,7 +13296,7 @@ ninja test
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gtk-doc-1.36.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gtk-doc-1.36.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13319,7 +13319,7 @@ MD5 sum of `intltool-0.51.0.tar.gz`: `12e517cac2b57a0121cda351570f1e63` (check w
 
 ```bash
 cd ~/src && tar -xf intltool-0.51.0.tar.gz
-cd "$(tar -tf intltool-0.51.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf intltool-0.51.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13349,7 +13349,7 @@ install -v -m644 -D doc/I18N-HOWTO -t /usr/share/doc/intltool-0.51.0
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf intltool-0.51.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf intltool-0.51.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13370,7 +13370,7 @@ MD5 sum of `libgpg-error-1.61.tar.bz2`: `c89a8c6825cb64c527d5c1c0fb36f245` (chec
 
 ```bash
 cd ~/src && tar -xf libgpg-error-1.61.tar.bz2
-cd "$(tar -tf libgpg-error-1.61.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libgpg-error-1.61.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13392,7 +13392,7 @@ install -v -m644 -D README /usr/share/doc/libgpg-error-1.61/README
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libgpg-error-1.61.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libgpg-error-1.61.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13415,7 +13415,7 @@ MD5 sum of `libgcrypt-1.12.2.tar.bz2`: `4e98430cfc16d842a7231026c32418da` (check
 
 ```bash
 cd ~/src && tar -xf libgcrypt-1.12.2.tar.bz2
-cd "$(tar -tf libgcrypt-1.12.2.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libgcrypt-1.12.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13451,7 +13451,7 @@ install -v -m644 doc/gcrypt.{txt,texi} \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libgcrypt-1.12.2.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libgcrypt-1.12.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13474,7 +13474,7 @@ MD5 sum of `libxklavier-5.4.tar.bz2`: `13af74dcb6011ecedf1e3ed122bd31fa` (check 
 
 ```bash
 cd ~/src && tar -xf libxklavier-5.4.tar.bz2
-cd "$(tar -tf libxklavier-5.4.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libxklavier-5.4.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13495,7 +13495,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libxklavier-5.4.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libxklavier-5.4.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13521,7 +13521,7 @@ MD5 sum of `lightdm-1.33.1.tar.gz`: `1e228e940a9e97a59a4e67b07836ad17` (check wi
 
 ```bash
 cd ~/src && tar -xf lightdm-1.33.1.tar.gz
-cd "$(tar -tf lightdm-1.33.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf lightdm-1.33.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS checkpoints for LightDM.** LightDM's `autoreconf` needs **GTK-Doc** (built earlier in this stage). Its whole install block must complete: `ls -l /usr/bin/lightdm-session` (the session wrapper; without it every login closes at once, which looks like a wrong password) and `ls -ld /var/lib/lightdm-data` must both succeed. The greeter's `tar -xf ../lightdm-gtk-greeter-...` line only works straight after LightDM's install, from inside LightDM's folder. After the greeter: `ls /usr/share/xgreeters/` must list `lightdm-gtk-greeter.desktop`. `make install-lightdm` runs in the systemd units folder.
@@ -13617,7 +13617,7 @@ make install-lightdm
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf lightdm-1.33.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf lightdm-1.33.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13640,7 +13640,7 @@ MD5 sum of `desktop-file-utils-0.28.tar.xz`: `dec5d7265c802db1fde3980356931b7b` 
 
 ```bash
 cd ~/src && tar -xf desktop-file-utils-0.28.tar.xz
-cd "$(tar -tf desktop-file-utils-0.28.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf desktop-file-utils-0.28.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13681,7 +13681,7 @@ update-desktop-database /usr/share/applications
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf desktop-file-utils-0.28.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf desktop-file-utils-0.28.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13705,7 +13705,7 @@ MD5 sum of `libwnck-43.3.tar.xz`: `61938ba1c41f38c9c12033aca5706598` (check with
 
 ```bash
 cd ~/src && tar -xf libwnck-43.3.tar.xz
-cd "$(tar -tf libwnck-43.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libwnck-43.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13729,7 +13729,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libwnck-43.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libwnck-43.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13752,7 +13752,7 @@ MD5 sum of `libdisplay-info-0.4.0.tar.xz`: `af9f07493bd5ff560a98b95ea4c5c129` (c
 
 ```bash
 cd ~/src && tar -xf libdisplay-info-0.4.0.tar.xz
-cd "$(tar -tf libdisplay-info-0.4.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libdisplay-info-0.4.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13776,7 +13776,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libdisplay-info-0.4.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libdisplay-info-0.4.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13799,7 +13799,7 @@ MD5 sum of `xfce4-dev-tools-4.20.0.tar.bz2`: `bea58046e67b4274c022fcff893fa350` 
 
 ```bash
 cd ~/src && tar -xf xfce4-dev-tools-4.20.0.tar.bz2
-cd "$(tar -tf xfce4-dev-tools-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfce4-dev-tools-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13820,7 +13820,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfce4-dev-tools-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfce4-dev-tools-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13843,7 +13843,7 @@ MD5 sum of `libxfce4windowing-4.20.7.tar.bz2`: `7f409dec4961e9340a29b273029453d2
 
 ```bash
 cd ~/src && tar -xf libxfce4windowing-4.20.7.tar.bz2
-cd "$(tar -tf libxfce4windowing-4.20.7.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libxfce4windowing-4.20.7.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13867,7 +13867,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libxfce4windowing-4.20.7.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libxfce4windowing-4.20.7.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13890,7 +13890,7 @@ MD5 sum of `json-c-0.19.tar.gz`: `5678f1373ba51e0041b574c0411c696b` (check with 
 
 ```bash
 cd ~/src && tar -xf json-c-0.19.tar.gz
-cd "$(tar -tf json-c-0.19.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf json-c-0.19.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -13930,7 +13930,7 @@ install -v -m644 doc/html/* /usr/share/doc/json-c-0.19
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf json-c-0.19.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf json-c-0.19.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -13955,7 +13955,7 @@ MD5 sum of `accountsservice-26.27.3.tar.bz2`: `61f56055b9d4564ad29bab799222e386`
 
 ```bash
 cd ~/src && tar -xf accountsservice-26.27.3.tar.bz2
-cd "$(tar -tf accountsservice-26.27.3.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf accountsservice-26.27.3.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14005,7 +14005,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf accountsservice-26.27.3.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf accountsservice-26.27.3.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14029,7 +14029,7 @@ MD5 sum of `polkit-gnome-0.105.tar.xz`: `50ecad37c8342fb4a52f590db7530621` (chec
 
 ```bash
 cd ~/src && tar -xf polkit-gnome-0.105.tar.xz
-cd "$(tar -tf polkit-gnome-0.105.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf polkit-gnome-0.105.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14076,7 +14076,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf polkit-gnome-0.105.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf polkit-gnome-0.105.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14099,7 +14099,7 @@ wget https://www.jwz.org/xscreensaver/xscreensaver-<VERSION>.tar.gz    # the nam
 
 ```bash
 cd ~/src && tar -xf xscreensaver-6.15.tar.gz
-cd "$(tar -tf xscreensaver-6.15.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xscreensaver-6.15.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS download and build fixes.** jwz.org keeps only the newest release, so 6.15 is gone. Download the current one (the first command shows its name) and use that version wherever this section says `6.15`. jwz.org publishes no MD5. XScreenSaver 6.16 ships a broken `configure` (`syntax error near unexpected token 'external'`); fix it before `./configure` with `sed -i 's/^AM_GNU_GETTEXT(external)$/:/' configure`. If `make` then stops in `po` ("No rule to make target 'default'"), remove `po` from the `SUBDIRS` lines of the top-level `Makefile` (`sed -n '9,10p' Makefile` shows them) and run `make` again: XScreenSaver then runs in English only. Check afterwards: `which xscreensaver-command` and `ls /etc/pam.d/xscreensaver` (the screen lock needs both).
@@ -14137,7 +14137,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xscreensaver-6.15.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xscreensaver-6.15.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14162,7 +14162,7 @@ MD5 sum of `xfce4-session-4.20.4.tar.bz2`: `048a3f838449dd75d358779b528b0a63` (c
 
 ```bash
 cd ~/src && tar -xf xfce4-session-4.20.4.tar.bz2
-cd "$(tar -tf xfce4-session-4.20.4.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfce4-session-4.20.4.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14212,7 +14212,7 @@ startx &> ~/.x-session-errors
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfce4-session-4.20.4.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfce4-session-4.20.4.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14235,7 +14235,7 @@ MD5 sum of `garcon-4.20.0.tar.bz2`: `fe17e9cb15a62013e0086183a446e89e` (check wi
 
 ```bash
 cd ~/src && tar -xf garcon-4.20.0.tar.bz2
-cd "$(tar -tf garcon-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf garcon-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14256,7 +14256,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf garcon-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf garcon-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14279,7 +14279,7 @@ MD5 sum of `xfce4-panel-4.20.8.tar.bz2`: `c4c7919a07c2c48cffea7a608ea86803` (che
 
 ```bash
 cd ~/src && tar -xf xfce4-panel-4.20.8.tar.bz2
-cd "$(tar -tf xfce4-panel-4.20.8.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfce4-panel-4.20.8.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14300,7 +14300,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfce4-panel-4.20.8.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfce4-panel-4.20.8.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14323,7 +14323,7 @@ MD5 sum of `libnotify-0.8.8.tar.xz`: `35bef24dc1e9a336394556d09345e078` (check w
 
 ```bash
 cd ~/src && tar -xf libnotify-0.8.8.tar.xz
-cd "$(tar -tf libnotify-0.8.8.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libnotify-0.8.8.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** **IPRPS change.** `-D tests=false`: the test programs need GTK 4, which comes later in this stage.
@@ -14367,7 +14367,7 @@ fi
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libnotify-0.8.8.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libnotify-0.8.8.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14392,7 +14392,7 @@ MD5 sum of `thunar-4.20.9.tar.bz2`: `7d6daadb0c241ebfaed2684950a67f74` (check wi
 
 ```bash
 cd ~/src && tar -xf thunar-4.20.9.tar.bz2
-cd "$(tar -tf thunar-4.20.9.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf thunar-4.20.9.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14415,7 +14415,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf thunar-4.20.9.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf thunar-4.20.9.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14440,7 +14440,7 @@ MD5 sum of `thunar-volman-4.20.0.tar.bz2`: `34c8e0af77ea3894db7e3d164998f9bf` (c
 
 ```bash
 cd ~/src && tar -xf thunar-volman-4.20.0.tar.bz2
-cd "$(tar -tf thunar-volman-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf thunar-volman-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14461,7 +14461,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf thunar-volman-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf thunar-volman-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14484,7 +14484,7 @@ MD5 sum of `tumbler-4.20.2.tar.bz2`: `544cd05cf6ec8d16c8c812529d09b34b` (check w
 
 ```bash
 cd ~/src && tar -xf tumbler-4.20.2.tar.bz2
-cd "$(tar -tf tumbler-4.20.2.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf tumbler-4.20.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14505,7 +14505,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf tumbler-4.20.2.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf tumbler-4.20.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14528,7 +14528,7 @@ MD5 sum of `xfce4-appfinder-4.20.0.tar.bz2`: `e60f6c2521a985c6cfe09057d4fb2d69` 
 
 ```bash
 cd ~/src && tar -xf xfce4-appfinder-4.20.0.tar.bz2
-cd "$(tar -tf xfce4-appfinder-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfce4-appfinder-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14549,7 +14549,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfce4-appfinder-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfce4-appfinder-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14573,7 +14573,7 @@ MD5 sum of `upower-v1.91.3.tar.bz2`: `bf09da2eb695224e249e38077460414c` (check w
 
 ```bash
 cd ~/src && tar -xf upower-v1.91.3.tar.bz2
-cd "$(tar -tf upower-v1.91.3.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf upower-v1.91.3.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14601,7 +14601,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf upower-v1.91.3.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf upower-v1.91.3.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14625,7 +14625,7 @@ MD5 sum of `xfce4-power-manager-4.20.1.tar.bz2`: `021ff5a9f6111e3bedfad87dddf914
 
 ```bash
 cd ~/src && tar -xf xfce4-power-manager-4.20.1.tar.bz2
-cd "$(tar -tf xfce4-power-manager-4.20.1.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfce4-power-manager-4.20.1.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14646,7 +14646,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfce4-power-manager-4.20.1.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfce4-power-manager-4.20.1.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14672,7 +14672,7 @@ MD5 sum of `libcanberra-0.30.tar.xz`: `34cb7e4430afaf6f447c4ebdb9b42072` (check 
 
 ```bash
 cd ~/src && tar -xf libcanberra-0.30.tar.xz
-cd "$(tar -tf libcanberra-0.30.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libcanberra-0.30.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14699,7 +14699,7 @@ make docdir=/usr/share/doc/libcanberra-0.30 install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libcanberra-0.30.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libcanberra-0.30.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14724,7 +14724,7 @@ MD5 sum of `xfce4-settings-4.20.5.tar.bz2`: `681c73af0e2db6f0e13ff61db265556c` (
 
 ```bash
 cd ~/src && tar -xf xfce4-settings-4.20.5.tar.bz2
-cd "$(tar -tf xfce4-settings-4.20.5.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfce4-settings-4.20.5.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14745,7 +14745,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfce4-settings-4.20.5.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfce4-settings-4.20.5.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14769,7 +14769,7 @@ MD5 sum of `xfdesktop-4.20.2.tar.bz2`: `8789870145b82f5ba4f35c8a6522db2e` (check
 
 ```bash
 cd ~/src && tar -xf xfdesktop-4.20.2.tar.bz2
-cd "$(tar -tf xfdesktop-4.20.2.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfdesktop-4.20.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14790,7 +14790,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfdesktop-4.20.2.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfdesktop-4.20.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14814,7 +14814,7 @@ MD5 sum of `xfwm4-4.20.0.tar.bz2`: `e74cfb30b6e9ebf9cbaac0827dd534e3` (check wit
 
 ```bash
 cd ~/src && tar -xf xfwm4-4.20.0.tar.bz2
-cd "$(tar -tf xfwm4-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfwm4-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14835,7 +14835,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfwm4-4.20.0.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfwm4-4.20.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14858,7 +14858,7 @@ MD5 sum of `fast_float-8.2.10.tar.gz`: `ddcf64ffe15f1e1ed964a355db7a04f3` (check
 
 ```bash
 cd ~/src && tar -xf fast_float-8.2.10.tar.gz
-cd "$(tar -tf fast_float-8.2.10.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf fast_float-8.2.10.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14883,7 +14883,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf fast_float-8.2.10.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf fast_float-8.2.10.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14906,7 +14906,7 @@ MD5 sum of `fmt-12.2.0.tar.gz`: `7be257d8bfad55bc9eabb1288ad895be` (check with `
 
 ```bash
 cd ~/src && tar -xf fmt-12.2.0.tar.gz
-cd "$(tar -tf fmt-12.2.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf fmt-12.2.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14942,7 +14942,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf fmt-12.2.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf fmt-12.2.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -14963,7 +14963,7 @@ MD5 sum of `nettle-4.0.tar.gz`: `144401453f9f35e53938bcacfc59800e` (check with `
 
 ```bash
 cd ~/src && tar -xf nettle-4.0.tar.gz
-cd "$(tar -tf nettle-4.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf nettle-4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -14987,7 +14987,7 @@ install -v -m644 nettle.{html,pdf} /usr/share/doc/nettle-4.0
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf nettle-4.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf nettle-4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15011,7 +15011,7 @@ MD5 sum of `gnutls-3.8.13.tar.xz`: `a97671c1839340c6b43c23ccb3237180` (check wit
 
 ```bash
 cd ~/src && tar -xf gnutls-3.8.13.tar.xz
-cd "$(tar -tf gnutls-3.8.13.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gnutls-3.8.13.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15034,7 +15034,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gnutls-3.8.13.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gnutls-3.8.13.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15057,7 +15057,7 @@ MD5 sum of `shaderc-2026.3.tar.gz`: `5ce02d42b02a77e6165dbc476d1a334c` (check wi
 
 ```bash
 cd ~/src && tar -xf shaderc-2026.3.tar.gz
-cd "$(tar -tf shaderc-2026.3.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf shaderc-2026.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15094,7 +15094,7 @@ install -vm755 glslc/glslc /usr/bin
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf shaderc-2026.3.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf shaderc-2026.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15117,7 +15117,7 @@ MD5 sum of `graphene-1.10.8.tar.xz`: `169e3c507b5a5c26e9af492412070b81` (check w
 
 ```bash
 cd ~/src && tar -xf graphene-1.10.8.tar.xz
-cd "$(tar -tf graphene-1.10.8.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf graphene-1.10.8.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15141,7 +15141,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf graphene-1.10.8.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf graphene-1.10.8.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15162,7 +15162,7 @@ MD5 sum of `libdvdread-7.1.1.tar.xz`: `bfd662e9180dabad03bae95292b38a50` (check 
 
 ```bash
 cd ~/src && tar -xf libdvdread-7.1.1.tar.xz
-cd "$(tar -tf libdvdread-7.1.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libdvdread-7.1.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15194,7 +15194,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libdvdread-7.1.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libdvdread-7.1.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15217,7 +15217,7 @@ MD5 sum of `libdvdnav-7.0.0.tar.xz`: `e9e9f137cdd52828abc0c61b727ea579` (check w
 
 ```bash
 cd ~/src && tar -xf libdvdnav-7.0.0.tar.xz
-cd "$(tar -tf libdvdnav-7.0.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libdvdnav-7.0.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15249,7 +15249,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libdvdnav-7.0.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libdvdnav-7.0.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15270,7 +15270,7 @@ MD5 sum of `soundtouch-2.4.1.tar.gz`: `6e8732dea92b6e65fc4ee75528ab0524` (check 
 
 ```bash
 cd ~/src && tar -xf soundtouch-2.4.1.tar.gz
-cd "$(tar -tf soundtouch-2.4.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf soundtouch-2.4.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15297,7 +15297,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf soundtouch-2.4.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf soundtouch-2.4.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15321,7 +15321,7 @@ MD5 sum of `SVT-AV1-v4.2.0.tar.gz`: `a40beb25d550ed1ddf26aa372f2dca42` (check wi
 
 ```bash
 cd ~/src && tar -xf SVT-AV1-v4.2.0.tar.gz
-cd "$(tar -tf SVT-AV1-v4.2.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf SVT-AV1-v4.2.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15360,7 +15360,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf SVT-AV1-v4.2.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf SVT-AV1-v4.2.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15384,7 +15384,7 @@ MD5 sum of `gst-plugins-bad-1.28.6.tar.xz`: `cdc3c30609d2d235d9322a676a5d4474` (
 
 ```bash
 cd ~/src && tar -xf gst-plugins-bad-1.28.6.tar.xz
-cd "$(tar -tf gst-plugins-bad-1.28.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gst-plugins-bad-1.28.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15413,7 +15413,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gst-plugins-bad-1.28.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gst-plugins-bad-1.28.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15438,7 +15438,7 @@ MD5 sum of `gtk-4.22.4.tar.xz`: `2420b9b289937c1c9f97332470db1889` (check with `
 
 ```bash
 cd ~/src && tar -xf gtk-4.22.4.tar.xz
-cd "$(tar -tf gtk-4.22.4.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gtk-4.22.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15504,7 +15504,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gtk-4.22.4.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gtk-4.22.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15527,7 +15527,7 @@ MD5 sum of `simdutf-9.0.0.tar.gz`: `a20af35e2a7c9737d97b7beae96e7146` (check wit
 
 ```bash
 cd ~/src && tar -xf simdutf-9.0.0.tar.gz
-cd "$(tar -tf simdutf-9.0.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf simdutf-9.0.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15554,7 +15554,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf simdutf-9.0.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf simdutf-9.0.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15578,7 +15578,7 @@ MD5 sum of `vte-0.84.1.tar.gz`: `9733f0218f72051999e42725fe5fbaa8` (check with `
 
 ```bash
 cd ~/src && tar -xf vte-0.84.1.tar.gz
-cd "$(tar -tf vte-0.84.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf vte-0.84.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15612,7 +15612,7 @@ rm -v /etc/profile.d/vte.*
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf vte-0.84.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf vte-0.84.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15635,7 +15635,7 @@ MD5 sum of `xfce4-terminal-1.2.0.tar.xz`: `1662d52f7ffdcfde7c4ef76fd2358947` (ch
 
 ```bash
 cd ~/src && tar -xf xfce4-terminal-1.2.0.tar.xz
-cd "$(tar -tf xfce4-terminal-1.2.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfce4-terminal-1.2.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15669,7 +15669,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfce4-terminal-1.2.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfce4-terminal-1.2.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15693,7 +15693,7 @@ MD5 sum of `aspell-0.60.8.2.tar.gz`: `bc3f30321db5d44f112ab66084421225` (check w
 
 ```bash
 cd ~/src && tar -xf aspell-0.60.8.2.tar.gz
-cd "$(tar -tf aspell-0.60.8.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf aspell-0.60.8.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15753,7 +15753,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf aspell-0.60.8.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf aspell-0.60.8.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15776,7 +15776,7 @@ MD5 sum of `enchant-2.8.19.tar.gz`: `b06fe4ea79687202ec58ce58bd4f5867` (check wi
 
 ```bash
 cd ~/src && tar -xf enchant-2.8.19.tar.gz
-cd "$(tar -tf enchant-2.8.19.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf enchant-2.8.19.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15814,7 +15814,7 @@ enchant-2 -d en_GB -a /tmp/test-enchant.txt
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf enchant-2.8.19.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf enchant-2.8.19.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15837,7 +15837,7 @@ MD5 sum of `gspell-1.14.4.tar.xz`: `f2baf4a418c57e0dc044d50ffc0dcf62` (check wit
 
 ```bash
 cd ~/src && tar -xf gspell-1.14.4.tar.xz
-cd "$(tar -tf gspell-1.14.4.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gspell-1.14.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15861,7 +15861,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gspell-1.14.4.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gspell-1.14.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15885,7 +15885,7 @@ MD5 sum of `gtksourceview-4.8.4.tar.xz`: `2bf056caaae27654ec3a5930dd5597d3` (che
 
 ```bash
 cd ~/src && tar -xf gtksourceview-4.8.4.tar.xz
-cd "$(tar -tf gtksourceview-4.8.4.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gtksourceview-4.8.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15909,7 +15909,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gtksourceview-4.8.4.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gtksourceview-4.8.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15933,7 +15933,7 @@ MD5 sum of `mousepad-0.7.0.tar.xz`: `96c09736fd02da599ffedf215313328f` (check wi
 
 ```bash
 cd ~/src && tar -xf mousepad-0.7.0.tar.xz
-cd "$(tar -tf mousepad-0.7.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf mousepad-0.7.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -15960,7 +15960,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf mousepad-0.7.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf mousepad-0.7.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -15981,7 +15981,7 @@ MD5 sum of `libexif-0.6.26.tar.bz2`: `d659a750d1be6330105de54eb3bf627a` (check w
 
 ```bash
 cd ~/src && tar -xf libexif-0.6.26.tar.bz2
-cd "$(tar -tf libexif-0.6.26.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libexif-0.6.26.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16004,7 +16004,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libexif-0.6.26.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libexif-0.6.26.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16027,7 +16027,7 @@ MD5 sum of `ristretto-0.14.0.tar.xz`: `63b94c3e3fab28c4533697f36ee6caa2` (check 
 
 ```bash
 cd ~/src && tar -xf ristretto-0.14.0.tar.xz
-cd "$(tar -tf ristretto-0.14.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf ristretto-0.14.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16051,7 +16051,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf ristretto-0.14.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf ristretto-0.14.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16074,7 +16074,7 @@ MD5 sum of `xfce4-notifyd-0.9.7.tar.bz2`: `d5bfe1fd8e8da9d64367a1f520d88633` (ch
 
 ```bash
 cd ~/src && tar -xf xfce4-notifyd-0.9.7.tar.bz2
-cd "$(tar -tf xfce4-notifyd-0.9.7.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfce4-notifyd-0.9.7.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16102,7 +16102,7 @@ notify-send -i info Information "Hi ${USER}, This is a Test"
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfce4-notifyd-0.9.7.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfce4-notifyd-0.9.7.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16126,7 +16126,7 @@ MD5 sum of `keybinder-3.0-0.3.2.tar.gz`: `97260321fda721fce799174ea6ba10cf` (che
 
 ```bash
 cd ~/src && tar -xf keybinder-3.0-0.3.2.tar.gz
-cd "$(tar -tf keybinder-3.0-0.3.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf keybinder-3.0-0.3.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16147,7 +16147,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf keybinder-3.0-0.3.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf keybinder-3.0-0.3.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16171,7 +16171,7 @@ MD5 sum of `xfce4-pulseaudio-plugin-0.5.1.tar.xz`: `186a097794ced3612713c2098ec0
 
 ```bash
 cd ~/src && tar -xf xfce4-pulseaudio-plugin-0.5.1.tar.xz
-cd "$(tar -tf xfce4-pulseaudio-plugin-0.5.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfce4-pulseaudio-plugin-0.5.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16195,7 +16195,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfce4-pulseaudio-plugin-0.5.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfce4-pulseaudio-plugin-0.5.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16218,7 +16218,7 @@ MD5 sum of `xarchiver-0.5.4.27.tar.gz`: `8a6fb3ab5c0161e3fa05ec6a1faf2c12` (chec
 
 ```bash
 cd ~/src && tar -xf xarchiver-0.5.4.27.tar.gz
-cd "$(tar -tf xarchiver-0.5.4.27.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xarchiver-0.5.4.27.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16258,7 +16258,7 @@ update-desktop-database -q
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xarchiver-0.5.4.27.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xarchiver-0.5.4.27.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16281,7 +16281,7 @@ MD5 sum of `libassuan-3.0.2.tar.bz2`: `c6f1bf4bd2aaa79cd1635dcc070ba51a` (check 
 
 ```bash
 cd ~/src && tar -xf libassuan-3.0.2.tar.bz2
-cd "$(tar -tf libassuan-3.0.2.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libassuan-3.0.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16327,7 +16327,7 @@ install -v -m644  doc/assuan.{pdf,ps,dvi} \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libassuan-3.0.2.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libassuan-3.0.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16350,7 +16350,7 @@ MD5 sum of `libksba-1.8.0.tar.bz2`: `182951961170c12f6569454717a1383a` (check wi
 
 ```bash
 cd ~/src && tar -xf libksba-1.8.0.tar.bz2
-cd "$(tar -tf libksba-1.8.0.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libksba-1.8.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16371,7 +16371,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libksba-1.8.0.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libksba-1.8.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16392,7 +16392,7 @@ MD5 sum of `npth-1.8.tar.bz2`: `cb4fc0402be5ba67544e499cb2c1a74d` (check with `m
 
 ```bash
 cd ~/src && tar -xf npth-1.8.tar.bz2
-cd "$(tar -tf npth-1.8.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf npth-1.8.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16413,7 +16413,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf npth-1.8.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf npth-1.8.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16434,7 +16434,7 @@ MD5 sum of `openldap-LMDB_1.0.1.tar.bz2`: `f060b9e036cd5d998b7b3ca1498d7715` (ch
 
 ```bash
 cd ~/src && tar -xf openldap-LMDB_1.0.1.tar.bz2
-cd "$(tar -tf openldap-LMDB_1.0.1.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf openldap-LMDB_1.0.1.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16456,7 +16456,7 @@ make prefix=/usr install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf openldap-LMDB_1.0.1.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf openldap-LMDB_1.0.1.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16480,7 +16480,7 @@ MD5 sum of `cyrus-sasl-2.1.28.tar.gz`: `6f228a692516f5318a64505b46966cfa` (check
 
 ```bash
 cd ~/src && tar -xf cyrus-sasl-2.1.28.tar.gz
-cd "$(tar -tf cyrus-sasl-2.1.28.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cyrus-sasl-2.1.28.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16538,7 +16538,7 @@ make install-saslauthd
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cyrus-sasl-2.1.28.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cyrus-sasl-2.1.28.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16562,7 +16562,7 @@ MD5 sum of `openldap-2.7.0.tgz`: `fcb40191baba83c1f237d79f85835283` (check with 
 
 ```bash
 cd ~/src && tar -xf openldap-2.7.0.tgz
-cd "$(tar -tf openldap-2.7.0.tgz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf openldap-2.7.0.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** **IPRPS: client libraries only.** GnuPG only needs OpenLDAP's client libraries. Follow the book's client-only instructions and skip the `slapd` server parts: the `ldap` user, the server build and configuration, and `make install-slapd`. Check: `ls /usr/lib/libldap.so /usr/lib/liblber.so`.
@@ -16702,7 +16702,7 @@ result: 0 Success
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf openldap-2.7.0.tgz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf openldap-2.7.0.tgz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16725,7 +16725,7 @@ MD5 sum of `pinentry-1.3.3.tar.bz2`: `59a65644180ac2a43a1235d698515b36` (check w
 
 ```bash
 cd ~/src && tar -xf pinentry-1.3.3.tar.bz2
-cd "$(tar -tf pinentry-1.3.3.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pinentry-1.3.3.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16747,7 +16747,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pinentry-1.3.3.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pinentry-1.3.3.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16771,7 +16771,7 @@ MD5 sum of `gnupg-2.5.21.tar.bz2`: `39311d55044c9548b5eb8f53466a86b5` (check wit
 
 ```bash
 cd ~/src && tar -xf gnupg-2.5.21.tar.bz2
-cd "$(tar -tf gnupg-2.5.21.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gnupg-2.5.21.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16823,7 +16823,7 @@ install -v -m644 doc/gnupg.pdf \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gnupg-2.5.21.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gnupg-2.5.21.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16848,7 +16848,7 @@ MD5 sum of `libsecret-0.21.7.tar.xz`: `7a938a802a3c17df441fbd0358866e99` (check 
 
 ```bash
 cd ~/src && tar -xf libsecret-0.21.7.tar.xz
-cd "$(tar -tf libsecret-0.21.7.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libsecret-0.21.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16884,7 +16884,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libsecret-0.21.7.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libsecret-0.21.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16908,7 +16908,7 @@ MD5 sum of `gcr-4.4.0.1.tar.xz`: `01da4445b5b16801c6dcc7d8945b4cc4` (check with 
 
 ```bash
 cd ~/src && tar -xf gcr-4.4.0.1.tar.xz
-cd "$(tar -tf gcr-4.4.0.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gcr-4.4.0.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -16946,7 +16946,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gcr-4.4.0.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gcr-4.4.0.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -16968,7 +16968,7 @@ MD5 sum of `libcdio-2.1.0.tar.bz2`: `aa7629e8f73662a762f64c444b901055` (check wi
 
 ```bash
 cd ~/src && tar -xf libcdio-2.1.0.tar.bz2
-cd "$(tar -tf libcdio-2.1.0.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libcdio-2.1.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17015,7 +17015,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libcdio-2.1.0.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libcdio-2.1.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17038,7 +17038,7 @@ MD5 sum of `gsettings-desktop-schemas-50.1.tar.xz`: `b3851a1d2dd684f7ea1a1d032e2
 
 ```bash
 cd ~/src && tar -xf gsettings-desktop-schemas-50.1.tar.xz
-cd "$(tar -tf gsettings-desktop-schemas-50.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gsettings-desktop-schemas-50.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17072,7 +17072,7 @@ glib-compile-schemas /usr/share/glib-2.0/schemas
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gsettings-desktop-schemas-50.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gsettings-desktop-schemas-50.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17096,7 +17096,7 @@ MD5 sum of `glib-networking-2.80.1.tar.xz`: `405e6c058723217a1307ba8415615f9d` (
 
 ```bash
 cd ~/src && tar -xf glib-networking-2.80.1.tar.xz
-cd "$(tar -tf glib-networking-2.80.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf glib-networking-2.80.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17124,7 +17124,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf glib-networking-2.80.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf glib-networking-2.80.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17149,7 +17149,7 @@ MD5 sum of `libsoup-3.6.6.tar.xz`: `9e07742595800ecf301eafb52300dd89` (check wit
 
 ```bash
 cd ~/src && tar -xf libsoup-3.6.6.tar.xz
-cd "$(tar -tf libsoup-3.6.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libsoup-3.6.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17188,7 +17188,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libsoup-3.6.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libsoup-3.6.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17211,7 +17211,7 @@ MD5 sum of `cryptsetup-2.8.7.tar.xz`: `a9a19068e4db32f77c0ab95c378ab290` (check 
 
 ```bash
 cd ~/src && tar -xf cryptsetup-2.8.7.tar.xz
-cd "$(tar -tf cryptsetup-2.8.7.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cryptsetup-2.8.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17257,7 +17257,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cryptsetup-2.8.7.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cryptsetup-2.8.7.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17278,7 +17278,7 @@ MD5 sum of `keyutils-1.6.3.tar.gz`: `6b70b2b381c1b6d9adfaf66d5d3e7c00` (check wi
 
 ```bash
 cd ~/src && tar -xf keyutils-1.6.3.tar.gz
-cd "$(tar -tf keyutils-1.6.3.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf keyutils-1.6.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17305,7 +17305,7 @@ make -k test
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf keyutils-1.6.3.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf keyutils-1.6.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17326,7 +17326,7 @@ MD5 sum of `libatasmart-0.19.tar.xz`: `53afe2b155c36f658e121fe6def33e77` (check 
 
 ```bash
 cd ~/src && tar -xf libatasmart-0.19.tar.xz
-cd "$(tar -tf libatasmart-0.19.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libatasmart-0.19.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17347,7 +17347,7 @@ make docdir=/usr/share/doc/libatasmart-0.19 install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libatasmart-0.19.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libatasmart-0.19.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17370,7 +17370,7 @@ MD5 sum of `libbytesize-2.12.tar.gz`: `5314b773b20d1f3acdf3b2bf0c92549f` (check 
 
 ```bash
 cd ~/src && tar -xf libbytesize-2.12.tar.gz
-cd "$(tar -tf libbytesize-2.12.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libbytesize-2.12.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17391,7 +17391,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libbytesize-2.12.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libbytesize-2.12.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17412,7 +17412,7 @@ MD5 sum of `libnvme-1.16.2.tar.gz`: `a6554fb50022d762021fc1e949e01520` (check wi
 
 ```bash
 cd ~/src && tar -xf libnvme-1.16.2.tar.gz
-cd "$(tar -tf libnvme-1.16.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libnvme-1.16.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17436,7 +17436,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libnvme-1.16.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libnvme-1.16.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17460,7 +17460,7 @@ MD5 sum of `libblockdev-3.5.0.tar.gz`: `68448042ea0a2073098fc4ae37b01cbf` (check
 
 ```bash
 cd ~/src && tar -xf libblockdev-3.5.0.tar.gz
-cd "$(tar -tf libblockdev-3.5.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libblockdev-3.5.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17490,7 +17490,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libblockdev-3.5.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libblockdev-3.5.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17514,7 +17514,7 @@ MD5 sum of `udisks-2.11.2.tar.bz2`: `9e8e8c7f43257bc501b4896f43db9eb8` (check wi
 
 ```bash
 cd ~/src && tar -xf udisks-2.11.2.tar.bz2
-cd "$(tar -tf udisks-2.11.2.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf udisks-2.11.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17539,7 +17539,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf udisks-2.11.2.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf udisks-2.11.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17564,7 +17564,7 @@ MD5 sum of `gvfs-1.60.2.tar.xz`: `467f7d017234e5aab24d8e0a4e09deff` (check with 
 
 ```bash
 cd ~/src && tar -xf gvfs-1.60.2.tar.xz
-cd "$(tar -tf gvfs-1.60.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gvfs-1.60.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17609,7 +17609,7 @@ glib-compile-schemas /usr/share/glib-2.0/schemas
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gvfs-1.60.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gvfs-1.60.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17632,7 +17632,7 @@ MD5 sum of `lynx2.9.3.tar.bz2`: `faedd64b8e3cb87ae41197340cc3016a` (check with `
 
 ```bash
 cd ~/src && tar -xf lynx2.9.3.tar.bz2
-cd "$(tar -tf lynx2.9.3.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf lynx2.9.3.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17686,7 +17686,7 @@ sed -e '/#PERSIST/    a PERSISTENT_COOKIES:TRUE' \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf lynx2.9.3.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf lynx2.9.3.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17709,7 +17709,7 @@ MD5 sum of `xmlto-0.0.29.tar.gz`: `9d9e9b2ebfca1e453f5e1599b82c48cc` (check with
 
 ```bash
 cd ~/src && tar -xf xmlto-0.0.29.tar.gz
-cd "$(tar -tf xmlto-0.0.29.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xmlto-0.0.29.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** **IPRPS download fix.** pagure.io no longer serves xmlto. This is Debian's copy of the official 0.0.29 release tarball (bz2 inside; `tar` detects it), with a ready `configure`.
@@ -17734,7 +17734,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xmlto-0.0.29.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xmlto-0.0.29.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17758,7 +17758,7 @@ MD5 sum of `xdg-utils-v1.2.1.tar.gz`: `4c72585a98ba8f775cb9e72b066cc0df` (check 
 
 ```bash
 cd ~/src && tar -xf xdg-utils-v1.2.1.tar.gz
-cd "$(tar -tf xdg-utils-v1.2.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xdg-utils-v1.2.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17781,7 +17781,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xdg-utils-v1.2.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xdg-utils-v1.2.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17802,7 +17802,7 @@ MD5 sum of `xdg-user-dirs-v0.20.tar.gz`: `a80c6f2cc9fd3d9870fcda76d73ce3e6` (che
 
 ```bash
 cd ~/src && tar -xf xdg-user-dirs-v0.20.tar.gz
-cd "$(tar -tf xdg-user-dirs-v0.20.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xdg-user-dirs-v0.20.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17829,7 +17829,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xdg-user-dirs-v0.20.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xdg-user-dirs-v0.20.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17852,7 +17852,7 @@ MD5 sum of `adwaita-icon-theme-50.0.tar.xz`: `a03d8d68377a88fcf06e090ba6a6ec2f` 
 
 ```bash
 cd ~/src && tar -xf adwaita-icon-theme-50.0.tar.xz
-cd "$(tar -tf adwaita-icon-theme-50.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf adwaita-icon-theme-50.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17877,7 +17877,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf adwaita-icon-theme-50.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf adwaita-icon-theme-50.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17900,7 +17900,7 @@ MD5 sum of `gnome-themes-extra-3.28.tar.xz`: `f9f2c6c521948da427f702372e16f826` 
 
 ```bash
 cd ~/src && tar -xf gnome-themes-extra-3.28.tar.xz
-cd "$(tar -tf gnome-themes-extra-3.28.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gnome-themes-extra-3.28.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17921,7 +17921,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gnome-themes-extra-3.28.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gnome-themes-extra-3.28.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -17961,7 +17961,7 @@ MD5 sum of `libmbim-1.34.0.tar.gz`: `e5c2b38c6a79a047b93cb0c9510bd91f` (check wi
 
 ```bash
 cd ~/src && tar -xf libmbim-1.34.0.tar.gz
-cd "$(tar -tf libmbim-1.34.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libmbim-1.34.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -17990,7 +17990,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libmbim-1.34.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libmbim-1.34.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18014,7 +18014,7 @@ MD5 sum of `libqmi-1.38.0.tar.gz`: `4ed2c13150611007f56f84b896449d46` (check wit
 
 ```bash
 cd ~/src && tar -xf libqmi-1.38.0.tar.gz
-cd "$(tar -tf libqmi-1.38.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libqmi-1.38.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18044,7 +18044,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libqmi-1.38.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libqmi-1.38.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18068,7 +18068,7 @@ MD5 sum of `ModemManager-1.24.2.tar.gz`: `b72860c54670f362e947edba160fa98e` (che
 
 ```bash
 cd ~/src && tar -xf ModemManager-1.24.2.tar.gz
-cd "$(tar -tf ModemManager-1.24.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf ModemManager-1.24.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18104,7 +18104,7 @@ systemctl enable ModemManager
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf ModemManager-1.24.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf ModemManager-1.24.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18128,7 +18128,7 @@ MD5 sum of `gcr-3.41.2.tar.xz`: `40a754ba44d5e95e4d07656d6302900c` (check with `
 
 ```bash
 cd ~/src && tar -xf gcr-3.41.2.tar.xz
-cd "$(tar -tf gcr-3.41.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gcr-3.41.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18173,7 +18173,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gcr-3.41.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gcr-3.41.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18197,7 +18197,7 @@ MD5 sum of `libnma-1.10.6.tar.xz`: `71c7ce674fea1fae8f1368a7fcb6ff43` (check wit
 
 ```bash
 cd ~/src && tar -xf libnma-1.10.6.tar.xz
-cd "$(tar -tf libnma-1.10.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libnma-1.10.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18226,7 +18226,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libnma-1.10.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libnma-1.10.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18250,7 +18250,7 @@ MD5 sum of `network-manager-applet-1.34.0.tar.xz`: `83ff059aff3a691766d5f0079209
 
 ```bash
 cd ~/src && tar -xf network-manager-applet-1.34.0.tar.xz
-cd "$(tar -tf network-manager-applet-1.34.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf network-manager-applet-1.34.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18279,7 +18279,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf network-manager-applet-1.34.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf network-manager-applet-1.34.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18300,7 +18300,7 @@ MD5 sum of `bubblewrap-0.11.2.tar.xz`: `6376255e2e505100e01b20c2dafa7faf` (check
 
 ```bash
 cd ~/src && tar -xf bubblewrap-0.11.2.tar.xz
-cd "$(tar -tf bubblewrap-0.11.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf bubblewrap-0.11.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18330,7 +18330,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf bubblewrap-0.11.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf bubblewrap-0.11.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18351,7 +18351,7 @@ MD5 sum of `fuse-3.18.2.tar.gz`: `43c6f6cd2c1368d916f6fb080eb39cbb` (check with 
 
 ```bash
 cd ~/src && tar -xf fuse-3.18.2.tar.gz
-cd "$(tar -tf fuse-3.18.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf fuse-3.18.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18419,7 +18419,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf fuse-3.18.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf fuse-3.18.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18440,7 +18440,7 @@ MD5 sum of `hicolor-icon-theme-0.18.tar.xz`: `ef14f3af03bcde9ed134aad626bdbaad` 
 
 ```bash
 cd ~/src && tar -xf hicolor-icon-theme-0.18.tar.xz
-cd "$(tar -tf hicolor-icon-theme-0.18.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf hicolor-icon-theme-0.18.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18464,7 +18464,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf hicolor-icon-theme-0.18.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf hicolor-icon-theme-0.18.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18487,7 +18487,7 @@ MD5 sum of `XML-Simple-2.25.tar.gz`: `bb841dce889a26c89a1c2739970e9fbc` (check w
 
 ```bash
 cd ~/src && tar -xf XML-Simple-2.25.tar.gz
-cd "$(tar -tf XML-Simple-2.25.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf XML-Simple-2.25.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18511,7 +18511,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf XML-Simple-2.25.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf XML-Simple-2.25.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18534,7 +18534,7 @@ MD5 sum of `icon-naming-utils-0.8.90.tar.bz2`: `dd8108b56130b9eedc4042df634efa66
 
 ```bash
 cd ~/src && tar -xf icon-naming-utils-0.8.90.tar.bz2
-cd "$(tar -tf icon-naming-utils-0.8.90.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf icon-naming-utils-0.8.90.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18555,7 +18555,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf icon-naming-utils-0.8.90.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf icon-naming-utils-0.8.90.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18578,7 +18578,7 @@ MD5 sum of `gnome-icon-theme-3.12.0.tar.xz`: `f14bed7f804e843189ffa7021141addd` 
 
 ```bash
 cd ~/src && tar -xf gnome-icon-theme-3.12.0.tar.xz
-cd "$(tar -tf gnome-icon-theme-3.12.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gnome-icon-theme-3.12.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18599,7 +18599,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gnome-icon-theme-3.12.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gnome-icon-theme-3.12.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18623,7 +18623,7 @@ MD5 sum of `gnome-keyring-50.0.tar.xz`: `406fb764c664de580a091527af059750` (chec
 
 ```bash
 cd ~/src && tar -xf gnome-keyring-50.0.tar.xz
-cd "$(tar -tf gnome-keyring-50.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gnome-keyring-50.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18649,7 +18649,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gnome-keyring-50.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gnome-keyring-50.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18670,7 +18670,7 @@ MD5 sum of `lame-3.100.tar.gz`: `83e260acbe4389b54fe08e0bdbf7cddb` (check with `
 
 ```bash
 cd ~/src && tar -xf lame-3.100.tar.gz
-cd "$(tar -tf lame-3.100.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf lame-3.100.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18697,7 +18697,7 @@ make pkghtmldir=/usr/share/doc/lame-3.100 install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf lame-3.100.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf lame-3.100.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18721,7 +18721,7 @@ MD5 sum of `libvpx-1.16.0.tar.gz`: `fb51551487ecfdec93f3d243b7fb1a67` (check wit
 
 ```bash
 cd ~/src && tar -xf libvpx-1.16.0.tar.gz
-cd "$(tar -tf libvpx-1.16.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libvpx-1.16.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18761,7 +18761,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libvpx-1.16.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libvpx-1.16.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18784,7 +18784,7 @@ MD5 sum of `mpg123-1.33.7.tar.bz2`: `46ceab9bfb0f04e739f010b88de5943d` (check wi
 
 ```bash
 cd ~/src && tar -xf mpg123-1.33.7.tar.bz2
-cd "$(tar -tf mpg123-1.33.7.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf mpg123-1.33.7.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18805,7 +18805,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf mpg123-1.33.7.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf mpg123-1.33.7.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18829,7 +18829,7 @@ MD5 sum of `gst-plugins-good-1.28.6.tar.xz`: `d84c17388909e98e7f7d81bb2717327c` 
 
 ```bash
 cd ~/src && tar -xf gst-plugins-good-1.28.6.tar.xz
-cd "$(tar -tf gst-plugins-good-1.28.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gst-plugins-good-1.28.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18857,7 +18857,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gst-plugins-good-1.28.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gst-plugins-good-1.28.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18880,7 +18880,7 @@ MD5 sum of `json-glib-1.10.8.tar.xz`: `95c3d5dd56d4ada808480739889b75bc` (check 
 
 ```bash
 cd ~/src && tar -xf json-glib-1.10.8.tar.xz
-cd "$(tar -tf json-glib-1.10.8.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf json-glib-1.10.8.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18919,7 +18919,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf json-glib-1.10.8.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf json-glib-1.10.8.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18940,7 +18940,7 @@ MD5 sum of `lxde-icon-theme-0.5.1.tar.xz`: `7467133275edbbcc79349379235d4411` (c
 
 ```bash
 cd ~/src && tar -xf lxde-icon-theme-0.5.1.tar.xz
-cd "$(tar -tf lxde-icon-theme-0.5.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf lxde-icon-theme-0.5.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -18966,7 +18966,7 @@ gtk-update-icon-cache -qf /usr/share/icons/nuoveXT2
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf lxde-icon-theme-0.5.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf lxde-icon-theme-0.5.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -18989,7 +18989,7 @@ MD5 sum of `sound-theme-freedesktop-0.8.tar.bz2`: `d7387912cfd275282d1ec94483cb2
 
 ```bash
 cd ~/src && tar -xf sound-theme-freedesktop-0.8.tar.bz2
-cd "$(tar -tf sound-theme-freedesktop-0.8.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf sound-theme-freedesktop-0.8.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -19010,7 +19010,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf sound-theme-freedesktop-0.8.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf sound-theme-freedesktop-0.8.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -19035,7 +19035,7 @@ MD5 sum of `xdg-desktop-portal-1.22.1.tar.xz`: `edfbfffe55a35920a303404b6c5d49a0
 
 ```bash
 cd ~/src && tar -xf xdg-desktop-portal-1.22.1.tar.xz
-cd "$(tar -tf xdg-desktop-portal-1.22.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xdg-desktop-portal-1.22.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -19066,7 +19066,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xdg-desktop-portal-1.22.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xdg-desktop-portal-1.22.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -19089,7 +19089,7 @@ MD5 sum of `xdg-desktop-portal-gtk-1.15.3.tar.xz`: `2d6e2ad2953c386a1db11618fa38
 
 ```bash
 cd ~/src && tar -xf xdg-desktop-portal-gtk-1.15.3.tar.xz
-cd "$(tar -tf xdg-desktop-portal-gtk-1.15.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xdg-desktop-portal-gtk-1.15.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** **IPRPS change.** The wallpaper portal needs GNOME Desktop, which IPRPS OS doesn't build (Xfce sets its own wallpapers). If `meson` still asks for `gnome-desktop-3.0`, also add `-D settings=disabled`.
@@ -19115,7 +19115,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xdg-desktop-portal-gtk-1.15.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xdg-desktop-portal-gtk-1.15.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -19889,7 +19889,7 @@ MD5 sum of `apr-1.7.6.tar.bz2`: `2ebb58910e426e5a83af97bc94cae66d` (check with `
 
 ```bash
 cd ~/src && tar -xf apr-1.7.6.tar.bz2
-cd "$(tar -tf apr-1.7.6.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf apr-1.7.6.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -19912,7 +19912,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf apr-1.7.6.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf apr-1.7.6.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -19935,7 +19935,7 @@ MD5 sum of `apr-util-1.6.5.tar.bz2`: `3897a2f32d365a8281fbb90d1c2794ac` (check w
 
 ```bash
 cd ~/src && tar -xf apr-util-1.6.5.tar.bz2
-cd "$(tar -tf apr-util-1.6.5.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf apr-util-1.6.5.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -19960,7 +19960,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf apr-util-1.6.5.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf apr-util-1.6.5.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -19985,7 +19985,7 @@ MD5 sum of `httpd-2.4.68.tar.bz2`: `f2f3121e9f1fb4838d433dbd494543f9` (check wit
 
 ```bash
 cd ~/src && tar -xf httpd-2.4.68.tar.bz2
-cd "$(tar -tf httpd-2.4.68.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf httpd-2.4.68.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -20056,7 +20056,7 @@ make install-httpd
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf httpd-2.4.68.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf httpd-2.4.68.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -20083,7 +20083,7 @@ Additional reference: https://www.php.net/download-docs.php
 
 ```bash
 cd ~/src && tar -xf php-8.5.12.tar.xz
-cd "$(tar -tf php-8.5.12.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf php-8.5.12.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS changes: build PHP 8.5.12, with MariaDB support.**
@@ -20222,7 +20222,7 @@ make install-php-fpm
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf php-8.5.12.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf php-8.5.12.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -20243,7 +20243,7 @@ MD5 sum of `libevent-2.1.13-stable.tar.gz`: `eaa0bd3472b5d6a52ac6b9e0b7418b03` (
 
 ```bash
 cd ~/src && tar -xf libevent-2.1.13-stable.tar.gz
-cd "$(tar -tf libevent-2.1.13-stable.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libevent-2.1.13-stable.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -20284,7 +20284,7 @@ cp      -v -R       html/* \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libevent-2.1.13-stable.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libevent-2.1.13-stable.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -20309,7 +20309,7 @@ MD5 sum of `mariadb-12.3.3.tar.gz`: `83d962d0f5917a0445786cc31337b118` (check wi
 
 ```bash
 cd ~/src && tar -xf mariadb-12.3.3.tar.gz
-cd "$(tar -tf mariadb-12.3.3.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf mariadb-12.3.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS notes for MariaDB.**
@@ -20490,7 +20490,7 @@ make install-mariadb
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf mariadb-12.3.3.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf mariadb-12.3.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -20774,7 +20774,7 @@ MD5 sum of `dav1d-1.5.4.tar.gz`: `af9b8fdb97f436a76b73425ed16b6239` (check with 
 
 ```bash
 cd ~/src && tar -xf dav1d-1.5.4.tar.gz
-cd "$(tar -tf dav1d-1.5.4.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf dav1d-1.5.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -20798,7 +20798,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf dav1d-1.5.4.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf dav1d-1.5.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -20823,7 +20823,7 @@ MD5 sum of `SDL3-3.4.14.tar.gz`: `32968d1180d29903e70cd3f7fc38470b` (check with 
 
 ```bash
 cd ~/src && tar -xf SDL3-3.4.14.tar.gz
-cd "$(tar -tf SDL3-3.4.14.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf SDL3-3.4.14.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -20879,7 +20879,7 @@ DESTDIR=$PWD/TESTS ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf SDL3-3.4.14.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf SDL3-3.4.14.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -20902,7 +20902,7 @@ MD5 sum of `sdl2-compat-2.32.70.tar.gz`: `ba9179f09652a6395b3673e4ce8c473b` (che
 
 ```bash
 cd ~/src && tar -xf sdl2-compat-2.32.70.tar.gz
-cd "$(tar -tf sdl2-compat-2.32.70.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf sdl2-compat-2.32.70.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -20953,7 +20953,7 @@ DESTDIR=$PWD/TESTS ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf sdl2-compat-2.32.70.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf sdl2-compat-2.32.70.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -20976,7 +20976,7 @@ MD5 sum of `tiff-4.7.2.tar.gz`: `a2a65ea450b8f469c667128848ffebfc` (check with `
 
 ```bash
 cd ~/src && tar -xf tiff-4.7.2.tar.gz
-cd "$(tar -tf tiff-4.7.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf tiff-4.7.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21003,7 +21003,7 @@ mv -v /usr/share/doc/tiff{,-4.7.2}
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf tiff-4.7.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf tiff-4.7.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21026,7 +21026,7 @@ MD5 sum of `libwebp-1.6.0.tar.gz`: `cceb6447180f961473b181c9ef38b630` (check wit
 
 ```bash
 cd ~/src && tar -xf libwebp-1.6.0.tar.gz
-cd "$(tar -tf libwebp-1.6.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libwebp-1.6.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21053,7 +21053,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libwebp-1.6.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libwebp-1.6.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21076,7 +21076,7 @@ MD5 sum of `c-ares-1.34.8.tar.gz`: `a0568780ffe1476160a6bbb4b6737261` (check wit
 
 ```bash
 cd ~/src && tar -xf c-ares-1.34.8.tar.gz
-cd "$(tar -tf c-ares-1.34.8.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf c-ares-1.34.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21100,7 +21100,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf c-ares-1.34.8.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf c-ares-1.34.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21124,7 +21124,7 @@ MD5 sum of `node-v24.19.0.tar.xz`: `9746bea71fd37c5ec17236b713e0879f` (check wit
 
 ```bash
 cd ~/src && tar -xf node-v24.19.0.tar.xz
-cd "$(tar -tf node-v24.19.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf node-v24.19.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS: finish the build before installing.** Node.js is a long build. Let `make` finish in BUILDER (`-j4` uses less memory; check with `out/Release/node --version`) before running `make install` as root. If `make install` starts compiling (`g++ -o ...` lines), the build wasn't finished: press Ctrl+C, run `chown -R builder:builder /build/src/node-v24.19.0` in IPRPS CHROOT, and finish `make` in BUILDER.
@@ -21156,7 +21156,7 @@ ln -sf node /usr/share/doc/node-24.19.0
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf node-v24.19.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf node-v24.19.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21180,7 +21180,7 @@ MD5 sum of `firefox-153.2.0esr.source.tar.xz`: `127f9c7fe72cf8cc9a47f35a051303f0
 
 ```bash
 cd ~/src && tar -xf firefox-153.2.0esr.source.tar.xz
-cd "$(tar -tf firefox-153.2.0esr.source.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf firefox-153.2.0esr.source.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS release override.** BLFS notes that a Firefox built with `--enable-official-branding` **cannot be distributed**, and its mozconfig embeds a Google location API key. In the mozconfig below, both lines are already commented out. The browser then builds with Mozilla's generic "unofficial" branding, which may be redistributed.
@@ -21367,7 +21367,7 @@ ln -sfv /usr/lib/firefox/browser/chrome/icons/default/default128.png \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf firefox-153.2.0esr.source.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf firefox-153.2.0esr.source.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21391,7 +21391,7 @@ MD5 sum of `libhandy-1.8.3.tar.xz`: `af586a91ff6d4093a6e7e283dfab5f7f` (check wi
 
 ```bash
 cd ~/src && tar -xf libhandy-1.8.3.tar.xz
-cd "$(tar -tf libhandy-1.8.3.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libhandy-1.8.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21415,7 +21415,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libhandy-1.8.3.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libhandy-1.8.3.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21438,7 +21438,7 @@ MD5 sum of `openjpeg-2.5.4.tar.gz`: `6160de075bb5191e482bc0f024b375e4` (check wi
 
 ```bash
 cd ~/src && tar -xf openjpeg-2.5.4.tar.gz
-cd "$(tar -tf openjpeg-2.5.4.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf openjpeg-2.5.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21474,7 +21474,7 @@ cp -rv ../doc/man -T /usr/share/man
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf openjpeg-2.5.4.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf openjpeg-2.5.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21497,7 +21497,7 @@ MD5 sum of `boost-1.92.0-b2-nodocs.tar.xz`: `01f7ba6534c21e1b49dc9f69524bf5e4` (
 
 ```bash
 cd ~/src && tar -xf boost-1.92.0-b2-nodocs.tar.xz
-cd "$(tar -tf boost-1.92.0-b2-nodocs.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf boost-1.92.0-b2-nodocs.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21536,7 +21536,7 @@ rm -rf /usr/lib/cmake/[Bb]oost*
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf boost-1.92.0-b2-nodocs.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf boost-1.92.0-b2-nodocs.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21561,7 +21561,7 @@ MD5 sum of `poppler-26.08.0.tar.xz`: `0c7953c55c449f20d97adbe355bcf49d` (check w
 
 ```bash
 cd ~/src && tar -xf poppler-26.08.0.tar.xz
-cd "$(tar -tf poppler-26.08.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf poppler-26.08.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** **IPRPS changes.** `-D ENABLE_QT6=OFF` (no Qt 6 in IPRPS OS) and `-D ENABLE_GPGME=OFF` (GnuPG-signed PDFs; needs GPGME++, which isn't built). **poppler-data** is unpacked *inside* Poppler's `build` folder (that's what `../../` means), so its root install runs in `/build/src/poppler-26.08.0/build/poppler-data-0.4.12`. Check: `ls /usr/share/poppler` lists `cMap` and other folders.
@@ -21614,7 +21614,7 @@ make prefix=/usr install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf poppler-26.08.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf poppler-26.08.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21638,7 +21638,7 @@ MD5 sum of `evince-48.4.tar.xz`: `5df36228e83ac93a5860f013af50c5c8` (check with 
 
 ```bash
 cd ~/src && tar -xf evince-48.4.tar.xz
-cd "$(tar -tf evince-48.4.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf evince-48.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21683,7 +21683,7 @@ glib-compile-schemas /usr/share/glib-2.0/schemas
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf evince-48.4.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf evince-48.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21706,7 +21706,7 @@ MD5 sum of `dbus-glib-0.114.tar.gz`: `188792077e880a8c0359288d7819dab3` (check w
 
 ```bash
 cd ~/src && tar -xf dbus-glib-0.114.tar.gz
-cd "$(tar -tf dbus-glib-0.114.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf dbus-glib-0.114.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21729,7 +21729,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf dbus-glib-0.114.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf dbus-glib-0.114.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21752,7 +21752,7 @@ MD5 sum of `utfcpp-4.1.1.tar.gz`: `2b439bf8f222cd85bac0d2603265a246` (check with
 
 ```bash
 cd ~/src && tar -xf utfcpp-4.1.1.tar.gz
-cd "$(tar -tf utfcpp-4.1.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf utfcpp-4.1.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21775,7 +21775,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf utfcpp-4.1.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf utfcpp-4.1.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21798,7 +21798,7 @@ MD5 sum of `taglib-2.3.1.tar.gz`: `b189dcfcf284179c04b97a89887e0ce6` (check with
 
 ```bash
 cd ~/src && tar -xf taglib-2.3.1.tar.gz
-cd "$(tar -tf taglib-2.3.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf taglib-2.3.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21825,7 +21825,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf taglib-2.3.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf taglib-2.3.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21849,7 +21849,7 @@ MD5 sum of `parole-4.20.0.tar.xz`: `388dee33b1d06ee89f007b4cb08dedaf` (check wit
 
 ```bash
 cd ~/src && tar -xf parole-4.20.0.tar.xz
-cd "$(tar -tf parole-4.20.0.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf parole-4.20.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21875,7 +21875,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf parole-4.20.0.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf parole-4.20.0.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21899,7 +21899,7 @@ MD5 sum of `libass-0.17.5.tar.xz`: `d9aeb9dac0ca97acbaae96c35af4013b` (check wit
 
 ```bash
 cd ~/src && tar -xf libass-0.17.5.tar.xz
-cd "$(tar -tf libass-0.17.5.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libass-0.17.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21920,7 +21920,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libass-0.17.5.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libass-0.17.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21943,7 +21943,7 @@ MD5 sum of `x264-20250815.tar.xz`: `a4adb6f7d2644043765885e54abc3955` (check wit
 
 ```bash
 cd ~/src && tar -xf x264-20250815.tar.xz
-cd "$(tar -tf x264-20250815.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf x264-20250815.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -21966,7 +21966,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf x264-20250815.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf x264-20250815.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -21990,7 +21990,7 @@ MD5 sum of `ffmpeg-9.0.1.tar.xz`: `3ed2aab5ce5d18a3c5e0d22d8ca3fadb` (check with
 
 ```bash
 cd ~/src && tar -xf ffmpeg-9.0.1.tar.xz
-cd "$(tar -tf ffmpeg-9.0.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf ffmpeg-9.0.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Warning:** **IPRPS release override.** BLFS builds FFmpeg with `--enable-nonfree` and `--enable-libfdk-aac`. FFmpeg built that way may **not be redistributed**. The command below already has both options removed, so the result is GPL and redistributable. (fdk-aac is left out of the IPRPS build for the same reason.)
@@ -22103,7 +22103,7 @@ grep ^TEST ../fate.log | wc -l
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf ffmpeg-9.0.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf ffmpeg-9.0.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -22124,7 +22124,7 @@ MD5 sum of `glad-2.0.8.tar.gz`: `028c39d581e6b53e53871f1dc21cf442` (check with `
 
 ```bash
 cd ~/src && tar -xf glad-2.0.8.tar.gz
-cd "$(tar -tf glad-2.0.8.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf glad-2.0.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -22150,7 +22150,7 @@ pip3 install --no-index --find-links dist --no-user glad2
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf glad-2.0.8.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf glad-2.0.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -22174,7 +22174,7 @@ MD5 sum of `libplacebo-7.360.1.tar.gz`: `e0fa1b52f8d7b7ba51373e9a639ca966` (chec
 
 ```bash
 cd ~/src && tar -xf libplacebo-7.360.1.tar.gz
-cd "$(tar -tf libplacebo-7.360.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libplacebo-7.360.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -22202,7 +22202,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libplacebo-7.360.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libplacebo-7.360.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -22223,7 +22223,7 @@ MD5 sum of `luajit-20260213.tar.xz`: `6459b2696188b74edf950926cb3bacd1` (check w
 
 ```bash
 cd ~/src && tar -xf luajit-20260213.tar.xz
-cd "$(tar -tf luajit-20260213.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf luajit-20260213.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -22244,7 +22244,7 @@ rm -v /usr/lib/libluajit-5.1.a
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf luajit-20260213.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf luajit-20260213.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -22267,7 +22267,7 @@ MD5 sum of `uchardet-0.0.8.tar.xz`: `9e267be7aee81417e5875086dd9d44fd` (check wi
 
 ```bash
 cd ~/src && tar -xf uchardet-0.0.8.tar.xz
-cd "$(tar -tf uchardet-0.0.8.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf uchardet-0.0.8.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 > **Side note:** uchardet uses CMake **without** Ninja, so it installs with `make install` (not `ninja install`). The rule: if the build step ended with `ninja`, install with `ninja install`; if it ended with `make`, use `make install`.
@@ -22296,7 +22296,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf uchardet-0.0.8.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf uchardet-0.0.8.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -22320,7 +22320,7 @@ MD5 sum of `mpv-0.41.0.tar.gz`: `fa40a0fedeaf0a77127e238a39b9d4c4` (check with `
 
 ```bash
 cd ~/src && tar -xf mpv-0.41.0.tar.gz
-cd "$(tar -tf mpv-0.41.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf mpv-0.41.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -22356,7 +22356,7 @@ update-desktop-database -q
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf mpv-0.41.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf mpv-0.41.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -23937,7 +23937,7 @@ MD5 sum of `clucene-core-2.3.3.4.tar.gz`: `48d647fbd8ef8889e5a7f422c1bfda94` (ch
 
 ```bash
 cd ~/src && tar -xf clucene-core-2.3.3.4.tar.gz
-cd "$(tar -tf clucene-core-2.3.3.4.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf clucene-core-2.3.3.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -23968,7 +23968,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf clucene-core-2.3.3.4.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf clucene-core-2.3.3.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -23992,7 +23992,7 @@ MD5 sum of `libgusb-0.4.9.tar.xz`: `354a3227334991ea4e924843c144bd82` (check wit
 
 ```bash
 cd ~/src && tar -xf libgusb-0.4.9.tar.xz
-cd "$(tar -tf libgusb-0.4.9.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libgusb-0.4.9.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24037,7 +24037,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libgusb-0.4.9.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libgusb-0.4.9.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24062,7 +24062,7 @@ MD5 sum of `colord-1.4.8.tar.xz`: `4d17dea7fe5460c2ea16aee64dca2ecb` (check with
 
 ```bash
 cd ~/src && tar -xf colord-1.4.8.tar.xz
-cd "$(tar -tf colord-1.4.8.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf colord-1.4.8.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24111,7 +24111,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf colord-1.4.8.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf colord-1.4.8.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24136,7 +24136,7 @@ MD5 sum of `cups-2.4.19-source.tar.gz`: `06b7a3921812988cdb3198ff74ae381d` (chec
 
 ```bash
 cd ~/src && tar -xf cups-2.4.19-source.tar.gz
-cd "$(tar -tf cups-2.4.19-source.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cups-2.4.19-source.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24227,7 +24227,7 @@ systemctl enable cups
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cups-2.4.19-source.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cups-2.4.19-source.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24248,7 +24248,7 @@ MD5 sum of `glm-1.0.3.tar.gz`: `2192069d8d0091ff1cca041cdcdc85fe` (check with `m
 
 ```bash
 cd ~/src && tar -xf glm-1.0.3.tar.gz
-cd "$(tar -tf glm-1.0.3.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf glm-1.0.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24265,7 +24265,7 @@ cp -r doc /usr/share/doc/glm-1.0.3
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf glm-1.0.3.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf glm-1.0.3.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24286,7 +24286,7 @@ MD5 sum of `libatomic_ops-7.10.0.tar.gz`: `1de9631daa0781a8c5a8457053d57cf0` (ch
 
 ```bash
 cd ~/src && tar -xf libatomic_ops-7.10.0.tar.gz
-cd "$(tar -tf libatomic_ops-7.10.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libatomic_ops-7.10.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24310,7 +24310,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libatomic_ops-7.10.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libatomic_ops-7.10.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24333,7 +24333,7 @@ MD5 sum of `Archive-Zip-1.68.tar.gz`: `a33993309322164867c99e04a4000ee3` (check 
 
 ```bash
 cd ~/src && tar -xf Archive-Zip-1.68.tar.gz
-cd "$(tar -tf Archive-Zip-1.68.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf Archive-Zip-1.68.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24355,7 +24355,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf Archive-Zip-1.68.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf Archive-Zip-1.68.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24382,8 +24382,10 @@ MD5 sum of `libreoffice-26.2.5.2.tar.xz`: `cde5452693205386a34cbf3ce561956b` (ch
 
 ```bash
 cd ~/src && tar -xf libreoffice-26.2.5.2.tar.xz
-cd "$(tar -tf libreoffice-26.2.5.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libreoffice-26.2.5.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
+
+> **Warning:** **IPRPS changes to the configure line.** IPRPS OS has no Java (JDK), GPGME, unixODBC, PostgreSQL or Redland, so BLFS's line stops at `configure: error: /opt/jdk/bin/java not found`. The commands below already use `--without-java` (LibreOffice works fully; only Java extensions and the old HSQLDB database engine are missing: Base uses its built-in Firebird engine), `--disable-gpgmepp` (no OpenPGP document signing; certificate signing still works), `--disable-postgresql-sdbc`, the bundled ODBC headers and the bundled Redland, and English (US) only. `LO_PREFIX=/usr`, so the `/opt` link steps after the install are skipped automatically. If `autogen.sh` already failed: `export LO_PREFIX=/usr` again in this window and run the corrected `./autogen.sh` in the same folder; nothing was installed.
 
 **Build and install:**
 
@@ -24419,7 +24421,7 @@ ln -sv src/libreoffice-translations-26.2.5.2/translations/
 **[BUILDER]** — Due to the large size of the package, you may prefer to install it in /opt, instead of /usr. Depending on your choice, replace <PREFIX> by /usr or by /opt/libreoffice-26.2.5.2:
 
 ```bash
-export LO_PREFIX=<PREFIX>
+export LO_PREFIX=/usr        # IPRPS: install in /usr (no /opt links needed)
 ```
 
 > **Side note (BLFS):** If you set the ACLOCAL environment variable to support installing Xorg in /opt, you will need to unset it for this package.
@@ -24438,7 +24440,7 @@ esac
 ./autogen.sh --prefix=$LO_PREFIX         \
              --sysconfdir=/etc           \
              --with-vendor=BLFS          \
-             --with-lang='fr en-GB'      \
+             --with-lang='en-US'         \
              --with-help=html            \
              --with-myspell-dicts        \
              --without-junit             \
@@ -24448,14 +24450,14 @@ esac
              --disable-mariadb-sdbc      \
              --enable-release-build=yes  \
              --enable-python=system      \
-             --with-jdk-home=/opt/jdk    \
+             --without-java              \
              --with-system-boost         \
              --with-system-clucene       \
              --with-system-curl          \
              --with-system-epoxy         \
              --with-system-expat         \
              --with-system-glm           \
-             --with-system-gpgmepp       \
+             --disable-gpgmepp           \
              --with-system-graphite      \
              --with-system-harfbuzz      \
              --with-system-icu           \
@@ -24467,13 +24469,11 @@ esac
              --with-system-libxml        \
              --with-system-libwebp       \
              --with-system-nss           \
-             --with-system-odbc          \
-             --with-system-openldap      \
+                          --with-system-openldap      \
              --with-system-openssl       \
              --with-system-poppler       \
-             --with-system-postgresql    \
-             --with-system-redland       \
-             --with-system-zlib          \
+             --disable-postgresql-sdbc   \
+                          --with-system-zlib          \
              --with-system-zstd
 ```
 
@@ -24529,7 +24529,7 @@ update-desktop-database
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libreoffice-26.2.5.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libreoffice-26.2.5.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24553,7 +24553,7 @@ MD5 sum of `docbook-xsl-1.79.2.tar.bz2`: `4a400f0264a19329c7f95f69e098744a` (che
 
 ```bash
 cd ~/src && tar -xf docbook-xsl-1.79.2.tar.bz2
-cd "$(tar -tf docbook-xsl-1.79.2.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf docbook-xsl-1.79.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24602,7 +24602,7 @@ ln -s VERSION /usr/share/xml/docbook/xsl-stylesheets-1.79.2/VERSION.xsl
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf docbook-xsl-1.79.2.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf docbook-xsl-1.79.2.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24625,7 +24625,7 @@ MD5 sum of `libfyaml-0.9.6.tar.gz`: `f6d3756a80cb1ff99714e510cf4ce13d` (check wi
 
 ```bash
 cd ~/src && tar -xf libfyaml-0.9.6.tar.gz
-cd "$(tar -tf libfyaml-0.9.6.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libfyaml-0.9.6.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24646,7 +24646,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libfyaml-0.9.6.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libfyaml-0.9.6.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24669,7 +24669,7 @@ MD5 sum of `libxmlb-0.3.29.tar.xz`: `83f87e2ce1fd6b34b25e7f5e1443293c` (check wi
 
 ```bash
 cd ~/src && tar -xf libxmlb-0.3.29.tar.xz
-cd "$(tar -tf libxmlb-0.3.29.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libxmlb-0.3.29.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24693,7 +24693,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libxmlb-0.3.29.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libxmlb-0.3.29.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24717,7 +24717,7 @@ MD5 sum of `AppStream-1.1.6.tar.xz`: `cc07d222289ec963be208c3757bde6a9` (check w
 
 ```bash
 cd ~/src && tar -xf AppStream-1.1.6.tar.xz
-cd "$(tar -tf AppStream-1.1.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf AppStream-1.1.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24797,7 +24797,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf AppStream-1.1.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf AppStream-1.1.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24820,7 +24820,7 @@ MD5 sum of `babl-0.1.128.tar.xz`: `47bc0674961d219710a96e03d9e839ad` (check with
 
 ```bash
 cd ~/src && tar -xf babl-0.1.128.tar.xz
-cd "$(tar -tf babl-0.1.128.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf babl-0.1.128.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24848,7 +24848,7 @@ install -v -m644 ../docs/graphics/*.{html,svg} /usr/share/gtk-doc/html/babl/grap
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf babl-0.1.128.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf babl-0.1.128.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24872,7 +24872,7 @@ MD5 sum of `gegl-0.4.70.tar.xz`: `2442d5f0cb97bcc1b50d2082e29c9375` (check with 
 
 ```bash
 cd ~/src && tar -xf gegl-0.4.70.tar.xz
-cd "$(tar -tf gegl-0.4.70.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gegl-0.4.70.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24902,7 +24902,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gegl-0.4.70.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gegl-0.4.70.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24923,7 +24923,7 @@ MD5 sum of `inih-r62.tar.gz`: `c0c6982525958a0376a3cb5bfbee14a0` (check with `md
 
 ```bash
 cd ~/src && tar -xf inih-r62.tar.gz
-cd "$(tar -tf inih-r62.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf inih-r62.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -24947,7 +24947,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf inih-r62.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf inih-r62.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -24971,7 +24971,7 @@ MD5 sum of `exiv2-0.28.8.tar.gz`: `3f3b2d9c3e73880ea8e6bd78c67ea56a` (check with
 
 ```bash
 cd ~/src && tar -xf exiv2-0.28.8.tar.gz
-cd "$(tar -tf exiv2-0.28.8.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf exiv2-0.28.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25002,7 +25002,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf exiv2-0.28.8.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf exiv2-0.28.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25026,7 +25026,7 @@ MD5 sum of `gexiv2-0.16.2.tar.xz`: `ed530cddf2f30e1903e983e5542262f9` (check wit
 
 ```bash
 cd ~/src && tar -xf gexiv2-0.16.2.tar.xz
-cd "$(tar -tf gexiv2-0.16.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gexiv2-0.16.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25057,7 +25057,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gexiv2-0.16.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gexiv2-0.16.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25082,14 +25082,14 @@ MD5 sum of `ghostscript-10.07.1.tar.xz`: `9e987b203c535d3c7829e1daefb85e98` (che
 
 ```bash
 cd ~/src && tar -xf ghostscript-10.07.1.tar.xz
-cd "$(tar -tf ghostscript-10.07.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf ghostscript-10.07.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
 
 > **Side note (BLFS):** The Ghostscript build system is not user-friendly. In order to use system copies of various graphics libraries, you must do it using unconventional methods.
 
-**[BUILDER]** — *(Optional — skip if unsure)* If you have installed the recommended dependencies on your system, remove the copies of freetype, lcms2, libjpeg, libpng, and openjpeg:
+**[BUILDER]** — *(IPRPS: **required**)* If you have installed the recommended dependencies on your system, remove the copies of freetype, lcms2, libjpeg, libpng, and openjpeg:
 
 ```bash
 rm -rf freetype lcms2mt jpeg libpng openjpeg
@@ -25154,7 +25154,7 @@ gs -q -dBATCH /usr/share/ghostscript/10.07.1/examples/tiger.eps
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf ghostscript-10.07.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf ghostscript-10.07.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25178,7 +25178,7 @@ MD5 sum of `libmypaint-1.6.1.tar.xz`: `7f1dab2d30ce8a3f494354c7c77a2977` (check 
 
 ```bash
 cd ~/src && tar -xf libmypaint-1.6.1.tar.xz
-cd "$(tar -tf libmypaint-1.6.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libmypaint-1.6.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25199,7 +25199,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libmypaint-1.6.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libmypaint-1.6.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25222,7 +25222,7 @@ MD5 sum of `mypaint-brushes-2.0.2.tar.xz`: `ce965cd5d75947b7beca5ed3ee4521d2` (c
 
 ```bash
 cd ~/src && tar -xf mypaint-brushes-2.0.2.tar.xz
-cd "$(tar -tf mypaint-brushes-2.0.2.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf mypaint-brushes-2.0.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25243,7 +25243,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf mypaint-brushes-2.0.2.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf mypaint-brushes-2.0.2.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25268,7 +25268,7 @@ MD5 sum of `gimp-3.2.4.tar.xz`: `4a5a233cf24e599bbf73084a3583e29f` (check with `
 
 ```bash
 cd ~/src && tar -xf gimp-3.2.4.tar.xz
-cd "$(tar -tf gimp-3.2.4.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gimp-3.2.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25346,7 +25346,7 @@ chown -R root:root /usr/share/gimp/3.0/help
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gimp-3.2.4.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gimp-3.2.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25369,7 +25369,7 @@ MD5 sum of `double-conversion-3.4.0.tar.gz`: `cb2e555c32614f680ba928e962dda9be` 
 
 ```bash
 cd ~/src && tar -xf double-conversion-3.4.0.tar.gz
-cd "$(tar -tf double-conversion-3.4.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf double-conversion-3.4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25397,7 +25397,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf double-conversion-3.4.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf double-conversion-3.4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25418,7 +25418,7 @@ MD5 sum of `gc-8.2.12.tar.gz`: `5e7c74f8bd57f64d3f86673ff3c17230` (check with `m
 
 ```bash
 cd ~/src && tar -xf gc-8.2.12.tar.gz
-cd "$(tar -tf gc-8.2.12.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gc-8.2.12.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25443,7 +25443,7 @@ install -v -m644 doc/gc.man /usr/share/man/man3/gc_malloc.3
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gc-8.2.12.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gc-8.2.12.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25464,7 +25464,7 @@ MD5 sum of `gsl-2.8.tar.gz`: `182ec03204f164e67238c9116591a37d` (check with `md5
 
 ```bash
 cd ~/src && tar -xf gsl-2.8.tar.gz
-cd "$(tar -tf gsl-2.8.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gsl-2.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25498,7 +25498,7 @@ cp -R doc/_build/html/* /usr/share/doc/gsl-2.8
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gsl-2.8.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gsl-2.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25521,7 +25521,7 @@ MD5 sum of `libsigc++-2.12.1.tar.xz`: `891f1b2dbaebd8007eda8c639bbe1149` (check 
 
 ```bash
 cd ~/src && tar -xf libsigc++-2.12.1.tar.xz
-cd "$(tar -tf libsigc++-2.12.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libsigc++-2.12.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25551,7 +25551,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libsigc++-2.12.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libsigc++-2.12.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25574,7 +25574,7 @@ MD5 sum of `glibmm-2.66.10.tar.xz`: `04fab47987ee9df63f808959577d153b` (check wi
 
 ```bash
 cd ~/src && tar -xf glibmm-2.66.10.tar.xz
-cd "$(tar -tf glibmm-2.66.10.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf glibmm-2.66.10.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25598,7 +25598,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf glibmm-2.66.10.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf glibmm-2.66.10.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25621,7 +25621,7 @@ MD5 sum of `atkmm-2.28.5.tar.xz`: `c9bdc196eed368c274177b0c1caf140c` (check with
 
 ```bash
 cd ~/src && tar -xf atkmm-2.28.5.tar.xz
-cd "$(tar -tf atkmm-2.28.5.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf atkmm-2.28.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25645,7 +25645,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf atkmm-2.28.5.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf atkmm-2.28.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25668,7 +25668,7 @@ MD5 sum of `cairomm-1.14.6.tar.xz`: `634242bb797fb6e9d7cfae1a83474d11` (check wi
 
 ```bash
 cd ~/src && tar -xf cairomm-1.14.6.tar.xz
-cd "$(tar -tf cairomm-1.14.6.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cairomm-1.14.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25696,7 +25696,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cairomm-1.14.6.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cairomm-1.14.6.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25719,7 +25719,7 @@ MD5 sum of `pangomm-2.46.5.tar.xz`: `4fc19301ccc94e4fb72f1ed54bc65d4d` (check wi
 
 ```bash
 cd ~/src && tar -xf pangomm-2.46.5.tar.xz
-cd "$(tar -tf pangomm-2.46.5.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pangomm-2.46.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25743,7 +25743,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pangomm-2.46.5.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pangomm-2.46.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25766,7 +25766,7 @@ MD5 sum of `gtkmm-3.24.11.tar.xz`: `554154811621e1e411285dde09ca8913` (check wit
 
 ```bash
 cd ~/src && tar -xf gtkmm-3.24.11.tar.xz
-cd "$(tar -tf gtkmm-3.24.11.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gtkmm-3.24.11.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25796,7 +25796,7 @@ mv -v /usr/share/doc/gtkmm-3.0 /usr/share/doc/gtkmm-3.24.11
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gtkmm-3.24.11.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gtkmm-3.24.11.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25819,7 +25819,7 @@ MD5 sum of `potrace-1.16.tar.gz`: `5f0bd87ddd9a620b0c4e65652ef93d69` (check with
 
 ```bash
 cd ~/src && tar -xf potrace-1.16.tar.gz
-cd "$(tar -tf potrace-1.16.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf potrace-1.16.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25845,7 +25845,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf potrace-1.16.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf potrace-1.16.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25871,7 +25871,7 @@ MD5 sum of `inkscape-1.4.4.tar.xz`: `60ed50c2de060307ad1a6555c7653458` (check wi
 
 ```bash
 cd ~/src && tar -xf inkscape-1.4.4.tar.xz
-cd "$(tar -tf inkscape-1.4.4.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf inkscape-1.4.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25914,7 +25914,7 @@ update-desktop-database -q
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf inkscape-1.4.4.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf inkscape-1.4.4.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25935,7 +25935,7 @@ MD5 sum of `a52dec-0.8.0.tar.gz`: `4debeed0257f5312e84d92711a5cfcec` (check with
 
 ```bash
 cd ~/src && tar -xf a52dec-0.8.0.tar.gz
-cd "$(tar -tf a52dec-0.8.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf a52dec-0.8.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -25963,7 +25963,7 @@ install -v -m644 -D doc/liba52.txt \
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf a52dec-0.8.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf a52dec-0.8.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -25985,7 +25985,7 @@ MD5 sum of `libmad-0.15.1b.tar.gz`: `1be543bc30c56fb6bea1d7bf6a64e66c` (check wi
 
 ```bash
 cd ~/src && tar -xf libmad-0.15.1b.tar.gz
-cd "$(tar -tf libmad-0.15.1b.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libmad-0.15.1b.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26029,7 +26029,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libmad-0.15.1b.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libmad-0.15.1b.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26052,7 +26052,7 @@ MD5 sum of `vlc-3.0.23.tar.xz`: `ebc3f0d0a94785fd2b2df4087516938e` (check with `
 
 ```bash
 cd ~/src && tar -xf vlc-3.0.23.tar.xz
-cd "$(tar -tf vlc-3.0.23.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf vlc-3.0.23.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26088,7 +26088,7 @@ update-desktop-database -q
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf vlc-3.0.23.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf vlc-3.0.23.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26111,7 +26111,7 @@ MD5 sum of `ImageMagick-7.1.2-13.tar.xz`: `a28a5d65a58fce9c24e8cf4b47cb5c5c` (ch
 
 ```bash
 cd ~/src && tar -xf ImageMagick-7.1.2-13.tar.xz
-cd "$(tar -tf ImageMagick-7.1.2-13.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf ImageMagick-7.1.2-13.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26137,7 +26137,7 @@ make DOCUMENTATION_PATH=/usr/share/doc/imagemagick-7.1.2 install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf ImageMagick-7.1.2-13.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf ImageMagick-7.1.2-13.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26161,7 +26161,7 @@ MD5 sum of `freeglut-3.8.0.tar.gz`: `ca8361b5b6a64b07795b41bd24f6a23e` (check wi
 
 ```bash
 cd ~/src && tar -xf freeglut-3.8.0.tar.gz
-cd "$(tar -tf freeglut-3.8.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf freeglut-3.8.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26189,7 +26189,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf freeglut-3.8.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf freeglut-3.8.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26213,7 +26213,7 @@ MD5 sum of `mupdf-1.26.12-source.tar.gz`: `d10eb7e1ef0f4a44f5c14a29b9d6f906` (ch
 
 ```bash
 cd ~/src && tar -xf mupdf-1.26.12-source.tar.gz
-cd "$(tar -tf mupdf-1.26.12-source.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf mupdf-1.26.12-source.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26260,7 +26260,7 @@ ln -sfv mupdf-x11 /usr/bin/mupdf
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf mupdf-1.26.12-source.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf mupdf-1.26.12-source.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26283,7 +26283,7 @@ MD5 sum of `pdfio-1.6.4.tar.gz`: `21d128da7e16b8035e5eab0676c7496d` (check with 
 
 ```bash
 cd ~/src && tar -xf pdfio-1.6.4.tar.gz
-cd "$(tar -tf pdfio-1.6.4.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pdfio-1.6.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26307,7 +26307,7 @@ mv -v /usr/share/doc/pdfio{,-1.6.4}
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pdfio-1.6.4.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pdfio-1.6.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26330,7 +26330,7 @@ MD5 sum of `qpdf-12.4.0.tar.gz`: `d3156920305cafe5b554dcf36cf3cfe7` (check with 
 
 ```bash
 cd ~/src && tar -xf qpdf-12.4.0.tar.gz
-cd "$(tar -tf qpdf-12.4.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf qpdf-12.4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26358,7 +26358,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf qpdf-12.4.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf qpdf-12.4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26382,7 +26382,7 @@ MD5 sum of `libcupsfilters-2.1.1.tar.xz`: `1e3144c242e7ddcee112d41c79266885` (ch
 
 ```bash
 cd ~/src && tar -xf libcupsfilters-2.1.1.tar.xz
-cd "$(tar -tf libcupsfilters-2.1.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libcupsfilters-2.1.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26405,7 +26405,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libcupsfilters-2.1.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libcupsfilters-2.1.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26428,7 +26428,7 @@ MD5 sum of `libppd-2.1.1.tar.xz`: `65accc86f9956a1160937b14e0f516a6` (check with
 
 ```bash
 cd ~/src && tar -xf libppd-2.1.1.tar.xz
-cd "$(tar -tf libppd-2.1.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libppd-2.1.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26453,7 +26453,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libppd-2.1.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libppd-2.1.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26477,7 +26477,7 @@ MD5 sum of `cups-filters-2.0.1.tar.xz`: `b40d0f135af414666e1c3917983a1bb3` (chec
 
 ```bash
 cd ~/src && tar -xf cups-filters-2.0.1.tar.xz
-cd "$(tar -tf cups-filters-2.0.1.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cups-filters-2.0.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26512,7 +26512,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cups-filters-2.0.1.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cups-filters-2.0.1.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26535,7 +26535,7 @@ MD5 sum of `gutenprint-5.3.5.tar.xz`: `18968a1376a0fb0155afea4ce832d7fd` (check 
 
 ```bash
 cd ~/src && tar -xf gutenprint-5.3.5.tar.xz
-cd "$(tar -tf gutenprint-5.3.5.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gutenprint-5.3.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26575,7 +26575,7 @@ systemctl restart cups
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gutenprint-5.3.5.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gutenprint-5.3.5.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26596,7 +26596,7 @@ MD5 sum of `libburn-1.5.8.tar.gz`: `4c8c786e88eb3e9f7c1d0ddc4d4a39e7` (check wit
 
 ```bash
 cd ~/src && tar -xf libburn-1.5.8.tar.gz
-cd "$(tar -tf libburn-1.5.8.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libburn-1.5.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26630,7 +26630,7 @@ install -v -m644 doc/html/* /usr/share/doc/libburn-1.5.8
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libburn-1.5.8.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libburn-1.5.8.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26651,7 +26651,7 @@ MD5 sum of `libisofs-1.5.8.pl02.tar.gz`: `48150014510f8e65de66cb687ff63957` (che
 
 ```bash
 cd ~/src && tar -xf libisofs-1.5.8.pl02.tar.gz
-cd "$(tar -tf libisofs-1.5.8.pl02.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libisofs-1.5.8.pl02.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26685,7 +26685,7 @@ install -v -m644 doc/html/* /usr/share/doc/libisofs-1.5.8.pl02
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libisofs-1.5.8.pl02.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libisofs-1.5.8.pl02.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26708,7 +26708,7 @@ MD5 sum of `xfburn-0.8.0.tar.bz2`: `0ae5e3e94c71857b7cd8555f9f18625f` (check wit
 
 ```bash
 cd ~/src && tar -xf xfburn-0.8.0.tar.bz2
-cd "$(tar -tf xfburn-0.8.0.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf xfburn-0.8.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26729,7 +26729,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf xfburn-0.8.0.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf xfburn-0.8.0.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26752,7 +26752,7 @@ MD5 sum of `gmmlib-22.10.0.tar.gz`: `f94f6903e7df944c7a064f85b1b4a99b` (check wi
 
 ```bash
 cd ~/src && tar -xf gmmlib-22.10.0.tar.gz
-cd "$(tar -tf gmmlib-22.10.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf gmmlib-22.10.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26779,7 +26779,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf gmmlib-22.10.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf gmmlib-22.10.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26802,7 +26802,7 @@ MD5 sum of `intel-media-driver-26.2.4.tar.gz`: `507c81a204cbb38da19ac915ec16a618
 
 ```bash
 cd ~/src && tar -xf intel-media-driver-26.2.4.tar.gz
-cd "$(tar -tf intel-media-driver-26.2.4.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf intel-media-driver-26.2.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26840,7 +26840,7 @@ ninja install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf intel-media-driver-26.2.4.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf intel-media-driver-26.2.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26863,7 +26863,7 @@ MD5 sum of `msgpack-1.2.1.tar.gz`: `e0a9c82423574f99314ccd1ed77b8c67` (check wit
 
 ```bash
 cd ~/src && tar -xf msgpack-1.2.1.tar.gz
-cd "$(tar -tf msgpack-1.2.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf msgpack-1.2.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26883,7 +26883,7 @@ pip3 install --no-index --find-links dist --no-user msgpack
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf msgpack-1.2.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf msgpack-1.2.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26904,7 +26904,7 @@ MD5 sum of `charset_normalizer-3.4.7.tar.gz`: `68805886064d248d2e5205fd11112d85`
 
 ```bash
 cd ~/src && tar -xf charset_normalizer-3.4.7.tar.gz
-cd "$(tar -tf charset_normalizer-3.4.7.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf charset_normalizer-3.4.7.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26934,7 +26934,7 @@ deactivate
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf charset_normalizer-3.4.7.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf charset_normalizer-3.4.7.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26955,7 +26955,7 @@ MD5 sum of `idna-3.18.tar.gz`: `64359467ec86d86e398b1ae614e5718c` (check with `m
 
 ```bash
 cd ~/src && tar -xf idna-3.18.tar.gz
-cd "$(tar -tf idna-3.18.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf idna-3.18.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -26975,7 +26975,7 @@ pip3 install --no-index --find-links dist --no-user idna
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf idna-3.18.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf idna-3.18.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -26998,7 +26998,7 @@ MD5 sum of `hatch_vcs-0.5.0.tar.gz`: `9a22a9f7203783e526959d34510a9672` (check w
 
 ```bash
 cd ~/src && tar -xf hatch_vcs-0.5.0.tar.gz
-cd "$(tar -tf hatch_vcs-0.5.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf hatch_vcs-0.5.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27018,7 +27018,7 @@ pip3 install --no-index --find-links dist --no-user hatch_vcs
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf hatch_vcs-0.5.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf hatch_vcs-0.5.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27041,7 +27041,7 @@ MD5 sum of `urllib3-2.7.0.tar.gz`: `e79707b798a66c8165c9c441440f4e80` (check wit
 
 ```bash
 cd ~/src && tar -xf urllib3-2.7.0.tar.gz
-cd "$(tar -tf urllib3-2.7.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf urllib3-2.7.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27073,7 +27073,7 @@ deactivate
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf urllib3-2.7.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf urllib3-2.7.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27098,7 +27098,7 @@ MD5 sum of `requests-2.34.2.tar.gz`: `611e438d0803e962500225f9807a475e` (check w
 
 ```bash
 cd ~/src && tar -xf requests-2.34.2.tar.gz
-cd "$(tar -tf requests-2.34.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf requests-2.34.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27143,7 +27143,7 @@ deactivate
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf requests-2.34.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf requests-2.34.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27164,7 +27164,7 @@ MD5 sum of `semantic_version-2.10.0.tar.gz`: `e48abef93ba69abcd4eaf4640edfc38b` 
 
 ```bash
 cd ~/src && tar -xf semantic_version-2.10.0.tar.gz
-cd "$(tar -tf semantic_version-2.10.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf semantic_version-2.10.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27184,7 +27184,7 @@ pip3 install --no-index --find-links dist --no-user semantic_version
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf semantic_version-2.10.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf semantic_version-2.10.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27207,7 +27207,7 @@ MD5 sum of `setuptools_rust-1.12.1.tar.gz`: `90ce501aabce2a859e19a213985288ea` (
 
 ```bash
 cd ~/src && tar -xf setuptools_rust-1.12.1.tar.gz
-cd "$(tar -tf setuptools_rust-1.12.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf setuptools_rust-1.12.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27227,7 +27227,7 @@ pip3 install --no-index --find-links dist --no-user setuptools_rust
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf setuptools_rust-1.12.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf setuptools_rust-1.12.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27250,7 +27250,7 @@ MD5 sum of `maturin-1.14.1.tar.gz`: `ed60ce01916c36311fa8752b7af00b67` (check wi
 
 ```bash
 cd ~/src && tar -xf maturin-1.14.1.tar.gz
-cd "$(tar -tf maturin-1.14.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf maturin-1.14.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27278,7 +27278,7 @@ PATH=$PWD/testenv/bin:$PATH cargo test
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf maturin-1.14.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf maturin-1.14.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27301,7 +27301,7 @@ MD5 sum of `uv_build-0.11.24.tar.gz`: `f537ded461369ed76aec64e5d2e0269d` (check 
 
 ```bash
 cd ~/src && tar -xf uv_build-0.11.24.tar.gz
-cd "$(tar -tf uv_build-0.11.24.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf uv_build-0.11.24.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27321,7 +27321,7 @@ pip3 install --no-index --find-links dist --no-user uv_build
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf uv_build-0.11.24.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf uv_build-0.11.24.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27344,7 +27344,7 @@ MD5 sum of `cachecontrol-0.14.4.tar.gz`: `05c8e0cb39b405094ae1d6cdea337521` (che
 
 ```bash
 cd ~/src && tar -xf cachecontrol-0.14.4.tar.gz
-cd "$(tar -tf cachecontrol-0.14.4.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cachecontrol-0.14.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27372,7 +27372,7 @@ testenv/bin/python3 -m pytest
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cachecontrol-0.14.4.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cachecontrol-0.14.4.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27395,7 +27395,7 @@ MD5 sum of `cssselect-1.5.0.tar.gz`: `465a7b6af9ea95fdefe5357301589b9c` (check w
 
 ```bash
 cd ~/src && tar -xf cssselect-1.5.0.tar.gz
-cd "$(tar -tf cssselect-1.5.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cssselect-1.5.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27415,7 +27415,7 @@ pip3 install --no-index --find-links dist --no-user cssselect
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cssselect-1.5.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cssselect-1.5.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27436,7 +27436,7 @@ MD5 sum of `pyproject_metadata-0.12.1.tar.gz`: `d44c15fd176128acd9497af2512085a0
 
 ```bash
 cd ~/src && tar -xf pyproject_metadata-0.12.1.tar.gz
-cd "$(tar -tf pyproject_metadata-0.12.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pyproject_metadata-0.12.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27464,7 +27464,7 @@ testenv/bin/python3 -m pytest
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pyproject_metadata-0.12.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pyproject_metadata-0.12.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27488,7 +27488,7 @@ MD5 sum of `meson_python-0.20.0.tar.gz`: `032ed60b1d86c448331fc0a2ba81f499` (che
 
 ```bash
 cd ~/src && tar -xf meson_python-0.20.0.tar.gz
-cd "$(tar -tf meson_python-0.20.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf meson_python-0.20.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27516,7 +27516,7 @@ HOME= testenv/bin/python -m pytest
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf meson_python-0.20.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf meson_python-0.20.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27539,7 +27539,7 @@ MD5 sum of `numpy-2.5.2.tar.gz`: `85f9db626b908f4d2211d98b4bf8a83d` (check with 
 
 ```bash
 cd ~/src && tar -xf numpy-2.5.2.tar.gz
-cd "$(tar -tf numpy-2.5.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf numpy-2.5.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27572,7 +27572,7 @@ deactivate
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf numpy-2.5.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf numpy-2.5.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27593,7 +27593,7 @@ MD5 sum of `patchelf-0.19.1.tar.gz`: `508702ca6e4ee4638fe4e6dcf8885c95` (check w
 
 ```bash
 cd ~/src && tar -xf patchelf-0.19.1.tar.gz
-cd "$(tar -tf patchelf-0.19.1.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf patchelf-0.19.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27615,7 +27615,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf patchelf-0.19.1.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf patchelf-0.19.1.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27638,7 +27638,7 @@ MD5 sum of `pyserial-3.5.tar.gz`: `1cf25a76da59b530dbfc2cf99392dc83` (check with
 
 ```bash
 cd ~/src && tar -xf pyserial-3.5.tar.gz
-cd "$(tar -tf pyserial-3.5.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf pyserial-3.5.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27658,7 +27658,7 @@ pip3 install --no-index --find-links dist --no-user pyserial
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf pyserial-3.5.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf pyserial-3.5.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27679,7 +27679,7 @@ MD5 sum of `six-1.17.0.tar.gz`: `a0387fe15662c71057b4fb2b7aa9056a` (check with `
 
 ```bash
 cd ~/src && tar -xf six-1.17.0.tar.gz
-cd "$(tar -tf six-1.17.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf six-1.17.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27699,7 +27699,7 @@ pip3 install --no-index --find-links dist --no-user six
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf six-1.17.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf six-1.17.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27722,7 +27722,7 @@ MD5 sum of `scour-0.38.2.tar.gz`: `ae30f52602802f8c7df3a32e1f72b325` (check with
 
 ```bash
 cd ~/src && tar -xf scour-0.38.2.tar.gz
-cd "$(tar -tf scour-0.38.2.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf scour-0.38.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -27742,7 +27742,7 @@ pip3 install --no-index --find-links dist --no-user scour
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf scour-0.38.2.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf scour-0.38.2.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -28157,7 +28157,7 @@ MD5 sum of `sane-backends-1.4.0.tar.gz`: `fddb8b164ff1b1ffb576c9ba4173610d` (che
 
 ```bash
 cd ~/src && tar -xf sane-backends-1.4.0.tar.gz
-cd "$(tar -tf sane-backends-1.4.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf sane-backends-1.4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -28214,7 +28214,7 @@ EOF
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf sane-backends-1.4.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf sane-backends-1.4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -28235,7 +28235,7 @@ MD5 sum of `libspiro-dist-20220722.tar.gz`: `c21f86e6c1ad65ed4cb1f754f6d7563c` (
 
 ```bash
 cd ~/src && tar -xf libspiro-dist-20220722.tar.gz
-cd "$(tar -tf libspiro-dist-20220722.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libspiro-dist-20220722.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -28256,7 +28256,7 @@ make install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libspiro-dist-20220722.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libspiro-dist-20220722.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -28279,7 +28279,7 @@ MD5 sum of `fontforge-20251009.tar.xz`: `9407db5126f937618f1f5f1f9ee8aab2` (chec
 
 ```bash
 cd ~/src && tar -xf fontforge-20251009.tar.xz
-cd "$(tar -tf fontforge-20251009.tar.xz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf fontforge-20251009.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -28311,7 +28311,7 @@ ln -sv fontforge /usr/share/doc/fontforge-20251009
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf fontforge-20251009.tar.xz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf fontforge-20251009.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -28332,7 +28332,7 @@ MD5 sum of `libao-1.2.0.tar.gz`: `9f5dd20d7e95fd0dd72df5353829f097` (check with 
 
 ```bash
 cd ~/src && tar -xf libao-1.2.0.tar.gz
-cd "$(tar -tf libao-1.2.0.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libao-1.2.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -28360,7 +28360,7 @@ install -v -m644 README /usr/share/doc/libao-1.2.0
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libao-1.2.0.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libao-1.2.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -28383,7 +28383,7 @@ MD5 sum of `cdrdao-1.2.6.tar.bz2`: `f59689d847d56647187d4de487e3487d` (check wit
 
 ```bash
 cd ~/src && tar -xf cdrdao-1.2.6.tar.bz2
-cd "$(tar -tf cdrdao-1.2.6.tar.bz2 | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf cdrdao-1.2.6.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -28406,7 +28406,7 @@ install -v -m644 README /usr/share/doc/cdrdao-1.2.6
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf cdrdao-1.2.6.tar.bz2 | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf cdrdao-1.2.6.tar.bz2 | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -28429,7 +28429,7 @@ MD5 sum of `libisoburn-1.5.8.pl02.tar.gz`: `008b9adc9ab3545e167495220b453413` (c
 
 ```bash
 cd ~/src && tar -xf libisoburn-1.5.8.pl02.tar.gz
-cd "$(tar -tf libisoburn-1.5.8.pl02.tar.gz | head -1 | cut -d/ -f1)" && pwd
+cd "$(tar -tf libisoburn-1.5.8.pl02.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
 **Build and install:**
@@ -28465,7 +28465,7 @@ install -v -m644 doc/html/* /usr/share/doc/libisoburn-1.5.8.pl02
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf libisoburn-1.5.8.pl02.tar.gz | head -1 | cut -d/ -f1)"
+cd ~/src && rm -rf "$(tar -tf libisoburn-1.5.8.pl02.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -28517,18 +28517,16 @@ Then re-enter the IPRPS CHROOT and BUILDER windows (0.5). Details and restoring:
 
 ## Part 18 — Future Releases
 
-### 18.1 Local AI (planning only)
+### 18.1 Local AI: next steps
 
-A later IPRPS release will add a local AI assistant for Session Masters: NPC dialogue, encounter ideas, recaps, all without internet or API keys. Plan for it now, without building anything yet:
+The local AI is part of 1.0: the **IPRPS Oracle** with Ollama and the bundled `iprps-storyteller` model, in Medium and Advanced (Part 15). Later releases can build on it:
 
-| Planning item | Recommendation |
+| Next step | Notes |
 |---|---|
-| Edition | Advanced only, at first |
-| Hardware | 16 GB RAM minimum for small models; a supported GPU speeds it up greatly |
-| Storage | Models are several GB each. Keep them in `/opt/iprps-ai/models`, downloaded on demand rather than shipped in the image |
-| Integration | A local web API on `127.0.0.1` only, which the Hub and other IPRPS apps call like any other service |
-| Database | The `session_log` and `sheet_json` data already give an assistant the campaign context it needs |
-| Privacy | Everything stays on the computer, which is a strong selling point for player data |
+| A custom-trained IPRPS model | `iprps-ai-model` (Part 15) installs it in place of the bundled model; the Oracle doesn't change |
+| Larger optional models | Downloaded on demand for 16 GB+ machines, rather than shipped in the image |
+| The Hub's campaign tools | Session log, NPC and quest screens give the Oracle more campaign context |
+| The IPRPS Table | Oracle descriptions sent straight to players' devices, as they are to the player display |
 
 ### 18.2 A live/installer ISO
 

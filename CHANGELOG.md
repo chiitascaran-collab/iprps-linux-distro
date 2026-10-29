@@ -1,10 +1,18 @@
 # Changelog
 
+## 2026-10-29
+
+- **Overview with pictures:** screenshots of the Session Master Hub, the IPRPS Table (console and a player's phone), the IPRPS Oracle and IPRPS Writer, plus the wallpaper and login artwork (`docs/images/`), in the Markdown, Word and PDF versions. `md2docx.js` now places images (`![caption](file "w=inches")`).
+- **Overview and PDF updated** (`docs/IPRPS-OS-Overview.md`, `docs/IPRPS-OS-What-It-Is-and-What-It-Can-Do.pdf`): the IPRPS Table, the IPRPS Oracle as part of 1.0, Chromium, IPRPS Writer and Drawing, the Hub's app manager, current edition contents and tool status, privacy notes for LAN play, download and GitHub addresses, new FAQ answers. Part 18.1 now describes the next steps for the local AI that shipped in 1.0. The Word files now carry the right title, author and page header.
+- **Ghostscript (Stage H):** removing the bundled freetype, lcms2mt, jpeg, libpng and openjpeg copies is now marked **required** (BLFS calls it optional; IPRPS builds all of them, and skipping it stops configure with "Mixing local libtiff with shared libjpeg not supported").
+- **Unpack lines (every BLFS package):** the folder name is now read with `sed 's@^\./@@' | grep -m1 -o '^[^/]\+'`, which also works for tarballs whose listing starts with `./` (a likely cause of `cd` staying in `~/src` for AppStream).
+
 ## 2026-10-28
 
 - **IPRPS Table (12.7), all editions:** LAN play for computers with one screen. Any phone, tablet, laptop or desktop on the same network joins the Session Master's campaign at `http://<computer>:7777/` with a join code (or a QR code). Players: chat to everyone, players only, privately to the Session Master or to another player, with images (paste works) and audio files; a dice toolbar with the IPRPS rolls (skill check with bands and BTN, initiative, reaction, Trinity/Hydra Hand, Dual-Die, Infinite Convergence with exploding dice, RPS, weapon damage) and visibility per roll. Session Master console (this computer only): who is at the table (online, device, address, last seen), groups, messages to everyone/groups/selected/one player, push images, video and text cards, play sound (looping) on players' devices, secret rolls, copy buttons, kick, lock, new code. Node.js core only, its own system account and hardened systemd unit (`iprps-table.service`), rolls made on the server, files visible only to their recipients. Session Master Mode opens it instead of a player display window on one-screen computers; it's a Hub default app. Release cleanup empties its data.
 - Hub default apps now list **IPRPS Table** after Writer.
 - **Before Stage H (Part 15):** snapshot, a free-space check with steps to grow the build image by 40 GB (Medium's LibreOffice build alone needs about 15 GB), memory advice, and a procedure for re-releasing **Lite** with fixes made during Stage H: `iprps-enter.sh`, `iprps-leave.sh` and `iprps-release-clean.sh` now take `IPRPS_IMG=<image>` to work on a Lite fix copy.
+- **LibreOffice (Stage H):** configure without Java, GPGME, unixODBC, PostgreSQL and Redland (not in IPRPS OS; BLFS's line stopped at `/opt/jdk/bin/java not found`), English (US), installed in `/usr`.
 - wpa_supplicant section: checks for the Wi-Fi drivers (`nl80211`, `wext`) and libnl before installing.
 
 ## 2026-10-26

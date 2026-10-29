@@ -3998,18 +3998,16 @@ Install the Advanced IPRPS apps (12.4).
 
 ## Part 18 — Future Releases
 
-### 18.1 Local AI (planning only)
+### 18.1 Local AI: next steps
 
-A later IPRPS release will add a local AI assistant for Session Masters: NPC dialogue, encounter ideas, recaps, all without internet or API keys. Plan for it now, without building anything yet:
+The local AI is part of 1.0: the **IPRPS Oracle** with Ollama and the bundled `iprps-storyteller` model, in Medium and Advanced (Part 15). Later releases can build on it:
 
-| Planning item | Recommendation |
+| Next step | Notes |
 |---|---|
-| Edition | Advanced only, at first |
-| Hardware | 16 GB RAM minimum for small models; a supported GPU speeds it up greatly |
-| Storage | Models are several GB each. Keep them in `/opt/iprps-ai/models`, downloaded on demand rather than shipped in the image |
-| Integration | A local web API on `127.0.0.1` only, which the Hub and other IPRPS apps call like any other service |
-| Database | The `session_log` and `sheet_json` data already give an assistant the campaign context it needs |
-| Privacy | Everything stays on the computer, which is a strong selling point for player data |
+| A custom-trained IPRPS model | `iprps-ai-model` (Part 15) installs it in place of the bundled model; the Oracle doesn't change |
+| Larger optional models | Downloaded on demand for 16 GB+ machines, rather than shipped in the image |
+| The Hub's campaign tools | Session log, NPC and quest screens give the Oracle more campaign context |
+| The IPRPS Table | Oracle descriptions sent straight to players' devices, as they are to the player display |
 
 ### 18.2 A live/installer ISO
 

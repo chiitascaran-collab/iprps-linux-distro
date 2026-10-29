@@ -83,7 +83,7 @@ def label_text(el):
 
 NOTE_TAGS = ('note', 'important', 'warning', 'caution', 'tip')
 # Steps BLFS marks optional that IPRPS needs (NetworkManager drives Wi-Fi through wpa_supplicant's D-Bus interface)
-REQUIRED_MARKERS = ('CONFIG_CTRL_IFACE_DBUS_NEW', 'dbus/fi.w1.wpa_supplicant1.service', 'make install-httpd', 'make install-php-fpm', 'make install-mariadb')
+REQUIRED_MARKERS = ('rm -rf freetype lcms2mt jpeg libpng openjpeg', 'CONFIG_CTRL_IFACE_DBUS_NEW', 'dbus/fi.w1.wpa_supplicant1.service', 'make install-httpd', 'make install-php-fpm', 'make install-mariadb')
 OPTIONAL_RE = re.compile(r'^(if you\'ve|if you\'re|if you (wish|want|have|need|prefer|are|built|installed|downloaded|used|did|do not)|if desired|optionally|to test|to run the test|the test|tests? |before running the tests)'
                          r'|\b(test suite|run the tests|testsuite|doxygen|sphinx|api documentation|build the documentation|install the documentation|manual pages)\b', re.I)
 
@@ -144,6 +144,8 @@ def render_section(sec, root_note=True):
             out.append('')
             last_label = ''
     return out
+
+TOPDIR = "sed 's@^\\./@@' | grep -m1 -o '^[^/]\\+'"   # top folder, also for tarballs listed as ./name/...
 
 def unpack_dir(tarball):
     d = re.sub(r'\.(tar\.(xz|gz|bz2|lz|zst)|tgz|zip)$', '', tarball)
@@ -273,7 +275,7 @@ def render_package(pid, stage_code, built_set, extra_note=None, rebuild=False, u
         for l, t in other:
             if l and l.strip().startswith('http'):
                 lines += [f'Additional reference: {l.strip()}', '']
-        lines += ['**[BUILDER]** — Unpack (the folder name is read from the tarball):', '', '```bash', f'cd ~/src && tar -xf {tb}', f'cd "$(tar -tf {tb} | head -1 | cut -d/ -f1)" && pwd', '```', '']
+        lines += ['**[BUILDER]** — Unpack (the folder name is read from the tarball):', '', '```bash', f'cd ~/src && tar -xf {tb}', f'cd "$(tar -tf {tb} | {TOPDIR})" && pwd', '```', '']
     # pages that build several packages: render each one like its own package
     multi = [x for x in node.xpath('./sect2') if x.xpath('./sect3[@role="package"]')]
     if len(multi) >= 2:
@@ -290,7 +292,7 @@ def render_package(pid, stage_code, built_set, extra_note=None, rebuild=False, u
                 tb = si['download'].rstrip('/').split('/')[-1]
                 lines += ['**[BUILDER]** — Download and unpack (the folder name is read from the tarball):', '', '```bash', 'cd ~/src',
                           f'wget {si["download"]}', f'md5sum {tb}' + (f'          # must print {si["md5"]}' if si['md5'] else ''),
-                          f'tar -xf {tb}', f'cd "$(tar -tf {tb} | head -1 | cut -d/ -f1)" && pwd', '```', '']
+                          f'tar -xf {tb}', f'cd "$(tar -tf {tb} | {TOPDIR})" && pwd', '```', '']
             for sec in sub.xpath('./sect3'):
                 if sec.get('role') in ('package', 'commands', 'content', 'kernel'):
                     if sec.get('role') == 'kernel' and sec.xpath('.//screen'):
@@ -301,7 +303,7 @@ def render_package(pid, stage_code, built_set, extra_note=None, rebuild=False, u
                 if any(l.startswith('```') for l in body):
                     lines += body
             if si['download']:
-                lines += ['**[BUILDER]** — Clean up:', '', '```bash', f'cd ~/src && rm -rf "$(tar -tf {tb} | head -1 | cut -d/ -f1)"', '```', '']
+                lines += ['**[BUILDER]** — Clean up:', '', '```bash', f'cd ~/src && rm -rf "$(tar -tf {tb} | {TOPDIR})"', '```', '']
         md = '\n'.join(lines)
         return md
     # render every command-bearing subsection in page order
@@ -326,7 +328,7 @@ def render_package(pid, stage_code, built_set, extra_note=None, rebuild=False, u
         lines += [head, ''] + body
     if info['download']:
         tb = info['download'].rstrip('/').split('/')[-1]
-        lines += ['**[BUILDER]** — Clean up:', '', '```bash', f'cd ~/src && rm -rf "$(tar -tf {tb} | head -1 | cut -d/ -f1)"', '```', '']
+        lines += ['**[BUILDER]** — Clean up:', '', '```bash', f'cd ~/src && rm -rf "$(tar -tf {tb} | {TOPDIR})"', '```', '']
     md = '\n'.join(lines)
     if pid in OVERRIDES:
         reps, note = OVERRIDES[pid]
@@ -353,3 +355,14 @@ OVERRIDES['firefox'] = (_r, _n + """
 _r, _n = OVERRIDES['firefox']
 OVERRIDES['firefox'] = (_r + [('echo "' + 'AIzaSy' + 'DxKL42zsPjbke5O8_rPVpVrLrJ8aeE9rQ" > google-key',
     "# IPRPS: skip this step. The key belongs to the LFS project and must not be\n# built into IPRPS OS; Firefox works without geolocation.")], _n)
+
+# IPRPS (Oct 28): LibreOffice without Java and without packages IPRPS doesn't build
+OVERRIDES['libreoffice'] = ([
+    ('export LO_PREFIX=<PREFIX>', 'export LO_PREFIX=/usr        # IPRPS: install in /usr (no /opt links needed)'),
+    ("--with-lang='fr en-GB'      \\", "--with-lang='en-US'         \\"),
+    ('--with-jdk-home=/opt/jdk    \\', '--without-java              \\'),
+    ('--with-system-gpgmepp       \\', '--disable-gpgmepp           \\'),
+    ('--with-system-odbc          \\\n', ''),
+    ('--with-system-postgresql    \\', '--disable-postgresql-sdbc   \\'),
+    ('--with-system-redland       \\\n', ''),
+], """> **Warning:** **IPRPS changes to the configure line.** IPRPS OS has no Java (JDK), GPGME, unixODBC, PostgreSQL or Redland, so BLFS's line stops at `configure: error: /opt/jdk/bin/java not found`. The commands below already use `--without-java` (LibreOffice works fully; only Java extensions and the old HSQLDB database engine are missing: Base uses its built-in Firebird engine), `--disable-gpgmepp` (no OpenPGP document signing; certificate signing still works), `--disable-postgresql-sdbc`, the bundled ODBC headers and the bundled Redland, and English (US) only. `LO_PREFIX=/usr`, so the `/opt` link steps after the install are skipped automatically. If `autogen.sh` already failed: `export LO_PREFIX=/usr` again in this window and run the corrected `./autogen.sh` in the same folder; nothing was installed.""")
