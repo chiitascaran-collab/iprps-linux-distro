@@ -2,6 +2,7 @@
 
 ## 2026-10-29
 
+- **New walkthrough** (`docs/IPRPS-OS-Walkthrough`): first boot, the desktop and Hub, session prep in IPRPS Writer and the Oracle, opening the IPRPS Table, and a complete Dual-Die one-shot, *Fog on Pier Nine*, that uses every Table feature, with pre-generated characters, troubleshooting and a glossary.
 - **Overview with pictures:** screenshots of the Session Master Hub, the IPRPS Table (console and a player's phone), the IPRPS Oracle and IPRPS Writer, plus the wallpaper and login artwork (`docs/images/`), in the Markdown, Word and PDF versions. `md2docx.js` now places images (`![caption](file "w=inches")`).
 - **Overview and PDF updated** (`docs/IPRPS-OS-Overview.md`, `docs/IPRPS-OS-What-It-Is-and-What-It-Can-Do.pdf`): the IPRPS Table, the IPRPS Oracle as part of 1.0, Chromium, IPRPS Writer and Drawing, the Hub's app manager, current edition contents and tool status, privacy notes for LAN play, download and GitHub addresses, new FAQ answers. Part 18.1 now describes the next steps for the local AI that shipped in 1.0. The Word files now carry the right title, author and page header.
 - **Ghostscript (Stage H):** removing the bundled freetype, lcms2mt, jpeg, libpng and openjpeg copies is now marked **required** (BLFS calls it optional; IPRPS builds all of them, and skipping it stops configure with "Mixing local libtiff with shared libjpeg not supported").

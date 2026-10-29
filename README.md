@@ -30,6 +30,7 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | Path | Contents |
 |---|---|
 | `docs/IPRPS-OS-Distribution-Build-Guide.md` / `.docx` | The complete step-by-step build guide (386 BLFS packages, every command labeled with its window) |
+| `docs/IPRPS-OS-Walkthrough.md` / `.docx` / `.pdf` | Step-by-step tutorial: first boot to game night, with the ready-to-run IPRPS one-shot "Fog on Pier Nine" |
 | `docs/IPRPS-OS-Overview.md` / `.pdf` | What IPRPS OS is, who it's for, editions, requirements, roadmap, FAQ |
 | `tools/iprps-clean-apps.py` | Makes a distributable copy of the web apps: no API keys, no hosting passwords, local database names, `@IPRPS_DB_PASS@` placeholder (guide 12.5) |
 | `docs/USEFUL-COMMANDS.md` | File transfers (Windows ↔ WSL ↔ chroot ↔ test VM), QEMU and RealVNC, SSH, Git |
