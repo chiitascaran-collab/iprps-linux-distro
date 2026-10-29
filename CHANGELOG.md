@@ -4,6 +4,8 @@
 
 - **IPRPS Table (12.7), all editions:** LAN play for computers with one screen. Any phone, tablet, laptop or desktop on the same network joins the Session Master's campaign at `http://<computer>:7777/` with a join code (or a QR code). Players: chat to everyone, players only, privately to the Session Master or to another player, with images (paste works) and audio files; a dice toolbar with the IPRPS rolls (skill check with bands and BTN, initiative, reaction, Trinity/Hydra Hand, Dual-Die, Infinite Convergence with exploding dice, RPS, weapon damage) and visibility per roll. Session Master console (this computer only): who is at the table (online, device, address, last seen), groups, messages to everyone/groups/selected/one player, push images, video and text cards, play sound (looping) on players' devices, secret rolls, copy buttons, kick, lock, new code. Node.js core only, its own system account and hardened systemd unit (`iprps-table.service`), rolls made on the server, files visible only to their recipients. Session Master Mode opens it instead of a player display window on one-screen computers; it's a Hub default app. Release cleanup empties its data.
 - Hub default apps now list **IPRPS Table** after Writer.
+- **Before Stage H (Part 15):** snapshot, a free-space check with steps to grow the build image by 40 GB (Medium's LibreOffice build alone needs about 15 GB), memory advice, and a procedure for re-releasing **Lite** with fixes made during Stage H: `iprps-enter.sh`, `iprps-leave.sh` and `iprps-release-clean.sh` now take `IPRPS_IMG=<image>` to work on a Lite fix copy.
+- wpa_supplicant section: checks for the Wi-Fi drivers (`nl80211`, `wext`) and libnl before installing.
 
 ## 2026-10-26
 

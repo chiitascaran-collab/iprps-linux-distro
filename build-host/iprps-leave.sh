@@ -15,6 +15,6 @@ for m in dev/shm dev/pts dev proc sys run build boot/efi; do
 done
 mountpoint -q "$R" && umount -v "$R"
 sync
-for L in $(losetup -j /root/iprps-system.img | cut -d: -f1); do losetup -v -d "$L"; done
+for L in $(losetup -j "${IPRPS_IMG:-/root/iprps-system.img}" | cut -d: -f1); do losetup -v -d "$L"; done
 echo "Remaining mounts under $R:"; findmnt -R "$R" || echo "  none"
 losetup -a | grep iprps || echo "Image detached."

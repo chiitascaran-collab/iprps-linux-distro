@@ -82,6 +82,8 @@ def label_text(el):
     return t
 
 NOTE_TAGS = ('note', 'important', 'warning', 'caution', 'tip')
+# Steps BLFS marks optional that IPRPS needs (NetworkManager drives Wi-Fi through wpa_supplicant's D-Bus interface)
+REQUIRED_MARKERS = ('CONFIG_CTRL_IFACE_DBUS_NEW', 'dbus/fi.w1.wpa_supplicant1.service', 'make install-httpd', 'make install-php-fpm', 'make install-mariadb')
 OPTIONAL_RE = re.compile(r'^(if you\'ve|if you\'re|if you (wish|want|have|need|prefer|are|built|installed|downloaded|used|did|do not)|if desired|optionally|to test|to run the test|the test|tests? |before running the tests)'
                          r'|\b(test suite|run the tests|testsuite|doxygen|sphinx|api documentation|build the documentation|install the documentation|manual pages)\b', re.I)
 
@@ -118,6 +120,9 @@ def render_section(sec, root_note=True):
                 prefix = '**[IPRPS CHROOT]** *(root; same folder as BUILDER)* — ' if root_note else '**[IPRPS CHROOT]** *(root; any folder)* — '
             else:
                 prefix = '**[BUILDER]** — '
+            if optional and any(m in body for m in REQUIRED_MARKERS):
+                optional = False
+                prefix += '*(IPRPS: **required**)* '
             if optional: prefix += '*(Optional — skip if unsure)* '
             if ui and re.search(r'^make install-(httpd|iptables|lightdm|mariadb|php-fpm|rsyncd|saslauthd|slapd|sshd|[a-z0-9-]*units?)\b', body.strip(), re.M) and 'blfs-systemd-units' not in body:
                 body = 'cd /build/src/blfs-systemd-units-20251204    # the BLFS systemd units folder (kept since Part 2.5)\n' + body.strip('\n')
@@ -185,7 +190,7 @@ OVERRIDES = {
    '> **Side note:** **IPRPS change.** The wallpaper portal needs GNOME Desktop, which IPRPS OS doesn\'t build (Xfce sets its own wallpapers). If `meson` still asks for `gnome-desktop-3.0`, also add `-D settings=disabled`.'),
  'wpa_supplicant': ([('systemctl enable wpa_supplicant@wlan0', '# IPRPS: don\'t enable this. NetworkManager starts wpa_supplicant itself;\n# an enabled per-interface unit makes every boot wait 90 s for wlan0.\n# systemctl enable wpa_supplicant@wlan0'),
                      ('systemctl start wpa_supplicant@wlan0', '# systemctl start wpa_supplicant@wlan0')],
-   '> **Warning:** **IPRPS change.** Don\'t enable `wpa_supplicant@wlan0`. NetworkManager (Stage D) manages Wi-Fi and starts wpa_supplicant when needed. If you enabled it already: `systemctl disable wpa_supplicant@wlan0.service` in IPRPS CHROOT.'),
+   '> **Warning:** **IPRPS change.** Don\'t enable `wpa_supplicant@wlan0`. NetworkManager (Stage D) manages Wi-Fi and starts wpa_supplicant when needed. If you enabled it already: `systemctl disable wpa_supplicant@wlan0.service` in IPRPS CHROOT.\n\n> **Warning:** **IPRPS check: Wi-Fi drivers and D-Bus.** Write the **whole** `.config` from this section (all the `CONFIG_...=y` lines, including `CONFIG_DRIVER_NL80211=y`, `CONFIG_LIBNL32=y` and `CONFIG_CTRL_IFACE_DBUS_NEW=y`), not only the D-Bus lines: without the others, wpa_supplicant builds but says **"No drivers enabled"** and Wi-Fi stays greyed out. Before `make install`, check: `./wpa_supplicant -h | grep -A4 \'^drivers:\'` lists `nl80211` and `wext`, and `ldd wpa_supplicant | grep -c libnl` prints `2` or more. If not, fix `.config`, run `make clean`, and build again.'),
  'polkit': ([('-D man=true ', '-D man=false'), ('-D tests=true', '-D tests=false')],
    '> **Side note:** **IPRPS change.** Manual pages and tests are switched off: the man pages need extra documentation tools, and the tests can\'t run in the chroot.'),
  'xscreensaver': ([('wget https://www.jwz.org/xscreensaver/xscreensaver-6.15.tar.gz',
@@ -343,3 +348,8 @@ _r, _n = OVERRIDES['firefox']
 OVERRIDES['firefox'] = (_r, _n + """
 
 > **Side note:** **Running `./mach`.** `cat > mozconfig`, the two `export` lines and `./mach build` must all run **inside the Firefox source folder** (`ls mach mozconfig` lists both). `MOZBUILD_STATE_PATH=${PWD}/mozbuild` takes the folder you're in, so export it again after changing folders. Firefox is the longest build of the project (several hours). If it's killed for lack of memory, run `export MOZ_PARALLEL_BUILD=4` before `./mach build`. After an interruption, the same commands in the same folder continue the build. The two `export` lines are also needed in IPRPS CHROOT before `./mach install`.""")
+
+# IPRPS (Oct 25): never use the LFS project's Google key in IPRPS builds
+_r, _n = OVERRIDES['firefox']
+OVERRIDES['firefox'] = (_r + [('echo "' + 'AIzaSy' + 'DxKL42zsPjbke5O8_rPVpVrLrJ8aeE9rQ" > google-key',
+    "# IPRPS: skip this step. The key belongs to the LFS project and must not be\n# built into IPRPS OS; Firefox works without geolocation.")], _n)

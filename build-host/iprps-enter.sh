@@ -1,8 +1,8 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2026 Mythical Legends Publishing, LLC
-# Mount the IPRPS image and enter the chroot as root
-IMG=/root/iprps-system.img; R=/mnt/iprps
+# Mount the IPRPS image and enter the chroot as root (IPRPS_IMG=<file> picks another image, such as a Lite fix copy)
+IMG=${IPRPS_IMG:-/root/iprps-system.img}; R=/mnt/iprps
 L=$(losetup -j $IMG | cut -d: -f1 | head -1); [ -n "$L" ] || L=$(losetup -fP --show $IMG)
 mkdir -p $R; mountpoint -q $R || mount ${L}p3 $R
 mkdir -p $R/boot/efi $R/build

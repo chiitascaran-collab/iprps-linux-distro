@@ -361,8 +361,8 @@ Save this script; it attaches the image, mounts everything and enters the chroot
 ```bash
 cat > /root/iprps-enter.sh << "EOF"
 #!/bin/bash
-# Mount the IPRPS image and enter the chroot as root
-IMG=/root/iprps-system.img; R=/mnt/iprps
+# Mount the IPRPS image and enter the chroot as root (IPRPS_IMG=<file> picks another image, such as a Lite fix copy)
+IMG=${IPRPS_IMG:-/root/iprps-system.img}; R=/mnt/iprps
 L=$(losetup -j $IMG | cut -d: -f1 | head -1); [ -n "$L" ] || L=$(losetup -fP --show $IMG)
 mkdir -p $R; mountpoint -q $R || mount ${L}p3 $R
 mkdir -p $R/boot/efi $R/build
@@ -393,7 +393,7 @@ for m in dev/shm dev/pts dev proc sys run build boot/efi; do
 done
 mountpoint -q "$R" && umount -v "$R"
 sync
-for L in $(losetup -j /root/iprps-system.img | cut -d: -f1); do losetup -v -d "$L"; done
+for L in $(losetup -j "${IPRPS_IMG:-/root/iprps-system.img}" | cut -d: -f1); do losetup -v -d "$L"; done
 echo "Remaining mounts under $R:"; findmnt -R "$R" || echo "  none"
 losetup -a | grep iprps || echo "Image detached."
 EOF
@@ -23441,7 +23441,7 @@ cat > /root/iprps-release-clean.sh << "EOF"
 set -eu
 case "${1:-}" in lite|medium|advanced) ED=$1 ;; *) echo "usage: $0 lite|medium|advanced"; exit 1 ;; esac
 EDC=${ED^}
-SRC=/root/iprps-system.img
+SRC=${IPRPS_IMG:-/root/iprps-system.img}     # IPRPS_IMG=<file> releases another image (a Lite fix copy, Part 15)
 REL=/root/release
 IMG=$REL/iprps-os-1.0-$ED.img
 MNT=/mnt/rel
@@ -23858,6 +23858,57 @@ Then continue building in `/root/iprps-system.img`.
 ---
 
 ## Part 15 — Stage H: Medium Edition Apps
+
+### Before Stage H: room in the image, memory, and Lite fixes
+
+**1. Snapshot.** Take snapshot **`stage-H-start`** (0.4), after `RELEASE-lite`. Every Stage H problem can go back to it.
+
+**2. Free space.** Medium adds LibreOffice, GIMP, Inkscape, VLC, Chromium and the Oracle's AI model, and LibreOffice alone needs about 15 GB while it builds. Check the image:
+
+**[IPRPS CHROOT]**
+
+```bash
+df -h /
+du -sh /build/src
+```
+
+If **Avail** is under **30 GB**, make the image bigger before starting (the release scripts shrink it again, so this doesn't change the download size). Leave the chroot windows (`exit`) and stop any test VM first:
+
+**[DEBIAN ROOT]**
+
+```bash
+bash /root/iprps-leave.sh
+df -h /                                            # Debian needs room for the extra 40 GB
+truncate -s +40G /root/iprps-system.img
+sfdisk --relocate gpt-bak-std /root/iprps-system.img
+echo ", +" | sfdisk -N 3 /root/iprps-system.img
+LP=$(losetup -fP --show /root/iprps-system.img) && e2fsck -f ${LP}p3 && resize2fs ${LP}p3; losetup -d $LP
+ls -l /root/iprps-system.img                       # now 85899345920 bytes
+```
+
+`sfdisk --relocate` moves the partition table's backup copy to the new end of the image, and `resize2fs` grows the file system into the new space. Then enter again (`bash /root/iprps-enter.sh`) and `df -h /` shows the extra space. From now on, a complete snapshot (0.4) or test copy has the **new size** (85899345920 bytes), not 42949672960.
+
+> **Side note:** Deleting finished build folders also frees space: once a package is installed, its extracted folder in `/build/src` (not the tarball) can go, for example `rm -rf /build/src/libreoffice-26.2.5` after LibreOffice's `make install`. Keep folders the guide says to keep (such as glycin's).
+
+**3. Memory.** LibreOffice, GIMP and Inkscape are large C++ builds. With 32 GB in the PC, give WSL 20 GB and swap (`.wslconfig`, Appendix C) and build them with `make -j4` (or `ninja -j4`) if WSL becomes unresponsive.
+
+**4. Lite fixes during Stage H.** The editions share one image, so a fix made now (to an IPRPS app or script, say) lands in Medium and Advanced automatically. To **re-release Lite** with it, make the same fix in a copy of the `RELEASE-lite` snapshot. `iprps-enter.sh`, `iprps-leave.sh` and `iprps-release-clean.sh` work on another image when `IPRPS_IMG` names it. Only one image can be entered at a time, so leave the main one first:
+
+**[DEBIAN ROOT]**
+
+```bash
+bash /root/iprps-leave.sh
+cp -v --sparse=always /root/snapshots/iprps-RELEASE-lite.img /root/iprps-lite-fix.img
+IPRPS_IMG=/root/iprps-lite-fix.img bash /root/iprps-enter.sh
+#   ... make the fix inside, then exit ...
+IPRPS_IMG=/root/iprps-lite-fix.img bash /root/iprps-leave.sh
+IPRPS_IMG=/root/iprps-lite-fix.img /root/iprps-release-clean.sh lite
+/root/iprps-release-pack.sh lite
+cp -v --sparse=always /root/iprps-lite-fix.img /root/snapshots/iprps-RELEASE-lite.img    # the fixed Lite is the new Lite base
+bash /root/iprps-enter.sh                                                               # back to the Medium build
+```
+
+The repository's CHANGELOG records each fix, so the Lite copy and the main image stay in step.
 
 The Medium edition's apps: **LibreOffice**, **GIMP**, **Inkscape**, **VLC**, **FFmpeg**, **ImageMagick**, **CUPS** printing with Gutenprint and Ghostscript, **Xfburn**, and hardware video decoding for Intel (libva, intel-media-driver).
 
