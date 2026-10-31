@@ -55,8 +55,8 @@ You build **one** system in stages, inside **WSL** on your Windows PC, working i
 | F | Part 10 | Web server and database | 6 | Lite (and up) |
 | G | Part 11 | Lite edition apps | 25 | Lite (and up) |
 | H | Part 15 | Medium edition apps | 68 | Medium |
-| I | Part 16 | Advanced edition apps (BLFS part) | 6 | Advanced |
-| | | **Total BLFS packages** | **386** (+2 rebuilds) | |
+| I | Part 16 | Advanced edition apps (BLFS part) | 7 | Advanced |
+| | | **Total BLFS packages** | **387** (+2 rebuilds) | |
 
 ### Conventions
 
@@ -26102,17 +26102,19 @@ cd ~/src && rm -rf "$(tar -tf vlc-3.0.23.tar.xz | sed 's@^\./@@' | grep -m1 -o '
 
 ```bash
 cd ~/src
-wget https://www.imagemagick.org/archive/releases/ImageMagick-7.1.2-13.tar.xz
+wget -O ImageMagick-7.1.2-13.tar.gz https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-13.tar.gz
 ```
 
-MD5 sum of `ImageMagick-7.1.2-13.tar.xz`: `a28a5d65a58fce9c24e8cf4b47cb5c5c` (check with `md5sum ImageMagick-7.1.2-13.tar.xz`).
+GitHub makes this archive itself, so BLFS's MD5 sum doesn't apply. Check that it is a real archive: `tar -tzf ImageMagick-7.1.2-13.tar.gz | head -3` lists `ImageMagick-7.1.2-13/...` files.
 
 **[BUILDER]** — Unpack (the folder name is read from the tarball):
 
 ```bash
-cd ~/src && tar -xf ImageMagick-7.1.2-13.tar.xz
-cd "$(tar -tf ImageMagick-7.1.2-13.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
+cd ~/src && tar -xf ImageMagick-7.1.2-13.tar.gz
+cd "$(tar -tf ImageMagick-7.1.2-13.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
+
+> **Warning:** **IPRPS download change.** imagemagick.org keeps only its newest releases, so BLFS's address for 7.1.2-13 now answers **404 Not Found**. The commands below download the same version from ImageMagick's official GitHub repository (the `7.1.2-13` tag) as a `.tar.gz`; everything else is unchanged. Newer 7.1.2 releases also build with these commands and include security fixes: to use one, replace `7.1.2-13` everywhere in this section with the newest tag listed at https://github.com/ImageMagick/ImageMagick/tags.
 
 **Build and install:**
 
@@ -26137,7 +26139,7 @@ make DOCUMENTATION_PATH=/usr/share/doc/imagemagick-7.1.2 install
 **[BUILDER]** — Clean up:
 
 ```bash
-cd ~/src && rm -rf "$(tar -tf ImageMagick-7.1.2-13.tar.xz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
+cd ~/src && rm -rf "$(tar -tf ImageMagick-7.1.2-13.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')"
 ```
 
 
@@ -27779,22 +27781,24 @@ Medium and Advanced add **Chromium** as the **default web browser**, and as the 
 
 IPRPS uses **ungoogled-chromium**, a prebuilt, open-source Chromium **without Google's services and telemetry**, unbranded, and BSD-licensed like Chromium itself. It isn't built from source here on purpose: BLFS has no Chromium, one build needs about 16 GB of RAM, over 100 GB of disk and roughly a day, and since September 2026 Chromium releases every two weeks, with weekly security fixes. A prebuilt release keeps IPRPS current with a few minutes' work per update.
 
-**1. Download (Windows).** From **https://github.com/ungoogled-software/ungoogled-chromium-portablelinux/releases**, download the newest **x86_64 Linux `.tar.xz`** (for example `ungoogled-chromium_155.0.8059.84-1_linux.tar.xz`; use the exact name shown). GitHub lists each file's **SHA-256** next to it; note it down.
+**1. Download (Windows).** From **https://github.com/ungoogled-software/ungoogled-chromium-portablelinux/releases**, download the newest **x86_64 Linux `.tar.xz`** (for example `ungoogled-chromium-156.0.8078.73-1-x86_64_linux.tar.xz`; the naming changes between releases, so the commands below match any of them). GitHub lists each file's **SHA-256** next to it; note it down.
 
 **2. Copy it in and check it. [DEBIAN ROOT]**
 
 ```bash
-cp -v /mnt/c/Users/<you>/Downloads/ungoogled-chromium_*_linux.tar.xz /build/src/
-sha256sum /build/src/ungoogled-chromium_*_linux.tar.xz
+cp -v /mnt/c/Users/<you>/Downloads/ungoogled-chromium*linux.tar.xz /build/src/
+sha256sum /build/src/ungoogled-chromium*linux.tar.xz
 ```
 
 The `sha256sum` output must match GitHub's value exactly.
+
+> **Note:** Windows hides the last part of the name: Explorer shows `...x86_64_linux.tar` for a file that is really `...x86_64_linux.tar.xz`. If `cp` says *No such file*, run `ls /mnt/c/Users/<you>/Downloads/ | grep -i chromium` to see the real name. Keep only one ungoogled-chromium archive in `/build/src`, so the commands pick the right one.
 
 **3. Install into `/opt/chromium`. [IPRPS CHROOT]**
 
 ```bash
 rm -rf /opt/chromium && install -vdm755 /opt/chromium
-tar -xf /build/src/ungoogled-chromium_*_linux.tar.xz -C /opt/chromium --strip-components=1
+tar -xf /build/src/ungoogled-chromium*linux.tar.xz -C /opt/chromium --strip-components=1
 ls -l /opt/chromium/chrome
 S=$(ls /opt/chromium/chrome[-_]sandbox 2>/dev/null) && chown root:root "$S" && chmod 4755 "$S" && ls -l "$S"
 ldd /opt/chromium/chrome | grep 'not found' || echo "all libraries found"
@@ -28136,9 +28140,9 @@ Then re-enter the IPRPS CHROOT and BUILDER windows (0.5). Details and restoring:
 
 ## Part 16 — Stage I: Advanced Edition Apps
 
-The Advanced edition's extra BLFS packages: **SANE** (scanners), **FontForge** (fonts and symbols), **Graphviz** (relationship and story diagrams), **cdrdao** and **libisoburn** (disc mastering), and **FUSE 3** (for AppImage apps in 16.1).
+The Advanced edition's extra BLFS packages: **SANE** (scanners), **FontForge** (fonts and symbols), **Graphviz** (relationship and story diagrams), **cdrdao** and **libisoburn** (disc mastering), **FUSE 3** (for AppImage apps in 16.1) and **XCB Utilities** (`libxcb-cursor` for Calibre, 16.2).
 
-**6 packages, in build order:** SANE-1.4.0, Libspiro-20220722, FontForge-20251009, Libao-1.2.0, Cdrdao-1.2.6, libisoburn-1.5.8.pl02.
+**7 packages, in build order:** SANE-1.4.0, Libspiro-20220722, FontForge-20251009, Libao-1.2.0, Cdrdao-1.2.6, libisoburn-1.5.8.pl02, XCB Utilities.
 
 ### SANE-1.4.0
 
@@ -28160,6 +28164,8 @@ cd ~/src && tar -xf sane-backends-1.4.0.tar.gz
 cd "$(tar -tf sane-backends-1.4.0.tar.gz | sed 's@^\./@@' | grep -m1 -o '^[^/]\+')" && pwd
 ```
 
+> **Warning:** **IPRPS: order matters.** Run the two root steps first (create the `scanner` group, then add `builder` to it), **then** configure and build in BUILDER, then `make install` as root. BLFS's configure line runs through `sg scanner`, which fails if the group or the membership doesn't exist yet, and then `make install` says *No rule to make target 'install'*. `--enable-libusb_1_0` is added for USB scanners (libusb is in the build).
+
 **Build and install:**
 
 **[IPRPS CHROOT]** *(root; same folder as BUILDER)* — The SANE daemon should run with its own group. Create this group by issuing the following command as the root user:
@@ -28170,10 +28176,10 @@ groupadd -g 70 scanner
 
 > **Side note (BLFS):** configure assumes that the user building SANE Backends is a member of the scanner group for testing the existence of this group. As a result, the user building the package needs to be added to the scanner group. Add the user to the scanner group by issuing the following command as the root user: After adding the scanner group as above, you will need to log out and back in to activate it.
 
-**[IPRPS CHROOT]** *(root; same folder as BUILDER)* — *(Optional — skip if unsure)* configure assumes that the user building SANE Backends is a member of the scanner group for testing the existence of this group. As a result, the user building the package needs to be added to the scanner group. Add the user to the scanner group by issuing…
+**[IPRPS CHROOT]** *(root; same folder as BUILDER)* — *(IPRPS: **required**)* configure assumes that the user building SANE Backends is a member of the scanner group for testing the existence of this group. As a result, the user building the package needs to be added to the scanner group. Add the user to the scanner group by issuing…
 
 ```bash
-usermod -G scanner -a username
+usermod -G scanner -a builder
 ```
 
 **[BUILDER]** — For a USB scanner, if you are linking to libusb-1.0.30, include the configure switch --enable-libusb_1_0. Install SANE Backends by running the following commands:
@@ -28184,6 +28190,7 @@ PYTHON=python3 ./configure --prefix=/usr        \
                            --sysconfdir=/etc    \
                            --localstatedir=/var \
                            --with-lockdir=/run/lock \
+                           --enable-libusb_1_0  \
                            --docdir=/usr/share/doc/sane-backends-1.4.0" &&
 make
 ```
@@ -28469,6 +28476,90 @@ cd ~/src && rm -rf "$(tar -tf libisoburn-1.5.8.pl02.tar.gz | sed 's@^\./@@' | gr
 ```
 
 
+### XCB Utilities
+
+*BLFS 13.1 · ID `xcb-utilities` · Stage I* · *Build time:* 0.1 SBU (ignoring the time to download) · *Disk space:* 13.4 MB
+
+**Requires:** `libxcb`, `xcb-util`
+
+This page builds a **set of packages** from https://xorg.freedesktop.org/archive/individual/lib/ using the list and loop below.
+
+**Download preparation:**
+
+> **Side note (BLFS):** This package is known to build and work properly using an LFS 13.1 platform.
+
+**Downloading XCB Utilities:**
+
+**[BUILDER]** — First, create a list of files to be downloaded. This file will also be used to verify the integrity of the downloads when complete:
+
+```bash
+cat > xcb-utils.md5 << "EOF"
+a67bfac2eff696170259ef1f5ce1b611  xcb-util-image-0.4.1.tar.xz
+fbdc05f86f72f287ed71b162f1a9725a  xcb-util-keysyms-0.4.1.tar.xz
+193b890e2a89a53c31e2ece3afcbd55f  xcb-util-renderutil-0.3.10.tar.xz
+581b3a092e3c0c1b4de6416d90b969c3  xcb-util-wm-0.4.2.tar.xz
+e85bccd1993992be07232f8b80a814c8  xcb-util-cursor-0.1.6.tar.xz
+322cf9df283625223933ffcecb4a1cca  xcb-util-errors-1.0.1.tar.xz
+EOF
+```
+
+**[BUILDER]** — To download the needed files using Wget-1.25.0, use the following commands:
+
+```bash
+mkdir xcb-utils &&
+cd    xcb-utils &&
+grep -v '^#' ../xcb-utils.md5 | awk '{print $2}' | wget -i- -c \
+     -B https://xorg.freedesktop.org/archive/individual/lib/ &&
+md5sum -c ../xcb-utils.md5
+```
+
+**Build and install:**
+
+> **Side note (BLFS):** When installing multiple packages in a script, the installation needs to be done as the root user. There are three general options that can be used to do this: One way to handle this situation is to create a short bash function that automatically selects the appropriate method. Once the command is set in the environment, it does not need to be set again.
+
+**[BUILDER]** — *(Optional — skip if unsure)* When installing multiple packages in a script, the installation needs to be done as the root user. There are three general options that can be used to do this: One way to handle this situation is to create a short bash function that automatically selects…
+
+```bash
+as_root()
+{
+  if   [ $EUID = 0 ];        then $*
+  elif [ -x /usr/bin/sudo ]; then sudo $*
+  else                            su -c \\"$*\\"
+  fi
+}
+
+export -f as_root
+```
+
+**[BUILDER]** — First, start a subshell that will exit on error:
+
+```bash
+bash -e
+```
+
+**[BUILDER]** — Install all of the packages by running the following commands:
+
+```bash
+for package in $(grep -v '^#' ../xcb-utils.md5 | awk '{print $2}')
+do
+  packagedir=${package%.tar.?z*}
+  tar -xf $package
+  pushd $packagedir
+     ./configure $XORG_CONFIG
+     make
+     as_root make install
+  popd
+  rm -rf $packagedir
+done
+```
+
+**[BUILDER]** — Finally, exit the shell that was started earlier:
+
+```bash
+exit
+```
+
+
 
 ### 16.1 Creative apps from upstream (not in BLFS)
 
@@ -28487,6 +28578,56 @@ These popular creative tools aren't in BLFS 13.1. Ship them as their projects' *
 | Pandoc | Document conversion | Tarball (single binary) | Markdown to DOCX/EPUB/PDF |
 
 > **Warning:** Before each release, download the current version from each project's official site, check its published checksum or signature, and **test that it starts** on the IPRPS image. AppImages need FUSE (`fuse3` is in the build). If an AppImage complains about FUSE, run it with `--appimage-extract` once and use the extracted `AppRun` instead. Check each app's license allows redistribution; for GPL apps, also link to their source.
+
+### 16.2 Calibre (e-books)
+
+**Calibre** manages and converts e-books: campaign books, rulebooks and setting guides as EPUB, plus a reader for them. It's free software (**GPL-3.0**), so it can ship in IPRPS OS. IPRPS uses its **official Linux binary**, which carries private copies of nearly everything it needs (its own Qt and Python) and installs into `/opt/calibre`. Calibre's author recommends it over distribution-built packages.
+
+**1. The libraries Calibre needs from the system. [IPRPS CHROOT]** Its Qt needs `libxcb-cursor` (from **XCB Utilities**, Stage I above), Mesa's `libEGL` and `libGL`, and `libOpenGL.so.0`:
+
+```bash
+ls -l /usr/lib/libxcb-cursor.so.0 /usr/lib/libEGL.so.1 /usr/lib/libGL.so.1
+[ -e /usr/lib/libOpenGL.so.0 ] || ln -sv libGL.so.1 /usr/lib/libOpenGL.so.0
+ldconfig && ldconfig -p | grep -E 'libOpenGL.so.0|libxcb-cursor.so.0'
+```
+
+- If `libxcb-cursor.so.0` is missing, build **XCB Utilities** from Stage I first. Without it, Calibre stops at start with *Could not load the Qt platform plugin "xcb"*.
+- **Why the link:** `libOpenGL.so.0` normally comes from *libglvnd*, which BLFS doesn't use: BLFS's Mesa puts all of OpenGL in `libGL.so.1`. Programs built elsewhere, such as Calibre's Qt, ask for `libOpenGL.so.0` by name; the link points them at Mesa's library, which has the same OpenGL functions. Without it, Calibre's installer stops with *You are missing the system library libOpenGL.so.0*.
+
+**2. Install with Calibre's own installer. [IPRPS CHROOT]**
+
+```bash
+cd /build/src
+wget -nv -O calibre-linux-installer.sh https://download.calibre-ebook.com/linux-installer.sh
+sh calibre-linux-installer.sh install_dir=/opt
+/opt/calibre/calibre --version
+ls /usr/bin/calibre /usr/bin/ebook-viewer /usr/bin/ebook-convert
+```
+
+- The installer downloads the newest Calibre, **checks its signature**, unpacks it to `/opt/calibre`, and runs `calibre_postinstall`, which adds the `calibre`, `ebook-viewer` and `ebook-convert` commands, the menu entries (Office) and the e-book file types.
+- `calibre --version` prints the version, for example `calibre (calibre 9.17.0)`. Note it for step 3.
+- Saving the script first (rather than piping it into `sh`) lets you read it before running it: `less calibre-linux-installer.sh`.
+
+**3. Keep the matching source code. [IPRPS CHROOT]** The GPL requires it to be published with each release (13.7):
+
+```bash
+V=$(/opt/calibre/calibre --version | grep -o '[0-9][0-9.]*' | head -1); echo "Calibre $V"
+wget -P /build/src https://download.calibre-ebook.com/$V/calibre-$V.tar.xz
+ls -l /build/src/calibre-$V.tar.xz
+```
+
+Publish `calibre-$V.tar.xz` with the release's other source archives. The official binary also bundles Qt, Python and other libraries under their own licenses; they're listed in Calibre's `bypy/sources.json` (in the source tarball and at https://github.com/kovidgoyal/calibre), and their licenses are inside `/opt/calibre`.
+
+**4. Test. [TEST VM]** Open **calibre** from the menu (Office). The welcome wizard asks where to keep the library: the default, `~/Calibre Library`, is fine; or choose a folder inside *Campaigns*. Add any EPUB or PDF and open it in the viewer.
+
+> **Pro tip:** **Updating Calibre.** Calibre releases often. To update between IPRPS releases, an administrator runs step 2 again (`sudo sh calibre-linux-installer.sh install_dir=/opt`); it replaces `/opt/calibre` and keeps every user's library and settings.
+
+| Problem | Fix |
+| --- | --- |
+| *You are missing the system library libOpenGL.so.0* | Step 1: create the `libOpenGL.so.0` link and run `ldconfig`, then run the installer again |
+| *Could not load the Qt platform plugin "xcb"* | `libxcb-cursor` is missing: build XCB Utilities (Stage I), then start Calibre again. `QT_DEBUG_PLUGINS=1 calibre` names any other missing library |
+| The installer stops with a signature or download error | Check the internet connection in the chroot (`ping -c1 download.calibre-ebook.com`) and run step 2 again; never skip the check |
+| No Calibre in the menu | Run `/opt/calibre/calibre_postinstall` as root, then `update-desktop-database /usr/share/applications` |
 
 Install the Advanced IPRPS apps (12.4).
 
@@ -28946,9 +29087,9 @@ libtasn1-4.21.0, p11-kit-0.26.5, make-ca-1.16.1, libunistring-1.4.2, libidn2-2.3
 
 CLucene-2.3.3.4, libgusb-0.4.9, Colord-1.4.8, Cups-2.4.19, GLM-1.0.3, libatomic_ops-7.10.0, Archive::Zip-1.68, LibreOffice-26.2.5, docbook-xsl-ns-1.79.2, libfyaml-0.9.6, libxmlb-0.3.29, AppStream-1.1.6, babl-0.1.128, gegl-0.4.70, inih-62, Exiv2-0.28.8, gexiv2-0.16.2, ghostscript-10.07.1, libmypaint-1.6.1, mypaint-brushes-2.0.2, Gimp-3.2.4, Double-conversion-3.4.0, GC-8.2.12, gsl-2.8, libsigc++-2.12.1, GLibmm-2.66.10, Atkmm-2.28.5, libcairomm-1.0 (cairomm-1.14.6), Pangomm-2.46.5, Gtkmm-3.24.11, Potrace-1.16, Inkscape-1.4.4, Liba52-0.8.0, libmad-0.15.1b, VLC-3.0.23, ImageMagick-7.1.2-13, Freeglut-3.8.0, MuPDF-1.26.12, pdfio-1.6.4, Qpdf-12.4.0, libcupsfilters-2.1.1, libppd-2.1.1, cups-filters-2.0.1, Gutenprint-5.3.5, libburn-1.5.8, libisofs-1.5.8.pl02, Xfburn-0.8.0, gmmlib-22.10.0, intel-media-driver-26.2.4, Msgpack-1.2.1, Charset-normalizer-3.4.7, Idna-3.18, Hatch_vcs-0.5.0, Urllib3-2.7.0, Requests-2.34.2, semantic_version-2.10.0, setuptools_rust-1.12.1, maturin-1.14.1, uv_build-0.11.24, cachecontrol-0.14.4, CSSSelect-1.5.0, Pyproject-Metadata-0.12.1, Meson_python-0.20.0, NumPy-2.5.2, Patchelf-0.19.1, pySerial-3.5, six-1.17.0, Scour-0.38.2.
 
-### Advanced (Medium + 6 packages, Stage I, plus the upstream apps in 16.1)
+### Advanced (Medium + 7 packages, Stage I, plus the upstream apps in 16.1)
 
-SANE-1.4.0, Libspiro-20220722, FontForge-20251009, Libao-1.2.0, Cdrdao-1.2.6, libisoburn-1.5.8.pl02.
+SANE-1.4.0, Libspiro-20220722, FontForge-20251009, Libao-1.2.0, Cdrdao-1.2.6, libisoburn-1.5.8.pl02, XCB Utilities.
 
 
 ---
