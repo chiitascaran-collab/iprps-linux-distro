@@ -22687,6 +22687,7 @@ update-desktop-database /usr/share/applications
 | **Infinite Plane Writing Assistant** | Writing help for campaigns and lore | Exists (needs internet + API key) | — | ✔ | ✔ |
 | **IPRPS Oracle** | Local AI for the Session Master: chat, quick generators (NPC, location, loot, encounter, plot hook, names, read-aloud), campaign memory, save to the campaign, show on the player display | Exists (`oracle/`, Part 15) | — | ✔ | ✔ |
 | **Soundboard** | One-click sound effects and ambience: built-in sounds made by the computer, your own files, boards and hotkeys; plays files on the Table too | Exists (`soundboard/`, 12.11) | ✔ | ✔ | ✔ |
+| **IPRPS Updates** | Security fixes, new app versions and optional software, installed without reinstalling (pacman); Hub tile, notifications | Exists (`iprps-base`, 12.12) | ✔ | ✔ | ✔ |
 | **IPRPS File Viewer** | Open and check `.iprps`, `.ipai`, `.srpatch` and `.capstone`/`.pcapstone` files; import sheets | Exists (`file-viewer/`, 12.10) | ✔ | ✔ | ✔ |
 | **Lookbook Studio** | Visual lookbooks for campaigns and settings | Exists | — | — | ✔ |
 | **Reel** | Browser-based audio workstation | Exists | — | — | ✔ |
@@ -23229,9 +23230,10 @@ Five more apps complete the Session Master's toolkit, in every edition. Like Cha
 - Apps that need a key ask for it with the user's sign-in: `GET /iprps/welcome/api.php?action=secret&provider=anthropic` (or `google`, `openai`, `xai`, `leonardo`, `elevenlabs`, `kling`, or a name the user chose) returns `{"ok":true,"secret":"…"}` for that account only.
 - The IPRPS web apps from the live server keep their own key settings until they're changed to ask the vault (12.5).
 
-**1. Copy the apps. [DEBIAN ROOT]** From the newest repository:
+**1. Copy the apps. [DEBIAN ROOT]** From the newest repository. The Combat Tracker adds combatants from Character Sheets, so do 12.9 first if you want that (the first line checks; the other tools work without it):
 
 ```bash
+[ -d /mnt/iprps/srv/www/iprps/character-sheets ] || echo "Note: Character Sheets (12.9) isn't installed yet"
 R=/mnt/g/IPRPS/iprps-os
 cp -rv $R/apps/iprps-lib $R/apps/combat $R/apps/dice $R/apps/session-log $R/apps/welcome $R/apps/file-viewer /mnt/iprps/srv/www/iprps/
 cp -v $R/apps/hub/default-apps.json $R/apps/hub/app-names.json /mnt/iprps/srv/www/iprps/hub/
@@ -23302,11 +23304,11 @@ php -r 'echo function_exists("openssl_encrypt") ? "openssl OK\n" : "openssl MISS
 **3. The release cleanup forgets the vault key. [DEBIAN ROOT]** Section 13.4's `iprps-release-clean.sh` now empties `/var/lib/iprps-vault` (each install makes its own key at first use). If you installed the script before this change, update it:
 
 ```bash
-grep -q 'iprps-vault' /root/iprps-release-clean.sh || sed -i 's|/var/lib/iprps-table/\*   #|/var/lib/iprps-table/* /var/lib/iprps-vault/*   #|' /root/iprps-release-clean.sh
+install -vm755 /mnt/g/IPRPS/iprps-os/build-host/iprps-release-clean.sh /root/
 grep -c 'iprps-vault' /root/iprps-release-clean.sh
 ```
 
-It prints **1** or more. Writing the script again from 13.4 does the same.
+It prints **2**. This installs the current script from the repository (writing it again from 13.4 does the same).
 
 **4. Test. [TEST VM]** Fresh test copy, new user.
 
@@ -23358,9 +23360,10 @@ The **Soundboard** (`soundboard`) is the last of the Session Master's tools, in 
 
 Every account has its own boards (stored in `user_settings` as `soundboard`) and its own files: the table `sound_files` (`id`, `user_id`, `name`, `file`, `mime`, `size`, `table_media`, `created_at`), created on first use, with the audio in `/var/lib/iprps-sounds/<account>/`. That folder is readable by the web server only, and files are fetched with the sign-in token. The release cleanup (13.4) empties it.
 
-**1. Copy the app. [DEBIAN ROOT]**
+**1. Copy the app. [DEBIAN ROOT]** The Soundboard uses the session tools' shared code, so **12.10 must be done first** (the first line checks):
 
 ```bash
+[ -d /mnt/iprps/srv/www/iprps/iprps-lib ] || echo "STOP: do 12.10 first (iprps-lib and IPRPS Welcome are missing)"
 R=/mnt/g/IPRPS/iprps-os
 cp -rv $R/apps/soundboard /mnt/iprps/srv/www/iprps/
 cp -v $R/apps/hub/default-apps.json $R/apps/hub/app-names.json /mnt/iprps/srv/www/iprps/hub/
@@ -23402,11 +23405,11 @@ ls -ld /var/lib/iprps-sounds
 **3. The release cleanup empties the sound folder. [DEBIAN ROOT]** Section 13.4's script now includes `/var/lib/iprps-sounds/*`. To update a script installed earlier:
 
 ```bash
-grep -q 'iprps-sounds' /root/iprps-release-clean.sh || sed -i 's|/var/lib/iprps-vault/\*   #|/var/lib/iprps-vault/* /var/lib/iprps-sounds/*   #|' /root/iprps-release-clean.sh
+install -vm755 /mnt/g/IPRPS/iprps-os/build-host/iprps-release-clean.sh /root/
 grep -c 'iprps-sounds' /root/iprps-release-clean.sh
 ```
 
-It prints **1** or more. (Do 12.10's step 3 first if `iprps-vault` isn't in the script yet.)
+It prints **2**. This installs the current script from the repository, which also has 12.10's change.
 
 **4. Test. [TEST VM]**
 
@@ -23422,7 +23425,275 @@ It prints **1** or more. (Do 12.10's step 3 first if `iprps-vault` isn't in the 
 | No sound at all | Check the master volume and the desktop's volume (panel). In a QEMU VM started with `-audio none`, there is no sound device |
 | *The IPRPS Table is closed* | Open the table in its console first; built-in sounds and pads without **Also on players' devices** don't need it |
 
-> **Checkpoint:** All Lite IPRPS apps open from the IPRPS menu, and Session Master Mode opens all three windows. Take snapshot **`iprps-apps-lite`**.
+### 12.12 Package manager: pacman and IPRPS Updates
+
+From here on, IPRPS OS installs updates **without reinstalling**: security fixes, new versions of the IPRPS apps, and optional software that an edition doesn't include. The tool is **pacman**, Arch Linux's package manager, built from source like everything else. Every edition gets it.
+
+**How it fits together:**
+
+| Piece | What it is |
+|---|---|
+| **pacman 7.1.0** | Installs, updates and removes packages (`.pkg.tar.zst` files), keeps track of every file a package owns, and checks dependencies. **makepkg** builds packages from recipes called **PKGBUILDs**. |
+| **Three repositories** on infiniteplane.space | **`iprps-core`**: pacman, the signing key, the system, the edition packages and security updates. **`iprps-apps`**: the IPRPS apps, one package each. **`iprps-extra`**: optional software. Address: `https://infiniteplane.space/downloads/iprps/repo/1/<repository>/x86_64/` (`1` = the IPRPS OS 1.x series). |
+| **Signatures** | Every package and every repository list is signed with the **IPRPS signing key**, which you create in step 1. Computers refuse anything unsigned or signed by another key, even if the server or a mirror were tampered with. The private key stays in Debian and on your D: drive; it is never in the image or in Git. |
+| **`iprps-base`** | pacman's settings (`/etc/pacman.conf`, `/etc/pacman.d/iprps-mirrorlist`), **IPRPS Updates**, `iprps-update`, the update check timer and the notifications. Its version *is* the IPRPS OS version: a point release (1.0.1) raises it and adds what the release needs (Part 17). |
+| **Edition packages** | `iprps-lite`, `iprps-medium`, `iprps-advanced`: exactly one is installed (13.4 picks it). Each depends on that edition's IPRPS apps, so an app added to an edition later arrives with the next update. Medium and Advanced also tell pacman about software they have that isn't packaged yet (Ollama; Advanced also XCB Utilities' `libxcb-cursor`). |
+| **IPRPS app packages** | `iprps-hub`, `iprps-table`, `iprps-writer`, `iprps-oracle` and the others: the files from 12.5–12.11, built from the repository (`packages/iprps-apps`). Users' data is never in a package: it stays in the database and in `/var/lib`. |
+| **IPRPS Updates** (menu: IPRPS → IPRPS Updates) | A window for administrators: what's waiting, **Install updates**, optional software to **Install** or **Remove**, and the automatic-check setting. It asks for the administrator's password (polkit), then runs on this computer only, for that account only. |
+| **`iprps-update`** | The same in a terminal: `sudo iprps-update` (status), `check`, `upgrade`, `extras`, `install NAME`, `remove NAME`, `auto on/off`. |
+| **Automatic check** | `iprps-update-check.timer`: 10 minutes after start and every 6 hours, when online, it downloads the package lists (nothing else) into a separate copy. Administrators get a desktop notification when updates are ready, and the Hub's **IPRPS Updates** tile shows them. |
+
+> **Side note:** **Adopting the release's files.** The system was built without a package manager, so pacman doesn't know who owns most files. The first time a package arrives for something already installed (the Hub, say, or a rebuilt cURL), it **takes over** those files. That's what `--overwrite` does: `iprps-update` allows it only under `/usr`, `/opt` and `/srv/www/iprps`, never in `/etc`. `iprps-repo.sh check` (step 8) makes sure no two IPRPS packages contain the same file, so taking over can never steal a file from another package.
+
+**Privacy:** the update check is an ordinary download from infiniteplane.space (the server sees the computer's IP address, as with any web page). Nothing about the user or the computer is sent. Users can switch it off in IPRPS Updates (**Settings**) or with `sudo iprps-update auto off`.
+
+**1. The signing key, and the publishing tools. [DEBIAN ROOT]** Unzip the newest repository over `G:\IPRPS\iprps-os` first. It has the recipes (`packages/`), the Hub tile (`apps/updates-tile/`) and `build-host/iprps-repo.sh`.
+
+```bash
+apt install pacman-package-manager makepkg gnupg rsync libarchive-tools zstd curl
+install -vm755 /mnt/g/IPRPS/iprps-os/build-host/iprps-repo.sh /root/
+/root/iprps-repo.sh key
+```
+
+`iprps-repo.sh key` creates the key (**ed25519**, valid 5 years) as *IPRPS OS Packages &lt;packages@infiniteplane.space&gt;*; set `IPRPS_KEY_UID="Name <address>"` before it to use another name. It asks for a **passphrase** twice: choose a strong one and keep it in a password manager. You type it whenever you publish.
+
+**What you should see:** *Signing key* followed by 40 characters (the **fingerprint**), and:
+
+- `D:\IPRPS\keys\iprps-signing-key-PRIVATE.asc`: the private key, protected by the passphrase, plus `iprps-signing-key-revoke.rev`. **Copy both to a USB stick** kept somewhere safe. Never upload them, email them or put them in Git. If the PC dies, `gpg --import` of that file brings the key back.
+- `G:\IPRPS\iprps-os\packages\iprps-keyring\iprps.gpg` and `iprps-trusted`: the **public** key and its fingerprint. These belong in Git, and the keyring package is built from them.
+
+> **Warning:** The newest repository zips don't contain `iprps.gpg` or `iprps-trusted`, so unzipping one never wipes your key files. If they're ever lost, run `/root/iprps-repo.sh key` again: it reuses the existing key and writes them back.
+
+**2. GnuPG, GPGME and fakeroot.** pacman checks signatures through **GPGME** and **GnuPG** (both BLFS 13.1), and makepkg builds packages inside **fakeroot** (not in BLFS; from Debian).
+
+**[BUILDER]** — GnuPG 2.5.21. IPRPS builds it without LDAP (address-book servers), so OpenLDAP isn't needed:
+
+```bash
+cd ~/src
+wget https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.5.21.tar.bz2
+md5sum gnupg-2.5.21.tar.bz2          # must print 39311d55044c9548b5eb8f53466a86b5
+tar -xf gnupg-2.5.21.tar.bz2 && cd gnupg-2.5.21
+mkdir build && cd build
+../configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc \
+             --docdir=/usr/share/doc/gnupg-2.5.21 --disable-ldap &&
+make
+```
+
+**[IPRPS CHROOT]**
+
+```bash
+cd /build/src/gnupg-2.5.21/build && make install
+gpg --version | head -1
+```
+
+**[BUILDER]** — GPGME 2.1.2:
+
+```bash
+cd ~/src
+wget https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-2.1.2.tar.bz2
+md5sum gpgme-2.1.2.tar.bz2           # must print 58448073da13a22e878adfb22a988d4d
+tar -xf gpgme-2.1.2.tar.bz2 && cd gpgme-2.1.2
+mkdir build && cd build
+../configure --prefix=/usr --disable-static &&
+make
+```
+
+**[IPRPS CHROOT]**
+
+```bash
+cd /build/src/gpgme-2.1.2/build && make install
+ls /usr/lib/libgpgme.so*
+```
+
+**[BUILDER]** — fakeroot 1.37.2 (Debian's upstream tarball, from Debian's permanent archive):
+
+```bash
+cd ~/src
+wget https://snapshot.debian.org/archive/debian/20260401T000000Z/pool/main/f/fakeroot/fakeroot_1.37.2.orig.tar.gz
+sha256sum fakeroot_1.37.2.orig.tar.gz   # must print 0eea60fbe89771b88fcf415c8f2f0a6ccfe9edebbcf3ba5dc0212718d98884db
+tar -xf fakeroot_1.37.2.orig.tar.gz && cd fakeroot-1.37.2
+[ -x configure ] || ./bootstrap
+./configure --prefix=/usr --libdir=/usr/lib/libfakeroot --disable-static --with-ipc=sysv &&
+make
+```
+
+**[IPRPS CHROOT]**
+
+```bash
+cd /build/src/fakeroot-1.37.2 && make install
+grep -q '^include /etc/ld.so.conf.d' /etc/ld.so.conf || echo 'include /etc/ld.so.conf.d/*.conf' >> /etc/ld.so.conf
+install -dm755 /etc/ld.so.conf.d && echo /usr/lib/libfakeroot > /etc/ld.so.conf.d/fakeroot.conf && ldconfig
+su - builder -c 'fakeroot id -u'
+```
+
+The last line prints **`0`**: inside fakeroot, `builder` looks like root, so packages get root-owned files without anyone being root.
+
+> **Side note:** Why this address: Debian's normal download server keeps only the current version, so links to it break (*404 Not Found*). `snapshot.debian.org` keeps every version permanently. IPRPS uses **1.37.2**, the newest 1.x release; fakeroot 2.x changed how it handles file attributes and has known problems (Buildroot went back to 1.37.2 for that reason).
+
+**3. pacman 7.1.0, the first time.** This builds pacman by hand so that it can then package everything, itself included (step 6).
+
+**[BUILDER]**
+
+```bash
+cd ~/src
+wget https://gitlab.archlinux.org/pacman/pacman/-/releases/v7.1.0/downloads/pacman-7.1.0.tar.xz
+tar -xf pacman-7.1.0.tar.xz && cd pacman-7.1.0
+meson setup --prefix=/usr --sysconfdir=/etc --localstatedir=/var --buildtype=release \
+      -D doc=disabled -D i18n=true -D crypto=openssl -D gpgme=enabled -D curl=enabled \
+      -D scriptlet-shell=/usr/bin/bash -D ldconfig=/usr/sbin/ldconfig -D pkg-ext=.pkg.tar.zst build &&
+ninja -C build
+```
+
+**[IPRPS CHROOT]**
+
+```bash
+cd /build/src/pacman-7.1.0 && ninja -C build install
+cat > /etc/pacman.conf << "EOF"
+# Temporary (12.12 step 3): iprps-base replaces this in step 7
+[options]
+Architecture = x86_64
+SigLevel = Required
+LocalFileSigLevel = Optional
+EOF
+pacman --version | grep -o 'Pacman v[0-9.]*'
+ldd /usr/bin/pacman | grep -cE 'libalpm|libgpgme|libcurl|libarchive'
+install -dm755 -o builder -g builder /build/repo
+```
+
+**What you should see:** `Pacman v7.1.0`, and `4` from `ldd` (pacman found its four libraries). `/build/repo` is where every package you build lands.
+
+**4. makepkg settings for `builder`. [BUILDER]**
+
+```bash
+cat > ~/.makepkg.conf << "EOF"
+# IPRPS OS package builds (12.12). Removed with the builder account at release (13.4).
+PKGDEST=/build/repo
+SRCDEST=/build/src
+PACKAGER="IPRPS OS <packages@infiniteplane.space>"
+OPTIONS=(strip docs !libtool !staticlibs emptydirs zipman purge !debug !lto)
+MAKEFLAGS="-j4"
+PKGEXT='.pkg.tar.zst'
+EOF
+grep -E '^CARCH' /etc/makepkg.conf
+```
+
+`grep` shows `CARCH="x86_64"`. `PKGEXT` makes packages **zstd**-compressed (`.pkg.tar.zst`), like Arch's: pacman's own default is `.pkg.tar.gz`, which `iprps-repo.sh` and step 7 don't accept.
+
+**5. Copy the repository into the image. [DEBIAN ROOT]** The app packages are built from it, so copy it again whenever the apps change (Part 17):
+
+```bash
+rsync -a --delete /mnt/g/IPRPS/iprps-os/ /mnt/iprps/build/src/iprps-os/
+chroot /mnt/iprps chown -R builder:builder /build/src/iprps-os
+ls /mnt/iprps/build/src/iprps-os/packages
+grep -c ':4:' /mnt/iprps/build/src/iprps-os/packages/iprps-keyring/iprps-trusted
+```
+
+`ls` lists `examples iprps-apps iprps-base iprps-keyring pacman README.md`, and `grep` prints **1** (step 1's fingerprint).
+
+**6. Build the packages. [BUILDER]**
+
+```bash
+cd /build/src/iprps-os/packages
+for p in pacman iprps-keyring iprps-base iprps-apps; do
+  ( cd $p && makepkg -f --nodeps --noconfirm ) || { echo "STOPPED at $p"; break; }
+done
+ls /build/repo
+```
+
+- `--nodeps`: makepkg doesn't look for the packages' dependencies on this system (pacman checks them when installing, in step 7).
+- pacman's recipe downloads its tarball again and runs pacman's test suite (a few minutes).
+- **What you should see:** `ls` lists **20** packages: `pacman-7.1.0-1-x86_64`, `iprps-keyring-…`, `iprps-base-1.0-1-any`, `iprps-lite-…`, `iprps-medium-…`, `iprps-advanced-…` and the 14 IPRPS app packages (`iprps-hub-2026.11.01-1-any.pkg.tar.zst` and so on), each ending in `.pkg.tar.zst`.
+
+**7. Install them: pacman takes over the system's IPRPS files. [IPRPS CHROOT]** Set `ED` to the edition this image is **now** (`advanced` once Part 16 is done; `lite` in a Lite copy):
+
+```bash
+ED=advanced
+cd /build/repo
+ls pacman-*.pkg.tar.zst iprps-*.pkg.tar.zst | grep -vE '^iprps-(lite|medium|advanced)-' > /tmp/iprps-pkgs
+ls iprps-$ED-*.pkg.tar.zst >> /tmp/iprps-pkgs
+[ "$ED" = lite ] && sed -i '/^iprps-oracle-/d' /tmp/iprps-pkgs
+pacman -U --noconfirm --overwrite '*' $(cat /tmp/iprps-pkgs)
+find /etc /srv/www/iprps -name '*.pacnew'
+```
+
+`--overwrite '*'` is used **only here, once**: it lets the packages take over the files you installed in 12.3–12.11 and in step 3.
+
+`find` lists `/etc/pacman.conf.pacnew` and `/srv/www/iprps/hub/default-apps.json.pacnew` (and in Medium/Advanced `oracle/config.php.pacnew`). These are files a package keeps when you've changed them; here the existing copies are the build's own, so take the packaged versions:
+
+```bash
+for f in $(find /etc /srv/www/iprps -name '*.pacnew'); do mv -v "$f" "${f%.pacnew}"; done
+pacman-key --init && pacman-key --populate iprps
+pacman -Q | wc -l
+pacman -Qo /usr/bin/pacman /srv/www/iprps/hub/index.html /opt/iprps/table/server.js
+pacman -Dk
+systemctl is-enabled iprps-update-check.timer iprps-pacman-keyring.service iprps-table
+iprps-update status
+```
+
+**What you should see:**
+
+- `pacman -Q | wc -l`: **18** (Advanced or Medium) or **17** (Lite).
+- `pacman -Qo` names `pacman`, `iprps-hub` and `iprps-table` as the owners.
+- `pacman -Dk`: *No database errors have been found!*
+- `systemctl is-enabled`: `enabled` three times.
+- `iprps-update status`: *IPRPS OS 1.0 … (iprps-base 1.0-1, 18 packages managed)*, *Last check: never*.
+
+The keyring made here is only for testing in the build image: 13.4 deletes it, and every installed computer makes its own at first boot (`iprps-pacman-keyring.service`).
+
+**8. Publish the first repository. [DEBIAN ROOT]** With the chroot open (the image mounted at `/mnt/iprps`):
+
+```bash
+D=/mnt/iprps/build/repo
+/root/iprps-repo.sh add iprps-core $D/pacman-*.pkg.tar.zst $D/iprps-{keyring,base,lite,medium,advanced}-*.pkg.tar.zst
+/root/iprps-repo.sh add iprps-apps $(ls $D/iprps-*.pkg.tar.zst | grep -vE '/iprps-(keyring|base|lite|medium|advanced)-')
+/root/iprps-repo.sh check
+/root/iprps-repo.sh stage
+```
+
+- `add` signs each package (it asks for the passphrase; `gpg-agent` remembers it for a while) and builds each repository's signed package list in `/root/iprps-repo/1/` (the master copy; back it up with the snapshots).
+- `check` must end with **Repository check passed.** It verifies every signature and looks for files in two packages and for `/etc` files that would overwrite users' settings.
+- `stage` first gives every repository that has no packages yet (at first, `iprps-extra`) an **empty, signed list** (`iprps-repo.sh init` does just that). Every computer downloads all three lists, and a missing one would make each update check fail. Then it copies the repository to **`G:\IPRPS\repo-upload\1`**, with real files instead of links.
+
+Then upload, in **FileZilla** or **WinSCP** (your hosting login; never stored in the repository):
+
+1. On the server, create the folder `/downloads/iprps/repo/1/` (next to the release images).
+2. Upload the **contents** of `G:\IPRPS\repo-upload\1` (the folders `iprps-core`, `iprps-apps` and `iprps-extra`) into it. Packages first; the `.db`, `.files` and `.sig` files last, so computers never see a list that names packages not uploaded yet.
+3. **[DEBIAN ROOT]** `/root/iprps-repo.sh online` must end with **Online repository matches.**
+
+**9. The release cleanup knows about pacman. [DEBIAN ROOT]** 13.4's script now installs the right **edition package** in each release copy, removes the build's keyring (each computer makes its own), and empties pacman's download cache. Install the current script:
+
+```bash
+install -vm755 /mnt/g/IPRPS/iprps-os/build-host/iprps-release-clean.sh /root/
+grep -c 'edition package' /root/iprps-release-clean.sh
+```
+
+It prints **2**.
+
+**10. Test. [TEST VM]** In a boot-test copy (1.4), logged in as a user in `wheel`:
+
+1. **IPRPS menu → IPRPS Updates.** The password window (polkit) appears; then the IPRPS Updates window. **Check now**: *IPRPS OS is up to date* (the server has the same versions as the image). **IPRPS apps and optional software** lists the apps; **Part of your edition** holds the installed ones.
+2. **The Hub's IPRPS Updates tile** shows the result of the last check.
+3. **Terminal:** `sudo iprps-update status`, `sudo iprps-update extras`.
+4. **Before uploading,** test against your own copy instead: **[DEBIAN ROOT]** `/root/iprps-repo.sh serve`, then in the VM `echo 'Server = http://10.0.2.2:8080/$repo/$arch' | sudo tee /etc/pacman.d/iprps-mirrorlist` (`10.0.2.2` is Debian, from inside QEMU). Afterwards put the real line back: `Server = https://infiniteplane.space/downloads/iprps/repo/1/$repo/$arch`.
+
+| Problem | Fix |
+|---|---|
+| GnuPG's `configure` stops at *LDAP* or *OpenLDAP* | The `--disable-ldap` option is missing from the `configure` line |
+| `meson setup` for pacman: *Dependency "gpgme" not found* | Step 2's GPGME isn't installed: `ls /usr/lib/pkgconfig/gpgme.pc` |
+| makepkg: *Running makepkg as root is not allowed* | Run it in the **BUILDER** window, not the IPRPS CHROOT window |
+| Step 6 made `.pkg.tar.gz` files; step 7 finds nothing | `PKGEXT='.pkg.tar.zst'` is missing from `~/.makepkg.conf` (step 4): add it, `rm /build/repo/*.pkg.tar.gz`, and run step 6 again |
+| makepkg: *Cannot find the fakeroot binary* | Step 2's fakeroot isn't installed: `which fakeroot` |
+| iprps-keyring: *iprps.gpg is missing or empty* | Step 1 (`iprps-repo.sh key`) and step 5 (copy the repository) |
+| pacman: *exists in filesystem* during step 7 | `--overwrite '*'` is missing from the `pacman -U` line |
+| pacman: *signature from "…" is unknown trust* / *invalid or corrupted package (PGP signature)* | This computer's keyring lacks the IPRPS key: `sudo pacman-key --init && sudo pacman-key --populate iprps` |
+| IPRPS Updates: *Could not check for updates* · *No connection to the update server* | Offline, or the repository isn't uploaded yet (`iprps-repo.sh online` on the build host) |
+| IPRPS Updates: *failed to retrieve some files* / *404* | The upload missed files, or the host refuses `.db` files: `iprps-repo.sh online` names what's missing. On some hosts, `.db` files need a MIME type: add `AddType application/octet-stream .db .files .sig .zst` to `/downloads/iprps/repo/.htaccess` |
+| IPRPS Updates doesn't open after the password | Run `iprps-updates` in a terminal to see the message. Only administrators (group `wheel`) or someone who knows an administrator's password can open it |
+| *IPRPS Updates is open for another account* | Another user opened it on this computer. It closes 2 minutes after its window closes |
+
+> **Lite.** The Lite release needs pacman too. In the Lite fix copy (*Before Stage H*, step 4): do steps 2–4 here (the libraries and pacman), copy the packages over with **[DEBIAN ROOT]** `mkdir -p /mnt/iprps/build/repo && cp -v /root/iprps-repo/1/iprps-*/x86_64/*.pkg.tar.zst /mnt/iprps/build/repo/` while the Lite copy is entered, `chroot /mnt/iprps chown -R builder: /build/repo`, then step 7 with `ED=lite`. Nothing needs rebuilding: the packages are the same for every edition.
+
+> **Checkpoint:** All Lite IPRPS apps open from the IPRPS menu, Session Master Mode opens all three windows, and **IPRPS Updates** opens and checks. Take snapshot **`iprps-apps-lite`**.
 
 **[DEBIAN ROOT]** — snapshot `iprps-apps-lite`. First stop any test VM (`poweroff`) and `exit` every chroot window:
 
@@ -23498,7 +23769,7 @@ EOF
 systemctl enable iprps-firstboot.service
 ```
 
-**The database password, unique per installation.** The web apps (12.5) share one database user, `iprps`, for the core `iprps` database and all `iprps_*` app databases; their settings hold the placeholder `@IPRPS_DB_PASS@`. At first boot this script gives `iprps` a new random password, writes it into every app (replacing the placeholder) and into `/etc/iprps/db.php`. The backslashes in its `GRANT … iprps\\_%` line are deliberate: they give MariaDB a literal `` `iprps\_%` ``, meaning every database whose name starts with `iprps_`.
+**The database password, unique per installation.** The web apps (12.5) share one database user, `iprps`, for the core `iprps` database and all `iprps_*` app databases; their settings hold the placeholder `@IPRPS_DB_PASS@`. At first boot this script gives `iprps` a new random password, writes it into every app (replacing the placeholder) and into `/etc/iprps/db.php`. The backslashes in its `GRANT … iprps\\_%` line are deliberate: they give MariaDB a literal `` `iprps\_%` ``, meaning every database whose name starts with `iprps_`. It also replaces the password the apps had before: the one in `/etc/iprps/db.php` if the script runs a second time, and the build's test password (`/root/iprps-dev-db.txt`) in a boot-test copy of the build image, where the apps hold that instead of the placeholder. So the apps and the database always end up with the same password.
 
 **[IPRPS CHROOT]**
 
@@ -23521,8 +23792,14 @@ GRANT ALL PRIVILEGES ON \`iprps\\_%\`.* TO 'iprps'@'localhost';
 FLUSH PRIVILEGES;
 SQL
 mariadb -u root iprps < /usr/share/iprps/schema/iprps-core.sql
-# The web apps: replace the placeholder with this computer's password
-grep -rlF "$PH" /srv/www/iprps 2>/dev/null | xargs -r sed -i "s/$PH/$PW/g"
+# The web apps: put this computer's password wherever the apps have the placeholder (a release),
+# the previous password (a second run) or the build's test password (a test copy of the build image)
+OLD=$(sed -n "s/.*'pass' => '\([A-Za-z0-9]*\)'.*/\1/p" /etc/iprps/db.php 2>/dev/null || true)
+DEV=$(awk '{print $2}' /root/iprps-dev-db.txt 2>/dev/null || true)
+for o in "$PH" "$OLD" "$DEV"; do
+  [ ${#o} -ge 8 ] || continue
+  grep -rlF "$o" /srv/www/iprps 2>/dev/null | xargs -r sed -i "s/$o/$PW/g"
+done
 install -dm750 -o root -g apache /etc/iprps
 cat > /etc/iprps/db.php << PHP
 <?php
@@ -23646,8 +23923,8 @@ Before you start:
 
  * Most Wi-Fi works; a few chips (some Broadcom) aren't supported.
 
- * New versions arrive as new IPRPS OS releases. There is no app
-   store or package manager for adding other software.
+ * Updates install from IPRPS Updates (IPRPS menu): security
+   fixes, new app versions and optional software. No reinstalling.
 
  * Apps that use online AI services need internet and your own
    API key. Everything else works offline.
@@ -23938,6 +24215,7 @@ What it does, in order:
    At first boot, `iprps-db-init` (13.1) sets the real password.
 4. **App data:** lists files added to the apps' upload, storage and project folders since installation, and asks whether to delete them from the copy (**y**), keep them (**n**) or stop (**q**).
 5. **General cleanup:**
+   - **package manager** (12.12): installs this edition's package (`iprps-lite`, `iprps-medium` or `iprps-advanced`, removing the others), and removes the build's pacman keyring and download cache: each computer makes its own keyring at first boot;
    - removes the `builder` account and its sudo rules;
    - removes `/build`, root's files, command histories and temporary files;
    - removes the SSH host keys and first-boot markers (each installation makes its own), plus Ollama's identity key and the logs;
@@ -24105,6 +24383,25 @@ if [ -f /srv/www/iprps/auth/auth.php ]; then
   fi
 fi
 
+say "Package manager: edition package, keyring, cache"
+if command -v pacman >/dev/null 2>&1; then
+  ED=${EDC,,}
+  for e in lite medium advanced; do
+    [ "$e" = "$ED" ] || pacman -Rdd --noconfirm "iprps-$e" >/dev/null 2>&1 || true
+  done
+  if pacman -Q "iprps-$ED" >/dev/null 2>&1; then
+    echo "iprps-$ED is installed."
+  else
+    P=$(ls -t /build/repo/iprps-$ED-[0-9]*.pkg.tar.zst 2>/dev/null | head -1 || true)
+    if [ -n "$P" ]; then pacman -U --noconfirm "$P" >/dev/null && echo "Installed ${P##*/}"
+    else echo "WARNING: no iprps-$ED package in /build/repo (12.12 step 6)"; fi
+  fi
+  pacman -Dk 2>&1 | tail -3 || true
+  rm -rf /etc/pacman.d/gnupg /var/cache/pacman/pkg/* /var/lib/iprps-updates/*   # each computer makes its own keyring
+else
+  echo "pacman isn't installed (12.12): this release has no package manager."
+fi
+
 say "3/4 General cleanup"
 id builder >/dev/null 2>&1 && { userdel -r builder 2>/dev/null || userdel builder; rm -rf /home/builder; }
 rm -f /etc/sudoers.d/90-builder-build-only /etc/sudoers.d/xorg
@@ -24130,6 +24427,8 @@ echo "  Soundboard files:  $( [ -n "$(ls -A /var/lib/iprps-sounds 2>/dev/null)" 
 echo "  root password:     $(passwd -S root | awk '{print ($2=="L"||$2=="LK")?"locked":"NOT LOCKED"}')"
 echo "  machine ID:        $( [ -s /etc/machine-id ] && echo 'NOT EMPTY' || echo 'empty (new ID at first boot)')"
 echo "  edition:           $(grep ^PRETTY_NAME /etc/os-release)"
+echo "  edition package:   $(pacman -Qq 2>/dev/null | grep -xE 'iprps-(lite|medium|advanced)' | tr '\n' ' ' || true)"
+echo "  pacman keyring:    $( [ -d /etc/pacman.d/gnupg ] && echo 'STILL THERE' || echo 'removed (each computer makes its own)')"
 INSIDE_EOF
 chmod 755 "$INSIDE"
 chroot "$MNT" /bin/bash "$INSIDE" "$EDC"
@@ -29450,8 +29749,76 @@ Then re-enter the IPRPS CHROOT and BUILDER windows (0.5). Details and restoring:
 ## Part 17 — After Release: Updates and Users
 
 - **Users tailor their own systems.** They have `sudo`, a compiler and the full build toolchain, so they can follow BLFS for anything else they want.
-- **Security updates** are your job as the distributor. Watch https://www.linuxfromscratch.org/blfs/advisories/, rebuild affected packages in the build image (WSL chroot), and publish updated images (1.0.1, 1.0.2, ...).
-- **Package management** comes later. Until then, each release is a complete image. The image snapshots (0.4) make rebuilding any edition repeatable.
+- **Updates are your job as the distributor,** and since 12.12 they reach installed computers as **packages**: users click **Install updates** in IPRPS Updates (or run `sudo iprps-update upgrade`). New images (1.0.1, 1.1, …) are still worth publishing for new installs, but nobody has to reinstall to stay current.
+- **Watch** https://www.linuxfromscratch.org/blfs/advisories/ (and LFS's) for security fixes in packages IPRPS OS ships.
+
+Every update follows the same path:
+
+| Step | Where | Command |
+|---|---|---|
+| 1. Change the recipe or the app | Windows / **[DEBIAN ROOT]** | edit `G:\IPRPS\iprps-os\…`, then 12.12 step 5 (copy the repository into the image) |
+| 2. Build | **[BUILDER]** | `cd /build/src/iprps-os/packages/<folder> && makepkg -f --nodeps` |
+| 3. Install in the build image (keeps it current for the next release) | **[IPRPS CHROOT]** | `pacman -U /build/repo/<package>.pkg.tar.zst` |
+| 4. Sign and add | **[DEBIAN ROOT]** | `/root/iprps-repo.sh add <repository> /mnt/iprps/build/repo/<package>.pkg.tar.zst` |
+| 5. Check and test | **[DEBIAN ROOT]** + **[TEST VM]** | `/root/iprps-repo.sh check`, then `serve` and a VM copy of the **last release** (12.12 step 10) |
+| 6. Publish | **[DEBIAN ROOT]** + FileZilla | `/root/iprps-repo.sh stage`, upload, `/root/iprps-repo.sh online` |
+| 7. Record it | Git | a CHANGELOG line, commit and push (E.3) |
+
+Installed computers notice within 6 hours (or at once with **Check now**). **Test against a copy of a release image**, not the build image: the release is what users have.
+
+### 17.1 New versions of the IPRPS apps
+
+1. Change the app in `G:\IPRPS\iprps-os\apps\<app>\` (or unzip a newer repository).
+2. In `packages/iprps-apps/PKGBUILD`, set `pkgver` to today's date (`2026.11.15`), and `pkgrel=1`.
+3. Steps 1–7 above with the folder `iprps-apps`. Add only the packages that changed, or all of them (unchanged ones just get the new date):
+
+```bash
+/root/iprps-repo.sh add iprps-apps /mnt/iprps/build/repo/iprps-*-2026.11.15-1-any.pkg.tar.zst
+```
+
+A **new app** for an edition: add a `package_iprps-<app>()` function and its name to `pkgname=()` in `iprps-apps/PKGBUILD`, a menu entry in `iprps-apps/desktop/`, and the name to the edition lists (`_apps_lite`, …) in `iprps-base/PKGBUILD`. Then publish a new `iprps-base` (17.3) too: the edition packages then depend on it, so every computer of that edition installs it with the next update.
+
+### 17.2 A security update for a system package (example: cURL)
+
+BLFS publishes an advisory: cURL before 8.21.1 has a vulnerability.
+
+1. **[DEBIAN ROOT]** `cp -r` `packages/examples/curl` to `packages/curl` in `G:\IPRPS\iprps-os`. Set `pkgver=8.21.1` and replace the checksum (from the BLFS page or curl.se, or `makepkg -g` after checking the download's signature). Copy the repository into the image (12.12 step 5).
+2. **[BUILDER]** `cd /build/src/iprps-os/packages/curl && makepkg -f --nodeps`. The recipe is BLFS's own commands with `DESTDIR` (see `packages/examples/_blfs-template` for the rules).
+3. **[IPRPS CHROOT]** `pacman -U --overwrite '/usr/*' /build/repo/curl-8.21.1-1-x86_64.pkg.tar.zst` (the first cURL package takes over the files BLFS installed), then `curl --version`.
+4. **[DEBIAN ROOT]** `/root/iprps-repo.sh add iprps-core /mnt/iprps/build/repo/curl-8.21.1-1-x86_64.pkg.tar.zst`, check, test, publish.
+
+If the update must reach **every** computer (a security fix normally must, even where nobody installed cURL as a package), do a point release (17.3) that depends on it: `'curl>=8.21.1'`.
+
+**Libraries** (OpenSSL, glibc, …): if the library's file name changes (`libssl.so.3` → `libssl.so.4`), every program using it must be rebuilt and published in the same update. BLFS's advisories say when that applies. Updates of glibc, systemd, Mesa, D-Bus, OpenSSL or GnuTLS make IPRPS Updates ask for a restart.
+
+### 17.3 A point release (1.0.1, 1.1, …)
+
+`iprps-base`'s version **is** the IPRPS OS version. In `packages/iprps-base/PKGBUILD`:
+
+1. Set `pkgver=1.0.1`.
+2. Add what the release must bring to every computer to `package_iprps-base()`'s `depends=()`, for example `depends=(pacman iprps-keyring 'curl>=8.21.1' 'openssl>=3.6.2')`.
+3. Build and publish `iprps-base` and the three edition packages (one `makepkg` builds all four) to `iprps-core`.
+
+On each computer, the update sets the version in `/etc/os-release` (*IPRPS OS 1.0.1 Lite*); the first-boot setup, the Welcome tour and IPRPS Updates show it. Also make new images for new installs (13.4–13.9, with `1.0.1` in the file names).
+
+### 17.4 Optional extras
+
+Software that an edition doesn't include, offered under **IPRPS apps and optional software** in IPRPS Updates:
+
+- **IPRPS apps** from `iprps-apps` that an edition lacks appear automatically (the Oracle on Lite shows *not in this edition*, because it needs Ollama, which only Medium and Advanced have as yet).
+- **Other software** goes in `iprps-extra`. `packages/examples/calibre` packages Calibre's official binary. It depends on `xcb-util-cursor`, which only Advanced provides, so Lite and Medium show *not in this edition* until you also package XCB Utilities (BLFS, like 17.2) into `iprps-extra`. On Advanced, installing the package takes over the Calibre from 16.2 and keeps it updated.
+- IPRPS Updates never installs anything that would replace the computer's **edition package**; that's what *not in this edition* means.
+
+Good candidates for extras: binary apps that carry their own libraries (Calibre, the Chromium build from Part 15, Ollama and the Oracle's model for Lite on 16 GB machines), and Advanced's creative apps for Medium once their libraries are packaged.
+
+### 17.5 Mistakes, old packages, and the key
+
+- **A bad update:** publish a fixed one with a higher `pkgrel` (or `pkgver`). pacman never goes back to an older version on its own.
+- **Removing a package from a repository:** `/root/iprps-repo.sh remove <repository> <name>`. Computers keep what they have installed.
+- **Old versions** are deleted from the repository when a new one is added (`repo-add --remove`); the master copy in `/root/iprps-repo/1` is backed up with the snapshots (Appendix F), so add it to your backups: `rsync -a /root/iprps-repo/ /mnt/d/IPRPS/backups/repo/`.
+- **The signing key** expires after 5 years. Before then, extend it (`gpg --quick-set-expire <fingerprint> 5y`), run `/root/iprps-repo.sh key` to export the public key again, and publish a new `iprps-keyring` (raise its `pkgver`).
+- **If the private key leaks:** create a new key, put the old fingerprint in `packages/iprps-keyring/iprps-revoked` and the new key in `iprps.gpg`/`iprps-trusted`, sign the new `iprps-keyring` with the **old** key one last time (so computers accept it), then re-sign everything with the new key and announce it.
+- **A 2.x series** with breaking changes gets its own folder (`…/repo/2/`) and a new `iprps-mirrorlist`, so 1.x computers are never moved to it by accident.
 
 ---
 
@@ -29512,6 +29879,7 @@ Done in 1.0: **13.9** makes a live ISO for each edition (DVD or USB, UEFI and BI
 | `ERROR 2002 … Can't connect to local server through socket` right after `mariadbd-safe … &` | The server wasn't ready yet | Wait for it: `until mariadb-admin -u root ping >/dev/null 2>&1; do sleep 1; done`, then rerun what failed |
 | `ERROR 1045 … Access denied for user 'iprps'@'localhost'` | The `iprps` user wasn't created (or another password) | Rerun 12.5 step 6's `CREATE USER … ALTER USER … GRANT` with the password from `/root/iprps-dev-db.txt` |
 | Web apps show only the IPRPS login, or "Sign in required" | Normal: the Universal Login is working | Register at `/iprps/auth/login.html`; apps then let you in |
+| *DB connection failed* (Universal Login) in a boot-test copy of the build image | The copy ran the first-boot `iprps-db-init` from before 2026-11-02, which changed the database password but not the apps' test password | Install the current `iprps-db-init` (13.1) in the build image. In the copy: replace the test password from `/root/iprps-dev-db.txt` with the one in `/etc/iprps/db.php` in `/srv/www/iprps` (`grep -rlF … \| xargs sed -i`) |
 | A web app says it can't reach its database | Placeholder not filled in, or MariaDB not running | `grep -rl '@IPRPS_DB_PASS@' /srv/www/iprps`; `systemctl status mariadb php-fpm` |
 | `wget` → 404 Not Found | The download moved | Check the newest BLFS development book for the current address, or Debian's archive copy (`deb.debian.org/debian/pool/main/...`) with the same MD5 |
 | git.kernel.org → 400 Bad Request | Snapshot downloads are blocked | Use cdn.kernel.org release tarballs (4.7) |
