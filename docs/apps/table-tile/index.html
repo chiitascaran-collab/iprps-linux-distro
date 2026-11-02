@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- Copyright (C) 2026 Mythical Legends Publishing, LLC -->
+<!-- Hub tile for the IPRPS Table: the table itself runs as its own service on port 7777 (/opt/iprps/table). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>IPRPS Table</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0b0e1a; color: #e6e3d6; font: 16px/1.5 system-ui, "DejaVu Sans", sans-serif; }
+  main { max-width: 520px; padding: 24px; text-align: center; }
+  h1 { font: 600 28px "DejaVu Serif", Georgia, serif; color: #f1d58c; }
+  code { background: #0008; padding: 2px 6px; border-radius: 4px; }
+  a { color: #d9b45a; }
+</style>
+</head>
+<body>
+<main>
+  <h1>✦ IPRPS Table</h1>
+  <p id="msg">Opening the Session Master console…</p>
+</main>
+<script>
+  const URL = 'http://localhost:7777/sm/';
+  fetch('http://localhost:7777/api/info', { mode: 'no-cors', cache: 'no-store' })
+    .then(() => location.replace(URL))
+    .catch(() => {
+      document.getElementById('msg').innerHTML = 'The IPRPS Table service isn\'t running.<br><br>Open <b>IPRPS Table</b> from the IPRPS menu (it starts the service), or run <code>sudo systemctl start iprps-table</code>, then <a href="' + URL + '">open the console</a>.';
+    });
+</script>
+</body>
+</html>

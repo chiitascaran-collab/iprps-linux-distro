@@ -1,0 +1,2845 @@
+<!DOCTYPE html>
+<!-- The Infinite Plane Role Playing System - Character Creator. (C) 2026 Mythical Legends Publishing, LLC -->
+<!-- IPRPS OS: one file that works in the Session Master Hub, on the IPRPS Table (/sheet/), or opened on its own. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Infinite Plane - Character Creator</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2712%27 fill=%27%231a1a1a%27/%3E%3Cpath d=%27M20 10h20l8 8v36H20z%27 fill=%27%23a0a0a0%27/%3E%3Cpath d=%27M26 26h16M26 34h16M26 42h10%27 stroke=%27%231a1a1a%27 stroke-width=%273%27/%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap');
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  :root {
+    --bg-dark: #0a0a0a;
+    --bg-mid: #1a1a1a;
+    --bg-light: #2a2a2a;
+    --border: #404040;
+    --text-primary: #f0f0f0;
+    --text-secondary: #b0b0b0;
+    --text-muted: #707070;
+    --accent: #808080;
+    --accent-light: #a0a0a0;
+    --accent-dark: #606060;
+  }
+  
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+    color: var(--text-primary);
+    line-height: 1.6;
+    padding: 20px;
+  }
+  
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 30px 20px;
+    background: var(--bg-mid);
+    border-radius: 12px;
+    border: 2px solid var(--border);
+  }
+  
+  h1 {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--accent-light);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  
+  .subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+  
+  .main-content {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .avatar-section {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+  }
+  
+  .avatar-preview {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--bg-dark);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .avatar-placeholder {
+    font-size: 64px;
+    color: var(--text-muted);
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: var(--accent);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin-bottom: 8px;
+  }
+  
+  .btn:hover {
+    background: var(--accent-light);
+    border-color: var(--accent-light);
+  }
+  
+  .btn-primary {
+    background: var(--accent-dark);
+    border-color: var(--accent);
+  }
+  
+  .btn-primary:hover {
+    background: var(--accent);
+  }
+  
+  .btn-danger {
+    background: #3a3a3a;
+    border-color: #4a4a4a;
+  }
+  
+  .btn-danger:hover {
+    background: #4a4a4a;
+  }
+
+  .btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+    margin: 0;
+    width: auto;
+  }
+  
+  .character-form {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 30px;
+  }
+  
+  .form-section {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .form-section:last-child {
+    border-bottom: none;
+  }
+  
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-light);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    transition: all 0.3s;
+  }
+  
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--bg-mid);
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  
+  .stat-label {
+    flex: 1;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  
+  .stat-value {
+    width: 80px;
+    text-align: center;
+    padding: 6px 12px;
+    background: var(--bg-mid);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-weight: 700;
+    color: var(--accent-light);
+  }
+  
+  .stat-controls {
+    display: flex;
+    gap: 4px;
+  }
+  
+  .stat-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--accent-dark);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s;
+  }
+  
+  .stat-btn:hover {
+    background: var(--accent);
+  }
+  
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  
+  .skill-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  
+  .skill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .skill-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+  }
+  
+  .skill-level {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .skill-level input {
+    width: 50px;
+    padding: 4px 8px;
+    text-align: center;
+  }
+  
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 8px;
+  }
+  
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .checkbox-item:hover {
+    border-color: var(--accent);
+  }
+  
+  .checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  
+  .checkbox-item label {
+    margin: 0;
+    cursor: pointer;
+    font-size: 14px;
+    text-transform: none;
+    flex: 1;
+  }
+
+  .custom-item {
+    background: var(--bg-mid);
+    border-color: var(--accent);
+  }
+
+  .add-custom {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    align-items: stretch;
+  }
+
+  .add-custom input {
+    flex: 1;
+  }
+
+  .add-custom select {
+    width: 100px;
+  }
+
+  .spell-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+  }
+
+  .spell-table th {
+    text-align: left;
+    padding: 8px 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .spell-table td {
+    padding: 4px 4px;
+    vertical-align: middle;
+  }
+
+  .spell-table input[type="text"],
+  .spell-table input[type="number"] {
+    width: 100%;
+    padding: 6px 8px;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+  }
+
+  .spell-table input[type="text"]:focus,
+  .spell-table input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--bg-mid);
+  }
+
+  .spell-table .spell-name-col { width: 28%; }
+  .spell-table .spell-dmg-col { width: 16%; }
+  .spell-table .spell-mana-col { width: 12%; }
+  .spell-table .spell-cost-col { width: 10%; text-align: center; }
+  .spell-table .spell-skill-col { width: 22%; }
+  .spell-table .spell-act-col { width: 12%; text-align: center; }
+
+  .spell-skill-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .spell-skill-wrap input {
+    width: 50px !important;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .spell-skill-wrap .stat-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .spell-cost-display {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  }
+  
+  .action-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 2px solid var(--border);
+  }
+  
+  .action-bar .btn {
+    width: auto;
+    min-width: 150px;
+  }
+  
+  .info-display {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  
+  .info-card {
+    padding: 12px;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-align: center;
+  }
+  
+  .info-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  
+  .info-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent-light);
+  }
+  
+  input[type="file"] {
+    display: none;
+  }
+
+  .remove-btn {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    background: #4a4a4a;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+  }
+
+  .remove-btn:hover {
+    background: #5a5a5a;
+    color: var(--text-primary);
+  }
+  
+  @media (max-width: 1024px) {
+    .main-content {
+      grid-template-columns: 1fr;
+    }
+    
+    .avatar-section {
+      position: relative;
+      top: 0;
+    }
+
+    .info-display {
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    }
+
+    .stats-combined-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .equipment-money-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  /* IPRPS OS: save / send bar (hidden when the file is opened on its own) */
+  .iprps-bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    max-width: 1400px; margin: -20px auto 20px; padding: 10px 16px; background: #141414; border: 1px solid var(--border);
+    border-top: 0; border-radius: 0 0 10px 10px; box-shadow: 0 6px 18px #0008; }
+  .iprps-bar[hidden] { display: none; }
+  .iprps-bar .iprps-tag { font-weight: 700; color: var(--accent-light); letter-spacing: .5px; text-transform: uppercase; font-size: 13px; }
+  .iprps-bar .iprps-msg { color: var(--text-secondary); font-size: 14px; flex: 1; min-width: 180px; }
+  .iprps-bar .iprps-msg.bad { color: #ff8888; } .iprps-bar .iprps-msg.good { color: #88ff88; }
+  .iprps-bar .btn { width: auto; margin: 0; }
+  .iprps-bar a.btn { text-decoration: none; display: inline-block; }
+  .iprps-bar select { width: auto; padding: 6px 8px; font-size: 14px; }
+  /* IPRPS OS: phones and small tablets (players fill it in on the IPRPS Table) */
+  @media (max-width: 760px) {
+    body { padding: 10px; }
+    .iprps-bar { position: static; margin: -10px -10px 14px; border-radius: 0; }
+    header { padding: 18px 12px; margin-bottom: 18px; } h1 { font-size: 26px; letter-spacing: 1px; }
+    .main-content { grid-template-columns: 1fr; } .main-content > *, .form-section, .form-grid > * { min-width: 0; }
+    .stat-item { flex-wrap: wrap; } .stat-label { min-width: 120px; }
+    .avatar-section { position: static; }
+    .avatar-preview { max-width: 220px; margin-left: auto; margin-right: auto; }
+    .character-form { padding: 16px; }
+    .form-grid, .stats-combined-grid, .equipment-money-grid { grid-template-columns: 1fr !important; }
+    .skill-grid, .checkbox-grid { grid-template-columns: 1fr 1fr; }
+    #spellsContainer { overflow-x: auto; }
+  }
+  @media (max-width: 420px) { .skill-grid, .checkbox-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div id="iprpsBar" class="iprps-bar" hidden></div>
+<div class="container">
+  <header>
+    <h1>Infinite Plane RPS Character Creation App</h1>
+    <p class="subtitle">The Infinite Plane Role Playing System - IPRPS</p>
+  </header>
+
+  <div class="main-content">
+    <!-- Avatar Section -->
+    <div class="avatar-section">
+      <div class="avatar-preview" id="avatarPreview">
+        <span class="avatar-placeholder">👤</span>
+      </div>
+      <input type="file" id="avatarInput" accept="image/*">
+      <button class="btn" onclick="document.getElementById('avatarInput').click()">Upload Avatar</button>
+      <button class="btn btn-danger" onclick="removeAvatar()">Remove Avatar</button>
+      
+      <div style="margin-top: 24px;">
+        <button class="btn btn-primary" onclick="printBlankSheet()">🖨️ Print Blank</button>
+        <button class="btn btn-primary" onclick="printCurrentCharacter()">🖨️ Print Character</button>
+        <button class="btn btn-primary" onclick="exportCharacterAs('iprps')">📥 Export .iprps</button>
+        <button class="btn btn-primary" onclick="exportCharacterAs('json')">📥 Export .json</button>
+        <button class="btn btn-primary" onclick="document.getElementById('importInput').click()">📤 Import</button>
+        <input type="file" id="importInput" accept=".json,.iprps" style="display:none">
+        <button class="btn btn-danger" onclick="clearAll()">🗑️ Clear All</button>
+      </div>
+    </div>
+
+    <!-- Character Form -->
+    <div class="character-form">
+      <!-- Basic Info -->
+      <div class="form-section">
+        <h2 class="section-title">Basic Information</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Player Name</label>
+            <input type="text" id="playerName" placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Username">
+          </div>
+          <div class="form-group">
+            <label>Character Name</label>
+            <input type="text" id="characterName" placeholder="Character name">
+          </div>
+          <div class="form-group">
+            <label>Starting Character Points</label>
+            <input type="number" id="characterPoints" value="100" min="0" onchange="recalcPoints()">
+          </div>
+          <div class="form-group">
+            <label>Remaining Points</label>
+            <input type="number" id="remainingPoints" value="100" readonly style="color: var(--accent-light); font-weight: 700; background: var(--bg-dark); cursor: default;">
+          </div>
+          <div class="form-group">
+            <label>Experience Points (XP)</label>
+            <input type="number" id="xpPool" value="0" min="0" onchange="recalcPoints()">
+          </div>
+        </div>
+        
+        <div class="form-grid" style="margin-top: 16px;">
+          <div class="form-group">
+            <label>Race</label>
+            <select id="race" onchange="updateDerivedStats()">
+              <option value="">Select Race</option>
+              <option value="human">Human (0)</option>
+              <option value="humankin">Humankin (0)</option>
+              <option value="dwarf">Dwarf (+1)</option>
+              <option value="elf">Elf (-1)</option>
+              <option value="dark-elf">Dark Elf (-1)</option>
+              <option value="gemp">Gemp (+1)</option>
+              <option value="orc">Orc (+2)</option>
+              <option value="catfolk">Catfolk (-1)</option>
+              <option value="wolffolk">Wolffolk (0)</option>
+              <option value="dogfolk">Dogfolk (0)</option>
+              <option value="bearfolk">Bearfolk (+2)</option>
+              <option value="foxfolk">Foxfolk (-1)</option>
+              <option value="rabbitfolk">Rabbitfolk (-2)</option>
+              <option value="lizardfolk">Lizardfolk (+1)</option>
+              <option value="birdfolk">Birdfolk (-2)</option>
+              <option value="dragonborn">Dragonborn (+3)</option>
+              <option value="demon">Demon (-1)</option>
+              <option value="halfling">Halfling (-1)</option>
+              <option value="gnome">Gnome (-2)</option>
+              <option value="fairy">Fairy (-3)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Class</label>
+            <select id="class" onchange="updateClassOptions()">
+              <option value="">Select Class</option>
+              <option value="warrior">Warrior</option>
+              <option value="tank">Tank</option>
+              <option value="mage">Mage</option>
+              <option value="wizard">Wizard</option>
+              <option value="sorcerer">Sorcerer</option>
+              <option value="necromancer">Necromancer</option>
+              <option value="rogue">Rogue</option>
+              <option value="assassin">Assassin</option>
+              <option value="ranger">Ranger</option>
+              <option value="ninja">Ninja</option>
+              <option value="scout">Scout</option>
+              <option value="healer">Healer</option>
+              <option value="cleric">Cleric</option>
+              <option value="paladin">Paladin</option>
+              <option value="bard">Bard</option>
+              <option value="beast-tamer">Beast Tamer</option>
+              <option value="custom">⭐ Custom Class</option>
+            </select>
+          </div>
+          <div class="form-group" id="customClassGroup" style="display: none;">
+            <label>Custom Class Name</label>
+            <input type="text" id="customClass" placeholder="Enter custom class">
+          </div>
+          <div class="form-group">
+            <label>Level</label>
+            <input type="number" id="level" value="1" min="1" max="110" onchange="updateDerivedStats()">
+          </div>
+          <div class="form-group">
+            <label>Character Level</label>
+            <input type="number" id="xp" value="0" min="0">
+          </div>
+        </div>
+
+        <!-- Equipment and Money -->
+        <div class="equipment-money-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px;">
+          <div class="form-group">
+            <label>Equipment, Weapons, and Gear</label>
+            <textarea id="equipment" placeholder="List all equipment, weapons, armor, and gear..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Money and Personal Items</label>
+            <textarea id="money" placeholder="Currency, valuables, personal belongings..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Combined Section -->
+      <div class="form-section">
+        <h2 class="section-title">Attributes & Derived Stats</h2>
+        <button class="btn" onclick="randomizeStats()" style="margin-bottom: 16px;">🎲 Randomize All Stats</button>
+        
+        <div class="stats-combined-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px;">
+          <!-- Primary Attributes Column -->
+          <div>
+            <h3 style="font-size: 18px; font-weight: 700; color: var(--accent-light); margin-bottom: 12px; text-transform: uppercase;">Primary Attributes</h3>
+            <div id="statsContainer">
+              <div class="stat-item">
+                <span class="stat-label">Intelligence (INT)</span>
+                <span id="cost-int" style="font-size: 11px; color: var(--text-muted); min-width: 50px; text-align: right;">0 DP</span>
+                <input type="number" class="stat-value" id="stat-int" value="10" min="1" max="100" onchange="updateDerivedStats()">
+                <div class="stat-controls">
+                  <button class="stat-btn" onclick="adjustStat('int', -1)">-</button>
+                  <button class="stat-btn" onclick="adjustStat('int', 1)">+</button>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <span class="stat-label">Strength (STR)</span>
+                <span id="cost-str" style="font-size: 11px; color: var(--text-muted); min-width: 50px; text-align: right;">0 DP</span>
+                <input type="number" class="stat-value" id="stat-str" value="10" min="1" max="100" onchange="updateDerivedStats()">
+                <div class="stat-controls">
+                  <button class="stat-btn" onclick="adjustStat('str', -1)">-</button>
+                  <button class="stat-btn" onclick="adjustStat('str', 1)">+</button>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <span class="stat-label">Dexterity (DEX)</span>
+                <span id="cost-dex" style="font-size: 11px; color: var(--text-muted); min-width: 50px; text-align: right;">0 DP</span>
+                <input type="number" class="stat-value" id="stat-dex" value="10" min="1" max="100" onchange="updateDerivedStats()">
+                <div class="stat-controls">
+                  <button class="stat-btn" onclick="adjustStat('dex', -1)">-</button>
+                  <button class="stat-btn" onclick="adjustStat('dex', 1)">+</button>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <span class="stat-label">Wisdom (WIS)</span>
+                <span id="cost-wis" style="font-size: 11px; color: var(--text-muted); min-width: 50px; text-align: right;">0 DP</span>
+                <input type="number" class="stat-value" id="stat-wis" value="10" min="1" max="100" onchange="updateDerivedStats()">
+                <div class="stat-controls">
+                  <button class="stat-btn" onclick="adjustStat('wis', -1)">-</button>
+                  <button class="stat-btn" onclick="adjustStat('wis', 1)">+</button>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <span class="stat-label">Constitution (CON)</span>
+                <span id="cost-con" style="font-size: 11px; color: var(--text-muted); min-width: 50px; text-align: right;">0 DP</span>
+                <input type="number" class="stat-value" id="stat-con" value="10" min="1" max="100" onchange="updateDerivedStats()">
+                <div class="stat-controls">
+                  <button class="stat-btn" onclick="adjustStat('con', -1)">-</button>
+                  <button class="stat-btn" onclick="adjustStat('con', 1)">+</button>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <span class="stat-label">Will Power (WIL)</span>
+                <span id="cost-wil" style="font-size: 11px; color: var(--text-muted); min-width: 50px; text-align: right;">0 DP</span>
+                <input type="number" class="stat-value" id="stat-wil" value="10" min="1" max="100" onchange="updateDerivedStats()">
+                <div class="stat-controls">
+                  <button class="stat-btn" onclick="adjustStat('wil', -1)">-</button>
+                  <button class="stat-btn" onclick="adjustStat('wil', 1)">+</button>
+                </div>
+              </div>
+
+              <div class="stat-item">
+                <span class="stat-label">Charisma (CHA)</span>
+                <span id="cost-cha" style="font-size: 11px; color: var(--text-muted); min-width: 50px; text-align: right;">0 DP</span>
+                <input type="number" class="stat-value" id="stat-cha" value="10" min="1" max="100" onchange="updateDerivedStats()">
+                <div class="stat-controls">
+                  <button class="stat-btn" onclick="adjustStat('cha', -1)">-</button>
+                  <button class="stat-btn" onclick="adjustStat('cha', 1)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Derived Stats Column -->
+          <div>
+            <h3 style="font-size: 18px; font-weight: 700; color: var(--accent-light); margin-bottom: 12px; text-transform: uppercase;">Derived Stats</h3>
+            <div class="info-display" style="margin-top: 0;">
+              <div class="info-card">
+                <div class="info-label">HP</div>
+                <div class="info-value" id="derived-hp">100</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Mana Pool</div>
+                <div class="info-value" id="derived-mp">500</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Speed</div>
+                <div class="info-value" id="derived-speed">5</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Dodge</div>
+                <div class="info-value" id="derived-dodge">10</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Reach</div>
+                <div class="info-value" id="derived-reach">5</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Jump</div>
+                <div class="info-value" id="derived-jump">10</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Throw</div>
+                <div class="info-value" id="derived-throw">15</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Punch</div>
+                <div class="info-value" id="derived-punch">1d4</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Kick</div>
+                <div class="info-value" id="derived-kick">1d6</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Swing</div>
+                <div class="info-value" id="derived-swing">1d8</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Carry</div>
+                <div class="info-value" id="derived-carry">150</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Lift</div>
+                <div class="info-value" id="derived-lift">300</div>
+              </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 16px;">
+              <label>Armor Rating</label>
+              <select id="armor">
+                <option value="0">None (0)</option>
+                <option value="1">Leather (1)</option>
+                <option value="2">Studded Leather (2)</option>
+                <option value="3">Chain Mail (3)</option>
+                <option value="4">Scale Mail (4)</option>
+                <option value="5">Plate Mail (5)</option>
+                <option value="6">Full Plate (6)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="form-section">
+        <h2 class="section-title">Skills</h2>
+        <div class="skill-grid" id="skillsContainer"></div>
+        <div class="add-custom">
+          <input type="text" id="newSkillName" placeholder="Add custom skill...">
+          <input type="text" id="newSkillAttr" placeholder="Attribute" maxlength="3" style="width: 80px; text-transform: uppercase;">
+          <button class="btn btn-small" onclick="addCustomSkill()">Add Skill</button>
+        </div>
+      </div>
+
+      <!-- Advantages -->
+      <div class="form-section">
+        <h2 class="section-title">Advantages</h2>
+        <div class="checkbox-grid" id="advantagesContainer"></div>
+        <div class="add-custom">
+          <input type="text" id="newAdvantage" placeholder="Add custom advantage...">
+          <button class="btn btn-small" onclick="addCustomAdvantage()">Add Advantage</button>
+        </div>
+      </div>
+
+      <!-- Disadvantages -->
+      <div class="form-section">
+        <h2 class="section-title">Disadvantages</h2>
+        <div class="checkbox-grid" id="disadvantagesContainer"></div>
+        <div class="add-custom">
+          <input type="text" id="newDisadvantage" placeholder="Add custom disadvantage...">
+          <button class="btn btn-small" onclick="addCustomDisadvantage()">Add Disadvantage</button>
+        </div>
+      </div>
+
+      <!-- Quirks -->
+      <div class="form-section">
+        <h2 class="section-title">Quirks</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+          Each quirk gives back 2 DP. No more than 5 quirks.
+        </p>
+        <div class="checkbox-grid" id="quirksContainer"></div>
+        <div class="add-custom">
+          <input type="text" id="newQuirk" placeholder="Add custom quirk...">
+          <button class="btn btn-small" onclick="addCustomQuirk()">Add Quirk</button>
+        </div>
+      </div>
+
+      <!-- Magick Spells -->
+      <div class="form-section">
+        <h2 class="section-title">Magick Spells</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+          Each spell costs 10 DP to acquire. Skill levels use the Ascendant Skill Cost Table.
+        </p>
+        <div id="spellsContainer">
+          <table class="spell-table">
+            <thead>
+              <tr>
+                <th class="spell-name-col">Spell Name</th>
+                <th class="spell-dmg-col">Damage</th>
+                <th class="spell-mana-col">Mana Cost</th>
+                <th class="spell-cost-col">Acquire</th>
+                <th class="spell-skill-col">Skill Level</th>
+                <th class="spell-act-col"></th>
+              </tr>
+            </thead>
+            <tbody id="spellTableBody"></tbody>
+          </table>
+        </div>
+        <div class="add-custom">
+          <button class="btn btn-small" onclick="addSpell()">+ Add Spell</button>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-section">
+        <h2 class="section-title">Notes</h2>
+        <div class="form-group">
+          <label>Background Story</label>
+          <textarea id="background" placeholder="Character's history, motivations, and goals..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Additional Notes</label>
+          <textarea id="notes" placeholder="Any other relevant information..."></textarea>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-bar">
+        <button class="btn btn-primary" onclick="exportCharacter()">📥 Export JSON</button>
+        <button class="btn btn-primary" onclick="document.getElementById('importInput').click()">📤 Import JSON</button>
+        <button class="btn btn-danger" onclick="clearAll()">🗑️ Clear All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== IPRPS OS: where this page runs ====================
+// library    - in the Session Master Hub (/iprps/character-creator/): loads and saves Character Sheets
+// table      - on the IPRPS Table (/sheet/): a player fills it in and sends it to the Session Master
+// standalone - the file opened on its own: export and import JSON as before
+const IPRPS_MODE = (() => {
+  const p = location.pathname;
+  if (/\/iprps\/character-creator\//.test(p)) return 'library';
+  if (/^https?:$/.test(location.protocol) && /^\/sheet\/?$/.test(p)) return 'table';
+  return 'standalone';
+})();
+const IPRPS_PARAMS = new URLSearchParams(location.search);
+const STORE_KEY = IPRPS_MODE === 'library' ? 'iprpsLibraryCharacter' : 'infinitePlaneCharacter';
+let IPRPS_LIB_ID = +IPRPS_PARAMS.get('id') || 0;
+if (IPRPS_MODE === 'library') {
+  if (IPRPS_LIB_ID || IPRPS_PARAMS.has('new')) { try { localStorage.removeItem(STORE_KEY); } catch (e) {} }
+  const sc = document.createElement('script'); sc.src = '../auth/auth-client.js'; document.head.appendChild(sc);
+}
+
+// Sheets can come from other people's computers: keep names that go into the page markup plain.
+function iprpsClean(v, max) {
+  return String(v === undefined || v === null ? '' : v).replace(/[<>"`\\&]/g, '').replace(/'/g, '’').replace(/\s+/g, ' ').trim().slice(0, max || 80);
+}
+function sanitizeLoaded(o) {
+  if (!o || typeof o !== 'object') return {};
+  const list = a => Array.isArray(a) ? [...new Set(a.map(x => iprpsClean(x)).filter(Boolean))] : [];
+  ['advantages', 'disadvantages', 'quirks', 'customAdvantages', 'customDisadvantages', 'customQuirks'].forEach(k => { o[k] = list(o[k]); });
+  o.customSkills = Array.isArray(o.customSkills) ? o.customSkills.map(c => ({ name: iprpsClean(c && c.name, 60), attr: iprpsClean(c && c.attr, 3).toUpperCase() || 'INT' })).filter(c => c.name) : [];
+  const sk = {};
+  if (o.skills && typeof o.skills === 'object') Object.keys(o.skills).forEach(k => { const n = iprpsClean(k, 60); if (n) sk[n] = Math.max(0, Math.min(100, parseInt(o.skills[k]) || 0)); });
+  o.skills = sk;
+  o.spells = Array.isArray(o.spells) ? o.spells.slice(0, 100).map(x => ({ name: iprpsClean(x && x.name), damage: iprpsClean(x && x.damage, 40),
+    manaCost: parseInt(x && x.manaCost) || 0, acquired: !!(x && x.acquired), skillLevel: Math.max(0, Math.min(100, parseInt(x && x.skillLevel) || 0)) })) : [];
+  ['race', 'class', 'customClass'].forEach(k => { o[k] = iprpsClean(o[k], 60); });
+  if (o.stats && typeof o.stats === 'object') Object.keys(o.stats).forEach(k => { o.stats[k] = Math.max(1, Math.min(100, parseInt(o.stats[k]) || 10)); });
+  if (typeof o.avatar !== 'string' || !/^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/]+=*$/.test(o.avatar)) o.avatar = null;
+  ['level', 'xp', 'xpPool', 'characterPoints', 'armor', 'manaRoll'].forEach(k => { if (o[k] !== undefined) o[k] = parseInt(o[k]) || 0; });
+  if (!o.level) o.level = 1;
+  if (o.sheetType !== 'npc') o.sheetType = 'pc';
+  return o;
+}
+
+// Race modifiers for Mana Pool calculation
+const raceModifiers = {
+  'human': 0,
+  'humankin': 0,
+  'dwarf': 1,
+  'elf': -1,
+  'dark-elf': -1,
+  'orc': 2,
+  'catfolk': -1,
+  'wolffolk': 0,
+  'bearfolk': 2,
+  'foxfolk': -1,
+  'rabbitfolk': -2,
+  'lizardfolk': 1,
+  'birdfolk': -2,
+  'dragonborn': 3,
+  'halfling': -1,
+  'fairy': -3,
+  'gnome': -2
+};
+
+// Attribute cost tables from IPRPS Ascendant Economy
+// INT and DEX: 10 DP per level above 10, gain 2 DP per level below 10
+// STR, CON, WIS, CHA, WIL: 5 DP per level above 10, gain 2 DP per level below 10
+function getAttributeCost(attr, level) {
+  const expensiveAttrs = ['int', 'dex'];
+  const costPerLevel = expensiveAttrs.includes(attr) ? 10 : 5;
+  const gainPerLevel = 2;
+  if (level === 10) return 0;
+  if (level > 10) return (level - 10) * costPerLevel;
+  if (level < 10) return -((10 - level) * gainPerLevel); // negative = points returned
+  return 0;
+}
+
+// Skill cost from Ascendant Skill Cost Table (cumulative)
+function getSkillCost(level) {
+  if (level <= 0) return 0;
+  let cost = 0;
+  for (let i = 1; i <= level; i++) {
+    if (i <= 3) cost += 1;
+    else if (i <= 9) cost += 2;
+    else if (i === 10) cost += 5;
+    else if (i <= 14) cost += 3;
+    else if (i === 15) cost += 10;
+    else if (i <= 19) cost += 5;
+    else if (i === 20) cost += 15;
+    else if (i <= 49) cost += 10;
+    else if (i === 50) cost += 50;
+    else if (i <= 99) cost += 20;
+    else if (i === 100) cost += 100;
+  }
+  return cost;
+}
+
+// Calculate total points spent on all attributes and skills
+function calcTotalSpent() {
+  const stats = ['int', 'str', 'dex', 'wis', 'con', 'wil', 'cha'];
+  let totalAttrCost = 0;
+  stats.forEach(stat => {
+    const val = parseInt(document.getElementById('stat-' + stat).value) || 10;
+    totalAttrCost += getAttributeCost(stat, val);
+  });
+
+  let totalSkillCost = 0;
+  const allSkills = [...baseSkills, ...character.customSkills];
+  allSkills.forEach(skill => {
+    const lvl = character.skills[skill.name] || 0;
+    totalSkillCost += getSkillCost(lvl);
+  });
+
+  return totalAttrCost + totalSkillCost + calcSpellsTotalCost();
+}
+
+// Recalculate remaining points and update display
+function recalcPoints() {
+  const startingCP = parseInt(document.getElementById('characterPoints').value) || 100;
+  const xpPool = parseInt(document.getElementById('xpPool').value) || 0;
+  const totalBudget = startingCP + xpPool;
+  const spent = calcTotalSpent();
+  const remaining = totalBudget - spent;
+
+  const remEl = document.getElementById('remainingPoints');
+  remEl.value = remaining;
+
+  // Color the remaining points: red if 0 or negative, green if positive
+  if (remaining < 0) {
+    remEl.style.color = '#ff4444';
+  } else if (remaining === 0) {
+    remEl.style.color = '#ffaa00';
+  } else {
+    remEl.style.color = '#44ff44';
+  }
+
+  character.characterPoints = startingCP;
+  character.xpPool = xpPool;
+  character.remainingPoints = remaining;
+  character.totalSpent = spent;
+
+  // Update attribute cost displays
+  const stats = ['int', 'str', 'dex', 'wis', 'con', 'wil', 'cha'];
+  stats.forEach(stat => {
+    const val = parseInt(document.getElementById('stat-' + stat).value) || 10;
+    const cost = getAttributeCost(stat, val);
+    const costEl = document.getElementById('cost-' + stat);
+    if (costEl) {
+      if (cost > 0) {
+        costEl.textContent = cost + ' DP';
+        costEl.style.color = '#ff8888';
+      } else if (cost < 0) {
+        costEl.textContent = '+' + Math.abs(cost) + ' DP';
+        costEl.style.color = '#88ff88';
+      } else {
+        costEl.textContent = '0 DP';
+        costEl.style.color = 'var(--text-muted)';
+      }
+    }
+  });
+}
+let character = {
+  playerName: '',
+  username: '',
+  characterName: '',
+  characterPoints: 100,
+  xpPool: 0,
+  remainingPoints: 100,
+  totalSpent: 0,
+  race: '',
+  class: '',
+  customClass: '',
+  level: 1,
+  xp: 0,
+  stats: {
+    int: 10,
+    str: 10,
+    dex: 10,
+    wis: 10,
+    con: 10,
+    wil: 10,
+    cha: 10
+  },
+  derived: {
+    hp: 100,
+    mp: 0,
+    speed: 5,
+    dodge: 10,
+    reach: '5ft',
+    jump: '10ft',
+    throw: '15ft',
+    punch: '1d4',
+    kick: '1d6',
+    swing: '1d8',
+    carry: '150lb',
+    lift: '300lb'
+  },
+  armor: 0,
+  skills: {},
+  advantages: [],
+  disadvantages: [],
+  quirks: [],
+  background: '',
+  equipment: '',
+  money: '',
+  notes: '',
+  avatar: null,
+  customSkills: [],
+  customAdvantages: [],
+  customDisadvantages: [],
+  customQuirks: [],
+  spells: [],
+  manaRoll: 0, // Store the random roll for consistency
+  sheetType: IPRPS_PARAMS.get('kind') === 'npc' ? 'npc' : 'pc'
+};
+
+// Expanded skills list (57 total)
+const baseSkills = [
+  // Combat and Martial Skills
+  { name: 'Melee Weapons', attr: 'STR' },
+  { name: 'Ranged Weapons', attr: 'DEX' },
+  { name: 'Martial Arts', attr: 'DEX' },
+  { name: 'Parry', attr: 'DEX' },
+  { name: 'Dodge', attr: 'DEX' },
+  { name: 'Weapon Specialization', attr: 'STR' },
+  { name: 'Shield Combat', attr: 'STR' },
+  { name: 'Shield Bash', attr: 'STR' },
+  { name: 'Dual Wielding', attr: 'DEX' },
+  { name: 'Archery', attr: 'DEX' },
+  { name: 'Throwing', attr: 'DEX' },
+  
+  // Physical and Movement Skills
+  { name: 'Athletics', attr: 'STR' },
+  { name: 'Climbing', attr: 'STR' },
+  { name: 'Stealth', attr: 'DEX' },
+  { name: 'Swimming', attr: 'STR' },
+  { name: 'Acrobatics', attr: 'DEX' },
+  { name: 'Endurance', attr: 'CON' },
+  { name: 'Running', attr: 'CON' },
+  { name: 'Jumping', attr: 'STR' },
+  { name: 'Balance', attr: 'DEX' },
+  { name: 'Escape Artist', attr: 'DEX' },
+  
+  // Mental and Survival Skills
+  { name: 'Investigation', attr: 'INT' },
+  { name: 'Lore', attr: 'INT' },
+  { name: 'Perception', attr: 'WIS' },
+  { name: 'Insight', attr: 'WIS' },
+  { name: 'Survival', attr: 'WIS' },
+  { name: 'Tracking', attr: 'WIS' },
+  { name: 'Medicine', attr: 'WIS' },
+  { name: 'Nature', attr: 'WIS' },
+  { name: 'Animal Handling', attr: 'WIS' },
+  { name: 'Navigation', attr: 'INT' },
+  
+  // Social and Interaction Skills
+  { name: 'Negotiation', attr: 'CHA' },
+  { name: 'Persuasion', attr: 'CHA' },
+  { name: 'Deception', attr: 'CHA' },
+  { name: 'Streetwise', attr: 'INT' },
+  { name: 'Leadership', attr: 'CHA' },
+  { name: 'Public Speaking', attr: 'CHA' },
+  { name: 'Intimidation', attr: 'CHA' },
+  { name: 'Diplomacy', attr: 'CHA' },
+  { name: 'Bluff', attr: 'CHA' },
+  { name: 'Etiquette', attr: 'INT' },
+  
+  // Discipline and Will Skills
+  { name: 'Concentration', attr: 'WIL' },
+  { name: 'Meditation', attr: 'WIL' },
+  { name: 'Resistance', attr: 'WIL' },
+  { name: 'Mental Focus', attr: 'WIL' },
+  
+  // Technological and Specialized Skills
+  { name: 'Engineering', attr: 'INT' },
+  { name: 'Crafting', attr: 'INT' },
+  { name: 'Piloting', attr: 'DEX' },
+  { name: 'Repair', attr: 'INT' },
+  { name: 'Alchemy', attr: 'INT' },
+  { name: 'Magick Theory', attr: 'INT' },
+  { name: 'Magick Recovery', attr: 'CON' },
+  { name: 'Lock Picking', attr: 'DEX' },
+  { name: 'Trap Detection', attr: 'WIS' },
+  { name: 'Disguise', attr: 'CHA' },
+  { name: 'Forgery', attr: 'INT' },
+  { name: 'Gambling', attr: 'INT' },
+  { name: 'Sleight of Hand', attr: 'DEX' }
+];
+
+const baseAdvantages = [
+  // Core Physical Advantages
+  'Increased Strength', 'Enhanced Dexterity', 'Enhanced Constitution',
+  'Enhanced Senses', 'Night Vision', 'Damage Resistance',
+  'Immunity to Disease', 'Immunity to Poison', 'Regeneration',
+  'Increased Movement Speed', 'Climbing Limbs', 'Built-in Armor or Exoskeleton',
+  
+  // Mental and Cognitive Advantages
+  'High Intelligence', 'Perfect Memory', 'Rapid Learning',
+  'Strong Will', 'Iron Will', 'Danger Sense',
+  'Intuition', 'Precision Logic', 'Resistance to Fear',
+  'Resistance to Mind Control',
+  
+  // Social and Influence Advantages
+  'Charisma', 'Voice (clear, pleasant, commanding)', 'Reputation',
+  'Status', 'Rank', 'Wealth',
+  'Fame', 'Allies', 'Contacts',
+  'Followers', 'Leadership Ability', 'Social Privilege',
+  
+  // Skill and Training Advantages
+  'Aptitude Bonuses', 'Skill Talent Groups', 'Expertise Dice',
+  'Proficiency Bonuses', 'Reduced Penalties in Specialization',
+  'Advantage on Specific Skill Checks',
+  
+  // Combat Advantages
+  'Combat Reflexes', 'Improved Initiative', 'Extra Attacks',
+  'Weapon Mastery', 'Critical Hit Bonuses', 'Improved Defenses',
+  'Evasion', 'Uncanny Dodge', 'Tactical Awareness',
+  
+  // Magickal and Supernatural Advantages
+  'Magick Affinity', 'Mana Sense', 'Energy Reserve',
+  'True Faith', 'Destiny', 'Universal Supernatural Regeneration',
+  
+  // Species and Construct Advantages
+  'Natural Climber', 'Silent Movement', 'Integrated Tools',
+  'Damage Immunities'
+];
+
+const baseDisadvantages = [
+  // Physical Disadvantages
+  'Low Strength', 'Low Dexterity', 'Low Constitution',
+  'Frailty', 'Chronic Pain', 'Missing Limbs',
+  'Blindness', 'Deafness', 'Bad Vision',
+  'Slow Healing', 'Susceptibility to Disease', 'Susceptibility to Poison',
+  'Vulnerability to Damage Types',
+  
+  // Mental and Psychological Disadvantages
+  'Low Intelligence', 'Weak Will', 'Poor Perception',
+  'Phobias', 'Compulsions', 'Addictions',
+  'Paranoia', 'Overconfidence', 'Cowardice',
+  'Depression', 'Madness', 'Confusion Effects',
+  
+  // Social and Reputation Disadvantages
+  'Low Status', 'Infamy', 'Criminal Record',
+  'Social Stigma', 'Dishonor', 'Bad Reputation',
+  'Enemy Factions', 'Outcast Status', 'Hated Ancestry',
+  'Cursed Lineage',
+  
+  // Economic and Resource Disadvantages
+  'Poverty', 'Debt', 'Lack of Property',
+  'Dependent Obligations', 'Loss of Income', 'Restricted Equipment Access',
+  'Maintenance Costs',
+  
+  // Skill and Competence Disadvantages
+  'Low Skill Caps', 'Lack of Proficiency', 'Learning Penalties',
+  'Cultural Unfamiliarity', 'Illiteracy', 'Technological Ignorance',
+  'Inability to Use Certain Tools or Magick',
+  
+  // Behavioral and Habit Disadvantages
+  'Odious Personal Habits', 'Impulsiveness', 'Arrogance',
+  'Obsession', 'Greed', 'Honesty Codes',
+  'Vows', 'Taboos', 'Compulsive Behaviors',
+  
+  // Combat and Tactical Disadvantages
+  'Reduced Initiative', 'Limited Actions', 'Slower Reactions',
+  'Poor Defenses', 'Vulnerability to Surprise', 'Exhaustion Penalties',
+  'Clumsiness', 'Weapon or Armor Restrictions',
+  
+  // Magickal and Supernatural Disadvantages
+  'Cursed Items', 'Wild Magick Surges', 'Mana Sensitivity',
+  'Spell Failure Chance', 'Divine Restrictions', 'Magickal Dependency',
+  'Supernatural Enemies',
+  
+  // Species-Specific Disadvantages
+  'Cold Blooded', 'Territorial Aggression', 'Scaled Rigidity',
+  'Hive Conditioning', 'Alien Morality', 'Sensory Narrowness',
+  'Maintenance Dependency', 'Emotion Simulation', 'EMP Vulnerability',
+  'Binding Vulnerability', 'Planar Instability', 'Incorporeal Limitation',
+  'Anchor Dependence', 'Disruption Vulnerability',
+  
+  // Narrative and Meta Disadvantages
+  'Bad Luck', 'Narrative Burden', 'Temporal Displacement',
+  'Existential Instability', 'Plot Vulnerability',
+  
+  // Environmental and Survival Disadvantages
+  'Heat Intolerance', 'Cold Intolerance', 'Need for Frequent Rest',
+  'Breathing Limits', 'Pressure Sensitivity', 'Environmental Dependence'
+];
+
+const baseQuirks = [
+  // Behavioral Quirks
+  'Nervous habits', 'Avoiding eye contact', 'Formal speech patterns',
+  'Inappropriate laughter', 'Collecting trivial objects',
+  
+  // Speech and Communication Quirks
+  'Distinct accents', 'Sarcasm', 'Literal interpretation',
+  'Frequent pauses', 'Excessive politeness', 'Quoting sayings',
+  
+  // Personality and Attitude Quirks
+  'Optimism', 'Cynicism', 'Impatience',
+  'Stubbornness', 'Excessive caution', 'Curiosity',
+  'Distrust of authority',
+  
+  // Moral and Ethical Quirks
+  'Refusal to lie', 'Always helping children', 'Dislike of cruelty',
+  'Insistence on fair payment',
+  
+  // Social Interaction Quirks
+  'Discomfort in crowds', 'Preference for solitude', 'Eagerness to impress',
+  'Avoidance of certain classes', 'Deference to elders',
+  
+  // Habitual and Routine Quirks
+  'Strict meal routines', 'Pre-danger superstitions', 'Meticulous note taking',
+  'Ritual cleaning of gear', 'Refusal to sleep without light',
+  
+  // Psychological Quirks
+  'Mild paranoia', 'Nervous humor under stress', 'Fear of silence',
+  'Attachment to lucky items', 'Avoidance of reminders of failure',
+  
+  // Cultural and Background Quirks
+  'Unfamiliar customs', 'Reliance on old traditions', 'Unusual greetings',
+  'Homeland food taboos',
+  
+  // Physical and Sensory Quirks
+  'Stress-induced limp', 'Sensitivity to loud noise', 'Poor night vision',
+  'Distinctive scars', 'Constant squinting',
+  
+  // Professional and Skill-Based Quirks
+  'Obsessive tool organization', 'Correcting technical errors',
+  'Puzzle-oriented thinking',
+  
+  // Emotional Reaction Quirks
+  'Freezing when surprised', 'Over-talking under pressure',
+  'Retreating into silence', 'Hyper-focus on minor tasks',
+  
+  // Belief and Superstition Quirks
+  'Lucky numbers', 'Color distrust', 'Reverence for omens',
+  'Belief in destiny',
+  
+  // Relationship Quirks
+  'Letter writing to absent family', 'Protecting rivals',
+  'Refusal to abandon companions', 'Harmless grudges',
+  
+  // Meta and Narrative Quirks
+  'Bad timing', 'Arriving late', 'Overhearing gossip',
+  'Finding trouble unintentionally'
+];
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  initializeSkills();
+  initializeAdvantages();
+  initializeDisadvantages();
+  initializeQuirks();
+  initializeSpells();
+  
+  // Generate initial mana roll if not exists
+  if (!character.manaRoll) {
+    character.manaRoll = Math.floor(Math.random() * 1000) + 1;
+  }
+  
+  updateDerivedStats();
+  recalcPoints();
+  
+  // Avatar upload handler
+  document.getElementById('avatarInput').addEventListener('change', handleAvatarUpload);
+  
+  // Import handler
+  document.getElementById('importInput').addEventListener('change', handleImport);
+  
+  // Auto-save on input
+  const inputs = document.querySelectorAll('input, select, textarea');
+  inputs.forEach(input => {
+    input.addEventListener('change', autoSave);
+  });
+  
+  // Load saved character
+  loadCharacter();
+});
+
+function initializeSkills() {
+  const container = document.getElementById('skillsContainer');
+  container.innerHTML = '';
+  
+  const allSkills = [...baseSkills, ...character.customSkills];
+  
+  allSkills.forEach((skill, index) => {
+    const isCustom = index >= baseSkills.length;
+    const skillDiv = document.createElement('div');
+    skillDiv.className = 'skill-item' + (isCustom ? ' custom-item' : '');
+    skillDiv.innerHTML = `
+      <div class="skill-header">
+        <span class="skill-name">${skill.name}</span>
+        <span style="font-size: 12px; color: var(--text-muted);">(${skill.attr})</span>
+        ${isCustom ? `<button class="remove-btn" onclick="event.stopPropagation(); removeCustomSkill('${skill.name.replace(/'/g, "\\'")}')">✕</button>` : ''}
+      </div>
+      <div class="skill-level">
+        <button class="stat-btn" onclick="adjustSkill('${skill.name.replace(/'/g, "\\'")}', -1)">-</button>
+        <input type="number" id="skill-${skill.name.replace(/\s+/g, '-').replace(/'/g, '')}" 
+               value="${character.skills[skill.name] || 0}" min="0" max="100" 
+               onchange="updateSkillFromInput('${skill.name.replace(/'/g, "\\'")}')"
+               style="width: 50px;">
+        <button class="stat-btn" onclick="adjustSkill('${skill.name.replace(/'/g, "\\'")}', 1)">+</button>
+        <span id="skill-cost-${skill.name.replace(/\s+/g, '-').replace(/'/g, '')}" style="font-size: 11px; color: var(--text-muted); min-width: 40px; text-align: right;">${getSkillCost(character.skills[skill.name] || 0)} DP</span>
+      </div>
+    `;
+    container.appendChild(skillDiv);
+    if (!character.skills[skill.name]) {
+      character.skills[skill.name] = 0;
+    }
+  });
+}
+
+function initializeAdvantages() {
+  const container = document.getElementById('advantagesContainer');
+  container.innerHTML = '';
+  
+  const allAdvantages = [...baseAdvantages, ...character.customAdvantages];
+  
+  allAdvantages.forEach((adv, index) => {
+    const isCustom = index >= baseAdvantages.length;
+    const div = document.createElement('div');
+    div.className = 'checkbox-item' + (isCustom ? ' custom-item' : '');
+    div.innerHTML = `
+      <input type="checkbox" id="adv-${adv.replace(/\s+/g, '-').replace(/[()]/g, '')}" 
+             value="${adv}" onchange="updateAdvantages()"
+             ${character.advantages.includes(adv) ? 'checked' : ''}>
+      <label for="adv-${adv.replace(/\s+/g, '-').replace(/[()]/g, '')}">${adv}</label>
+      ${isCustom ? `<button class="remove-btn" onclick="event.stopPropagation(); removeCustomAdvantage('${adv.replace(/'/g, "\\'")}')">✕</button>` : ''}
+    `;
+    container.appendChild(div);
+  });
+}
+
+function initializeDisadvantages() {
+  const container = document.getElementById('disadvantagesContainer');
+  container.innerHTML = '';
+  
+  const allDisadvantages = [...baseDisadvantages, ...character.customDisadvantages];
+  
+  allDisadvantages.forEach((dis, index) => {
+    const isCustom = index >= baseDisadvantages.length;
+    const div = document.createElement('div');
+    div.className = 'checkbox-item' + (isCustom ? ' custom-item' : '');
+    div.innerHTML = `
+      <input type="checkbox" id="dis-${dis.replace(/\s+/g, '-').replace(/[()]/g, '')}" 
+             value="${dis}" onchange="updateDisadvantages()"
+             ${character.disadvantages.includes(dis) ? 'checked' : ''}>
+      <label for="dis-${dis.replace(/\s+/g, '-').replace(/[()]/g, '')}">${dis}</label>
+      ${isCustom ? `<button class="remove-btn" onclick="event.stopPropagation(); removeCustomDisadvantage('${dis.replace(/'/g, "\\'")}')">✕</button>` : ''}
+    `;
+    container.appendChild(div);
+  });
+}
+
+function initializeQuirks() {
+  const container = document.getElementById('quirksContainer');
+  container.innerHTML = '';
+  
+  const allQuirks = [...baseQuirks, ...character.customQuirks];
+  
+  allQuirks.forEach((quirk, index) => {
+    const isCustom = index >= baseQuirks.length;
+    const div = document.createElement('div');
+    div.className = 'checkbox-item' + (isCustom ? ' custom-item' : '');
+    div.innerHTML = `
+      <input type="checkbox" id="quirk-${quirk.replace(/\s+/g, '-').replace(/[()]/g, '')}" 
+             value="${quirk}" onchange="updateQuirks()"
+             ${character.quirks.includes(quirk) ? 'checked' : ''}>
+      <label for="quirk-${quirk.replace(/\s+/g, '-').replace(/[()]/g, '')}">${quirk}</label>
+      ${isCustom ? `<button class="remove-btn" onclick="event.stopPropagation(); removeCustomQuirk('${quirk.replace(/'/g, "\\'")}')">✕</button>` : ''}
+    `;
+    container.appendChild(div);
+  });
+}
+
+function addCustomSkill() {
+  const name = document.getElementById('newSkillName').value.trim();
+  const attr = document.getElementById('newSkillAttr').value.trim().toUpperCase();
+  
+  if (name && attr) {
+    const newSkill = { name, attr };
+    character.customSkills.push(newSkill);
+    character.skills[name] = 0;
+    initializeSkills();
+    document.getElementById('newSkillName').value = '';
+    document.getElementById('newSkillAttr').value = '';
+    autoSave();
+  }
+}
+
+function addCustomAdvantage() {
+  const name = document.getElementById('newAdvantage').value.trim();
+  
+  if (name && !character.customAdvantages.includes(name)) {
+    character.customAdvantages.push(name);
+    initializeAdvantages();
+    document.getElementById('newAdvantage').value = '';
+    autoSave();
+  }
+}
+
+function addCustomDisadvantage() {
+  const name = document.getElementById('newDisadvantage').value.trim();
+  
+  if (name && !character.customDisadvantages.includes(name)) {
+    character.customDisadvantages.push(name);
+    initializeDisadvantages();
+    document.getElementById('newDisadvantage').value = '';
+    autoSave();
+  }
+}
+
+function addCustomQuirk() {
+  const name = document.getElementById('newQuirk').value.trim();
+  
+  if (name && !character.customQuirks.includes(name)) {
+    character.customQuirks.push(name);
+    initializeQuirks();
+    document.getElementById('newQuirk').value = '';
+    autoSave();
+  }
+}
+
+function removeCustomSkill(name) {
+  character.customSkills = character.customSkills.filter(s => s.name !== name);
+  delete character.skills[name];
+  initializeSkills();
+  autoSave();
+}
+
+function removeCustomAdvantage(name) {
+  character.customAdvantages = character.customAdvantages.filter(a => a !== name);
+  character.advantages = character.advantages.filter(a => a !== name);
+  initializeAdvantages();
+  autoSave();
+}
+
+function removeCustomDisadvantage(name) {
+  character.customDisadvantages = character.customDisadvantages.filter(d => d !== name);
+  character.disadvantages = character.disadvantages.filter(d => d !== name);
+  initializeDisadvantages();
+  autoSave();
+}
+
+function removeCustomQuirk(name) {
+  character.customQuirks = character.customQuirks.filter(q => q !== name);
+  character.quirks = character.quirks.filter(q => q !== name);
+  initializeQuirks();
+  autoSave();
+}
+
+function updateClassOptions() {
+  const classSelect = document.getElementById('class');
+  const customClassGroup = document.getElementById('customClassGroup');
+  
+  if (classSelect.value === 'custom') {
+    customClassGroup.style.display = 'block';
+  } else {
+    customClassGroup.style.display = 'none';
+  }
+  autoSave();
+}
+
+function adjustStat(stat, change) {
+  const input = document.getElementById(`stat-${stat}`);
+  let currentValue = parseInt(input.value);
+  let newValue = currentValue + change;
+  newValue = Math.max(1, Math.min(20, newValue));
+
+  // Check if increasing would exceed budget
+  if (change > 0) {
+    const oldCost = getAttributeCost(stat, currentValue);
+    const newCost = getAttributeCost(stat, newValue);
+    const costDiff = newCost - oldCost;
+    const startingCP = parseInt(document.getElementById('characterPoints').value) || 100;
+    const xpPool = parseInt(document.getElementById('xpPool').value) || 0;
+    const totalBudget = startingCP + xpPool;
+    const currentSpent = calcTotalSpent();
+    const remainingAfter = totalBudget - currentSpent - costDiff;
+    if (remainingAfter < 0) {
+      return; // Not enough points
+    }
+  }
+
+  input.value = newValue;
+  character.stats[stat] = newValue;
+  updateDerivedStats();
+  recalcPoints();
+  autoSave();
+}
+
+function adjustSkill(skillName, change) {
+  const input = document.getElementById(`skill-${skillName.replace(/\s+/g, '-').replace(/'/g, '')}`);
+  let currentValue = parseInt(input.value);
+  let newValue = currentValue + change;
+  newValue = Math.max(0, Math.min(100, newValue));
+
+  // Check if increasing would exceed budget
+  if (change > 0) {
+    const oldCost = getSkillCost(currentValue);
+    const newCost = getSkillCost(newValue);
+    const costDiff = newCost - oldCost;
+    const startingCP = parseInt(document.getElementById('characterPoints').value) || 100;
+    const xpPool = parseInt(document.getElementById('xpPool').value) || 0;
+    const totalBudget = startingCP + xpPool;
+    const currentSpent = calcTotalSpent();
+    const remainingAfter = totalBudget - currentSpent - costDiff;
+    if (remainingAfter < 0) {
+      return; // Not enough points
+    }
+  }
+
+  input.value = newValue;
+  character.skills[skillName] = newValue;
+  updateSkillBonus(skillName);
+  recalcPoints();
+  autoSave();
+}
+
+function updateSkillBonus(skillName) {
+  const skillLevel = parseInt(document.getElementById(`skill-${skillName.replace(/\s+/g, '-').replace(/'/g, '')}`).value) || 0;
+  character.skills[skillName] = skillLevel;
+  // Update cost display
+  const costEl = document.getElementById(`skill-cost-${skillName.replace(/\s+/g, '-').replace(/'/g, '')}`);
+  if (costEl) costEl.textContent = getSkillCost(skillLevel) + ' DP';
+  recalcPoints();
+  autoSave();
+}
+
+function updateSkillFromInput(skillName) {
+  const input = document.getElementById(`skill-${skillName.replace(/\s+/g, '-').replace(/'/g, '')}`);
+  let newValue = parseInt(input.value) || 0;
+  newValue = Math.max(0, Math.min(100, newValue));
+
+  // Check budget
+  const oldValue = character.skills[skillName] || 0;
+  if (newValue > oldValue) {
+    const costDiff = getSkillCost(newValue) - getSkillCost(oldValue);
+    const startingCP = parseInt(document.getElementById('characterPoints').value) || 100;
+    const xpPool = parseInt(document.getElementById('xpPool').value) || 0;
+    const totalBudget = startingCP + xpPool;
+    const currentSpent = calcTotalSpent();
+    const remainingAfter = totalBudget - currentSpent - costDiff;
+    if (remainingAfter < 0) {
+      input.value = oldValue; // revert
+      return;
+    }
+  }
+
+  input.value = newValue;
+  character.skills[skillName] = newValue;
+  updateSkillBonus(skillName);
+}
+
+// ==================== MAGICK SPELLS ====================
+
+const SPELL_ACQUIRE_COST = 10; // DP to acquire each spell
+
+function createDefaultSpell() {
+  return {
+    name: '',
+    damage: '',
+    manaCost: 0,
+    acquired: false,
+    skillLevel: 0
+  };
+}
+
+function initializeSpells() {
+  // Ensure at least 5 spell slots
+  if (!character.spells || !Array.isArray(character.spells)) {
+    character.spells = [];
+  }
+  while (character.spells.length < 5) {
+    character.spells.push(createDefaultSpell());
+  }
+  renderSpells();
+}
+
+function renderSpells() {
+  const tbody = document.getElementById('spellTableBody');
+  tbody.innerHTML = '';
+
+  character.spells.forEach((spell, idx) => {
+    const tr = document.createElement('tr');
+    const skillCost = getSkillCost(spell.skillLevel || 0);
+    const totalSpellCost = (spell.acquired ? SPELL_ACQUIRE_COST : 0) + skillCost;
+
+    tr.innerHTML = `
+      <td class="spell-name-col">
+        <input type="text" value="${(spell.name || '').replace(/"/g, '&quot;')}" placeholder="Spell name..."
+               onchange="updateSpellField(${idx}, 'name', this.value)">
+      </td>
+      <td class="spell-dmg-col">
+        <input type="text" value="${(spell.damage || '').replace(/"/g, '&quot;')}" placeholder="e.g. 2d6+3"
+               onchange="updateSpellField(${idx}, 'damage', this.value)">
+      </td>
+      <td class="spell-mana-col">
+        <input type="number" value="${spell.manaCost || 0}" min="0"
+               onchange="updateSpellField(${idx}, 'manaCost', parseInt(this.value)||0)">
+      </td>
+      <td class="spell-cost-col" style="text-align: center;">
+        <label style="display: flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; margin: 0; text-transform: none; font-size: 12px;">
+          <input type="checkbox" ${spell.acquired ? 'checked' : ''}
+                 onchange="updateSpellAcquired(${idx}, this.checked)"
+                 style="width: 16px; height: 16px; cursor: pointer;">
+          <span style="color: ${spell.acquired ? '#ff8888' : 'var(--text-muted)'};">${SPELL_ACQUIRE_COST}</span>
+        </label>
+      </td>
+      <td class="spell-skill-col">
+        <div class="spell-skill-wrap">
+          <button class="stat-btn" onclick="adjustSpellSkill(${idx}, -1)">-</button>
+          <input type="number" id="spell-skill-${idx}" value="${spell.skillLevel || 0}" min="0" max="100"
+                 onchange="updateSpellSkillFromInput(${idx}, parseInt(this.value)||0)">
+          <button class="stat-btn" onclick="adjustSpellSkill(${idx}, 1)">+</button>
+          <span class="spell-cost-display" id="spell-cost-${idx}">${skillCost} DP</span>
+        </div>
+      </td>
+      <td class="spell-act-col">
+        <button class="remove-btn" onclick="removeSpell(${idx})" title="Remove spell"
+                style="background: var(--bg-mid); border: 1px solid var(--border); color: var(--text-muted); border-radius: 4px; cursor: pointer; padding: 4px 8px; font-size: 14px;">✕</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function addSpell() {
+  character.spells.push(createDefaultSpell());
+  renderSpells();
+  recalcPoints();
+  autoSave();
+}
+
+function removeSpell(idx) {
+  if (character.spells.length <= 5) {
+    // Don't remove below 5 slots, just clear it
+    character.spells[idx] = createDefaultSpell();
+  } else {
+    character.spells.splice(idx, 1);
+  }
+  renderSpells();
+  recalcPoints();
+  autoSave();
+}
+
+function updateSpellField(idx, field, value) {
+  character.spells[idx][field] = value;
+  autoSave();
+}
+
+function updateSpellAcquired(idx, checked) {
+  // Check budget if acquiring
+  if (checked) {
+    const startingCP = parseInt(document.getElementById('characterPoints').value) || 100;
+    const xpPool = parseInt(document.getElementById('xpPool').value) || 0;
+    const totalBudget = startingCP + xpPool;
+    const currentSpent = calcTotalSpent();
+    const remainingAfter = totalBudget - currentSpent - SPELL_ACQUIRE_COST;
+    if (remainingAfter < 0) {
+      // Revert the checkbox
+      renderSpells();
+      return;
+    }
+  }
+  character.spells[idx].acquired = checked;
+  // If un-acquiring, also reset skill level
+  if (!checked) {
+    character.spells[idx].skillLevel = 0;
+  }
+  renderSpells();
+  recalcPoints();
+  autoSave();
+}
+
+function adjustSpellSkill(idx, change) {
+  const spell = character.spells[idx];
+  if (!spell.acquired && change > 0) return; // Must acquire first
+  let newLevel = (spell.skillLevel || 0) + change;
+  newLevel = Math.max(0, Math.min(100, newLevel));
+
+  if (change > 0) {
+    const oldCost = getSkillCost(spell.skillLevel || 0);
+    const newCost = getSkillCost(newLevel);
+    const costDiff = newCost - oldCost;
+    const startingCP = parseInt(document.getElementById('characterPoints').value) || 100;
+    const xpPool = parseInt(document.getElementById('xpPool').value) || 0;
+    const totalBudget = startingCP + xpPool;
+    const currentSpent = calcTotalSpent();
+    if (totalBudget - currentSpent - costDiff < 0) return;
+  }
+
+  spell.skillLevel = newLevel;
+  renderSpells();
+  recalcPoints();
+  autoSave();
+}
+
+function updateSpellSkillFromInput(idx, value) {
+  const spell = character.spells[idx];
+  if (!spell.acquired && value > 0) {
+    renderSpells();
+    return;
+  }
+  value = Math.max(0, Math.min(100, value));
+
+  if (value > (spell.skillLevel || 0)) {
+    const costDiff = getSkillCost(value) - getSkillCost(spell.skillLevel || 0);
+    const startingCP = parseInt(document.getElementById('characterPoints').value) || 100;
+    const xpPool = parseInt(document.getElementById('xpPool').value) || 0;
+    const totalBudget = startingCP + xpPool;
+    const currentSpent = calcTotalSpent();
+    if (totalBudget - currentSpent - costDiff < 0) {
+      renderSpells();
+      return;
+    }
+  }
+
+  spell.skillLevel = value;
+  renderSpells();
+  recalcPoints();
+  autoSave();
+}
+
+function calcSpellsTotalCost() {
+  let total = 0;
+  (character.spells || []).forEach(spell => {
+    if (spell.acquired) {
+      total += SPELL_ACQUIRE_COST;
+      total += getSkillCost(spell.skillLevel || 0);
+    }
+  });
+  return total;
+}
+
+// ==================== END MAGICK SPELLS ====================
+
+function randomizeStats() {
+  const stats = ['int', 'str', 'dex', 'wis', 'con', 'wil', 'cha'];
+  stats.forEach(stat => {
+    const value = Math.floor(Math.random() * 10) + 8; // 8-17
+    document.getElementById(`stat-${stat}`).value = value;
+    character.stats[stat] = value;
+  });
+  
+  // Generate new mana roll
+  character.manaRoll = Math.floor(Math.random() * 1000) + 1;
+  
+  updateDerivedStats();
+  recalcPoints();
+  autoSave();
+}
+
+function updateDerivedStats() {
+  // Gather current stats
+  const int = parseInt(document.getElementById('stat-int').value);
+  const str = parseInt(document.getElementById('stat-str').value);
+  const dex = parseInt(document.getElementById('stat-dex').value);
+  const wis = parseInt(document.getElementById('stat-wis').value);
+  const con = parseInt(document.getElementById('stat-con').value);
+  const wil = parseInt(document.getElementById('stat-wil').value);
+  const cha = parseInt(document.getElementById('stat-cha').value);
+  
+  // Update character object
+  character.stats = { int, str, dex, wis, con, wil, cha };
+  
+  const level = parseInt(document.getElementById('level').value) || 1;
+  const race = document.getElementById('race').value;
+  
+  // Calculate HP: Base 50 + (CON × 10) + (Level × 5)
+  const hp = 50 + (con * 10) + (level * 5);
+  
+  // Calculate Mana Pool: ((manaRoll) * HP + INT/3) + (raceModifier × 100)) × 3
+  // Race modifier = race number × Size (where race number comes from raceModifiers)
+  const raceModifier = raceModifiers[race] !== undefined ? raceModifiers[race] : 0;
+  const manaBase = (character.manaRoll * hp) + (int / 3) + (raceModifier * 100);
+  const mp = Math.max(0, Math.floor(manaBase * 3));
+  
+  // Calculate Basic Speed: (DEX + CON) / 4
+  const speed = Math.floor((dex + con) / 4);
+  
+  // Calculate Dodge: Speed + DEX modifier
+  const dodge = speed + Math.floor((dex - 10) / 2);
+  
+  // Calculate Reach: Base 5ft (melee range)
+  const reach = 5;
+  
+  // Calculate Jump: STR + (DEX / 2) feet
+  const jump = str + Math.floor(dex / 2);
+  
+  // Calculate Throw: STR × 2 feet
+  const throwDist = str * 2;
+  
+  // Calculate Punch damage: Based on STR
+  const punchDice = str <= 10 ? '1d4' : str <= 15 ? '1d6' : '1d8';
+  
+  // Calculate Kick damage: Based on STR (slightly higher)
+  const kickDice = str <= 10 ? '1d6' : str <= 15 ? '1d8' : '1d10';
+  
+  // Calculate Swing damage: Based on STR (weapon-based)
+  const swingDice = str <= 10 ? '1d8' : str <= 15 ? '1d10' : '2d6';
+  
+  // Calculate Carry: STR × 12 lbs
+  const carry = str * 12;
+  
+  // Calculate Lift: STR × 20 lbs
+  const lift = str * 20;
+  
+  // Update display
+  document.getElementById('derived-hp').textContent = hp;
+  document.getElementById('derived-mp').textContent = mp.toLocaleString();
+  document.getElementById('derived-speed').textContent = speed;
+  document.getElementById('derived-dodge').textContent = dodge;
+  document.getElementById('derived-reach').textContent = reach + 'ft';
+  document.getElementById('derived-jump').textContent = jump + 'ft';
+  document.getElementById('derived-throw').textContent = throwDist + 'ft';
+  document.getElementById('derived-punch').textContent = punchDice;
+  document.getElementById('derived-kick').textContent = kickDice;
+  document.getElementById('derived-swing').textContent = swingDice;
+  document.getElementById('derived-carry').textContent = carry + 'lb';
+  document.getElementById('derived-lift').textContent = lift + 'lb';
+  
+  // Update character object
+  character.derived = {
+    hp,
+    mp,
+    speed,
+    dodge,
+    reach: reach + 'ft',
+    jump: jump + 'ft',
+    throw: throwDist + 'ft',
+    punch: punchDice,
+    kick: kickDice,
+    swing: swingDice,
+    carry: carry + 'lb',
+    lift: lift + 'lb'
+  };
+
+  recalcPoints();
+}
+
+function updateAdvantages() {
+  character.advantages = [];
+  const allAdvantages = [...baseAdvantages, ...character.customAdvantages];
+  allAdvantages.forEach(adv => {
+    const checkbox = document.getElementById(`adv-${adv.replace(/\s+/g, '-').replace(/[()]/g, '')}`);
+    if (checkbox && checkbox.checked) {
+      character.advantages.push(adv);
+    }
+  });
+  autoSave();
+}
+
+function updateDisadvantages() {
+  character.disadvantages = [];
+  const allDisadvantages = [...baseDisadvantages, ...character.customDisadvantages];
+  allDisadvantages.forEach(dis => {
+    const checkbox = document.getElementById(`dis-${dis.replace(/\s+/g, '-').replace(/[()]/g, '')}`);
+    if (checkbox && checkbox.checked) {
+      character.disadvantages.push(dis);
+    }
+  });
+  autoSave();
+}
+
+function updateQuirks() {
+  character.quirks = [];
+  const allQuirks = [...baseQuirks, ...character.customQuirks];
+  allQuirks.forEach(quirk => {
+    const checkbox = document.getElementById(`quirk-${quirk.replace(/\s+/g, '-').replace(/[()]/g, '')}`);
+    if (checkbox && checkbox.checked) {
+      character.quirks.push(quirk);
+    }
+  });
+  autoSave();
+}
+
+function handleAvatarUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      iprpsShrinkImage(e.target.result, 768, file.size > 400 * 1024).then(url => {
+        const avatarPreview = document.getElementById('avatarPreview');
+        avatarPreview.innerHTML = `<img src="${url}" alt="Avatar">`;
+        character.avatar = url;
+        autoSave();
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function removeAvatar() {
+  const avatarPreview = document.getElementById('avatarPreview');
+  avatarPreview.innerHTML = '<span class="avatar-placeholder">👤</span>';
+  character.avatar = null;
+  document.getElementById('avatarInput').value = '';
+  autoSave();
+}
+
+function gatherFormData() {
+  character.playerName = document.getElementById('playerName').value;
+  character.username = document.getElementById('username').value;
+  character.characterName = document.getElementById('characterName').value;
+  character.characterPoints = parseInt(document.getElementById('characterPoints').value);
+  character.xpPool = parseInt(document.getElementById('xpPool').value) || 0;
+  character.remainingPoints = parseInt(document.getElementById('remainingPoints').value) || 0;
+  character.race = document.getElementById('race').value;
+  character.class = document.getElementById('class').value;
+  character.customClass = document.getElementById('customClass').value;
+  character.level = parseInt(document.getElementById('level').value);
+  character.xp = parseInt(document.getElementById('xp').value);
+  character.armor = parseInt(document.getElementById('armor').value);
+  character.background = document.getElementById('background').value;
+  character.equipment = document.getElementById('equipment').value;
+  character.money = document.getElementById('money').value;
+  character.notes = document.getElementById('notes').value;
+  
+  // Spells are already maintained in real-time via updateSpell* functions
+  // Just ensure they exist
+  if (!character.spells) character.spells = [];
+
+  // IPRPS OS: identifies the file as a character sheet for the Session Master's library
+  character.format = 'iprps-character-sheet';
+  character.formatVersion = 1;
+  if (character.sheetType !== 'npc') character.sheetType = 'pc';
+  
+  return character;
+}
+
+function saveCharacter() {
+  gatherFormData();
+  localStorage.setItem(STORE_KEY, JSON.stringify(character));
+  alert('Character saved successfully!');
+}
+
+function loadCharacter() {
+  const saved = localStorage.getItem(STORE_KEY);
+  if (saved) {
+    try {
+      const loaded = sanitizeLoaded(JSON.parse(saved));
+      character = {
+        ...character,
+        ...loaded,
+        customSkills: loaded.customSkills || [],
+        customAdvantages: loaded.customAdvantages || [],
+        customDisadvantages: loaded.customDisadvantages || [],
+        customQuirks: loaded.customQuirks || [],
+        spells: loaded.spells || [],
+        manaRoll: loaded.manaRoll || (Math.floor(Math.random() * 1000) + 1)
+      };
+      
+      // Populate form
+      document.getElementById('playerName').value = character.playerName || '';
+      document.getElementById('username').value = character.username || '';
+      document.getElementById('characterName').value = character.characterName || '';
+      document.getElementById('characterPoints').value = character.characterPoints || 100;
+      document.getElementById('xpPool').value = character.xpPool || 0;
+      document.getElementById('race').value = character.race || '';
+      document.getElementById('class').value = character.class || '';
+      document.getElementById('customClass').value = character.customClass || '';
+      document.getElementById('level').value = character.level || 1;
+      document.getElementById('xp').value = character.xp || 0;
+      document.getElementById('armor').value = character.armor || 0;
+      document.getElementById('background').value = character.background || '';
+      document.getElementById('equipment').value = character.equipment || '';
+      document.getElementById('money').value = character.money || '';
+      document.getElementById('notes').value = character.notes || '';
+      
+      // Update custom class visibility
+      updateClassOptions();
+      
+      // Stats
+      if (character.stats) {
+        Object.keys(character.stats).forEach(stat => {
+          const input = document.getElementById(`stat-${stat}`);
+          if (input) input.value = character.stats[stat];
+        });
+      }
+      
+      // Re-initialize all lists with custom items
+      initializeSkills();
+      initializeAdvantages();
+      initializeDisadvantages();
+      initializeQuirks();
+      initializeSpells();
+      
+      // Avatar
+      if (character.avatar) {
+        const avatarPreview = document.getElementById('avatarPreview');
+        avatarPreview.innerHTML = `<img src="${character.avatar}" alt="Avatar">`;
+      }
+      
+      updateDerivedStats();
+      recalcPoints();
+    } catch (error) {
+      console.error('Error loading character:', error);
+    }
+  }
+}
+
+function autoSave() {
+  gatherFormData();
+  localStorage.setItem(STORE_KEY, JSON.stringify(character));
+}
+
+function exportCharacter() {
+  exportCharacterAs('json');
+}
+
+function exportCharacterAs(format) {
+  gatherFormData();
+  const dataStr = JSON.stringify(character, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  const extension = format === 'iprps' ? '.iprps' : '.json';
+  link.download = `${character.characterName || 'character'}_infinite_plane${extension}`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function handleImport(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const imported = sanitizeLoaded(JSON.parse(e.target.result));
+        character = {
+          ...character,
+          ...imported,
+          customSkills: imported.customSkills || [],
+          customAdvantages: imported.customAdvantages || [],
+          customDisadvantages: imported.customDisadvantages || [],
+          customQuirks: imported.customQuirks || [],
+          spells: imported.spells || [],
+          manaRoll: imported.manaRoll || (Math.floor(Math.random() * 1000) + 1)
+        };
+        localStorage.setItem(STORE_KEY, JSON.stringify(character));
+        loadCharacter();
+        alert('Character imported successfully!');
+      } catch (error) {
+        alert('Error importing character: Invalid JSON file');
+      }
+    };
+    reader.readAsText(file);
+  }
+}
+
+// Print blank character sheet - COMPLETE VERSION
+function printBlankSheet() {
+  const printWindow = window.open('', '_blank');
+  
+  let html = '<!DOCTYPE html><html><head><title>Infinite Plane Character Sheet - Blank</title>';
+  html += '<style>';
+  html += 'body { font-family: Arial, sans-serif; max-width: 900px; margin: 15px auto; padding: 15px; font-size: 10px; }';
+  html += 'h1 { text-align: center; border-bottom: 3px solid #000; padding-bottom: 8px; margin-bottom: 15px; font-size: 20px; }';
+  html += 'h2 { font-size: 14px; border-bottom: 2px solid #333; padding-bottom: 4px; margin-top: 15px; margin-bottom: 10px; }';
+  html += 'h3 { font-size: 11px; margin-top: 8px; margin-bottom: 6px; font-weight: bold; }';
+  html += '.section { margin-bottom: 15px; page-break-inside: avoid; }';
+  html += '.field { display: flex; align-items: center; margin-bottom: 6px; }';
+  html += '.field label { min-width: 120px; font-weight: bold; font-size: 9px; }';
+  html += '.field .line { flex: 1; border-bottom: 1px solid #000; height: 16px; }';
+  html += '.stats-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 12px; }';
+  html += '.stat-box { border: 2px solid #000; padding: 6px; text-align: center; }';
+  html += '.stat-name { font-weight: bold; margin-bottom: 4px; font-size: 10px; }';
+  html += '.stat-value { height: 22px; border-bottom: 2px solid #000; margin-top: 4px; }';
+  html += '.derived-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }';
+  html += '.checkbox-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 8px; }';
+  html += '.checkbox-item { display: flex; align-items: center; gap: 5px; font-size: 9px; }';
+  html += '.checkbox { width: 12px; height: 12px; border: 2px solid #000; display: inline-block; flex-shrink: 0; }';
+  html += '.text-area { width: 100%; min-height: 60px; border: 1px solid #000; margin-top: 4px; }';
+  html += '.notes-area { min-height: 80px; }';
+  html += '.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }';
+  html += '@media print { body { margin: 8px; font-size: 9px; } }';
+  html += '</style></head><body>';
+  
+  html += '<h1>⚔️ Infinite Plane Character Sheet</h1>';
+  
+  html += '<div class="section">';
+  html += '<h2>Basic Information</h2>';
+  html += '<div class="field"><label>Player Name:</label><div class="line"></div></div>';
+  html += '<div class="field"><label>Username:</label><div class="line"></div></div>';
+  html += '<div class="field"><label>Character Name:</label><div class="line"></div></div>';
+  html += '<div class="field"><label>Character Points:</label><div class="line"></div></div>';
+  html += '<div class="field"><label>Race:</label><div class="line"></div></div>';
+  html += '<div class="field"><label>Class:</label><div class="line"></div></div>';
+  html += '<div class="field"><label>Level:</label><div class="line"></div></div>';
+  html += '<div class="field"><label>XP:</label><div class="line"></div></div>';
+  html += '<div class="field"><label>Mana Roll:</label><div class="line"></div></div>';
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Attributes</h2>';
+  html += '<div class="stats-grid">';
+  html += '<div class="stat-box"><div class="stat-name">INT</div><div class="stat-value"></div></div>';
+  html += '<div class="stat-box"><div class="stat-name">STR</div><div class="stat-value"></div></div>';
+  html += '<div class="stat-box"><div class="stat-name">DEX</div><div class="stat-value"></div></div>';
+  html += '<div class="stat-box"><div class="stat-name">WIS</div><div class="stat-value"></div></div>';
+  html += '<div class="stat-box"><div class="stat-name">CON</div><div class="stat-value"></div></div>';
+  html += '<div class="stat-box"><div class="stat-name">WIL</div><div class="stat-value"></div></div>';
+  html += '<div class="stat-box"><div class="stat-name">CHA</div><div class="stat-value"></div></div>';
+  html += '</div></div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Derived Stats</h2>';
+  html += '<div class="derived-grid">';
+  html += '<div class="stat-box"><div class="stat-name">Max HP</div><div class="stat-value"></div></div>';
+  html += '<div class="stat-box"><div class="stat-name">Current HP</div><div class="stat-value"></div></div>';
+  html += '<div class="stat-box"><div class="stat-name">AC</div><div class="stat-value"></div></div>';
+  html += '<div class="stat-box"><div class="stat-name">Initiative</div><div class="stat-value"></div></div>';
+  html += '</div></div>';
+  
+  html += '<div class="two-col">';
+  
+  html += '<div class="section">';
+  html += '<h2>Skills</h2>';
+  html += '<div class="checkbox-list">';
+  const allSkills = [
+    'Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 
+    'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 
+    'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 
+    'Sleight of Hand', 'Stealth', 'Survival', 'Alchemy', 'Crafting',
+    'Engineering', 'Herbalism', 'Navigation', 'Tracking'
+  ];
+  allSkills.forEach(skill => {
+    html += '<div class="checkbox-item"><span class="checkbox"></span><span>' + skill + '</span></div>';
+  });
+  html += '</div>';
+  html += '<h3>Custom Skills</h3>';
+  html += '<div class="text-area" style="min-height: 40px;"></div>';
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Advantages</h2>';
+  html += '<div class="checkbox-list">';
+  const advantages = [
+    // Core Physical Advantages
+    'Increased Strength', 'Enhanced Dexterity', 'Enhanced Constitution',
+    'Enhanced Senses', 'Night Vision', 'Damage Resistance',
+    'Immunity to Disease', 'Immunity to Poison', 'Regeneration',
+    'Increased Movement Speed', 'Climbing Limbs', 'Built-in Armor or Exoskeleton',
+    // Mental and Cognitive Advantages
+    'High Intelligence', 'Perfect Memory', 'Rapid Learning',
+    'Strong Will', 'Iron Will', 'Danger Sense',
+    'Intuition', 'Precision Logic', 'Resistance to Fear',
+    'Resistance to Mind Control',
+    // Social and Influence Advantages
+    'Charisma', 'Voice (clear, pleasant, commanding)', 'Reputation',
+    'Status', 'Rank', 'Wealth',
+    'Fame', 'Allies', 'Contacts',
+    'Followers', 'Leadership Ability', 'Social Privilege',
+    // Skill and Training Advantages
+    'Aptitude Bonuses', 'Skill Talent Groups', 'Expertise Dice',
+    'Proficiency Bonuses', 'Reduced Penalties in Specialization',
+    'Advantage on Specific Skill Checks',
+    // Combat Advantages
+    'Combat Reflexes', 'Improved Initiative', 'Extra Attacks',
+    'Weapon Mastery', 'Critical Hit Bonuses', 'Improved Defenses',
+    'Evasion', 'Uncanny Dodge', 'Tactical Awareness',
+    // Magickal and Supernatural Advantages
+    'Magick Affinity', 'Mana Sense', 'Energy Reserve',
+    'True Faith', 'Destiny', 'Universal Supernatural Regeneration',
+    // Species and Construct Advantages
+    'Natural Climber', 'Silent Movement', 'Integrated Tools',
+    'Damage Immunities'
+  ];
+  advantages.forEach(adv => {
+    html += '<div class="checkbox-item"><span class="checkbox"></span><span>' + adv + '</span></div>';
+  });
+  html += '</div>';
+  html += '<h3>Custom Advantages</h3>';
+  html += '<div class="text-area" style="min-height: 40px;"></div>';
+  html += '</div>';
+  
+  html += '</div>';
+  
+  html += '<div class="two-col">';
+  
+  html += '<div class="section">';
+  html += '<h2>Disadvantages</h2>';
+  html += '<div class="checkbox-list">';
+  const disadvantages = [
+    // Physical Disadvantages
+    'Low Strength', 'Low Dexterity', 'Low Constitution',
+    'Frailty', 'Chronic Pain', 'Missing Limbs',
+    'Blindness', 'Deafness', 'Bad Vision',
+    'Slow Healing', 'Susceptibility to Disease', 'Susceptibility to Poison',
+    'Vulnerability to Damage Types',
+    // Mental and Psychological Disadvantages
+    'Low Intelligence', 'Weak Will', 'Poor Perception',
+    'Phobias', 'Compulsions', 'Addictions',
+    'Paranoia', 'Overconfidence', 'Cowardice',
+    'Depression', 'Madness', 'Confusion Effects',
+    // Social and Reputation Disadvantages
+    'Low Status', 'Infamy', 'Criminal Record',
+    'Social Stigma', 'Dishonor', 'Bad Reputation',
+    'Enemy Factions', 'Outcast Status', 'Hated Ancestry',
+    'Cursed Lineage',
+    // Economic and Resource Disadvantages
+    'Poverty', 'Debt', 'Lack of Property',
+    'Dependent Obligations', 'Loss of Income', 'Restricted Equipment Access',
+    'Maintenance Costs',
+    // Skill and Competence Disadvantages
+    'Low Skill Caps', 'Lack of Proficiency', 'Learning Penalties',
+    'Cultural Unfamiliarity', 'Illiteracy', 'Technological Ignorance',
+    'Inability to Use Certain Tools or Magick',
+    // Behavioral and Habit Disadvantages
+    'Odious Personal Habits', 'Impulsiveness', 'Arrogance',
+    'Obsession', 'Greed', 'Honesty Codes',
+    'Vows', 'Taboos', 'Compulsive Behaviors',
+    // Combat and Tactical Disadvantages
+    'Reduced Initiative', 'Limited Actions', 'Slower Reactions',
+    'Poor Defenses', 'Vulnerability to Surprise', 'Exhaustion Penalties',
+    'Clumsiness', 'Weapon or Armor Restrictions',
+    // Magickal and Supernatural Disadvantages
+    'Cursed Items', 'Wild Magick Surges', 'Mana Sensitivity',
+    'Spell Failure Chance', 'Divine Restrictions', 'Magickal Dependency',
+    'Supernatural Enemies',
+    // Species-Specific Disadvantages
+    'Cold Blooded', 'Territorial Aggression', 'Scaled Rigidity',
+    'Hive Conditioning', 'Alien Morality', 'Sensory Narrowness',
+    'Maintenance Dependency', 'Emotion Simulation', 'EMP Vulnerability',
+    'Binding Vulnerability', 'Planar Instability', 'Incorporeal Limitation',
+    'Anchor Dependence', 'Disruption Vulnerability',
+    // Narrative and Meta Disadvantages
+    'Bad Luck', 'Narrative Burden', 'Temporal Displacement',
+    'Existential Instability', 'Plot Vulnerability',
+    // Environmental and Survival Disadvantages
+    'Heat Intolerance', 'Cold Intolerance', 'Need for Frequent Rest',
+    'Breathing Limits', 'Pressure Sensitivity', 'Environmental Dependence'
+  ];
+  disadvantages.forEach(dis => {
+    html += '<div class="checkbox-item"><span class="checkbox"></span><span>' + dis + '</span></div>';
+  });
+  html += '</div>';
+  html += '<h3>Custom Disadvantages</h3>';
+  html += '<div class="text-area" style="min-height: 40px;"></div>';
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Quirks</h2>';
+  html += '<div class="checkbox-list">';
+  const quirks = [
+    // Behavioral Quirks
+    'Nervous habits', 'Avoiding eye contact', 'Formal speech patterns',
+    'Inappropriate laughter', 'Collecting trivial objects',
+    // Speech and Communication Quirks
+    'Distinct accents', 'Sarcasm', 'Literal interpretation',
+    'Frequent pauses', 'Excessive politeness', 'Quoting sayings',
+    // Personality and Attitude Quirks
+    'Optimism', 'Cynicism', 'Impatience',
+    'Stubbornness', 'Excessive caution', 'Curiosity',
+    'Distrust of authority',
+    // Moral and Ethical Quirks
+    'Refusal to lie', 'Always helping children', 'Dislike of cruelty',
+    'Insistence on fair payment',
+    // Social Interaction Quirks
+    'Discomfort in crowds', 'Preference for solitude', 'Eagerness to impress',
+    'Avoidance of certain classes', 'Deference to elders',
+    // Habitual and Routine Quirks
+    'Strict meal routines', 'Pre-danger superstitions', 'Meticulous note taking',
+    'Ritual cleaning of gear', 'Refusal to sleep without light',
+    // Psychological Quirks
+    'Mild paranoia', 'Nervous humor under stress', 'Fear of silence',
+    'Attachment to lucky items', 'Avoidance of reminders of failure',
+    // Cultural and Background Quirks
+    'Unfamiliar customs', 'Reliance on old traditions', 'Unusual greetings',
+    'Homeland food taboos',
+    // Physical and Sensory Quirks
+    'Stress-induced limp', 'Sensitivity to loud noise', 'Poor night vision',
+    'Distinctive scars', 'Constant squinting',
+    // Professional and Skill-Based Quirks
+    'Obsessive tool organization', 'Correcting technical errors',
+    'Puzzle-oriented thinking',
+    // Emotional Reaction Quirks
+    'Freezing when surprised', 'Over-talking under pressure',
+    'Retreating into silence', 'Hyper-focus on minor tasks',
+    // Belief and Superstition Quirks
+    'Lucky numbers', 'Color distrust', 'Reverence for omens',
+    'Belief in destiny',
+    // Relationship Quirks
+    'Letter writing to absent family', 'Protecting rivals',
+    'Refusal to abandon companions', 'Harmless grudges',
+    // Meta and Narrative Quirks
+    'Bad timing', 'Arriving late', 'Overhearing gossip',
+    'Finding trouble unintentionally'
+  ];
+  quirks.forEach(quirk => {
+    html += '<div class="checkbox-item"><span class="checkbox"></span><span>' + quirk + '</span></div>';
+  });
+  html += '</div>';
+  html += '<h3>Custom Quirks</h3>';
+  html += '<div class="text-area" style="min-height: 40px;"></div>';
+  html += '</div>';
+  
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Magick Spells</h2>';
+  html += '<table style="width:100%; border-collapse:collapse; font-size:9px;">';
+  html += '<tr><th style="border:1px solid #000; padding:4px; text-align:left;">Spell Name</th>';
+  html += '<th style="border:1px solid #000; padding:4px;">Damage</th>';
+  html += '<th style="border:1px solid #000; padding:4px;">Mana Cost</th>';
+  html += '<th style="border:1px solid #000; padding:4px;">Acquired</th>';
+  html += '<th style="border:1px solid #000; padding:4px;">Skill Level</th></tr>';
+  for (let i = 0; i < 8; i++) {
+    html += '<tr><td style="border:1px solid #000; padding:6px; height:20px;"></td>';
+    html += '<td style="border:1px solid #000; padding:6px;"></td>';
+    html += '<td style="border:1px solid #000; padding:6px;"></td>';
+    html += '<td style="border:1px solid #000; padding:6px;"></td>';
+    html += '<td style="border:1px solid #000; padding:6px;"></td></tr>';
+  }
+  html += '</table>';
+  html += '</div>';
+
+  html += '<div class="section">';
+  html += '<h2>Equipment & Inventory</h2>';
+  html += '<div class="text-area" style="min-height: 70px;"></div>';
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Spells & Abilities</h2>';
+  html += '<div class="text-area" style="min-height: 70px;"></div>';
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Background & Personality</h2>';
+  html += '<div class="text-area notes-area"></div>';
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Notes</h2>';
+  html += '<div class="text-area notes-area"></div>';
+  html += '</div>';
+  
+  html += '</body></html>';
+  
+  printWindow.document.write(html);
+  printWindow.document.close();
+  
+  setTimeout(function() {
+    printWindow.print();
+  }, 500);
+}
+
+// Print current character sheet - COMPLETE VERSION
+function printCurrentCharacter() {
+  gatherFormData();
+  
+  const printWindow = window.open('', '_blank');
+  
+  let html = '<!DOCTYPE html><html><head><title>' + (character.characterName || 'Character') + ' - Character Sheet</title>';
+  html += '<style>';
+  html += 'body { font-family: Arial, sans-serif; max-width: 900px; margin: 15px auto; padding: 15px; font-size: 10px; }';
+  html += 'h1 { text-align: center; border-bottom: 3px solid #000; padding-bottom: 8px; margin-bottom: 15px; font-size: 20px; }';
+  html += 'h2 { font-size: 14px; border-bottom: 2px solid #333; padding-bottom: 4px; margin-top: 15px; margin-bottom: 10px; }';
+  html += 'h3 { font-size: 11px; margin-top: 10px; margin-bottom: 6px; font-weight: bold; }';
+  html += '.section { margin-bottom: 15px; page-break-inside: avoid; }';
+  html += '.field { display: flex; margin-bottom: 5px; font-size: 10px; }';
+  html += '.field label { min-width: 120px; font-weight: bold; }';
+  html += '.field .value { flex: 1; }';
+  html += '.stats-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 12px; }';
+  html += '.stat-box { border: 2px solid #000; padding: 6px; text-align: center; background: #f5f5f5; }';
+  html += '.stat-name { font-weight: bold; margin-bottom: 4px; font-size: 10px; }';
+  html += '.stat-value { font-size: 16px; font-weight: bold; }';
+  html += '.derived-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }';
+  html += '.list { margin-left: 15px; }';
+  html += '.list-item { margin-bottom: 3px; padding: 3px; background: #f9f9f9; border-left: 2px solid #333; padding-left: 6px; font-size: 9px; }';
+  html += '.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }';
+  html += '.notes-box { border: 1px solid #000; padding: 8px; background: #fafafa; white-space: pre-wrap; min-height: 50px; font-size: 9px; }';
+  html += '@media print { body { margin: 8px; font-size: 9px; } }';
+  html += '</style></head><body>';
+  
+  html += '<h1>⚔️ ' + (character.characterName || 'Unnamed Character') + '</h1>';
+  
+  html += '<div class="section">';
+  html += '<h2>Basic Information</h2>';
+  html += '<div class="field"><label>Player Name:</label><div class="value">' + (character.playerName || 'N/A') + '</div></div>';
+  html += '<div class="field"><label>Username:</label><div class="value">' + (character.username || 'N/A') + '</div></div>';
+  html += '<div class="field"><label>Character Name:</label><div class="value">' + (character.characterName || 'N/A') + '</div></div>';
+  html += '<div class="field"><label>Character Points:</label><div class="value">' + (character.characterPoints || 100) + '</div></div>';
+  html += '<div class="field"><label>XP Pool:</label><div class="value">' + (character.xpPool || 0) + '</div></div>';
+  html += '<div class="field"><label>Points Spent:</label><div class="value">' + (character.totalSpent || 0) + '</div></div>';
+  html += '<div class="field"><label>Remaining:</label><div class="value">' + (character.remainingPoints || 0) + '</div></div>';
+  html += '<div class="field"><label>Race:</label><div class="value">' + (character.race || 'N/A') + '</div></div>';
+  html += '<div class="field"><label>Class:</label><div class="value">' + (character.class === 'custom' ? character.customClass : character.class || 'N/A') + '</div></div>';
+  html += '<div class="field"><label>Level:</label><div class="value">' + (character.level || 1) + '</div></div>';
+  html += '<div class="field"><label>XP:</label><div class="value">' + (character.xp || 0) + '</div></div>';
+  html += '<div class="field"><label>Mana Roll:</label><div class="value">' + (character.manaRoll || 'N/A') + '</div></div>';
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Attributes</h2>';
+  html += '<div class="stats-grid">';
+  html += '<div class="stat-box"><div class="stat-name">INT</div><div class="stat-value">' + (character.stats.int || 10) + '</div></div>';
+  html += '<div class="stat-box"><div class="stat-name">STR</div><div class="stat-value">' + (character.stats.str || 10) + '</div></div>';
+  html += '<div class="stat-box"><div class="stat-name">DEX</div><div class="stat-value">' + (character.stats.dex || 10) + '</div></div>';
+  html += '<div class="stat-box"><div class="stat-name">WIS</div><div class="stat-value">' + (character.stats.wis || 10) + '</div></div>';
+  html += '<div class="stat-box"><div class="stat-name">CON</div><div class="stat-value">' + (character.stats.con || 10) + '</div></div>';
+  html += '<div class="stat-box"><div class="stat-name">WIL</div><div class="stat-value">' + (character.stats.wil || 10) + '</div></div>';
+  html += '<div class="stat-box"><div class="stat-name">CHA</div><div class="stat-value">' + (character.stats.cha || 10) + '</div></div>';
+  html += '</div></div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Derived Stats</h2>';
+  html += '<div class="derived-grid">';
+  html += '<div class="stat-box"><div class="stat-name">Max HP</div><div class="stat-value">' + (character.derivedStats?.maxHP || 'N/A') + '</div></div>';
+  html += '<div class="stat-box"><div class="stat-name">Current HP</div><div class="stat-value">' + (character.derivedStats?.currentHP || 'N/A') + '</div></div>';
+  html += '<div class="stat-box"><div class="stat-name">AC</div><div class="stat-value">' + (character.derivedStats?.ac || 'N/A') + '</div></div>';
+  html += '<div class="stat-box"><div class="stat-name">Initiative</div><div class="stat-value">' + (character.derivedStats?.initiative || 'N/A') + '</div></div>';
+  html += '</div></div>';
+  
+  html += '<div class="two-col">';
+  
+  html += '<div class="section">';
+  html += '<h2>Skills</h2>';
+  if (character.skills && character.skills.length > 0) {
+    html += '<div class="list">';
+    character.skills.forEach(skill => {
+      html += '<div class="list-item">✓ ' + skill + '</div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<p style="font-size: 9px;">No skills selected</p>';
+  }
+  if (character.customSkills && character.customSkills.length > 0) {
+    html += '<h3>Custom Skills</h3>';
+    html += '<div class="list">';
+    character.customSkills.forEach(skill => {
+      html += '<div class="list-item">• ' + skill + '</div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Advantages</h2>';
+  if (character.advantages && character.advantages.length > 0) {
+    html += '<div class="list">';
+    character.advantages.forEach(adv => {
+      html += '<div class="list-item">✓ ' + adv + '</div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<p style="font-size: 9px;">No advantages selected</p>';
+  }
+  if (character.customAdvantages && character.customAdvantages.length > 0) {
+    html += '<h3>Custom Advantages</h3>';
+    html += '<div class="list">';
+    character.customAdvantages.forEach(adv => {
+      html += '<div class="list-item">• ' + adv + '</div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  
+  html += '</div>';
+  
+  html += '<div class="two-col">';
+  
+  html += '<div class="section">';
+  html += '<h2>Disadvantages</h2>';
+  if (character.disadvantages && character.disadvantages.length > 0) {
+    html += '<div class="list">';
+    character.disadvantages.forEach(dis => {
+      html += '<div class="list-item">✓ ' + dis + '</div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<p style="font-size: 9px;">No disadvantages selected</p>';
+  }
+  if (character.customDisadvantages && character.customDisadvantages.length > 0) {
+    html += '<h3>Custom Disadvantages</h3>';
+    html += '<div class="list">';
+    character.customDisadvantages.forEach(dis => {
+      html += '<div class="list-item">• ' + dis + '</div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Quirks</h2>';
+  if (character.quirks && character.quirks.length > 0) {
+    html += '<div class="list">';
+    character.quirks.forEach(quirk => {
+      html += '<div class="list-item">✓ ' + quirk + '</div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<p style="font-size: 9px;">No quirks selected</p>';
+  }
+  if (character.customQuirks && character.customQuirks.length > 0) {
+    html += '<h3>Custom Quirks</h3>';
+    html += '<div class="list">';
+    character.customQuirks.forEach(quirk => {
+      html += '<div class="list-item">• ' + quirk + '</div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  
+  html += '</div>';
+  
+  // Magick Spells section
+  html += '<div class="section">';
+  html += '<h2>Magick Spells</h2>';
+  const spellsWithData = (character.spells || []).filter(s => s.name || s.acquired);
+  if (spellsWithData.length > 0) {
+    html += '<table style="width:100%; border-collapse:collapse; font-size:9px; margin-bottom: 8px;">';
+    html += '<tr style="background:#eee;"><th style="border:1px solid #000; padding:4px; text-align:left;">Spell Name</th>';
+    html += '<th style="border:1px solid #000; padding:4px;">Damage</th>';
+    html += '<th style="border:1px solid #000; padding:4px;">Mana Cost</th>';
+    html += '<th style="border:1px solid #000; padding:4px;">Acquire Cost</th>';
+    html += '<th style="border:1px solid #000; padding:4px;">Skill Level</th>';
+    html += '<th style="border:1px solid #000; padding:4px;">Skill DP</th></tr>';
+    spellsWithData.forEach(function(spell) {
+      html += '<tr>';
+      html += '<td style="border:1px solid #000; padding:4px;">' + (spell.name || '') + '</td>';
+      html += '<td style="border:1px solid #000; padding:4px; text-align:center;">' + (spell.damage || '') + '</td>';
+      html += '<td style="border:1px solid #000; padding:4px; text-align:center;">' + (spell.manaCost || 0) + '</td>';
+      html += '<td style="border:1px solid #000; padding:4px; text-align:center;">' + (spell.acquired ? '10 DP' : '') + '</td>';
+      html += '<td style="border:1px solid #000; padding:4px; text-align:center;">' + (spell.skillLevel || 0) + '</td>';
+      html += '<td style="border:1px solid #000; padding:4px; text-align:center;">' + getSkillCost(spell.skillLevel || 0) + ' DP</td>';
+      html += '</tr>';
+    });
+    html += '</table>';
+  } else {
+    html += '<p style="font-size: 9px;">No spells</p>';
+  }
+  html += '</div>';
+  
+  html += '<div class="section">';
+  html += '<h2>Notes</h2>';
+  html += '<div class="notes-box">' + (character.notes || 'No notes') + '</div>';
+  html += '</div>';
+  
+  html += '</body></html>';
+  
+  printWindow.document.write(html);
+  printWindow.document.close();
+  
+  setTimeout(function() {
+    printWindow.print();
+  }, 500);
+}
+
+function clearAll() {
+  if (confirm('Are you sure you want to clear all character data? This cannot be undone.')) {
+    character = {
+      playerName: '',
+      username: '',
+      characterName: '',
+      characterPoints: 100,
+      xpPool: 0,
+      remainingPoints: 100,
+      totalSpent: 0,
+      race: '',
+      class: '',
+      customClass: '',
+      level: 1,
+      xp: 0,
+      stats: { int: 10, str: 10, dex: 10, wis: 10, con: 10, wil: 10, cha: 10 },
+      derived: {},
+      armor: 0,
+      skills: {},
+      advantages: [],
+      disadvantages: [],
+      quirks: [],
+      background: '',
+      equipment: '',
+      money: '',
+      notes: '',
+      avatar: null,
+      customSkills: [],
+      customAdvantages: [],
+      customDisadvantages: [],
+      customQuirks: [],
+      spells: [],
+      manaRoll: Math.floor(Math.random() * 1000) + 1
+    };
+    
+    localStorage.removeItem(STORE_KEY);
+    iprpsAfterClear();
+  }
+}
+
+// ==================== IPRPS OS: Hub library and IPRPS Table ====================
+function iprpsShrinkImage(dataUrl, max, force) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      if (scale === 1 && !force) return resolve(dataUrl);
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.width * scale)); c.height = Math.max(1, Math.round(img.height * scale));
+      const g = c.getContext('2d'); g.fillStyle = '#1a1a1a'; g.fillRect(0, 0, c.width, c.height);
+      g.drawImage(img, 0, 0, c.width, c.height);
+      resolve(c.toDataURL('image/jpeg', 0.86));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+function iprpsThumb(dataUrl) { return dataUrl ? iprpsShrinkImage(dataUrl, 96, true) : Promise.resolve(null); }
+
+function iprpsAfterClear() {
+  if (IPRPS_MODE === 'library') location.replace('?new=1' + (character.sheetType === 'npc' ? '&kind=npc' : ''));
+  else location.reload();
+}
+
+function iprpsBar(html) { const b = document.getElementById('iprpsBar'); b.innerHTML = html; b.hidden = false; return b; }
+function iprpsMsg(text, cls) { const m = document.getElementById('iprpsMsg'); if (m) { m.textContent = text; m.className = 'iprps-msg' + (cls ? ' ' + cls : ''); } }
+
+async function iprpsApi(action, body, params) {
+  const opt = body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {};
+  const r = await fetch('../character-sheets/api.php?action=' + action + (params || ''), opt);
+  let j; try { j = await r.json(); } catch (e) { throw new Error('Server error (HTTP ' + r.status + ')'); }
+  if (!j.ok) throw new Error(j.error || 'That did not work');
+  return j;
+}
+
+async function iprpsLibrarySave() {
+  gatherFormData(); recalcPoints();
+  const body = { sheet: character, kind: character.sheetType, source: 'editor', thumb: await iprpsThumb(character.avatar) };
+  if (IPRPS_LIB_ID) body.id = IPRPS_LIB_ID;
+  else if (+IPRPS_PARAMS.get('campaign')) body.campaign_id = +IPRPS_PARAMS.get('campaign');
+  iprpsMsg('Saving…');
+  try {
+    const j = await iprpsApi('save', body);
+    IPRPS_LIB_ID = j.id;
+    history.replaceState(null, '', '?id=' + j.id);
+    iprpsMsg('Saved to Character Sheets' + (j.warnings && j.warnings.length ? ' — ' + j.warnings.join(' ') : '') + '.', 'good');
+    try { if (window.opener && !window.opener.closed) window.opener.postMessage({ type: 'iprps-sheet-saved', id: j.id }, location.origin); } catch (e) {}
+  } catch (e) { iprpsMsg(e.message, 'bad'); }
+}
+
+function iprpsSetupLibrary(user) {
+  iprpsBar(`<span class="iprps-tag">✦ IPRPS</span>
+    <label class="iprps-msg" style="flex:0 0 auto">Sheet for <select id="iprpsKind"><option value="pc">a player character</option><option value="npc">an NPC</option></select></label>
+    <span id="iprpsMsg" class="iprps-msg"></span>
+    <button class="btn btn-primary" id="iprpsSave">💾 Save to Character Sheets</button>
+    <a class="btn" href="../character-sheets/">📚 Character Sheets</a>`);
+  const kind = document.getElementById('iprpsKind');
+  kind.value = character.sheetType === 'npc' ? 'npc' : 'pc';
+  kind.onchange = () => { character.sheetType = kind.value; autoSave(); };
+  document.getElementById('iprpsSave').onclick = iprpsLibrarySave;
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); iprpsLibrarySave(); } });
+  if (!IPRPS_LIB_ID) { iprpsMsg(IPRPS_PARAMS.has('new') ? 'New sheet: fill it in, then save.' : 'Not saved to Character Sheets yet.'); return; }
+  iprpsMsg('Loading…');
+  iprpsApi('get', null, '&id=' + IPRPS_LIB_ID).then(j => {
+    localStorage.setItem(STORE_KEY, JSON.stringify(j.sheet));
+    character.customSkills = []; character.customAdvantages = []; character.customDisadvantages = []; character.customQuirks = []; character.skills = {};
+    loadCharacter();
+    kind.value = character.sheetType === 'npc' ? 'npc' : 'pc';
+    if (j.meta.kind === 'creature') { iprpsMsg('This is a creature sheet: edit it in Character Sheets.', 'bad'); document.getElementById('iprpsSave').disabled = true; return; }
+    document.title = (character.characterName || 'Character') + ' · Character Creator';
+    iprpsMsg('Editing “' + (character.characterName || 'Unnamed') + '”' + (j.meta.campaign_name ? ' (' + j.meta.campaign_name + ')' : '') + '.');
+  }).catch(e => iprpsMsg(e.message, 'bad'));
+}
+
+function iprpsSetupTable() {
+  iprpsBar(`<span class="iprps-tag">✦ IPRPS Table</span>
+    <span id="iprpsMsg" class="iprps-msg">Fill in your character, then send it to the Session Master. It's also saved on this device.</span>
+    <button class="btn btn-primary" id="iprpsSend">📜 Send to the Session Master</button>
+    <a class="btn" href="/play">Back to the table</a>`);
+  document.getElementById('iprpsSend').onclick = async () => {
+    gatherFormData(); recalcPoints();
+    if (!character.characterName) { iprpsMsg('Give your character a name first.', 'bad'); return; }
+    iprpsMsg('Sending…');
+    try {
+      const r = await fetch('/api/p/sheet', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-IPRPS': '1' }, body: JSON.stringify({ sheet: character }) });
+      let j = {}; try { j = await r.json(); } catch (e) {}
+      if (r.status === 401) throw new Error('Join the table first (Back to the table), then send it again. Your sheet stays on this device.');
+      if (!j.ok) throw new Error(j.error || ('The table computer did not answer (HTTP ' + r.status + ')'));
+      iprpsMsg('Sent! The Session Master has “' + character.characterName + '”. Send it again after any changes.', 'good');
+    } catch (e) { iprpsMsg(e.message, 'bad'); }
+  };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (IPRPS_MODE === 'table') iprpsSetupTable();
+  if (IPRPS_MODE === 'library') {
+    if (window.IPAuth && IPAuth.user) iprpsSetupLibrary(IPAuth.user);
+    else document.addEventListener('ipauth:ready', e => iprpsSetupLibrary(e.detail), { once: true });
+  }
+});
+</script>
+</body>
+</html>

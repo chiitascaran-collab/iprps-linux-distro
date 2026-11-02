@@ -214,6 +214,7 @@ Each edition is one compressed disk image. Write it to a USB stick, boot from it
 
 | File | Use it for |
 | --- | --- |
+| `iprps-os-1.0-<edition>.iso` | **Try it first:** a live DVD or USB stick that runs in memory without touching your disks, and installs from there |
 | `iprps-os-1.0-<edition>.img.xz` | A USB stick or an internal disk; boots on UEFI and BIOS computers |
 | `iprps-os-1.0-<edition>.vhdx` | Trying it in Hyper-V on Windows |
 | `iprps-os-1.0-<edition>.qcow2` | Trying it in QEMU, virt-manager or Proxmox |
@@ -230,7 +231,7 @@ Each edition is one compressed disk image. Write it to a USB stick, boot from it
 
 **To install on the computer itself:** run *Install IPRPS OS to This Computer* from the IPRPS menu, choose the internal disk, and confirm. That disk is **completely erased**, so back up anything you need first.
 
-**To try it without touching your PC:** use the `.vhdx` in Hyper-V (Generation 2, Secure Boot off) or the `.qcow2` in QEMU.
+**To try it without touching your PC:** start the live `.iso` from a DVD (Windows: right-click it, **Burn disc image**) or a USB stick (balenaEtcher, or Rufus in DD Image mode), or use the `.vhdx` in Hyper-V (Generation 2, Secure Boot off) or the `.qcow2` in QEMU.
 
 ## Your data and privacy
 
@@ -272,10 +273,9 @@ These are plans, not promises, and dates aren't set; each release's notes say wh
 
 1. **Version 1.0:** the three editions, Session Master Mode, the Hub, the IPRPS Table, IPRPS Writer, the campaign database and, in Medium and Advanced, the IPRPS Oracle.
 2. **Campaign tools in the Hub:** campaign, character, session, NPC and quest screens, the initiative and combat tracker, and the session log, all feeding the player display and the IPRPS Table.
-3. **Version 1.1: Live ISO.** A try-before-you-install image that boots read-only from USB or DVD and installs from there.
-4. **More IPRPS apps:** Soundboard, IPRPS File Viewer for `.iprps`, `.ipai`, `.srpatch` and `.capstone` files, and the IPRPS Welcome app with a protected place for API keys.
-5. **A custom-trained IPRPS model** for the Oracle, which can replace the bundled one without changing the app.
-6. **Package manager:** install and update software, and apply security updates, without reinstalling the whole system.
+3. **More IPRPS apps:** Soundboard, IPRPS File Viewer for `.iprps`, `.ipai`, `.srpatch` and `.capstone` files, and the IPRPS Welcome app with a protected place for API keys.
+4. **A custom-trained IPRPS model** for the Oracle, which can replace the bundled one without changing the app.
+5. **Package manager:** install and update software, and apply security updates, without reinstalling the whole system.
 
 Follow infiniteplane.space and the GitHub repository for announcements.
 

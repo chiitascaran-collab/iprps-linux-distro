@@ -21,7 +21,7 @@ This guide builds **IPRPS OS** for distribution: a generic, ready-to-use Linux s
 | A desktop customized for IPRPS | The **IPRPS Desktop**: Xfce with IPRPS branding, a Session Master menu, Session Master Mode, a player display, and the **IPRPS Table** for players' phones, tablets and laptops on the same network |
 | Audio, video, image and document apps | Chosen per edition (Part 1) |
 | Exclusive IPRPS apps for Session Masters and Storytellers | Served by a built-in local **web server (Apache + PHP)** and **database (MariaDB)**, with a campaign and player-tracking database included |
-| Downloadable from GitHub and/or a download site | One compressed disk image per edition (USB stick or internal disk), optional VM images, checksums and source archives (13.8) |
+| Downloadable from GitHub and/or a download site | One compressed disk image per edition (USB stick or internal disk), a live ISO (DVD or USB, 13.9), optional VM images, checksums and source archives (13.8) |
 | Local AI later | Designed for, not built (Part 18) |
 
 ### The three editions
@@ -34,7 +34,7 @@ This guide builds **IPRPS OS** for distribution: a generic, ready-to-use Linux s
 | Desktop | IPRPS Desktop (Xfce) | Same | Same |
 | Local AI | — | **IPRPS Oracle** (Ollama, one bundled storyteller model) | Same as Medium |
 | Web browser | Firefox (unbranded) | Chromium (ungoogled, default; IPRPS apps open as their own windows) + Firefox | Same as Medium |
-| Campaign tools | IPRPS Session Master Hub, player display, dice, initiative, session log | + all Medium IPRPS apps | + all IPRPS apps |
+| Campaign tools | IPRPS Session Master Hub, **character sheets** (Character Creator, Character Sheets), IPRPS Table, player display, dice, initiative, session log | + all Medium IPRPS apps | + all IPRPS apps |
 | Audio | Parole (music and ambience); mpv plays ambience in Session Master Mode | + VLC | + upstream audio tools (Part 16) |
 | Video | mpv | + VLC, FFmpeg tools | + upstream video tools |
 | Images | Ristretto (viewer), **Drawing** (simple painting) | + GIMP, Inkscape, ImageMagick | + FontForge, Graphviz, upstream art tools |
@@ -222,6 +222,19 @@ cp -v --sparse=always /root/snapshots/iprps-<NAME>.img /root/iprps-system.img &&
 ```
 
 **Housekeeping.** `--sparse=always` makes each copy only as large as the data inside it (`du -h /root/snapshots/*` shows the real sizes). Keep the **latest three** and delete older ones with `rm`, except the release snapshots (`RELEASE-lite`, and so on). Snapshots cover the image only; `/build` (downloads and build folders) is separate and untouched by a restore.
+
+**Backing up to another drive.** Snapshots live inside WSL's own disk, so a damaged or reset WSL loses them all. After each checkpoint, copy the new snapshot to D: (set up once in Appendix F.1):
+
+**[DEBIAN ROOT]**
+
+```bash
+/root/iprps-backup.sh snapshots
+```
+
+- Every snapshot not yet backed up is compressed with zstd into `D:\IPRPS\backups\snapshots` and tested. Each prints **OK** or **up to date**, and the run ends with **Backup complete**.
+- Compressing matters: a plain copy to a Windows drive writes each sparse snapshot out at its full 40 GB.
+- Always back up the release snapshots (`RELEASE-lite`, and so on).
+- Backing up the working image and restoring from a backup are in Appendix F.
 
 ### 0.5 The windows: how to open each one
 
@@ -5383,6 +5396,77 @@ grep -n -B1 -A5 '^   n=0' /usr/share/mkinitramfs/init.in
 ```
 
 The first `grep` shows the `# IPRPS: no firmware` line and `drivers/usb/{host,storage,core,common}` in `mkinitramfs`. The second shows the `modprobe` line, now ending in `usbhid hid_generic`. The third shows `n=0`, a `while … -lt 30` loop with the "Waiting for the root device" message, then BLFS's own `while [ ! -b "$device" ]` loop.
+
+**IPRPS addition: live boot from an ISO (DVD or USB).** The live ISO images (13.9) start IPRPS OS from a DVD or USB stick without touching the computer's disks: the initramfs finds the disc by its label, opens the compressed system on it read-only, and puts a RAM layer on top, so the session can change anything and nothing is written to disk. This adds the CD/DVD drivers to the initramfs and a `do_mount_live` step to its `init`, used only when the kernel line has `iprps.live=<label>`; normal boots from a disk are unchanged. It finds the disc by trying every device with that label (a USB stick shows the label on a partition too, which can't be mounted, so it also tries the whole stick). Safe to run more than once:
+
+**[IPRPS CHROOT]**
+
+```bash
+grep -q 'drivers/{block,ata,nvme,md,firewire,cdrom}' /usr/sbin/mkinitramfs || \
+sed -i 's|drivers/{block,ata,nvme,md,firewire}|drivers/{block,ata,nvme,md,firewire,cdrom}|' /usr/sbin/mkinitramfs
+grep -q 'do_mount_live' /usr/share/mkinitramfs/init.in || python3 - /usr/share/mkinitramfs/init.in << "PYEOF"
+import sys
+p = sys.argv[1]; s = open(p).read()
+func = r'''
+# IPRPS: live boot from an ISO (DVD or USB): iprps.live=<volume label> on the kernel line.
+# Mounts the ISO, its live/filesystem.squashfs read-only, and a RAM overlay on top.
+find_live()
+{
+   # Every device with the disc's label; a USB stick also shows it on a partition, so try the whole disk too
+   for d in $(blkid -o device -t LABEL="$live" 2>/dev/null) ; do
+      for m in "$d" "/dev/$(basename "$(readlink -f /sys/class/block/${d#/dev/}/..)")" ; do
+         [ -b "$m" ] || continue
+         if mount -n -t iso9660 -o ro "$m" /run/live/medium 2>/dev/null ; then
+            device=$m; return 0
+         fi
+      done
+   done
+   return 1
+}
+
+do_mount_live()
+{
+   modprobe -a -q isofs squashfs overlay loop sr_mod cdrom 2>/dev/null
+   mkdir -p /run/live/medium /run/live/rootfs /run/live/rw /.root
+   n=0
+   until find_live ; do
+      [ $n = 0 ] && echo "Looking for the IPRPS OS live disc or USB drive ($live)..."
+      n=$((n+1))
+      if [ $n -gt 30 ] ; then
+         echo "The IPRPS OS live medium ($live) was not found."
+         problem
+         n=0
+      fi
+      sleep 1; udevadm settle
+   done
+   mount -n -t squashfs -o ro,loop /run/live/medium/live/filesystem.squashfs /run/live/rootfs || {
+      echo "Could not open live/filesystem.squashfs on $device"; problem; }
+   mount -n -t tmpfs -o mode=0755 tmpfs /run/live/rw
+   mkdir -p /run/live/rw/upper /run/live/rw/work
+   mount -n -t overlay overlay \
+      -o lowerdir=/run/live/rootfs,upperdir=/run/live/rw/upper,workdir=/run/live/rw/work /.root || {
+      echo "Could not set up the live system in memory"; problem; }
+   mkdir -p /.root/var/lib/iprps
+   : > /.root/etc/iprps-live
+   : > /.root/var/lib/iprps/firstboot-done
+   : > /.root/var/lib/iprps/setup-done
+   echo "Started IPRPS OS live from $live"
+}
+'''
+assert '\ninit=/sbin/init\n' in s and '\ndo_mount_root\n' in s and '    root=*      )' in s
+s = s.replace('\ninit=/sbin/init\n', func + '\ninit=/sbin/init\nlive=\n', 1)
+s = s.replace('    root=*      )', '    iprps.live=*) live=${param#iprps.live=}       ;;\n    root=*      )', 1)
+s = s.replace('\ndo_try_resume # This function will not return if resuming from disk\ndo_mount_root\n',
+              '\nif [ -n "$live" ] ; then\n   do_mount_live\nelse\n   do_try_resume # This function will not return if resuming from disk\n   do_mount_root\nfi\n', 1)
+assert 'do_mount_live\nelse' in s
+open(p, 'w').write(s)
+print("init.in: live boot added")
+PYEOF
+grep -n 'drivers/{block,ata,nvme,md,firewire,cdrom}' /usr/sbin/mkinitramfs
+grep -n 'iprps.live\|do_mount_live$' /usr/share/mkinitramfs/init.in
+```
+
+The output shows `init.in: live boot added` (or nothing new on a second run), the `mkinitramfs` line with `drivers/{block,ata,nvme,md,firewire,cdrom}`, and three `init.in` lines: the `do_mount_live` comment, the `iprps.live=*)` option, and the call. **Create the initramfs again** afterwards (the next step), or the change isn't in it.
 
 **IPRPS addition: quiet the PC speaker.** Debian's kernel configuration has two PC-speaker drivers, and both try to load ("Driver 'pcspkr' is already registered" at boot). Neither is needed (sound goes through the sound card), so both are switched off, which also ends the console beep:
 
@@ -20713,6 +20797,33 @@ CREATE TABLE IF NOT EXISTS session_log (
   text          TEXT NOT NULL,
   FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Character sheets (players, NPCs, creatures) for the Character Sheets app (12.9); one owner account each
+CREATE TABLE IF NOT EXISTS character_sheets (
+  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id       INT NOT NULL,
+  campaign_id   INT UNSIGNED NULL,
+  kind          ENUM('pc','npc','creature') NOT NULL DEFAULT 'pc',
+  name          VARCHAR(120) NOT NULL,
+  player_name   VARCHAR(100),
+  race          VARCHAR(80),
+  class         VARCHAR(80),
+  level         SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+  hp            INT,
+  mp            BIGINT,
+  armor         SMALLINT,
+  sheet_json    LONGTEXT NOT NULL,
+  avatar        MEDIUMTEXT,
+  thumb         TEXT,
+  source        ENUM('import','editor','oracle','table') NOT NULL DEFAULT 'import',
+  file_name     VARCHAR(200),
+  notes         TEXT,
+  created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_owner (user_id, kind, name),
+  INDEX idx_campaign (campaign_id),
+  FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 EOF
 grep -c "CREATE TABLE" /usr/share/iprps/schema/iprps-core.sql
 ```
@@ -20728,7 +20839,9 @@ mariadb -u root -e 'SHOW TABLES' iprps_test
 mariadb -u root -e 'DROP DATABASE iprps_test'
 ```
 
-> **Side note:** `sheet_json` stores a full character sheet as JSON, so IPRPS sheets (including data imported from `.iprps` files) fit without schema changes. The Universal Login tables (`ip_users`, `ip_sessions`) live in their own database as in the existing IPRPS web apps.
+`grep -c` prints **12**, and `SHOW TABLES` lists the 12 tables. `character_sheets` holds the Character Sheets app's sheets (12.9).
+
+> **Side note:** `sheet_json` (in `characters` and `character_sheets`) stores a full character sheet as JSON, so IPRPS sheets (including data imported from `.iprps` files) fit without schema changes. The Universal Login tables (`ip_users`, `ip_sessions`) live in their own database as in the existing IPRPS web apps.
 
 > **Checkpoint:** Take snapshot **`F-webstack`**.
 
@@ -22563,6 +22676,8 @@ update-desktop-database /usr/share/applications
 | **Initiative and Combat Tracker** | Turn order, HP, conditions; feeds the player display | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
 | **Dice Roller** | IPRPS dice mechanics; logs rolls to the session log | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
 | **Session Log and Recap** | Timeline of notes, rolls, loot and XP; exports recaps | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
+| **Character Creator** | The IPRPS character sheet (attributes, DP costs, skills, advantages, spells, portrait); exports `.json`; one file players can use anywhere | Exists (`character-creator/`, 12.9) | ✔ | ✔ | ✔ |
+| **Character Sheets** | The Session Master's sheet library: import players' files, view, print, by campaign; NPC and creature sheets; in the Table console; read by the Oracle | Exists (`character-sheets/`, 12.9) | ✔ | ✔ | ✔ |
 | **IPRPS Table** | LAN play: players join from phones, tablets and laptops on the same network; chat (everyone, players only, private), images and audio, IPRPS dice, and the Session Master pushes pictures, video, text and sound to everyone, groups or single players | Exists (`/opt/iprps/table`, 12.7) | ✔ | ✔ | ✔ |
 | **Player Display** | Full-screen handouts, maps and initiative for players | **Exists** (`hub/display.php`, shows text sent to it); maps and initiative to build | ✔ | ✔ | ✔ |
 | **Infinite Plane Universal Login** | Single sign-on for the local IPRPS apps | Exists | ✔ | ✔ | ✔ |
@@ -22738,6 +22853,8 @@ The Hub (`/srv/www/iprps/hub/`, opened by the **Session Master Hub** launcher an
 |---|---|
 | `writer` | IPRPS Writer |
 | `table` | IPRPS Table (opens the LAN play console, 12.7) |
+| `character-sheets` | Character Sheets (12.9) |
+| `character-creator` | Character Creator (12.9) |
 | `prompt_database` | Prompt Database |
 | `expressions` | Expressions |
 | `sfx` | SFX |
@@ -22784,7 +22901,7 @@ for a in $(python3 -c "import json; print(' '.join(json.load(open('/srv/www/iprp
 done
 ```
 
-`ls` shows `api.php`, `app-names.json`, `default-apps.json`, `display.php`, `hub-icon.svg`, `hub.css`, `hub.js` and `index.html`. The loop checks the default apps: each `MISSING` is a folder that isn't installed or has another name. Correct the name in `default-apps.json` (and `app-names.json`), or install the app. The Hub needs no database setup: it creates its table on first use.
+`ls` shows `api.php`, `app-names.json`, `default-apps.json`, `display.php`, `hub-icon.svg`, `hub.css`, `hub.js` and `index.html`. The loop checks the default apps: each `MISSING` is a folder that isn't installed or has another name. Correct the name in `default-apps.json` (and `app-names.json`), or install the app. `table`, `character-sheets` and `character-creator` show `MISSING` until 12.7 and 12.9 install them. The Hub needs no database setup: it creates its table on first use.
 
 **IPRPS Writer** (`/srv/www/iprps/writer/`) is a simple word processor that runs in the browser like the other IPRPS apps (in its own window in Medium and Advanced): headings, bold, italic, underline, lists, alignment, a word count, and a printed-page look. Documents save automatically to the Session Master's account (table `writer_docs` in the core database, created on first use) and are listed on the left. **Open file…** imports `.docx`, `.odt`, `.txt` and `.html` (or drag a file onto the page); **Save as** writes `.docx` (Word), `.odt` (LibreOffice), `.txt` or `.html` to Downloads, or prints/makes a PDF (**Ctrl+P**). It keeps text, headings, bold/italic/underline/strikethrough, lists and alignment; pictures, tables and fonts in imported files are not kept. It's also on the Hub by default and in the menu (**IPRPS Writer**, also under Office).
 
@@ -22808,6 +22925,12 @@ Many computers, especially older desktops, have **one display output**, so a sec
 > **Note:** The buttons come from `/opt/iprps/table/dice-presets.json`. To change them (the **Reaction** roll is a placeholder: 1d20 read on the Effectiveness bands), copy it to `/etc/iprps-table/presets.json` (`sudo install -Dm644 /opt/iprps/table/dice-presets.json /etc/iprps-table/presets.json`), edit it, and run `sudo systemctl restart iprps-table`. The console's **Session** box shows which file is in use.
 
 **Privacy.** The Session Master sees messages to everyone and to the Session Master. **Players only** messages and private messages between players stay between the players. Files follow their message: an image sent privately to one player can be opened by that player only. Players can share images and audio up to 15 MB; the Session Master can also share video, up to 1 GB per file.
+
+**Character sheets (12.9).**
+
+- Players tap **📜 Sheet** to fill in the IPRPS Character Creator on their own device, then **Send to the Session Master**. The sheet goes privately to the Session Master and stays on their device for next time.
+- In the console, **📜 Character sheets** opens the Character Sheets app beside the table. **Import to Character Sheets** adds or updates a sheet that arrived, **Sheet** next to a player opens theirs, and **Show to …** puts a sheet on a player's screen.
+- **New session** clears the files players sent, so import sheets first.
 
 **Safety.** The Table listens on port **7777** of every network the computer is on, but answers other devices only while the Session Master has the table **open**, and only with the join code. The console (`http://localhost:7777/sm/`) opens on the Session Master's own computer only. It runs as its own account, `iprps-table`, which can write nowhere but `/var/lib/iprps-table`. Closing the table disconnects everyone; chat, players and media are kept for next time (**Session → New session** clears the chat; **Reset everything** also removes players and media and makes a new code). After a restart the table is always closed.
 
@@ -22905,6 +23028,165 @@ The Hub's default apps include **IPRPS Table** (`table` in `hub/default-apps.jso
 ### 12.8 Desktop (non-web) apps
 
 Install desktop apps under `/opt/iprps/<app>/`, with a launcher in `/usr/share/applications/` (`Categories=X-IPRPS;AudioVideo;` for the Media Player). The **IPRPS Media Player** is an Electron app using libVLC: VLC must be installed (Medium), and Electron's own runtime needs GTK 3, NSS and ALSA, which are already in the build.
+
+### 12.9 Character sheets: Character Creator and Character Sheets
+
+Two apps in every edition handle IPRPS character sheets. Both are on the Hub by default.
+
+| App | Folder | What it does |
+|---|---|---|
+| **Character Creator** | `character-creator` | The IPRPS character sheet: attributes and derived stats, Development Point costs, 58 skills, advantages, disadvantages, quirks, magick spells, equipment, a portrait. It exports the sheet as **`.json`** (or `.iprps`, the same file) and prints blank or filled sheets. It's **one self-contained file**, so players can use it on any computer, offline. |
+| **Character Sheets** | `character-sheets` | The Session Master's library: import players' files, view, print and download sheets, sort them by campaign, keep private notes. It also makes **NPC** and **creature** sheets. It opens inside the **IPRPS Table** console and is read by the **IPRPS Oracle**. |
+
+**How a sheet travels**
+
+1. **Players fill in the sheet** on their own computers, in one of two ways.
+   - **As a file:** in Character Sheets, **Blank sheet for players ⇩** saves `IPRPS-Character-Sheet.html`. Give it to players on a USB stick, by email or in a shared folder. They open it in any browser, fill it in, and click **Export .json**. Their work is kept in that browser between visits.
+   - **At the table:** during a game on the IPRPS Table (12.7), players tap **📜 Sheet** on their phone, tablet or laptop. The same Character Creator opens. **Send to the Session Master** delivers the sheet privately to the Session Master, and they can send it again after changes.
+2. **The Session Master imports it.**
+   - **Files:** in Character Sheets, **Import sheets…** (or drag the files onto the window) takes any number of `.json`/`.iprps` files at once. Choose the campaign. A sheet for the same character and player **updates** the one you have instead of adding a copy.
+   - **From the Table:** in the Table console, a sheet that arrives shows an **Import to Character Sheets** button in the chat and at the top of the **📜 Character sheets** panel.
+3. **Using the sheets.**
+   - **Viewing and keeping them:** Character Sheets shows each sheet laid out for reading: attributes with their shifts, HP and Mana Pool, skills with skill shifts, advantages, spells and gear. **Print** prints just the sheet, and **Download .json** gives the file back.
+   - **Editing:** **Edit** opens a player or NPC sheet in the Character Creator, and **💾 Save to Character Sheets** stores it.
+   - **NPCs and creatures:**
+     - **New ▾** makes player, NPC and creature sheets.
+     - Creature sheets have their own layout: type, size (with the IPRPS size modifiers), threat, natural AR, attacks, abilities, weaknesses, behavior, tactics and loot.
+     - In Medium and Advanced, **✦ NPC with the Oracle…** and **✦ Creature with the Oracle…** have the local AI write a complete sheet that fits the campaign.
+   - **At the table:**
+     - The console's **📜 Character sheets** panel shows every sheet, and a green dot marks the players who are at the table. **Sheet** next to a player opens their sheet.
+     - **Show to …** puts a sheet on that player's screen as a text card.
+   - **With the Oracle (Medium and Advanced):** the Oracle gets a one-line summary of every sheet in the campaign. When a message names a character ("Can **Kira** climb the tower?"), it reads that sheet in full.
+
+Every sheet belongs to the Universal Login account that imported it, like Writer documents. The sheets are kept in the **`character_sheets`** table of the IPRPS core database (10.2), which Character Sheets also creates on first use.
+
+| Field | What it holds |
+|---|---|
+| `id`, `user_id` | The sheet, and the Session Master's account (`ip_users.id`) |
+| `campaign_id` | The campaign (optional; cleared if the campaign is deleted) |
+| `kind` | `pc` (player character), `npc` or `creature` |
+| `name`, `player_name`, `race`, `class`, `level`, `hp`, `mp`, `armor` | Copied from the sheet for lists and searches (for creatures, `race` holds the type and `class` the threat) |
+| `sheet_json` | The whole sheet as JSON, in the Character Creator's format (`format: iprps-character-sheet`, `formatVersion: 1`, `sheetType`) |
+| `avatar`, `thumb` | The portrait (at most 768 pixels) and a small copy for lists |
+| `source`, `file_name` | Where it came from (`import`, `editor`, `oracle`, `table`) and the imported file's name |
+| `notes` | The Session Master's private notes (the Oracle reads them too) |
+| `created_at`, `updated_at` | When it was added and last changed |
+
+Imported sheets are checked before they're stored. Numbers are kept in range and HP, Mana Pool, Speed and Dodge are worked out again with the Character Creator's formulas. Names that end up in the page are cleaned, and anything that isn't a PNG, JPEG, GIF or WebP portrait is left out, because the files come from other people's computers.
+
+**1. Copy the apps and the updated Hub and Table files. [DEBIAN ROOT]** From the newest repository (`apps/character-creator/`, `apps/character-sheets/`, and the updated `apps/hub/`, `apps/table/` and `apps/oracle/`):
+
+```bash
+R=/mnt/g/IPRPS/iprps-os
+cp -rv $R/apps/character-creator $R/apps/character-sheets /mnt/iprps/srv/www/iprps/
+cp -v $R/apps/hub/default-apps.json $R/apps/hub/app-names.json /mnt/iprps/srv/www/iprps/hub/
+cp -rv $R/apps/table/. /mnt/iprps/opt/iprps/table/
+[ -d /mnt/iprps/srv/www/iprps/oracle ] && cp -v $R/apps/oracle/{api.php,prompts.php,index.html,oracle.js,oracle.css} /mnt/iprps/srv/www/iprps/oracle/
+```
+
+The last line only does something in Medium and Advanced, where the Oracle is installed (Part 15). It leaves the Oracle's `config.php` as it is. In Lite, run it again after Part 15's step 8, or install the Oracle from this repository, which already has the changes.
+
+**2. Permissions, menu entries and the schema. [IPRPS CHROOT]**
+
+```bash
+for d in character-creator character-sheets; do
+  chown -R root:apache /srv/www/iprps/$d
+  find /srv/www/iprps/$d -type d -exec chmod 755 {} + ; find /srv/www/iprps/$d -type f -exec chmod 644 {} +
+done
+chown -R root:root /opt/iprps/table
+find /opt/iprps/table -type d -exec chmod 755 {} + ; find /opt/iprps/table -type f -exec chmod 644 {} +
+install -vDm644 /srv/www/iprps/character-sheets/favicon.svg /usr/share/icons/hicolor/scalable/apps/iprps-character-sheets.svg
+install -vDm644 /srv/www/iprps/character-creator/favicon.svg /usr/share/icons/hicolor/scalable/apps/iprps-character-creator.svg
+cat > /usr/share/applications/iprps-character-sheets.desktop << "EOF"
+[Desktop Entry]
+Type=Application
+Name=Character Sheets
+GenericName=IPRPS Character Sheets
+Comment=Every player's, NPC's and creature's sheet: import, view, print, and use them at the table
+Exec=iprps-open character-sheets/
+Icon=iprps-character-sheets
+Terminal=false
+Categories=X-IPRPS;Game;
+Keywords=character;sheet;npc;creature;player;stats;
+EOF
+cat > /usr/share/applications/iprps-character-creator.desktop << "EOF"
+[Desktop Entry]
+Type=Application
+Name=Character Creator
+GenericName=IPRPS Character Sheet
+Comment=Fill in an IPRPS character sheet
+Exec=iprps-open character-creator/
+Icon=iprps-character-creator
+Terminal=false
+Categories=X-IPRPS;Game;
+Keywords=character;sheet;creator;
+EOF
+gtk-update-icon-cache -qtf /usr/share/icons/hicolor
+update-desktop-database /usr/share/applications
+grep -q 'character_sheets' /usr/share/iprps/schema/iprps-core.sql || cat >> /usr/share/iprps/schema/iprps-core.sql << "EOF"
+
+CREATE TABLE IF NOT EXISTS character_sheets (
+  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id       INT NOT NULL,
+  campaign_id   INT UNSIGNED NULL,
+  kind          ENUM('pc','npc','creature') NOT NULL DEFAULT 'pc',
+  name          VARCHAR(120) NOT NULL,
+  player_name   VARCHAR(100),
+  race          VARCHAR(80),
+  class         VARCHAR(80),
+  level         SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+  hp            INT,
+  mp            BIGINT,
+  armor         SMALLINT,
+  sheet_json    LONGTEXT NOT NULL,
+  avatar        MEDIUMTEXT,
+  thumb         TEXT,
+  source        ENUM('import','editor','oracle','table') NOT NULL DEFAULT 'import',
+  file_name     VARCHAR(200),
+  notes         TEXT,
+  created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_owner (user_id, kind, name),
+  INDEX idx_campaign (campaign_id),
+  FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+EOF
+grep -c "CREATE TABLE" /usr/share/iprps/schema/iprps-core.sql
+ls -A /srv/www/iprps/character-creator /srv/www/iprps/character-sheets
+grep -c 'character-sheets' /srv/www/iprps/hub/default-apps.json
+grep -c 'SHEET_PAGE' /opt/iprps/table/server.js
+```
+
+**What you should see:**
+- `grep -c "CREATE TABLE"` prints **12**.
+- `character-creator` holds `favicon.svg` and `index.html`.
+- `character-sheets` holds `.user.ini` (raises PHP's upload size for sheets with portraits to 16 MB), `api.php`, `favicon.svg`, `index.html`, `lib.php`, `sheets.css` and `sheets.js`.
+- The last two lines print **1** or more. The Table service picks up its new files at the next boot (`sudo systemctl restart iprps-table` on a running system).
+
+> **Side note:** The Hub's default apps now include **Character Sheets** and **Character Creator**, after IPRPS Table. Accounts that already saved their own choice in **Manage apps** keep it. New apps follow the defaults, so the two appear switched on until the account saves again.
+
+**3. Test. [TEST VM]** Fresh test copy, signed in.
+
+1. **Hub:** open the **Session Master Hub**. The tiles **Character Sheets** and **Character Creator** are there.
+2. **A file from a player:**
+   - In **Character Sheets**, click **Blank sheet for players ⇩** and open the saved `IPRPS-Character-Sheet.html` from the Downloads folder.
+   - Fill in a character, click **Export .json**, then use **Import sheets…** in Character Sheets with that file and a campaign.
+   - The sheet appears under **Players**. Import the same file again: the import result says **updated**, not added.
+3. **Editing:**
+   - **Edit** opens the Character Creator with the sheet. Change something and click **💾 Save to Character Sheets**; Character Sheets shows the change.
+   - **New ▾ → Creature sheet**: fill in a name and an attack, then save. **Print** prints only the sheet.
+4. **The Table:**
+   - Open the table (12.7) and join from a second browser window.
+   - The player's **📜 Sheet** opens the Character Creator. Fill in a name and click **Send to the Session Master**.
+   - In the console, **Import to Character Sheets** opens the **📜 Character sheets** panel with the sheet. A green dot means the player is at the table.
+   - **Show to …** puts the sheet on the player's screen.
+5. **Medium and Advanced:**
+   - In the Oracle, **Character sheets → NPC sheet** writes a sheet and saves it; **📇 Open the sheet** opens it.
+   - Ask the Oracle about a character by name, and its answer uses that sheet.
+
+> **Note:** For the **Lite** release that is already published, add the character sheets with *Lite fixes* at the start of Part 15. Run steps 1 and 2 with `IPRPS_IMG` pointing at the Lite release copy, then clean and pack Lite again (13.4, 13.5), and make its ISO again (13.9).
+
+> **Pro tip:** A Session Master can keep a library of NPCs and creatures with no campaign (**No campaign**) and assign them to a campaign when they're needed. The Oracle reads the sheets of the campaign you choose, plus any sheet you name in a message.
 
 > **Checkpoint:** All Lite IPRPS apps open from the IPRPS menu, and Session Master Mode opens all three windows. Take snapshot **`iprps-apps-lite`**.
 
@@ -23332,11 +23614,19 @@ Users can run IPRPS straight from the USB drive, or install it to an internal di
 ```bash
 cat > /usr/sbin/iprps-install << "EOF"
 #!/bin/bash
-# iprps-install — copy the running IPRPS system to an internal disk
+# iprps-install — copy IPRPS OS to an internal disk: the running system (USB image),
+# or, when started from the live ISO (DVD or USB), the clean system on the disc
 set -euo pipefail
 [ $EUID -eq 0 ] || { echo "Please run: sudo iprps-install"; exit 1; }
-SRC_ROOT=$(findmnt -no SOURCE /)
-SRC_DISK=$(lsblk -no PKNAME "$SRC_ROOT")
+if [ -e /etc/iprps-live ] && mountpoint -q /run/live/rootfs; then
+  SRC=/run/live/rootfs                                   # live ISO: the read-only system, not the RAM session
+  MEDIUM=$(findmnt -no SOURCE /run/live/medium)
+  SRC_DISK=$(lsblk -no PKNAME "$MEDIUM" 2>/dev/null || true); [ -n "$SRC_DISK" ] || SRC_DISK=$(basename "$MEDIUM")
+else
+  SRC=/
+  SRC_ROOT=$(findmnt -no SOURCE /)
+  SRC_DISK=$(lsblk -no PKNAME "$SRC_ROOT")
+fi
 echo "Disks on this computer (you are running from: $SRC_DISK):"
 lsblk -d -e 7,11 -o NAME,SIZE,MODEL,TRAN | grep -v "^$SRC_DISK "
 read -rp "Install IPRPS OS to which disk (e.g. nvme0n1 or sda)? " T
@@ -23365,11 +23655,11 @@ mkdir -p "$NEW/boot/efi"
 mount "${P}1" "$NEW/boot/efi"
 rsync -aAXH --info=progress2 \
   --exclude={/dev/*,/proc/*,/sys/*,/run/*,/tmp/*,/mnt/*,/media/*,/lost+found,/swapfile,/boot/efi/*} \
-  / "$NEW/"
+  "$SRC/" "$NEW/"
 
 ROOT_UUID=$(blkid -s UUID -o value "${P}3")
 EFI_UUID=$(blkid -s UUID -o value "${P}1")
-OLD_UUID=$(blkid -s UUID -o value "$SRC_ROOT")
+OLD_UUID=$(grep -o 'root=UUID=[^ ]*' "$SRC/boot/grub/grub.cfg" | head -1 | cut -d= -f3)
 cat > "$NEW/etc/fstab" << FSTAB
 UUID=$ROOT_UUID  /          ext4  defaults                                 1 1
 UUID=$EFI_UUID   /boot/efi  vfat  codepage=437,iocharset=iso8859-1,nofail  0 2
@@ -23383,7 +23673,7 @@ chroot "$NEW" grub-install --target=i386-pc "$TARGET"
 rm -f "$NEW/var/lib/iprps/firstboot-done" "$NEW/etc/ssh/ssh_host_"*
 : > "$NEW/etc/machine-id"        # empty: a new ID at first boot, without systemd's preset reset
 umount -R "$NEW"
-echo; echo "Done. Shut down, remove the USB drive, and start the computer."
+echo; echo "Done. Shut down, remove the USB drive or DVD, and start the computer."
 EOF
 chmod 755 /usr/sbin/iprps-install
 cat > /usr/share/applications/iprps-install.desktop << "EOF"
@@ -23396,7 +23686,7 @@ Categories=X-IPRPS;System;
 EOF
 ```
 
-> **Warning:** Test the installer in a VM with a second empty virtual disk before every release. The installed system keeps the user account created at first boot. Its next boot re-runs `iprps-firstboot`, which creates swap and new SSH keys for the new disk.
+> **Warning:** Test the installer in a VM with a second empty virtual disk before every release. Installed from a USB image, the new system keeps the user account created at first boot, and its next boot re-runs `iprps-firstboot`, which creates swap and new SSH keys for the new disk. Installed from the **live ISO** (13.9), it copies the clean system from the disc instead of the live session, so its first boot runs the full setup (account, computer name, time zone).
 
 ### 13.4 Release cleanup (on a copy of the image)
 
@@ -23775,6 +24065,7 @@ To write the downloads somewhere else, run `IPRPS_RELEASE_OUT=/mnt/d/somewhere /
 | Real AMD PC from USB | Same |
 | 6 GB RAM machine or VM (Lite) | Desktop + Firefox + Hub usable; `free -h` shows swap |
 | `iprps-install` to a second disk | Installed system boots without the USB drive |
+| Live ISO (13.9) as DVD and as USB, UEFI and BIOS | Live desktop as IPRPS Live; installing to a second disk gives the setup screens at its first boot |
 | `systemctl --failed` | Shows nothing |
 
 **Without Hyper-V** (Windows 11 Home, for example), run the VM tests in QEMU on an **overlay**: a small file on top of the release `.qcow2` that leaves it unchanged and acts as a 40 GB disk, so first boot has room to grow. The backing file needs its **full path**:
@@ -23828,6 +24119,261 @@ Users join the parts before writing them. On Linux: `cat iprps-os-1.0-<edition>.
 > **Pro tip:** Publish checksums in **both** places, and state the SHA256 in the release notes. Users can then verify a download from either site.
 
 **Release notes checklist:** edition contents (Part 1 table), minimum requirements (64-bit Intel/AMD, 6 GB RAM, 64 GB storage; 128 GB for Advanced), **Secure Boot must be off**, how to write the image, first-boot setup, how to install to disk, known issues, and the link to the source archive.
+
+### 13.9 Live ISO images: DVD and USB
+
+Next to the `.img.xz`, each edition can ship as a **live ISO**: `iprps-os-1.0-<edition>.iso`. It starts IPRPS OS from a **DVD or a USB stick** on UEFI and BIOS computers, runs it entirely in memory without touching the computer's disks, and installs it from there with **Install IPRPS OS to This Computer**. It's the familiar "try it first" download.
+
+| | `.img.xz` (13.5) | `.iso` (this section) |
+|---|---|---|
+| Media | USB stick or internal disk | **DVD** or USB stick |
+| Changes are kept | Yes: it *is* the installed system | No: the live session lives in RAM and is gone at shutdown |
+| First start | Setup screens, then the desktop | Straight to the desktop as **IPRPS Live** (no password) |
+| Installing | Optional; copies the running system | Copies the clean system from the disc; its first boot runs the setup screens |
+| Memory | The edition's minimum | The edition's minimum plus about 2 GB (the session's changes are kept in RAM) |
+
+The ISO is made from the same cleaned release copy as the other downloads (13.4), so it contains exactly the same system.
+
+**1. Live support in the build image. [IPRPS CHROOT]** Once per build image. For an edition that was already released (Lite), also do it in its release copy, as in *Lite fixes* at the start of Part 15. First do 4.9's **live boot** step if you haven't, then:
+
+```bash
+cat > /usr/sbin/iprps-live-setup << "EOF"
+#!/bin/bash
+# iprps-live-setup - prepares the live session when IPRPS OS starts from its ISO (DVD or USB).
+# The live initramfs (4.9) marks a live start with /etc/iprps-live; everything here lives in RAM
+# and is gone at shutdown. Installed systems never run it.
+set -u
+[ -e /etc/iprps-live ] || exit 0
+U=live
+getent group autologin >/dev/null || groupadd -r autologin
+if ! id "$U" >/dev/null 2>&1; then
+  useradd -m -G users,wheel,audio,video,iprps,autologin -s /bin/bash -c "IPRPS Live" "$U"
+  for g in lpadmin scanner; do getent group $g >/dev/null && usermod -aG $g "$U"; done
+fi
+passwd -d "$U" >/dev/null
+echo "$U ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/99-iprps-live
+chmod 440 /etc/sudoers.d/99-iprps-live
+# No password prompts in the live session (the live user has no password)
+cat > /etc/polkit-1/rules.d/05-iprps-live.rules << "LIVEEOF"
+polkit.addRule(function(action, subject) {
+    if (subject.user == "live") return polkit.Result.YES;
+});
+LIVEEOF
+echo iprps-live > /etc/hostname; hostname iprps-live
+sed -i '/^127\.0\.1\.1/d' /etc/hosts; echo "127.0.1.1 iprps-live" >> /etc/hosts
+mkdir -p /etc/lightdm/lightdm.conf.d
+cat > /etc/lightdm/lightdm.conf.d/50-iprps-live.conf << "LIVEEOF"
+[Seat:*]
+autologin-user=live
+autologin-user-timeout=0
+autologin-session=xfce
+LIVEEOF
+# The installer, on the desktop
+D=/home/$U/Desktop
+install -d -o "$U" -g "$U" "$D"
+if [ -f /usr/share/applications/iprps-install.desktop ]; then
+  install -m 755 -o "$U" -g "$U" /usr/share/applications/iprps-install.desktop "$D/"
+fi
+exit 0
+EOF
+chmod 755 /usr/sbin/iprps-live-setup
+cat > /usr/lib/systemd/system/iprps-live.service << "EOF"
+[Unit]
+Description=IPRPS OS live session: live user, automatic login, installer on the desktop
+ConditionPathExists=/etc/iprps-live
+After=local-fs.target
+Before=display-manager.service iprps-setup.service systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/iprps-live-setup
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable iprps-live.service
+bash -n /usr/sbin/iprps-live-setup && echo "live setup OK"
+grep -c 'run/live/rootfs' /usr/sbin/iprps-install
+cd /boot && mkinitramfs 7.1.8-iprps && ls -lh /boot/initrd.img-7.1.8-iprps
+```
+
+- `iprps-live-setup` runs only on a live start (the live initramfs leaves `/etc/iprps-live` in the RAM layer). It creates the **IPRPS Live** user (`live`, no password, administrator without prompts), logs it in automatically, names the computer `iprps-live`, and puts **Install IPRPS OS to This Computer** on its desktop. Installed systems skip it.
+- `grep -c 'run/live/rootfs' /usr/sbin/iprps-install` must print a number above 0: the installer knows the live ISO. If it prints `0`, write `iprps-install` again from 13.3.
+- The initramfs is rebuilt, so it contains the live boot step.
+
+**2. Tools on the build host. [DEBIAN ROOT]** Once:
+
+```bash
+apt install squashfs-tools grub-common grub-pc-bin grub-efi-amd64-bin xorriso mtools ovmf
+```
+
+These only provide files for building and testing the ISO in WSL (GRUB's BIOS and UEFI boot files, the ISO writer, the compressor, and OVMF for UEFI tests). Nothing is installed into the PC's boot setup.
+
+**3. The ISO script. [DEBIAN ROOT]** Once (or `install -vm755 /mnt/g/IPRPS/iprps-os/build-host/iprps-release-iso.sh /root/` from the repository):
+
+```bash
+cat > /root/iprps-release-iso.sh << "EOF"
+#!/bin/bash
+# iprps-release-iso.sh <lite|medium|advanced> - guide 13.9
+# Makes a live ISO (DVD or USB stick; UEFI and BIOS) from the cleaned release copy that
+# iprps-release-clean.sh made. Run as root in Debian (WSL), after 13.4 (before or after 13.5).
+# The ISO starts IPRPS OS in memory without touching the computer's disks; its installer
+# copies the clean system to a disk. Output: /mnt/g/IPRPS/release (or set IPRPS_RELEASE_OUT).
+# IPRPS_ISO_ARGS adds kernel options to the menu entries (for tests, e.g. "console=ttyS0").
+set -eu
+case "${1:-}" in lite|medium|advanced) ED=$1 ;; *) echo "usage: $0 lite|medium|advanced"; exit 1 ;; esac
+EDC=${ED^}
+REL=/root/release
+NAME=iprps-os-1.0-$ED
+IMG=${IPRPS_ISO_SRC:-$REL/$NAME.img}
+OUT=${IPRPS_RELEASE_OUT:-/mnt/g/IPRPS/release}
+LABEL="IPRPS_OS_1_0_${ED^^}"
+WORK=$REL/iso-$ED
+STAGE=$WORK/stage
+MNT=$WORK/root
+ISO=$REL/$NAME.iso
+LP=""
+
+say() { printf '\n\033[1;33m== %s\033[0m\n' "$*"; }
+die() { printf '\n\033[1;31mSTOPPED: %s\033[0m\n' "$*" >&2; exit 1; }
+p3_loop() {
+  local s n
+  read -r s n < <(sfdisk -d "$1" | sed -n 's/.*3 : start= *\([0-9]*\), size= *\([0-9]*\).*/\1 \2/p') || true
+  [ -n "${s:-}" ] || return 1
+  losetup -r -f --show -o $(( s * 512 )) --sizelimit $(( n * 512 )) "$1"
+}
+cleanup() {
+  mountpoint -q "$MNT" 2>/dev/null && umount "$MNT"
+  [ -n "$LP" ] && losetup -d "$LP" 2>/dev/null
+  true
+}
+trap cleanup EXIT
+
+say "Checks"
+[ "$(id -u)" = 0 ] || die "run this as root in Debian"
+[ -f "$IMG" ] || die "$IMG not found: run /root/iprps-release-clean.sh $ED first"
+[ -z "$(losetup -j "$IMG")" ] || die "$IMG is attached: $(losetup -j "$IMG" | cut -d: -f1) (losetup -d it)"
+for t in sfdisk mksquashfs grub-mkrescue xorriso mformat sha256sum; do
+  command -v $t >/dev/null || die "$t is missing: apt install squashfs-tools grub-common grub-pc-bin grub-efi-amd64-bin xorriso mtools"
+done
+[ -d /usr/lib/grub/i386-pc ] || die "GRUB's BIOS files are missing: apt install grub-pc-bin"
+[ -d /usr/lib/grub/x86_64-efi ] || die "GRUB's UEFI files are missing: apt install grub-efi-amd64-bin"
+mkdir -p "$OUT" || die "can't create $OUT"
+echo "OK. Source: $IMG"
+
+say "1/4 Opening the release image (read-only)"
+rm -rf "$WORK"; mkdir -p "$MNT" "$STAGE/boot/grub" "$STAGE/live"
+LP=$(p3_loop "$IMG") || die "partition 3 not found in $IMG"
+mount -o ro "$LP" "$MNT" || die "can't mount the image's root partition"
+K=$(ls "$MNT"/boot/vmlinuz-* 2>/dev/null | sort -V | tail -1); [ -n "$K" ] || die "no kernel in /boot of the image"
+KV=${K##*/vmlinuz-}
+INITRD=$MNT/boot/initrd.img-$KV
+[ -f "$INITRD" ] || die "no initramfs for kernel $KV in the image"
+grep -q do_mount_live "$MNT/usr/share/mkinitramfs/init.in" 2>/dev/null \
+  || die "the image has no live boot support: do 4.9's live-boot step in the build image, rebuild the initramfs, then release again"
+[ "$(stat -c %Y "$INITRD")" -ge "$(stat -c %Y "$MNT/usr/share/mkinitramfs/init.in")" ] \
+  || die "the initramfs is older than the live boot change: run mkinitramfs $KV (4.9) in the build image, then release again"
+[ -x "$MNT/usr/sbin/iprps-live-setup" ] || die "iprps-live-setup is missing from the image (13.9 step 1)"
+[ ! -e "$MNT/var/lib/iprps/setup-done" ] && [ ! -e "$MNT/etc/iprps/db.php" ] \
+  || die "this image wasn't cleaned: run /root/iprps-release-clean.sh $ED first"
+echo "Kernel $KV, live boot support present, image cleaned."
+
+say "2/4 Compressing the system (squashfs) - the long step, often 20-60 minutes"
+mksquashfs "$MNT" "$STAGE/live/filesystem.squashfs" -comp xz -Xbcj x86 -b 1M -noappend \
+  -wildcards -e 'lost+found' 'swapfile' 'tmp/*' 'var/tmp/*'
+cp -v "$K" "$STAGE/boot/vmlinuz"
+cp -v "$INITRD" "$STAGE/boot/initrd.img"
+umount "$MNT"; losetup -d "$LP"; LP=""
+
+cat > "$STAGE/boot/grub/grub.cfg" << GRUBCFG
+set default=0
+set timeout=10
+insmod all_video
+search --no-floppy --set=root --file /live/filesystem.squashfs
+
+menuentry "Start IPRPS OS 1.0 $EDC (try it, or install it)" {
+        linux   /boot/vmlinuz iprps.live=$LABEL quiet${IPRPS_ISO_ARGS:+ $IPRPS_ISO_ARGS}
+        initrd  /boot/initrd.img
+}
+menuentry "Start IPRPS OS 1.0 $EDC (safe graphics)" {
+        linux   /boot/vmlinuz iprps.live=$LABEL nomodeset${IPRPS_ISO_ARGS:+ $IPRPS_ISO_ARGS}
+        initrd  /boot/initrd.img
+}
+menuentry "Restart" {
+        reboot
+}
+menuentry "Power off" {
+        halt
+}
+GRUBCFG
+
+say "3/4 Building the ISO (UEFI and BIOS; DVD and USB)"
+rm -f "$ISO"
+grub-mkrescue -o "$ISO" -V "$LABEL" -iso-level 3 "$STAGE"
+xorriso -indev "$ISO" -pvd_info 2>/dev/null | grep -i '^Volume Id' || die "the ISO can't be read back"
+SZ=$(stat -c %s "$ISO")
+echo "ISO size: $(( SZ / 1048576 )) MB"
+if   [ "$SZ" -le 4700000000 ]; then echo "Fits a single-layer DVD (4.7 GB) or a USB stick."
+elif [ "$SZ" -le 8500000000 ]; then echo "Needs a DUAL-LAYER DVD (DVD+R DL, 8.5 GB) or a USB stick."
+else echo "Too big for a DVD: USB stick only (8 GB or larger)."; fi
+( cd "$REL" && sha256sum "$NAME.iso" > "SHA256SUMS-$ED-iso" )
+
+say "4/4 Copying to $OUT"
+cp -v "$ISO" "$REL/SHA256SUMS-$ED-iso" "$OUT/"
+( cd "$OUT" && sha256sum -c "SHA256SUMS-$ED-iso" ) || die "the copied ISO doesn't match its checksum: copy it again"
+rm -rf "$WORK"
+ls -lh "$OUT/$NAME.iso" "$OUT/SHA256SUMS-$ED-iso"
+printf '\n\033[1;32mDone: %s (copy verified).\033[0m\n' "$OUT/$NAME.iso"
+echo "Test it (13.9 step 4) before publishing. Delete $ISO afterwards to free space."
+EOF
+chmod 755 /root/iprps-release-iso.sh
+```
+
+**4. Make the ISO. [DEBIAN ROOT]** After `iprps-release-clean.sh <edition>` (13.4), before or after `iprps-release-pack.sh` (13.5); both leave the cleaned image in `/root/release`:
+
+```bash
+/root/iprps-release-iso.sh lite        # or medium / advanced
+```
+
+The script checks that the image is cleaned and has live support, compresses the system into `live/filesystem.squashfs` (xz, 20 to 60 minutes), adds the kernel, the initramfs and a GRUB menu, and builds one hybrid ISO that starts from a DVD or a USB stick on UEFI and BIOS. It reports the size, writes `SHA256SUMS-<edition>-iso`, and copies both to `G:\IPRPS\release` with a verified checksum.
+
+**Which disc it needs.** A single-layer DVD holds **4.7 GB** and a dual-layer DVD (DVD+R DL) **8.5 GB**; the script says which one the ISO fits. Lite is expected to fit a single-layer DVD. Medium and Advanced, with LibreOffice, Chromium, GIMP and the Oracle's AI model, may need a dual-layer DVD or a USB stick: check the size the script reports, and say so on the download page. A USB stick of 8 GB or more takes any edition.
+
+**5. Test. [DEBIAN ROOT]** In QEMU, as a DVD on UEFI (then again without the `-bios` line, for BIOS), and as a USB stick:
+
+```bash
+ED=lite
+qemu-system-x86_64 -enable-kvm -m 8G -smp 4 -bios /usr/share/ovmf/OVMF.fd \
+  -cdrom /root/release/iprps-os-1.0-$ED.iso \
+  -audio none -vga virtio -display none -vnc 127.0.0.1:0 -monitor stdio
+qemu-system-x86_64 -enable-kvm -m 8G -smp 4 \
+  -drive if=none,id=stick,file=/root/release/iprps-os-1.0-$ED.iso,format=raw,readonly=on \
+  -device qemu-xhci -device usb-storage,drive=stick \
+  -audio none -vga virtio -display none -vnc 127.0.0.1:0 -monitor stdio
+```
+
+Connect with RealVNC to `localhost:5900` (Appendix C). Expected:
+
+1. The GRUB menu: **Start IPRPS OS 1.0 Lite (try it, or install it)**.
+2. "Looking for the IPRPS OS live disc or USB drive…" for a few seconds, then "Started IPRPS OS live".
+3. The desktop, logged in as **IPRPS Live**, with **Install IPRPS OS to This Computer** on it. The Hub, the IPRPS Table and Writer work; anything saved disappears at shutdown.
+
+For the installer test, add an empty disk (`qemu-img create -f qcow2 /root/iso-target.qcow2 64G`, plus `-drive file=/root/iso-target.qcow2,format=qcow2,if=virtio`), install to `vda`, shut down, and start the disk alone: the setup screens (13.2) appear. In Hyper-V: a Generation 2 VM with **Secure Boot off**, the ISO in its DVD drive, and 8 GB of memory.
+
+**Writing the ISO** (also for the release notes and the download page):
+
+- **DVD (Windows):** right-click the `.iso`, then **Burn disc image**.
+- **USB stick:** **balenaEtcher**, or **Rufus**: when Rufus asks how to write the image, choose **DD Image mode**. On Linux: `sudo dd if=iprps-os-1.0-lite.iso of=/dev/sdX bs=4M status=progress conv=fsync`.
+- **Secure Boot must be off**, as for the other downloads.
+
+| Problem | Fix |
+|---|---|
+| The script stops: *the image has no live boot support* or *the initramfs is older* | Step 1 wasn't done in the image that was released: do it in the build image (or the Lite release copy), then clean and release again (13.4) |
+| Boot stops at "The IPRPS OS live medium (IPRPS_OS_1_0_…) was not found" | The stick was written in Rufus's *ISO mode*, which changes the volume name: write it again in **DD Image mode**. In a VM, check the ISO is attached |
+| *Could not open live/filesystem.squashfs* | The download or the disc is damaged: check it against `SHA256SUMS-<edition>-iso`, and burn DVDs at a slower speed |
+| The desktop gets slow, or programs close, after a while | The live session keeps every change in RAM: install IPRPS OS, or use the `.img.xz` on a USB stick to keep changes |
+| The ISO is too big for a DVD | Use a dual-layer DVD or a USB stick (step 4) |
 
 ---
 
@@ -28091,7 +28637,7 @@ gtk-update-icon-cache -qtf /usr/share/icons/hicolor
 update-desktop-database /usr/share/applications
 ```
 
-`ls -A` lists `api.php`, `config.php`, `display.php`, `index.html`, `markdown.js`, `oracle.css`, `oracle.js`, `oracle-icon.svg`, `prompts.php` and `.user.ini` (which turns PHP's output buffering off for this folder). The Oracle needs **no database setup**: on first use it creates its tables (`oracle_messages`, `oracle_memory`, `display_items`) in the IPRPS core database, using the password `iprps-db-init` writes to `/etc/iprps/db.php` (13.1). It reads the campaign memory from the core tables the Session Master Hub fills: `campaigns`, `sessions` (recap, Session Master notes), `session_log`, `npcs`, `quests` and `characters`.
+`ls -A` lists `api.php`, `config.php`, `display.php`, `index.html`, `markdown.js`, `oracle.css`, `oracle.js`, `oracle-icon.svg`, `prompts.php` and `.user.ini` (which turns PHP's output buffering off for this folder). The Oracle needs **no database setup**: on first use it creates its tables (`oracle_messages`, `oracle_memory`, `display_items`) in the IPRPS core database, using the password `iprps-db-init` writes to `/etc/iprps/db.php` (13.1). It reads the campaign memory from the core tables the Session Master Hub fills: `campaigns`, `sessions` (recap, Session Master notes), `session_log`, `npcs`, `quests` and `characters`, and the campaign's sheets in `character_sheets` (12.9). With Character Sheets installed, its **Character sheets** buttons (**NPC sheet**, **Creature sheet**) write complete IPRPS sheets and save them there. The model answers in a fixed JSON layout (Ollama's structured outputs), and the values are checked before they're stored.
 
 **9. Test** (fresh test copy, `-m 8G`, log in):
 
@@ -28588,11 +29134,13 @@ These popular creative tools aren't in BLFS 13.1. Ship them as their projects' *
 ```bash
 ls -l /usr/lib/libxcb-cursor.so.0 /usr/lib/libEGL.so.1 /usr/lib/libGL.so.1
 [ -e /usr/lib/libOpenGL.so.0 ] || ln -sv libGL.so.1 /usr/lib/libOpenGL.so.0
-ldconfig && ldconfig -p | grep -E 'libOpenGL.so.0|libxcb-cursor.so.0'
+[ -e /usr/lib/libGLX.so.0 ] || ln -sv libGL.so.1 /usr/lib/libGLX.so.0
+ldconfig && ldconfig -p | grep -E 'libOpenGL.so.0|libGLX.so.0|libxcb-cursor.so.0'
 ```
 
 - If `libxcb-cursor.so.0` is missing, build **XCB Utilities** from Stage I first. Without it, Calibre stops at start with *Could not load the Qt platform plugin "xcb"*.
-- **Why the link:** `libOpenGL.so.0` normally comes from *libglvnd*, which BLFS doesn't use: BLFS's Mesa puts all of OpenGL in `libGL.so.1`. Programs built elsewhere, such as Calibre's Qt, ask for `libOpenGL.so.0` by name; the link points them at Mesa's library, which has the same OpenGL functions. Without it, Calibre's installer stops with *You are missing the system library libOpenGL.so.0*.
+- **Why the links:** `libOpenGL.so.0` and `libGLX.so.0` normally come from *libglvnd*, which BLFS doesn't use: BLFS's Mesa puts all of OpenGL and GLX in `libGL.so.1`. Programs built elsewhere, such as Calibre's Qt, ask for the two libglvnd names; the links point them at Mesa's library, which has the same functions. Without `libOpenGL.so.0`, Calibre's installer stops with *You are missing the system library libOpenGL.so.0*; without `libGLX.so.0`, it installs but Calibre doesn't start and gets no menu entries (*cannot import name 'QImage'*).
+- `ldconfig -p` must list all three libraries.
 
 **2. Install with Calibre's own installer. [IPRPS CHROOT]**
 
@@ -28602,7 +29150,21 @@ wget -nv -O calibre-linux-installer.sh https://download.calibre-ebook.com/linux-
 sh calibre-linux-installer.sh install_dir=/opt
 /opt/calibre/calibre --version
 ls /usr/bin/calibre /usr/bin/ebook-viewer /usr/bin/ebook-convert
+ls /usr/share/applications/calibre-*.desktop
 ```
+
+`ls` must list four menu entries: `calibre-gui`, `calibre-ebook-viewer`, `calibre-ebook-edit` and `calibre-lrfviewer`. If it says *No such file*, the installer's last part (the menu entries) failed: scroll up for `WARNING` and *Setting up desktop integration failed*. Run that part again with the standard folders set, move anything it put under `/usr/local`, and refresh the menu and icon caches:
+
+```bash
+XDG_DATA_DIRS=/usr/share XDG_CONFIG_DIRS=/etc/xdg /opt/calibre/calibre_postinstall 2>&1 | grep -i -A4 'warning\|failed\|error'
+mv -v /usr/local/share/applications/calibre-*.desktop /usr/share/applications/ 2>/dev/null
+update-desktop-database /usr/share/applications
+gtk-update-icon-cache -qtf /usr/share/icons/hicolor || true
+ls /usr/share/applications/calibre-*.desktop
+grep -H '^Categories' /usr/share/applications/calibre-*.desktop
+```
+
+The `grep -i` line prints nothing when the menu step works. `Categories` lines start with `Office`, so the entries appear under **Office**.
 
 - The installer downloads the newest Calibre, **checks its signature**, unpacks it to `/opt/calibre`, and runs `calibre_postinstall`, which adds the `calibre`, `ebook-viewer` and `ebook-convert` commands, the menu entries (Office) and the e-book file types.
 - `calibre --version` prints the version, for example `calibre (calibre 9.17.0)`. Note it for step 3.
@@ -28625,9 +29187,10 @@ Publish `calibre-$V.tar.xz` with the release's other source archives. The offici
 | Problem | Fix |
 | --- | --- |
 | *You are missing the system library libOpenGL.so.0* | Step 1: create the `libOpenGL.so.0` link and run `ldconfig`, then run the installer again |
+| *Setting up desktop integration failed*, *cannot import name 'QImage' from 'qt.core'*, or *libGLX.so.0: cannot open shared object file* | Step 1: create the `libGLX.so.0` link and run `ldconfig`, then step 2's second block (`calibre_postinstall`). Check with `/opt/calibre/calibre-debug -c 'from PyQt6.QtGui import QImage; print("QtGui OK")'` |
 | *Could not load the Qt platform plugin "xcb"* | `libxcb-cursor` is missing: build XCB Utilities (Stage I), then start Calibre again. `QT_DEBUG_PLUGINS=1 calibre` names any other missing library |
 | The installer stops with a signature or download error | Check the internet connection in the chroot (`ping -c1 download.calibre-ebook.com`) and run step 2 again; never skip the check |
-| No Calibre in the menu | Run `/opt/calibre/calibre_postinstall` as root, then `update-desktop-database /usr/share/applications` |
+| No Calibre in the menu (Office) | Step 2's second block (`calibre_postinstall` with `XDG_DATA_DIRS=/usr/share`). The change is in the build image: make a **new test copy** to see it; in a running session, log out and in |
 
 Install the Advanced IPRPS apps (12.4).
 
@@ -28671,16 +29234,7 @@ The local AI is part of 1.0: the **IPRPS Oracle** with Ollama and the bundled `i
 
 ### 18.2 A live/installer ISO
 
-A hybrid ISO that boots read-only from USB or DVD, lets people try IPRPS without changing their computer, and installs it from there. What it takes:
-
-| Piece | How |
-|---|---|
-| Compressed root filesystem | `mksquashfs` of the cleaned release image (Debian's `squashfs-tools`, run in WSL) |
-| Live boot | An initramfs `init` that finds the ISO by label, mounts the squashfs read-only, adds a RAM overlay (`overlayfs`), then switches to it |
-| Bootable ISO for UEFI and BIOS | `grub-mkrescue` with `xorriso` and `mtools` (Debian packages, in WSL) |
-| Installer | `iprps-install` (13.3), copying from the live system |
-
-This is planned for IPRPS 1.1. The 1.0 images already run directly from a USB stick and install from there.
+Done in 1.0: **13.9** makes a live ISO for each edition (DVD or USB, UEFI and BIOS) that runs in memory and installs from there. A later release can add a persistent live mode (keeping changes on the USB stick) and a graphical installer.
 
 ---
 
@@ -28745,6 +29299,12 @@ This is planned for IPRPS 1.1. The 1.0 images already run directly from a USB st
 | IPRPS Table: the Hub tile says the service isn't running | `iprps-table.service` is stopped or failed | `systemctl status iprps-table` and `journalctl -u iprps-table -b`; check `node --version` and that `/opt/iprps/table/server.js` exists, then `sudo systemctl restart iprps-table` (12.7) |
 | IPRPS Table: "That join code is not right" | A new code was made, or a typo | Read the code in the console (letters and numbers, no O/0 or I/1 confusion); scanning the QR code fills it in |
 | IPRPS Table: no music on a phone | Phones block sound until the page is touched once | Tap **Tap to turn on the table sound**; check the phone's volume |
+| IPRPS Table: players have no **📜 Sheet** button, or it says the character sheet is not installed | The Character Creator isn't at `/srv/www/iprps/character-creator/`, or the Table service still runs its old files | 12.9 steps 1 and 2, then `sudo systemctl restart iprps-table` |
+| IPRPS Table: the **📜 Character sheets** panel asks to sign in, or stays empty | Normal the first time: the panel is Character Sheets, which uses the Universal Login | Sign in once inside the panel. If it stays blank, check `http://localhost/iprps/character-sheets/` opens in the browser (12.9) |
+| Character Sheets: an import says *not an IPRPS character sheet* | The file isn't a Character Creator export (or is damaged) | Ask the player for the `.json` from **Export .json**; `.iprps` exports work too |
+| Character Sheets: *The sheet was too large to send* | A very large portrait in a sheet made outside IPRPS | Re-export it from the current Character Creator (it shrinks portraits), or remove the portrait; the limit is 16 MB (`character-sheets/.user.ini`) |
+| The Oracle has no **Character sheets** buttons | Character Sheets isn't installed, or the Oracle files are older than 12.9 | 12.9 step 1 (the Oracle line), then reload the Oracle |
+| The Oracle: *the answer was not a usable sheet* | The model's answer didn't fit the sheet layout | Try again; a shorter description helps. Check `ollama --version` is 0.5 or newer (structured outputs) |
 | Session Master Mode: closing the browser leaves a white full-screen page | The full-screen player display stayed open on a single screen (and in Lite no display page exists yet) | 12.2 `iprps-session` update (full screen only with two screens); right now press **Alt+F4** |
 | Everything is slow when running from a USB stick | USB 2 sticks (and ports) have very slow small reads and writes | Use a USB 3 stick in a USB 3 (often blue) port, or install to the internal disk; the first boot is the slowest (disk growth, swap, database) |
 | Boot shows many "Failed to preset all unit … Read-only file system" lines | The release image's `/etc/machine-id` said `uninitialized` (first boot), so systemd tried to reset all services | 13.4: the release script now leaves it **empty**. On an affected image it's harmless (the reset failed); new releases don't show it |
@@ -29091,6 +29651,196 @@ CLucene-2.3.3.4, libgusb-0.4.9, Colord-1.4.8, Cups-2.4.19, GLM-1.0.3, libatomic_
 
 SANE-1.4.0, Libspiro-20220722, FontForge-20251009, Libao-1.2.0, Cdrdao-1.2.6, libisoburn-1.5.8.pl02, XCB Utilities.
 
+
+## Appendix F — Backing Up and Restoring Images
+
+The build image and its snapshots live inside WSL's own disk (`G:\WSL\Debian\ext4.vhdx`). If that file is damaged, or WSL is reset or reinstalled, they're gone with it. Copies on another drive protect weeks of build work.
+
+| What | Where in Debian | Back up |
+|---|---|---|
+| Working build image | `/root/iprps-system.img` | Before risky steps, and at the end of a long session |
+| Snapshots (0.4) | `/root/snapshots/iprps-<NAME>.img` | After each checkpoint, **always** the release snapshots (`RELEASE-lite`, and so on) |
+| Release downloads | `G:\IPRPS\release` | Already on a Windows drive. Copy them to a second drive in Explorer if you like |
+| The repository | `G:\IPRPS\iprps-os` | Already on a Windows drive (and on GitHub) |
+| Source tarballs | `/build/src` | Optional: everything can be downloaded again |
+
+**Why compressed.**
+- The images are **sparse**: a 40 GB image with 15 GB of data uses only 15 GB inside WSL.
+- A plain copy to a Windows drive (`cp` to `/mnt/d`, or Explorer) writes the empty parts out in full, so every copy takes the image's full size (40 GB, or 80 GB after Part 15's resize).
+- `iprps-backup.sh` compresses each image with **zstd**: the empty parts disappear and the data shrinks too, typically to a third or a half. It also tests every copy before keeping it.
+- Restoring with `zstd -d --sparse` gives back a sparse image, exactly like the original.
+
+### F.1 Set up once
+
+**1. A drive for backups.** D: is used here. An external USB drive works too (see the note after step 3).
+
+**[DEBIAN ROOT]**
+
+```bash
+apt install zstd
+ls /mnt/d
+mkdir -p /mnt/d/IPRPS/backups
+```
+
+`ls /mnt/d` lists the drive's folders. If it says *No such file or directory*, WSL doesn't see the drive yet: in **[WINDOWS POWERSHELL]** run `wsl --shutdown`, then open Debian again.
+
+**2. The backup script. [DEBIAN ROOT]** Install it from the repository (`install -vm755 /mnt/g/IPRPS/iprps-os/build-host/iprps-backup.sh /root/`), or write it here:
+
+```bash
+cat > /root/iprps-backup.sh << "EOF"
+#!/bin/bash
+# iprps-backup.sh - back up the IPRPS build image and snapshots to a Windows drive (guide Appendix F)
+#   iprps-backup.sh snapshots   every snapshot in /root/snapshots that isn't backed up yet (or changed since)
+#   iprps-backup.sh image       the working build image (close it first: iprps-leave.sh)
+#   iprps-backup.sh all         both
+#   iprps-backup.sh list        what is backed up
+# Destination: IPRPS_BACKUP (default /mnt/d/IPRPS/backups, which is D:\IPRPS\backups in Windows).
+# Files are compressed with zstd (sparse images would otherwise be written out at full size) and
+# each copy is checked before it's kept. Restore with: zstd -d --sparse <file>.img.zst -o <image>  (Appendix F).
+set -u
+DEST=${IPRPS_BACKUP:-/mnt/d/IPRPS/backups}
+IMG=${IPRPS_IMG:-/root/iprps-system.img}
+SNAPS=${IPRPS_SNAPSHOTS:-/root/snapshots}
+LOG=$DEST/BACKUPS.txt
+FAILED=0
+
+die() { printf '\033[1;31mSTOPPED: %s\033[0m\n' "$*" >&2; exit 1; }
+[ "$(id -u)" = 0 ] || die "run this as root in Debian (sudo -i)"
+command -v zstd >/dev/null || die "zstd is missing: apt install zstd"
+DRIVE=$(echo "$DEST" | cut -d/ -f1-3)
+[ -d "$DRIVE" ] || die "$DRIVE not found. Is the drive connected? (Appendix F: drives in WSL)"
+mkdir -p "$DEST/snapshots" "$DEST/image" || die "can't write to $DEST"
+
+# one <source image> <backup file>
+one() {
+  local src=$1 out=$2 name=${1##*/} used avail
+  if [ -f "$out" ] && [ "$out" -nt "$src" ]; then echo "  up to date   $name"; return 0; fi
+  used=$(du -B1 "$src" | cut -f1)
+  avail=$(df -B1 --output=avail "$DEST" | tail -1)
+  if [ "$avail" -lt $(( used * 6 / 10 )) ]; then
+    printf '\033[1;31m  NO ROOM      %s (uses %s; %s free on the drive)\033[0m\n' "$name" "$(numfmt --to=iec "$used")" "$(numfmt --to=iec "$avail")"
+    FAILED=1; return 1
+  fi
+  echo "== $name  ($(numfmt --to=iec "$used") of data, $(numfmt --to=iec "$(stat -c %s "$src")") image)"
+  if zstd -T0 -3 -q --progress -f "$src" -o "$out.part" && zstd -tq "$out.part" && mv -f "$out.part" "$out" && touch "$out"; then
+    printf '%s  %s  %s bytes  %s\n' "$(date '+%F %R')" "${out##*/}" "$(stat -c %s "$src")" "$(numfmt --to=iec "$(stat -c %s "$out")") compressed" >> "$LOG"
+    printf '\033[1;32m  OK           %s → %s (%s)\033[0m\n' "$name" "$out" "$(numfmt --to=iec "$(stat -c %s "$out")")"
+  else
+    rm -f "$out.part"
+    printf '\033[1;31m  FAILED       %s\033[0m\n' "$name"; FAILED=1; return 1
+  fi
+}
+
+do_snapshots() {
+  local n=0 f
+  for f in "$SNAPS"/*.img; do
+    [ -f "$f" ] || continue
+    n=$((n + 1)); one "$f" "$DEST/snapshots/${f##*/}.zst"
+  done
+  [ "$n" -gt 0 ] || echo "  No snapshots in $SNAPS."
+}
+do_image() {
+  [ -f "$IMG" ] || die "$IMG not found"
+  [ -z "$(losetup -j "$IMG")" ] || die "the build image is in use: leave every chroot window, then bash /root/iprps-leave.sh"
+  pgrep -x qemu-system-x86_64 >/dev/null && echo "  (a QEMU test VM is running; that's fine if it uses a test copy, not $IMG)"
+  one "$IMG" "$DEST/image/$(basename "$IMG" .img)-$(date +%F).img.zst"
+}
+
+case "${1:-}" in
+  snapshots) do_snapshots ;;
+  image)     do_image ;;
+  all)       do_image; do_snapshots ;;
+  list)      ls -lh "$DEST/image" "$DEST/snapshots"; echo; [ -f "$LOG" ] && tail -n 30 "$LOG"; exit 0 ;;
+  *)         echo "usage: $0 snapshots | image | all | list"; exit 1 ;;
+esac
+df -h "$DEST" | tail -1 | awk '{print "Drive: " $4 " free of " $2}'
+[ "$FAILED" = 0 ] && printf '\033[1;32mBackup complete: %s\033[0m\n' "$DEST" || die "some backups failed (see above)"
+EOF
+chmod 755 /root/iprps-backup.sh
+bash -n /root/iprps-backup.sh && echo "script OK"
+```
+
+**3. Check the space.** The backup needs, at most, the space the images really use:
+
+```bash
+du -ch /root/iprps-system.img /root/snapshots/*.img | tail -1
+df -h /mnt/d
+```
+
+The free space on D: (`df`, **Avail**) should be larger than the `du` total. Expect the backups to use a third to a half of it. The script checks again before each image and skips any image that won't fit (**NO ROOM**).
+
+> **Note:** **An external USB drive.** Plug it in. Windows gives it a letter, say E:, and WSL shows it as `/mnt/e` (run `wsl --shutdown` and reopen Debian if it doesn't). Use it by setting the destination for each run: `IPRPS_BACKUP=/mnt/e/IPRPS/backups /root/iprps-backup.sh snapshots`. Eject it in Windows before unplugging it. An exFAT or NTFS drive is fine; FAT32 is not (files over 4 GB).
+
+### F.2 Back up
+
+**Snapshots. [DEBIAN ROOT]** Any time, without closing anything:
+
+```bash
+/root/iprps-backup.sh snapshots
+```
+
+- Each snapshot not yet backed up is compressed to `D:\IPRPS\backups\snapshots\iprps-<NAME>.img.zst`, tested, and kept. Each run prints **OK**, **up to date** (already backed up, unchanged) or **FAILED** for every snapshot.
+- Run it after each checkpoint: only the new snapshot is copied.
+- It ends with **Backup complete** and the free space on the drive.
+- Allow about 5 to 15 minutes per snapshot (more for Medium and Advanced). Use a tmux window for long runs. Don't take or restore a snapshot while it runs.
+
+**The working image.** Close it first (0.4 steps 1–2: stop test VMs, leave every chroot window), then:
+
+**[DEBIAN ROOT]**
+
+```bash
+bash /root/iprps-leave.sh
+/root/iprps-backup.sh image
+```
+
+The copy is `D:\IPRPS\backups\image\iprps-system-<date>.img.zst`, one per day; a second run on the same day replaces it only if the image changed. The script refuses to copy an image that's still open: an image copied while in use can be broken.
+
+**Both at once:** `/root/iprps-backup.sh all`. **What's there:** `/root/iprps-backup.sh list` shows the files and the log `D:\IPRPS\backups\BACKUPS.txt` (date, file, the image's exact size in bytes).
+
+**Housekeeping.** Backups aren't deleted automatically. Delete old ones in Windows Explorer (or with `rm` in Debian), but keep the **release snapshots** and the newest copy of each stage you might go back to.
+
+### F.3 Restore
+
+**Space first.** A restored image uses as much space in WSL as its data (`du` size), not its full size. Check `df -h /` in Debian before restoring.
+
+**A snapshot back into `/root/snapshots`. [DEBIAN ROOT]**
+
+```bash
+mkdir -p /root/snapshots
+zstd -d --sparse /mnt/d/IPRPS/backups/snapshots/iprps-<NAME>.img.zst -o /root/snapshots/iprps-<NAME>.img && echo "RESTORED"
+ls -l /root/snapshots/iprps-<NAME>.img
+grep 'iprps-<NAME>.img.zst' /mnt/d/IPRPS/backups/BACKUPS.txt | tail -1
+```
+
+- Wait for **RESTORED**. `ls -l` shows the same number of bytes as the last `BACKUPS.txt` line for that file.
+- Then use it like any snapshot: *Restoring a snapshot* in 0.4 copies it over the build image.
+- If `zstd` says the file exists, the snapshot is still in `/root/snapshots`: use that, or delete it first if you want the backup's version.
+
+**The working image directly. [DEBIAN ROOT]** Do 0.4 steps 1–2 first:
+
+```bash
+bash /root/iprps-leave.sh
+zstd -d --sparse -f /mnt/d/IPRPS/backups/image/iprps-system-<date>.img.zst -o /root/iprps-system.img && echo "RESTORED"
+ls -l /root/iprps-system.img
+```
+
+`-f` replaces the current image. Re-enter the chroot windows (0.5) and continue from where that backup was made.
+
+**On a new PC, or after WSL was reinstalled:**
+
+1. Set up Debian in WSL again as in 0.2 and 0.3.
+2. Install the build-host scripts from the repository (`install -vm755 /mnt/g/IPRPS/iprps-os/build-host/*.sh /root/`), then `apt install zstd`.
+3. Restore the working image (or a snapshot, then restore it as in 0.4) with the commands above.
+4. Create the scratch space as in 1.3, then enter the chroot (0.5). `/build` is empty on a new system: the next package you build downloads its sources again.
+
+| Problem | Fix |
+|---|---|
+| **STOPPED: /mnt/d not found** | WSL doesn't see the drive: `wsl --shutdown` in PowerShell, reopen Debian. For a USB drive, check it's connected and has a drive letter in Explorer |
+| **NO ROOM** for a snapshot | Free space on the drive (delete old backups) or use a bigger drive (`IPRPS_BACKUP=...`) |
+| **STOPPED: the build image is in use** | Leave every chroot window, then `bash /root/iprps-leave.sh` |
+| **FAILED**, or `zstd -d` reports a damaged file | The copy was interrupted or the drive has errors: run the backup again; check the drive in Windows (Properties → Tools → Check) |
+| A restored image is the full 40 GB in WSL | `--sparse` was left out: delete it and restore again with `zstd -d --sparse` |
+| Backups are very slow | Normal for a USB 2 drive or a busy disk. Close Windows programs that scan files (or exclude `D:\IPRPS\backups` from real-time antivirus scanning) |
 
 ---
 
