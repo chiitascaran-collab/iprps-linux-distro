@@ -38,7 +38,7 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `docs/CUSTOMIZING-ICONS.md` | How users and administrators add their own icons on an installed IPRPS OS |
 | `docs/lfs/` | LFS 13.1-systemd companion guides (WSL and Debian editions), checklists, `wget-list-systemd`, `md5sums` |
 | `docs/archive/` | The original planning guide (written under the earlier name "IPRPS Linux") |
-| `build-host/` | `iprps-enter.sh` / `iprps-leave.sh`: mount the image and enter the build chroot from Debian on WSL; `iprps-release-clean.sh` / `iprps-release-pack.sh`: make the release images (13.4, 13.5); `iprps-release-iso.sh`: the live ISO for DVD and USB (13.9); `iprps-backup.sh`: back up the build image and snapshots to another drive, compressed (Appendix F) |
+| `build-host/` | `iprps-enter.sh` / `iprps-leave.sh`: mount the image and enter the build chroot from Debian on WSL; `iprps-release-clean.sh` / `iprps-release-pack.sh`: make the release images (13.4, 13.5); `iprps-release-iso.sh`: the live ISO for DVD and USB (13.9); `iprps-backup.sh`: back up the build image and snapshots to another drive, compressed (Appendix F); `iprps-repo.sh`: the package repository: signing key, sign and add packages, check, stage for upload, test server (12.12, Part 17) |
 | `rootfs/` | Files installed into the system: first-boot setup, installer, Session Master Mode, desktop and menu defaults, systemd units |
 | `apps/hub/` | The **Session Master Hub**: home page with the Session Master's apps, **Manage apps** (every app in `/srv/www/iprps`, on/off per account), default apps, and the player display |
 | `apps/table/` | The **IPRPS Table**: LAN play. A Node.js service (no npm packages) on port 7777: players join from phones, tablets and laptops; chat with private messages, images and audio; IPRPS dice (`dice-presets.json`); the Session Master pushes images, video, text and sound to everyone, groups or single players |
@@ -53,6 +53,8 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `apps/session-log/` | **Session Log and Recap** (12.10) |
 | `apps/welcome/` | **IPRPS Welcome**: first-login tour, color scheme, encrypted API key vault (12.10) |
 | `apps/file-viewer/` | **IPRPS File Viewer**: opens and checks `.iprps`, `.ipai`, `.srpatch`, `.capstone` files (12.10) |
+| `apps/updates-tile/` | The Hub tile for **IPRPS Updates**: what the last update check found (installed as `/srv/www/iprps/updates`, 12.12) |
+| `packages/` | **Package recipes** (PKGBUILDs) for pacman: `pacman`, `iprps-keyring`, `iprps-base` (pacman settings, **IPRPS Updates**, `iprps-update`, the update timer, the edition packages), `iprps-apps` (one package per IPRPS app), and worked examples (`examples/curl`, `examples/calibre`, a BLFS template). Rules in `packages/README.md` (12.12, Part 17) |
 | `apps/character-sheets/` | **Character Sheets**: the Session Master's sheet library (import players' files, view, print, by campaign; NPC and creature sheets; `character_sheets` table); shown inside the IPRPS Table console |
 | `ai/` | Ollama service, the `iprps-storyteller` Modelfile and system prompt, and `iprps-ai-model` (swap in a custom IPRPS model) |
 | `database/` | `iprps-core.sql`, the campaign and player-tracking schema |
