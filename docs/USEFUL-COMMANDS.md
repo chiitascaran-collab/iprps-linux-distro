@@ -57,10 +57,9 @@ The repository lives on the G: drive (`/mnt/g/IPRPS/iprps-os`).
 
 ```bash
 cd /mnt/g/IPRPS/iprps-os
-cp -v /mnt/c/Users/<you>/Downloads/iprps-icons/*.png artwork/icons/
-ls artwork/icons/*.png | wc -l        # 24
+ls artwork/icons/*.png | wc -l        # 72 (the repository zip includes them)
 git status
-git add -A && git commit -m "Add the IPRPS icons" && git push
+git add -A && git commit -m "Update IPRPS OS" && git push
 ```
 
 ## C.4 Debian ↔ a running test VM (SSH)
@@ -176,7 +175,7 @@ sudo install -v -m644 ~/Downloads/my-new-icon.png /usr/share/icons/IPRPS/256x256
 sudo gtk-update-icon-cache -f /usr/share/icons/IPRPS
 ```
 
-The first line replaces one of the 24 IPRPS icons in place: name your file exactly like the IPRPS icon it replaces (`folder-documents.png`, `trash.png`, `terminal.png`…, the first column of 9.3's table), and every standard name linked to it changes too. The third adds a brand-new icon under its own name, usable as `Icon=my-new-icon` in launchers. Log out and back in to see the change everywhere. An IPRPS OS update (a new image) brings back the original icons, so keep your custom PNGs on a USB stick.
+The first line replaces one of the 72 IPRPS icons in place: name your file exactly like the IPRPS icon it replaces (`folder-documents.png`, `trash.png`, `terminal.png`…, the first column of 9.3's table or `ls /usr/share/iprps/icons`), and every standard name linked to it changes too. Folder icons in Thunar use the same files (9.3); clear the old pictures with `rm -rf ~/.cache/thumbnails/*/`. The third adds a brand-new icon under its own name, usable as `Icon=my-new-icon` in launchers. Log out and back in to see the change everywhere. An update of the `iprps-icons` package (IPRPS Updates) brings back the original icons, so keep your custom PNGs on a USB stick, or use 3a, which updates never touch.
 
 **On a Live ISO or Live USB:** changes live in memory and disappear at shutdown. Keep your icons and the commands above on a USB stick and run them again in each session, or install IPRPS OS to keep them for good.
 

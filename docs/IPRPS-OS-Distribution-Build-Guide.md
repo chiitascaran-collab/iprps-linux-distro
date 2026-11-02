@@ -19271,27 +19271,21 @@ The artwork comes from Windows. Each file travels **Windows → Debian (`/mnt/c/
 |---|---|---|
 | `/usr/share/backgrounds/iprps/iprps-login.png` | 1920×1080 | LightDM login screen (the IPRPS plane with castles and dice) |
 | `/usr/share/backgrounds/iprps/iprps-default.png` | 16:9, about 2700×1536 | Desktop wallpaper (the IPRPS logo on black) |
-| `/usr/share/iprps/icons/*.png` | 256×256, 24 files | The **IPRPS icon theme** (9.3) and the IPRPS launchers |
+| `/usr/share/iprps/icons/*.png` | 256×256, 72 files | The **IPRPS icon theme** and folder icons (9.3), and the IPRPS launchers. They come from the repository's `artwork/icons`, installed in 9.3 |
 | `/boot/grub/iprps-grub.png` | 1920×1080 | GRUB boot menu background (optional, 9.5) |
 
 Images that aren't exactly 16:9 are trimmed to 16:9 first (centred), so they fill a 16:9 screen without black bars. The repository's `artwork/` folder keeps the finished files.
 
-**1. Copy them in. [DEBIAN ROOT]** (the files are in your Windows Downloads folder; the icons in a folder `iprps-icons`):
+**1. Copy them in. [DEBIAN ROOT]** (the files are in your Windows Downloads folder):
 
 ```bash
 cp -v /mnt/c/Users/<you>/Downloads/iprps-login.png /mnt/c/Users/<you>/Downloads/iprps-default.png /build/src/
-mkdir -p /build/src/iprps-icons
-cp -v /mnt/c/Users/<you>/Downloads/iprps-icons/*.png /build/src/iprps-icons/
-ls /build/src/iprps-icons | wc -l       # 24
 ```
-
-Windows file names with spaces or capitals make poor icon names; rename them in `/build/src/iprps-icons` first: `for f in *.png; do n=$(echo "$f" | tr 'A-Z ' 'a-z-'); [ "$f" != "$n" ] && mv -v "$f" "$n"; done`.
 
 **2. Check the chroot sees them. [IPRPS CHROOT]**
 
 ```bash
 ls /build/src/iprps-login.png /build/src/iprps-default.png
-ls /build/src/iprps-icons/*.png | wc -l    # 24
 ```
 
 If the chroot doesn't see files that Debian has in `/build/src`, Debian's `/build` isn't connected to this chroot session (`findmnt /mnt/iprps/build` in DEBIAN ROOT prints nothing). Copy straight into the image instead (`cp -v ... /mnt/iprps/build/src/`), and reconnect next time: leave the chroot, run `iprps-leave.sh`, then `iprps-enter.sh` again.
@@ -19301,7 +19295,6 @@ If the chroot doesn't see files that Debian has in `/build/src`, Debian's `/buil
 ```bash
 install -vdm755 /usr/share/backgrounds/iprps /usr/share/iprps/{icons,schema,branding}
 install -v -m644 /build/src/iprps-login.png /build/src/iprps-default.png /usr/share/backgrounds/iprps/
-install -v -m644 /build/src/iprps-icons/*.png /usr/share/iprps/icons/
 ```
 
 `-m644` matters: the login screen runs as the `lightdm` user, which must be able to read the image.
@@ -19331,103 +19324,72 @@ EOF
 
 `Adwaita-dark` comes from the gnome-themes-extra package (Stage E). `IPRPS` is the icon theme built next.
 
-**The IPRPS icon theme.** It layers your 24 icons on top of Adwaita: wherever Xfce asks for an icon you made (home, trash, terminal and so on), it gets yours; Adwaita covers the rest. Each icon is linked under the standard names Xfce uses, and also as `iprps-<name>` for IPRPS's own launchers.
+**The IPRPS icon theme.** It layers the **72 IPRPS icons** (256×256 PNG, in the repository's `artwork/icons`) on top of Adwaita: wherever Xfce, Thunar or GTK asks for an icon IPRPS has (home, trash, terminal, folders, text files…), it gets the IPRPS one; Adwaita covers the rest. Every icon is available as `iprps-<name>` for IPRPS's own launchers, and many also under the **standard names** programs ask for. `/usr/lib/iprps/iprps-icon-theme` builds the theme; the `iprps-icons` package (12.12) runs the same script, so new images and updates always agree.
 
-| Icon | Standard names | Where it shows |
+| IPRPS icon | Standard names | Where it shows |
 |---|---|---|
-| folder-home, folder-desktop, folder-documents, folder-downloads, folder-music, folder-pictures, folder-videos | `user-home`, `user-desktop`, `folder-documents`, `folder-download`, `folder-music`, `folder-pictures`, `folder-videos` | Home and the standard folders |
+| home | `user-home`, `folder-home`, `go-home` | Home |
+| folder-desktop, documents, folder-downloads, folder-music, folder-pictures, folder-videos | `user-desktop`, `folder-documents`, `folder-download`, `folder-music`, `folder-pictures`, `folder-videos` | The standard folders |
+| Public, Templates, Projects, campaigns | `folder-publicshare`, `folder-templates`, `folder-projects`, `folder-campaigns` | Public, Templates; Projects and Campaigns |
+| folder | `folder`, `generic-folder`, `inode-directory` | **Every other folder** |
 | folder-network, network | `folder-remote`, `network-workgroup` | Network folders, Browse Network |
-| file-system | `drive-harddisk` | File System |
 | trash | `user-trash`, `user-trash-full` | Trash |
-| finder | `system-file-manager`, `org.xfce.thunar` | File manager |
+| file-system | `drive-harddisk` | File System |
+| text-files, document | `text-x-generic`, `text-plain`; `x-office-document`, `application-document` | Text files; documents |
+| thunar-app, file-system-thunar, finder | `org.xfce.thunar`; `thunar`, `Thunar`; `system-file-manager` | The file manager (Thunar) |
 | terminal | `utilities-terminal`, `org.xfce.terminal`, `org.xfce.terminalemulator` | Terminal |
 | internet | `applications-internet`, `web-browser`, `org.xfce.webbrowser` | Internet category, browser |
-| settings | `preferences-system`, `preferences-desktop`, `org.xfce.settings.manager` | Settings |
-| security | `preferences-system-privacy` | Privacy and security settings |
+| settings, security | `preferences-system`, `preferences-desktop`, `org.xfce.settings.manager`; `preferences-system-privacy` | Settings |
 | audio | `applications-multimedia`, `multimedia-volume-control` | Multimedia category, volume |
-| menu | `org.xfce.panel.applicationsmenu`, `start-here` | The panel's Applications menu button |
-| apps | `applications-other`, `applications-all` | Other category |
-| home | `go-home` | Go-home buttons |
-| folder-rpg-vault, folder-archives, folder-code-scripts, folder-root-system | `iprps-` names only | IPRPS's own folders and launchers |
+| menu, apps | `org.xfce.panel.applicationsmenu`, `start-here`; `applications-other`, `applications-all` | The Applications menu button; Other category |
+| hub, session-master-mode, initiative, dice | `iprps-hub`, `iprps-session`, `iprps-combat`, `iprps-dice` | Session Master Hub, Session Master Mode, Combat Tracker, Dice Roller |
+| ai-session-master, media-player, and the rest | `iprps-` names only | IPRPS launchers and the folder icons below |
 
-**[IPRPS CHROOT]** (the icons are in `/usr/share/iprps/icons` from 9.2)
+**IPRPS folder icons in Thunar.** An icon theme names *kinds* of folders, not particular ones, and Thunar 4.20 has no per-folder icon setting. So IPRPS adds a **folder thumbnailer** (`/usr/bin/iprps-folder-thumbnailer`, the method in Thunar's documentation): Thunar asks it for a "thumbnail" of each folder, and it answers with that folder's IPRPS icon. Nothing is written inside the folders; folders without an IPRPS icon keep the `folder` icon.
+
+| Folders | Icon |
+|---|---|
+| `/bin` `/boot` `/dev` `/etc` `/home` `/lib` `/lib64` `/media` `/mnt` `/opt` `/proc` `/root` `/run` `/sbin` `/srv` `/sys` `/tmp` `/usr` `/var` | The icon of the same name |
+| `/build`, `/usr/src`, `/build/src` | build, src, sources |
+| By name, anywhere (any capitals): Campaigns, Projects, Public, Templates, Maps, Handouts, NPCs, Players, Creatures, Dungeons, AI Profiles, AI Patches, RPG Vault, Archives, Code / Scripts, Text Files, Audio, debian-kconfig | campaigns, Projects, Public, Templates, folder-maps, folder-handouts, folder-npcs, folder-players, folder-creatures, folder-dungeons, folder-ai-profiles, folder-ai-patches, folder-rpg-vault, folder-archives, folder-code-scripts, folder-text-files, folder-music, debian-kconfig |
+
+Thunar shows these where it shows thumbnails (**View → Show thumbnails**, default *Local files only*); the side pane uses the theme icons.
+
+**1. Copy the icons and the two scripts into the image. [DEBIAN ROOT]** From the repository (unzip the newest over `G:\IPRPS\iprps-os` first):
 
 ```bash
-I=/usr/share/iprps/icons; T=/usr/share/icons/IPRPS
-ls $I/*.png | wc -l                    # 24 - stop here if not
-rm -rf $T
-install -vdm755 $T/256x256/places $T/256x256/apps $T/256x256/devices
-ic() { ln -sfv $I/$1.png $T/256x256/$2/$3.png; }
-for f in $I/*.png; do n=$(basename $f .png); ic $n apps iprps-$n; done
-ic folder-home places user-home
-ic folder-desktop places user-desktop
-ic folder-documents places folder-documents
-ic folder-downloads places folder-download
-ic folder-music places folder-music
-ic folder-pictures places folder-pictures
-ic folder-videos places folder-videos
-ic folder-network places folder-remote
-ic network places network-workgroup
-ic trash places user-trash
-ic trash places user-trash-full
-ic file-system devices drive-harddisk
-for n in system-file-manager org.xfce.thunar; do ic finder apps $n; done
-for n in utilities-terminal org.xfce.terminal org.xfce.terminalemulator; do ic terminal apps $n; done
-for n in applications-internet web-browser org.xfce.webbrowser; do ic internet apps $n; done
-for n in preferences-system preferences-desktop org.xfce.settings.manager; do ic settings apps $n; done
-ic security apps preferences-system-privacy
-for n in applications-multimedia multimedia-volume-control; do ic audio apps $n; done
-for n in org.xfce.panel.applicationsmenu start-here; do ic menu apps $n; done
-for n in applications-other applications-all; do ic apps apps $n; done
-ic home apps go-home
-cat > $T/index.theme << "EOF"
-[Icon Theme]
-Name=IPRPS
-Comment=IPRPS OS icons
-Inherits=Adwaita,hicolor
-Directories=256x256/places,256x256/apps,256x256/devices
-
-[256x256/places]
-Size=256
-MinSize=16
-MaxSize=512
-Type=Scalable
-Context=Places
-
-[256x256/apps]
-Size=256
-MinSize=16
-MaxSize=512
-Type=Scalable
-Context=Applications
-
-[256x256/devices]
-Size=256
-MinSize=16
-MaxSize=512
-Type=Scalable
-Context=Devices
-EOF
-gtk-update-icon-cache -f $T
-ls $T/256x256/*/ | wc -l               # about 60
+R=/mnt/g/IPRPS/iprps-os
+install -vdm755 /mnt/iprps/usr/share/iprps/icons
+install -m644 $R/artwork/icons/*.png /mnt/iprps/usr/share/iprps/icons/
+install -vDm755 $R/rootfs/usr/lib/iprps/iprps-icon-theme /mnt/iprps/usr/lib/iprps/iprps-icon-theme
+install -vDm755 $R/rootfs/usr/bin/iprps-folder-thumbnailer /mnt/iprps/usr/bin/iprps-folder-thumbnailer
+install -vDm644 $R/rootfs/usr/share/thumbnailers/iprps-folders.thumbnailer /mnt/iprps/usr/share/thumbnailers/iprps-folders.thumbnailer
+ls /mnt/iprps/usr/share/iprps/icons/*.png | wc -l      # 72
 ```
 
-The final count is about **60** (24 `iprps-*` names, 31 standard names and 5 lines of `ls` headings). **36** means the 24 icons weren't found in `/usr/share/iprps/icons`.
+**2. Build the theme. [IPRPS CHROOT]**
 
-> **Side note:** `Type=Scalable` with `MinSize=16` lets GTK scale the 256-pixel icons down for the panel and menus. There's no plain `folder` icon, so ordinary folders keep Adwaita's look; add a `folder.png` and link it as `places/folder` to change that.
+```bash
+/usr/lib/iprps/iprps-icon-theme
+find /usr/share/icons/IPRPS -xtype l | wc -l           # 0 broken links
+```
+
+It prints **IPRPS icon theme: 124 names from 72 icons**. It starts by deleting the old theme, so it's safe to run again after changing icons.
+
+> **Side note:** On a system that already has the package manager (12.12), install the **`iprps-icons`** package instead of these two steps (it contains the same files and runs the same script); Part 17's app-update steps publish it to installed computers. `Type=Scalable` with `MinSize=16` lets GTK scale the 256-pixel icons down for the panel and menus.
 
 **If the icons don't show up in a test boot**, check the build image. **[IPRPS CHROOT]**
 
 ```bash
-ls /usr/share/iprps/icons/*.png | wc -l                                  # 24
+ls /usr/share/iprps/icons/*.png | wc -l                                  # 72
 find /usr/share/icons/IPRPS -xtype l | wc -l                             # 0 broken links
-ls /usr/share/icons/IPRPS/256x256/*/ | wc -l                             # about 60
 ls -l /usr/share/icons/IPRPS/index.theme /usr/share/icons/IPRPS/icon-theme.cache
 grep IconThemeName /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml   # value="IPRPS"
 grep icon-theme /etc/lightdm/lightdm-gtk-greeter.conf                    # IPRPS
+/usr/bin/iprps-folder-thumbnailer 256 /usr /tmp/t.png && echo "folder icons OK"
 ```
 
-Any wrong answer: install the icons again (9.2 step 3) and rerun the block above; it starts with `rm -rf` of the theme, so it's safe to repeat. If everything is right, the test copy is probably older than the change (make a fresh one), or the test user has an icon setting of its own (next note). Appendix C.6 shows users and administrators how to add their own icons later.
+Any wrong answer: repeat steps 1 and 2. If everything is right, the test copy is probably older than the change (make a fresh one), or the test user has an icon setting of its own (next note). Folder icons that don't change in Thunar: the thumbnail service reads its list of thumbnailers when it starts and keeps old pictures, so run `thunar -q; pkill tumblerd; rm -rf ~/.cache/thumbnails/*/; thunar ~ &` (or log out and in). Appendix C.6 shows users and administrators how to add their own icons later.
 
 > **Side note:** Users who logged in before the theme existed may keep their own saved setting. Change it for them, in their desktop session, with `xfconf-query -c xsettings -p /Net/IconThemeName -s IPRPS`.
 
@@ -22652,7 +22614,7 @@ Type=Application
 Name=Session Master Mode
 Comment=Open the Session Master Hub, ambience and the player display
 Exec=iprps-session
-Icon=/usr/share/iprps/icons/iprps-session.png
+Icon=iprps-session
 Categories=X-IPRPS;
 EOF
 cat > /usr/share/applications/iprps-hub.desktop << "EOF"
@@ -22661,7 +22623,7 @@ Type=Application
 Name=Session Master Hub
 Comment=Campaigns, players, characters, sessions and encounters
 Exec=iprps-open hub/
-Icon=/usr/share/iprps/icons/iprps-hub.png
+Icon=iprps-hub
 Categories=X-IPRPS;
 EOF
 update-desktop-database /usr/share/applications
@@ -23689,6 +23651,7 @@ It prints **2**.
 | IPRPS Updates: *Could not check for updates* · *No connection to the update server* | Offline, or the repository isn't uploaded yet (`iprps-repo.sh online` on the build host) |
 | IPRPS Updates: *failed to retrieve some files* / *404* | The upload missed files, or the host refuses `.db` files: `iprps-repo.sh online` names what's missing. On some hosts, `.db` files need a MIME type: add `AddType application/octet-stream .db .files .sig .zst` to `/downloads/iprps/repo/.htaccess` |
 | IPRPS Updates doesn't open after the password | Run `iprps-updates` in a terminal to see the message. Only administrators (group `wheel`) or someone who knows an administrator's password can open it |
+| IPRPS Updates stays at *upgrading …* (iprps-base 1.0-1 only) | pacman 7.1 hung starting `ldconfig` right after downloading in the same run. The package is installed; the transaction just doesn't finish. From 1.0-2, `iprps-update` downloads first and installs in a separate run | In a terminal: `ps -eo pid,etime,args --forest \| grep pacman`, then `sudo kill <PID>` of the **inner** `pacman` (the one whose parent is also `pacman`). pacman then finishes by itself. Then install iprps-base 1.0-2 (Part 17) |
 | *IPRPS Updates is open for another account* | Another user opened it on this computer. It closes 2 minutes after its window closes |
 
 > **Lite.** The Lite release needs pacman too. In the Lite fix copy (*Before Stage H*, step 4): do steps 2–4 here (the libraries and pacman), copy the packages over with **[DEBIAN ROOT]** `mkdir -p /mnt/iprps/build/repo && cp -v /root/iprps-repo/1/iprps-*/x86_64/*.pkg.tar.zst /mnt/iprps/build/repo/` while the Lite copy is entered, `chroot /mnt/iprps chown -R builder: /build/repo`, then step 7 with `ED=lite`. Nothing needs rebuilding: the packages are the same for every edition.
@@ -29875,7 +29838,8 @@ Done in 1.0: **13.9** makes a live ISO for each edition (DVD or USB, UEFI and BI
 | `make install` as root starts compiling (`g++ -o ...`) | The BUILDER build didn't finish | Ctrl+C, `chown -R builder:builder <folder>`, finish `make` in BUILDER |
 | `make install` / `cmake --install`: "Permission denied", "Maybe need administrative privileges" | Installed from the BUILDER window | Run it in IPRPS CHROOT, in the same folder |
 | A server started in the chroot (`mariadbd-safe ... &`) | Background process: the prompt returns at once | Press Enter; stop it (`mariadb-admin -u root shutdown`) before leaving the chroot |
-| Icon theme count is 36 instead of about 60 | The 24 icons weren't in `/usr/share/iprps/icons` | Install them (9.2), `rm -rf /usr/share/icons/IPRPS`, run 9.3's block again |
+| `iprps-icon-theme` prints fewer than 124 names, or *not found* | Icons missing from `/usr/share/iprps/icons` | 9.3 step 1 (copy the 72 icons), then step 2 again |
+| Folders in Thunar keep the plain folder icon | The thumbnail service started before the thumbnailer was installed, thumbnails are off, or old pictures are cached | `thunar -q; pkill tumblerd; rm -rf ~/.cache/thumbnails/*/; thunar ~ &` (`iprps-icons` 2026.11.02-2 and later do this when installed). **View → Show thumbnails** must not be *Never*; `ls /usr/share/thumbnailers/iprps-folders.thumbnailer` |
 | `ERROR 2002 … Can't connect to local server through socket` right after `mariadbd-safe … &` | The server wasn't ready yet | Wait for it: `until mariadb-admin -u root ping >/dev/null 2>&1; do sleep 1; done`, then rerun what failed |
 | `ERROR 1045 … Access denied for user 'iprps'@'localhost'` | The `iprps` user wasn't created (or another password) | Rerun 12.5 step 6's `CREATE USER … ALTER USER … GRANT` with the password from `/root/iprps-dev-db.txt` |
 | Web apps show only the IPRPS login, or "Sign in required" | Normal: the Universal Login is working | Register at `/iprps/auth/login.html`; apps then let you in |
@@ -29978,10 +29942,9 @@ The repository lives on the G: drive (`/mnt/g/IPRPS/iprps-os`).
 
 ```bash
 cd /mnt/g/IPRPS/iprps-os
-cp -v /mnt/c/Users/<you>/Downloads/iprps-icons/*.png artwork/icons/
-ls artwork/icons/*.png | wc -l        # 24
+ls artwork/icons/*.png | wc -l        # 72 (the repository zip includes them)
 git status
-git add -A && git commit -m "Add the IPRPS icons" && git push
+git add -A && git commit -m "Update IPRPS OS" && git push
 ```
 
 ### C.4 Debian ↔ a running test VM (SSH)
@@ -30097,7 +30060,7 @@ sudo install -v -m644 ~/Downloads/my-new-icon.png /usr/share/icons/IPRPS/256x256
 sudo gtk-update-icon-cache -f /usr/share/icons/IPRPS
 ```
 
-The first line replaces one of the 24 IPRPS icons in place: name your file exactly like the IPRPS icon it replaces (`folder-documents.png`, `trash.png`, `terminal.png`…, the first column of 9.3's table), and every standard name linked to it changes too. The third adds a brand-new icon under its own name, usable as `Icon=my-new-icon` in launchers. Log out and back in to see the change everywhere. An IPRPS OS update (a new image) brings back the original icons, so keep your custom PNGs on a USB stick.
+The first line replaces one of the 72 IPRPS icons in place: name your file exactly like the IPRPS icon it replaces (`folder-documents.png`, `trash.png`, `terminal.png`…, the first column of 9.3's table or `ls /usr/share/iprps/icons`), and every standard name linked to it changes too. Folder icons in Thunar use the same files (9.3); clear the old pictures with `rm -rf ~/.cache/thumbnails/*/`. The third adds a brand-new icon under its own name, usable as `Icon=my-new-icon` in launchers. Log out and back in to see the change everywhere. An update of the `iprps-icons` package (IPRPS Updates) brings back the original icons, so keep your custom PNGs on a USB stick, or use 3a, which updates never touch.
 
 **On a Live ISO or Live USB:** changes live in memory and disappear at shutdown. Keep your icons and the commands above on a USB stick and run them again in each session, or install IPRPS OS to keep them for good.
 
