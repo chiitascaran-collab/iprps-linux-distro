@@ -1,0 +1,15 @@
+# IPRPS Table: its service account, and the service at every boot
+post_install() {
+  getent group iprps-table >/dev/null || groupadd -r iprps-table
+  getent passwd iprps-table >/dev/null || useradd -r -g iprps-table -d /var/lib/iprps-table -s /sbin/nologin -c "IPRPS Table" iprps-table
+  systemctl enable iprps-table.service >/dev/null 2>&1 || true
+}
+post_upgrade() {
+  post_install
+  # A running Table keeps the old code until it restarts. Restarting closes an open table,
+  # which is why IPRPS Updates asks you to close it first.
+  systemctl try-restart iprps-table.service >/dev/null 2>&1 || true
+}
+pre_remove() {
+  systemctl disable --now iprps-table.service >/dev/null 2>&1 || true
+}

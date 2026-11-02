@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Initiative and Combat Tracker
+GenericName=Combat Tracker
+Comment=Turn order, rounds, HP, Armor Rating and conditions
+Exec=iprps-open combat/
+Icon=iprps-combat
+Terminal=false
+Categories=X-IPRPS;Game;

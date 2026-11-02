@@ -1,0 +1,38 @@
+# IPRPS OS security update, worked example: cURL from BLFS 13.1 (Part 17)
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+#
+# How a BLFS page becomes a package: the BLFS "configure ... make" lines go in build(),
+# and BLFS's "make install" (as root) becomes "make DESTDIR=$pkgdir install" in package().
+# For a security fix, change pkgver to the fixed version (and the checksum), build, test, publish to iprps-core.
+
+pkgname=curl
+pkgver=8.21.0
+pkgrel=1
+pkgdesc='Command line tool and library for transferring data with URLs'
+arch=(x86_64)
+url='https://curl.se/'
+license=(MIT)
+depends=(iprps-base)
+provides=(libcurl.so)
+source=("https://curl.se/download/curl-$pkgver.tar.xz")
+# From the BLFS page (MD5); prefer sha256sums from "makepkg -g" once the download is checked
+md5sums=('230131079987135cbe1eadb77a04af57')
+
+build() {
+  cd "curl-$pkgver"
+  ./configure --prefix=/usr    \
+              --disable-static \
+              --with-openssl   \
+              --with-ca-path=/etc/ssl/certs
+  make
+}
+
+package() {
+  cd "curl-$pkgver"
+  make DESTDIR="$pkgdir" install
+  rm -rf docs/examples/.deps
+  find docs \( -name Makefile\* -o -name \*.1 -o -name \*.3 -o -name CMakeLists.txt \) -delete
+  install -dm755 "$pkgdir/usr/share/doc"
+  cp -R docs -T "$pkgdir/usr/share/doc/curl-$pkgver"
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}

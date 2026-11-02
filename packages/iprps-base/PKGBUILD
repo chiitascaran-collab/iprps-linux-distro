@@ -1,0 +1,78 @@
+# IPRPS OS: the package manager's own settings, IPRPS Updates, and the three edition packages (guide 12.12)
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+#
+# iprps-base's version IS the IPRPS OS version. A point release (1.0.1, ...) raises pkgver here and
+# adds what it needs to depends=() - for example 'openssl>=3.6.2' - so "update everything" brings it in.
+# Edition packages depend on that edition's IPRPS apps: an app added to an edition's list here
+# arrives on every computer of that edition with its next update.
+
+pkgbase=iprps-base
+pkgname=(iprps-base iprps-lite iprps-medium iprps-advanced)
+pkgver=1.0
+pkgrel=1
+arch=(any)
+url='https://infiniteplane.space/'
+license=(GPL-2.0-only)
+
+# The IPRPS apps every edition has (packages from packages/iprps-apps)
+_apps_lite=(iprps-lib iprps-hub iprps-writer iprps-table iprps-character-creator iprps-character-sheets
+            iprps-combat iprps-dice iprps-session-log iprps-welcome iprps-file-viewer iprps-soundboard iprps-updates-tile)
+_apps_medium=("${_apps_lite[@]}" iprps-oracle)
+_apps_advanced=("${_apps_medium[@]}")
+
+package_iprps-base() {
+  pkgdesc='IPRPS OS base: package manager settings, signing keys and IPRPS Updates'
+  depends=(pacman iprps-keyring)
+  provides=(iprps-os)
+  backup=(etc/pacman.conf etc/pacman.d/iprps-mirrorlist etc/xdg/autostart/iprps-update-notify.desktop)
+  install=iprps-base.install
+  local s="$startdir"
+
+  install -Dm644 "$s/pacman.conf"       "$pkgdir/etc/pacman.conf"
+  install -Dm644 "$s/iprps-mirrorlist"  "$pkgdir/etc/pacman.d/iprps-mirrorlist"
+  install -Dm755 "$s/iprps-update"         "$pkgdir/usr/bin/iprps-update"
+  install -Dm755 "$s/iprps-updates"        "$pkgdir/usr/bin/iprps-updates"
+  install -Dm755 "$s/iprps-update-notify"  "$pkgdir/usr/bin/iprps-update-notify"
+  install -Dm755 "$s/iprps-updates-server" "$pkgdir/usr/lib/iprps/updates/iprps-updates-server"
+  for f in index.html updates.js updates.css icon.svg; do
+    install -Dm644 "$s/www/$f" "$pkgdir/usr/lib/iprps/updates/www/$f"
+  done
+  install -Dm644 "$s/www/icon.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/iprps-updates.svg"
+  install -Dm644 "$s/iprps-updates.desktop"       "$pkgdir/usr/share/applications/iprps-updates.desktop"
+  install -Dm644 "$s/iprps-update-notify.desktop" "$pkgdir/etc/xdg/autostart/iprps-update-notify.desktop"
+  install -Dm644 "$s/space.infiniteplane.iprps.updates.policy" \
+                 "$pkgdir/usr/share/polkit-1/actions/space.infiniteplane.iprps.updates.policy"
+  for u in iprps-update-check.service iprps-update-check.timer iprps-pacman-keyring.service; do
+    install -Dm644 "$s/$u" "$pkgdir/usr/lib/systemd/system/$u"
+  done
+  for k in iprps-desktop-db iprps-icon-cache iprps-systemd-reload; do
+    install -Dm644 "$s/$k.hook" "$pkgdir/usr/share/libalpm/hooks/$k.hook"
+  done
+  install -dm755 "$pkgdir/var/lib/iprps-updates"
+}
+
+_edition() {   # _edition <name> <Title> <apps...>
+  local ed=$1 title=$2; shift 2
+  pkgdesc="IPRPS OS $title edition: its IPRPS apps, and what other packages can count on"
+  depends=("iprps-base=$pkgver" "$@")
+  conflicts=()
+  local e; for e in lite medium advanced; do [ "$e" = "$ed" ] || conflicts+=("iprps-$e"); done
+  install=iprps-edition.install
+  install -Dm644 /dev/stdin "$pkgdir/usr/lib/iprps/edition-$ed" <<< "$ed"   # one file per edition: they never overlap
+}
+
+package_iprps-lite() {
+  _edition lite Lite "${_apps_lite[@]}"
+}
+
+package_iprps-medium() {
+  _edition medium Medium "${_apps_medium[@]}"
+  # Installed by the Medium build (Part 15) without a package: Ollama (the Oracle's engine)
+  provides=(ollama)
+}
+
+package_iprps-advanced() {
+  _edition advanced Advanced "${_apps_advanced[@]}"
+  # Installed by the Medium and Advanced builds without packages: Ollama, and XCB Utilities' libxcb-cursor (Calibre)
+  provides=(ollama xcb-util-cursor)
+}

@@ -1,0 +1,4 @@
+# IPRPS OS package repositories (guide 12.12). $repo is iprps-core, iprps-apps or iprps-extra.
+# Servers are tried in order. Packages are checked against the IPRPS signing key,
+# so a mirror can't change them.
+Server = https://infiniteplane.space/downloads/iprps/repo/1/$repo/$arch

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS Updates
+GenericName=Software Updates
+Comment=Security fixes, new IPRPS app versions and optional software
+Exec=iprps-updates
+Icon=iprps-updates
+Terminal=false
+Categories=X-IPRPS;System;Settings;PackageManager;
+Keywords=update;upgrade;install;software;packages;security;

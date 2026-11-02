@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS Table
+GenericName=LAN Play
+Comment=Players join from their phones, tablets and laptops: chat, dice, pictures and sound
+Exec=iprps-table
+Icon=/usr/share/iprps/icons/iprps-table.svg
+Terminal=false
+Categories=X-IPRPS;Game;
+Keywords=lan;party;players;phone;tablet;dice;chat;

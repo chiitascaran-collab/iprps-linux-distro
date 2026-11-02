@@ -1,0 +1,11 @@
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = usr/share/icons/hicolor/*
+
+[Action]
+Description = Updating the icon cache...
+When = PostTransaction
+Exec = /usr/bin/gtk-update-icon-cache --quiet --force --ignore-theme-index /usr/share/icons/hicolor

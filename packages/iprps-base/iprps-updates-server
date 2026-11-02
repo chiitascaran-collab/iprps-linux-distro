@@ -1,0 +1,215 @@
+#!/usr/bin/python3
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+"""IPRPS Updates - the window's back end (guide 12.12).
+
+Started by /usr/bin/iprps-updates through pkexec (an administrator's password), so it runs as root.
+It serves the IPRPS Updates page on 127.0.0.1 at a random port, prints the address once, and:
+  * accepts connections only from the account that started it (checked in /proc/net/tcp),
+  * needs the one-time key from that address, swapped for a cookie on the first visit,
+  * accepts only Host 127.0.0.1:<port> (no DNS rebinding) and POSTs with the X-IPRPS header,
+  * runs nothing but /usr/bin/iprps-update,
+  * quits 2 minutes after the page is closed (never while an update is running).
+"""
+import http.server, json, os, re, secrets, socket, subprocess, sys, threading, time, urllib.parse
+
+WWW = os.environ.get('IPRPS_UPDATES_WWW', '/usr/lib/iprps/updates/www')
+TOOL = os.environ.get('IPRPS_UPDATE_TOOL', '/usr/bin/iprps-update')
+OWNER = int(os.environ.get('PKEXEC_UID', os.environ.get('IPRPS_UPDATES_UID', '-1')))
+IDLE = 120
+TYPES = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
+         '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml'}
+NAME = re.compile(r'^[a-z0-9@._+-]{1,80}$')
+
+key = secrets.token_urlsafe(24)       # one-time, in the address the launcher opens
+session = secrets.token_urlsafe(32)   # the cookie it is swapped for
+key_used = False
+last_seen = time.time()
+lock = threading.Lock()
+job = {'kind': None, 'lines': [], 'rc': None, 'running': False, 'started': 0}
+
+
+def peer_uid(addr, port):
+    """Owner of the client's end of a 127.0.0.1 connection, from /proc/net/tcp."""
+    ip, cport = addr
+    want = '%08X:%04X' % (int.from_bytes(socket.inet_aton(ip), 'little'), cport)
+    srv = ':%04X' % port
+    try:
+        with open('/proc/net/tcp') as f:
+            next(f)
+            for line in f:
+                p = line.split()
+                if p[1] == want and p[2].endswith(srv):
+                    return int(p[7])
+    except OSError:
+        pass
+    return None
+
+
+def start_job(kind, args):
+    with lock:
+        if job['running']:
+            return False
+        job.update(kind=kind, lines=[], rc=None, running=True, started=time.time())
+
+    def work():
+        env = dict(os.environ, LC_ALL='C.UTF-8', TERM='dumb')
+        try:
+            p = subprocess.Popen([TOOL] + args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                 stdin=subprocess.DEVNULL, text=True, bufsize=1, env=env)
+            for line in p.stdout:
+                for part in line.rstrip('\n').split('\r'):
+                    if part.strip():
+                        with lock:
+                            job['lines'].append(part)
+            rc = p.wait()
+        except OSError as e:
+            with lock:
+                job['lines'].append(f'Could not start {TOOL}: {e}')
+            rc = 127
+        with lock:
+            job.update(rc=rc, running=False)
+    threading.Thread(target=work, daemon=True).start()
+    return True
+
+
+class H(http.server.BaseHTTPRequestHandler):
+    server_version = 'IPRPS-Updates'
+    sys_version = ''
+
+    def log_message(self, *a):
+        pass
+
+    def send(self, code, body, ctype='application/json', headers=()):
+        if not isinstance(body, bytes):
+            body = (json.dumps(body) if ctype == 'application/json' else body).encode()
+        self.send_response(code)
+        self.send_header('Content-Type', ctype)
+        self.send_header('Content-Length', str(len(body)))
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('X-Frame-Options', 'DENY')
+        self.send_header('Referrer-Policy', 'no-referrer')
+        self.send_header('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-ancestors 'none'")
+        for k, v in headers:
+            self.send_header(k, v)
+        self.end_headers()
+        self.wfile.write(body)
+
+    def allowed(self):
+        global last_seen
+        port = self.server.server_address[1]
+        if self.headers.get('Host') not in (f'127.0.0.1:{port}', f'localhost:{port}'):
+            self.send(403, {'error': 'Wrong address.'}); return False
+        if OWNER >= 0 and peer_uid(self.client_address, port) != OWNER:
+            self.send(403, {'error': 'IPRPS Updates is open for another account.'}); return False
+        last_seen = time.time()
+        return True
+
+    def has_session(self):
+        c = self.headers.get('Cookie', '')
+        return any(p.strip() == f'iprps_updates={session}' for p in c.split(';'))
+
+    def do_GET(self):
+        global key_used
+        if not self.allowed():
+            return
+        u = urllib.parse.urlsplit(self.path)
+        q = urllib.parse.parse_qs(u.query)
+        if u.path == '/' and 't' in q:
+            with lock:
+                ok = not key_used and secrets.compare_digest(q['t'][0], key)
+                if ok:
+                    key_used = True
+            if not ok:
+                return self.send(403, '<p>This IPRPS Updates link was already used. Open IPRPS Updates again from the menu.</p>', 'text/html; charset=utf-8')
+            return self.send(303, b'', 'text/plain', [('Location', '/'),
+                             ('Set-Cookie', f'iprps_updates={session}; HttpOnly; SameSite=Strict; Path=/')])
+        if not self.has_session():
+            return self.send(403, '<p>Open IPRPS Updates from the menu.</p>', 'text/html; charset=utf-8')
+        if u.path == '/api/status':
+            r = subprocess.run([TOOL, 'json'], capture_output=True, text=True)
+            try:
+                data = json.loads(r.stdout)
+            except ValueError:
+                return self.send(500, {'error': (r.stderr or 'iprps-update failed').strip()})
+            with lock:
+                data['busy'] = job['running']
+            return self.send(200, data)
+        if u.path == '/api/job':
+            start = int((q.get('from') or ['0'])[0] or 0)
+            with lock:
+                return self.send(200, {'kind': job['kind'], 'running': job['running'], 'rc': job['rc'],
+                                       'lines': job['lines'][start:], 'next': len(job['lines'])})
+        name = 'index.html' if u.path == '/' else u.path.lstrip('/')
+        if not re.fullmatch(r'[a-z0-9-]+\.(html|js|css|svg)', name):
+            return self.send(404, {'error': 'Not found.'})
+        try:
+            with open(os.path.join(WWW, name), 'rb') as f:
+                body = f.read()
+        except OSError:
+            return self.send(404, {'error': 'Not found.'})
+        self.send(200, body, TYPES[os.path.splitext(name)[1]])
+
+    def do_POST(self):
+        if not self.allowed():
+            return
+        if not self.has_session() or self.headers.get('X-IPRPS') != '1':
+            return self.send(403, {'error': 'Not allowed.'})
+        n = int(self.headers.get('Content-Length') or 0)
+        try:
+            data = json.loads(self.rfile.read(min(n, 65536)) or b'{}')
+        except ValueError:
+            return self.send(400, {'error': 'Bad request.'})
+        path = urllib.parse.urlsplit(self.path).path
+        names = [x for x in data.get('names', []) if isinstance(x, str) and NAME.match(x)][:20]
+        if path == '/api/ping':
+            return self.send(200, {'ok': True})
+        if path == '/api/quit':
+            with lock:
+                busy = job['running']
+            if not busy:
+                threading.Thread(target=self.server.shutdown, daemon=True).start()
+            return self.send(200, {'ok': not busy})
+        actions = {
+            '/api/check': ('check', ['check']),
+            '/api/upgrade': ('upgrade', ['upgrade', '--yes']),
+            '/api/install': ('install', ['install', '--yes'] + names),
+            '/api/remove': ('remove', ['remove', '--yes'] + names),
+            '/api/auto': ('auto', ['auto', 'on' if data.get('on') else 'off']),
+        }
+        if path not in actions:
+            return self.send(404, {'error': 'Not found.'})
+        kind, args = actions[path]
+        if kind in ('install', 'remove') and not names:
+            return self.send(400, {'error': 'Choose what to install or remove.'})
+        if not start_job(kind, args):
+            return self.send(409, {'error': 'Something is already being installed. Wait for it to finish.'})
+        self.send(200, {'ok': True})
+
+
+def watchdog(srv):
+    while True:
+        time.sleep(10)
+        with lock:
+            busy = job['running']
+        if not busy and time.time() - last_seen > IDLE:
+            srv.shutdown()
+            return
+
+
+def main():
+    if os.geteuid() != 0 and not os.environ.get('IPRPS_UPDATES_TEST'):
+        sys.exit('iprps-updates-server: start IPRPS Updates from the menu (it asks for an administrator password)')
+    os.umask(0o022)
+    srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), H)
+    srv.daemon_threads = True
+    print(f'http://127.0.0.1:{srv.server_address[1]}/?t={key}', flush=True)
+    # Nothing more goes to the launcher: it may close its end.
+    devnull = os.open(os.devnull, os.O_WRONLY)
+    os.dup2(devnull, 1)
+    threading.Thread(target=watchdog, args=(srv,), daemon=True).start()
+    srv.serve_forever()
+
+
+if __name__ == '__main__':
+    main()

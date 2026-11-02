@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Character Creator
+GenericName=IPRPS Character Sheet
+Comment=Fill in an IPRPS character sheet
+Exec=iprps-open character-creator/
+Icon=iprps-character-creator
+Terminal=false
+Categories=X-IPRPS;Game;
+Keywords=character;sheet;creator;

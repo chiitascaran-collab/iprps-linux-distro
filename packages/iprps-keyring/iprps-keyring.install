@@ -1,0 +1,8 @@
+# Add new or changed IPRPS keys to this computer's keyring (once it has one)
+post_upgrade() {
+  if [ -f /etc/pacman.d/gnupg/trustdb.gpg ]; then
+    pacman-key --populate iprps >/dev/null 2>&1 && echo "  IPRPS signing keys updated"
+  fi
+  return 0
+}
+post_install() { post_upgrade; }

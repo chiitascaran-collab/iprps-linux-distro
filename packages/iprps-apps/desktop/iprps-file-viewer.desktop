@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS File Viewer
+GenericName=IPRPS File Viewer
+Comment=Open and check .iprps, .ipai, .srpatch and .capstone files
+Exec=iprps-open file-viewer/
+Icon=iprps-file-viewer
+Terminal=false
+Categories=X-IPRPS;Utility;

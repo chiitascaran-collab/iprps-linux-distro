@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Soundboard
+GenericName=IPRPS Soundboard
+Comment=One-click sound effects and ambience during play
+Exec=iprps-open soundboard/
+Icon=iprps-soundboard
+Terminal=false
+Categories=X-IPRPS;AudioVideo;Audio;
+Keywords=sound;effects;ambience;music;

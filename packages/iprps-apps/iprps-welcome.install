@@ -1,0 +1,6 @@
+# IPRPS Welcome: the encrypted API key vault's folder (the web server's only)
+post_install() {
+  getent passwd apache >/dev/null && install -dm700 -o apache -g apache /var/lib/iprps-vault
+  return 0
+}
+post_upgrade() { post_install; }

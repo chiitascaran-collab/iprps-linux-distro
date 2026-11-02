@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS Updates (notifications)
+Comment=Tells administrators when updates are ready
+Exec=/usr/bin/iprps-update-notify
+NoDisplay=true

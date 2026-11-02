@@ -1,0 +1,6 @@
+# Soundboard: the folder for each account's own sound files (the web server's only)
+post_install() {
+  getent passwd apache >/dev/null && install -dm700 -o apache -g apache /var/lib/iprps-sounds
+  return 0
+}
+post_upgrade() { post_install; }

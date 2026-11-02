@@ -1,0 +1,2 @@
+# IPRPS edition packages: nothing to do but say which edition this is
+post_install() { echo "  IPRPS OS edition: $(cat /usr/lib/iprps/edition-* 2>/dev/null)"; }

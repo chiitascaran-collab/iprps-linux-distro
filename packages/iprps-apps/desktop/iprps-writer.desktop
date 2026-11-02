@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS Writer
+GenericName=Word Processor
+Comment=Write documents; save them as Word, OpenDocument or PDF
+Exec=iprps-open writer/
+Icon=accessories-text-editor
+Terminal=false
+Categories=X-IPRPS;Office;WordProcessor;
+Keywords=write;document;word;docx;odt;

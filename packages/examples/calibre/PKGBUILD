@@ -1,0 +1,41 @@
+# IPRPS OS optional extra, worked example: Calibre (official binary), for iprps-extra (Part 17)
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+#
+# Advanced has Calibre already (16.2, installed without a package); on Advanced this package adopts it
+# and from then on updates it. On Lite and Medium it is an optional extra once xcb-util-cursor is
+# offered too (Advanced's XCB Utilities; package that from BLFS the same way as examples/curl).
+# Check the newest version at https://calibre-ebook.com/download_linux
+
+pkgname=calibre
+pkgver=9.17.0
+pkgrel=1
+pkgdesc='E-book library, reader, editor and converter'
+arch=(x86_64)
+url='https://calibre-ebook.com/'
+license=(GPL-3.0-only)
+depends=(iprps-base xcb-util-cursor)
+options=(!strip !debug)
+source=("https://download.calibre-ebook.com/$pkgver/calibre-$pkgver-x86_64.txz"
+        "https://download.calibre-ebook.com/$pkgver/calibre-$pkgver.tar.xz")
+noextract=("calibre-$pkgver-x86_64.txz")
+sha256sums=('SKIP' 'SKIP')     # fill in with "makepkg -g" after checking calibre's published signatures
+
+package() {
+  install -dm755 "$pkgdir/opt/calibre"
+  tar -xJf "calibre-$pkgver-x86_64.txz" -C "$pkgdir/opt/calibre"
+  # Commands, menu entries (Office), icons and file types, as calibre_postinstall makes them on the system
+  install -dm755 "$pkgdir/usr/bin" "$pkgdir/usr/share/applications" "$pkgdir/usr/share/icons/hicolor" "$pkgdir/usr/share/mime/packages"
+  local b
+  for b in "$pkgdir"/opt/calibre/{calibre,ebook-viewer,ebook-edit,ebook-convert,ebook-meta,calibre-debug,calibredb,lrfviewer,ebook-polish,calibre-server,calibre-smtp,fetch-ebook-metadata,web2disk,lrf2lrs,lrs2lrf,markdown-calibre,calibre-customize,calibre-parallel}; do
+    [ -x "$b" ] && ln -s "/opt/calibre/${b##*/}" "$pkgdir/usr/bin/${b##*/}"
+  done
+  XDG_DATA_DIRS="$pkgdir/usr/share" XDG_DATA_HOME="$pkgdir/usr/share" XDG_UTILS_INSTALL_MODE=system \
+    "$pkgdir/opt/calibre/calibre_postinstall" --root="$pkgdir/usr" --make-errors-fatal 2>&1 | tail -5 || true
+  # The postinstall step may write links that point into $pkgdir: point them at the real paths
+  find "$pkgdir/usr" -type l | while read -r l; do
+    t=$(readlink "$l"); case "$t" in "$pkgdir"*) ln -sfn "${t#$pkgdir}" "$l" ;; esac
+  done
+  rm -f "$pkgdir"/usr/share/applications/mimeinfo.cache "$pkgdir"/usr/share/icons/hicolor/icon-theme.cache
+  rm -rf "$pkgdir"/usr/share/mime/{aliases,generic-icons,globs,globs2,icons,magic,mime.cache,subclasses,treemagic,types,XMLnamespaces,version}
+  install -Dm644 "calibre-$pkgver.tar.xz" "$pkgdir/usr/share/iprps/sources/calibre-$pkgver.tar.xz"   # GPL: the matching source
+}

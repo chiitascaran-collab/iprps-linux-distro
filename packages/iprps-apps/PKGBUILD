@@ -1,0 +1,143 @@
+# IPRPS OS: the IPRPS apps, one package each (guide 12.12)
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+#
+# Built from a copy of the IPRPS OS repository (default /build/src/iprps-os; set IPRPS_REPO to use another).
+# To publish new app versions: update the repository copy, raise pkgver (the date), build, and publish (Part 17).
+# Users' data is never in these packages: it lives in the database and in /var/lib.
+
+pkgbase=iprps-apps
+pkgname=(iprps-lib iprps-hub iprps-writer iprps-table iprps-character-creator iprps-character-sheets
+         iprps-combat iprps-dice iprps-session-log iprps-welcome iprps-file-viewer iprps-soundboard
+         iprps-oracle iprps-updates-tile)
+pkgver=2026.11.01
+pkgrel=1
+arch=(any)
+url='https://github.com/chiitascaran-collab/iprps-linux-distro'
+license=(GPL-2.0-only)
+options=(!strip !debug)
+
+_repo=${IPRPS_REPO:-/build/src/iprps-os}
+_www=srv/www/iprps
+
+prepare() {
+  [ -d "$_repo/apps/hub" ] || { echo "No IPRPS OS repository at $_repo (copy it there, or set IPRPS_REPO)" >&2; return 1; }
+}
+
+# _web <folder in apps/> <folder in /srv/www/iprps>: the app's files, readable by the web server
+_web() {
+  install -dm755 "$pkgdir/$_www/$2"
+  cp -r "$_repo/apps/$1/." "$pkgdir/$_www/$2/"
+  find "$pkgdir/$_www/$2" -type d -exec chmod 755 {} +
+  find "$pkgdir/$_www/$2" -type f -exec chmod 644 {} +
+}
+# _menu <name>: the menu entry iprps-<name>.desktop, with icon iprps-<name> from the app's icon file
+_menu() {
+  install -Dm644 "$startdir/desktop/iprps-$1.desktop" "$pkgdir/usr/share/applications/iprps-$1.desktop"
+  [ -n "${2:-}" ] && install -Dm644 "$_repo/apps/$2" "$pkgdir/usr/share/icons/hicolor/scalable/apps/iprps-$1.svg"
+  return 0
+}
+
+package_iprps-lib() {
+  pkgdesc='IPRPS session tools: shared look, campaign picker, dice and API'
+  _web iprps-lib iprps-lib
+}
+
+package_iprps-hub() {
+  pkgdesc='Session Master Hub: home page of the IPRPS apps, Manage apps, player display'
+  backup=("$_www/hub/default-apps.json")
+  _web hub hub
+  _menu hub
+}
+
+package_iprps-writer() {
+  pkgdesc='IPRPS Writer: a simple word processor (.docx, .odt, PDF)'
+  _web writer writer
+  _menu writer
+}
+
+package_iprps-table() {
+  pkgdesc='IPRPS Table: LAN play on phones, tablets and laptops'
+  install=iprps-table.install
+  install -dm755 "$pkgdir/opt/iprps/table"
+  cp -r "$_repo/apps/table/." "$pkgdir/opt/iprps/table/"
+  find "$pkgdir/opt/iprps/table" -type d -exec chmod 755 {} +
+  find "$pkgdir/opt/iprps/table" -type f -exec chmod 644 {} +
+  _web table-tile table
+  install -Dm755 "$_repo/rootfs/usr/bin/iprps-table" "$pkgdir/usr/bin/iprps-table"
+  install -Dm644 "$_repo/rootfs/usr/lib/systemd/system/iprps-table.service" "$pkgdir/usr/lib/systemd/system/iprps-table.service"
+  install -Dm644 "$_repo/apps/table/public/table-icon.svg" "$pkgdir/usr/share/iprps/icons/iprps-table.svg"
+  _menu table
+}
+
+package_iprps-character-creator() {
+  pkgdesc='Character Creator: the IPRPS character sheet'
+  _web character-creator character-creator
+  _menu character-creator character-creator/favicon.svg
+}
+
+package_iprps-character-sheets() {
+  pkgdesc="Character Sheets: the Session Master's sheet library"
+  _web character-sheets character-sheets
+  _menu character-sheets character-sheets/favicon.svg
+}
+
+package_iprps-combat() {
+  pkgdesc='Initiative and Combat Tracker'
+  depends=(iprps-lib)
+  _web combat combat
+  _menu combat combat/favicon.svg
+}
+
+package_iprps-dice() {
+  pkgdesc='Dice Roller: any dice and every IPRPS roll'
+  depends=(iprps-lib)
+  _web dice dice
+  _menu dice dice/favicon.svg
+}
+
+package_iprps-session-log() {
+  pkgdesc='Session Log and Recap'
+  depends=(iprps-lib)
+  _web session-log session-log
+  _menu session-log session-log/favicon.svg
+}
+
+package_iprps-welcome() {
+  pkgdesc='IPRPS Welcome: first-login tour, color scheme and API key vault'
+  depends=(iprps-lib)
+  install=iprps-welcome.install
+  backup=(etc/xdg/autostart/iprps-welcome.desktop)
+  _web welcome welcome
+  _menu welcome welcome/favicon.svg
+  install -Dm755 "$_repo/rootfs/usr/bin/iprps-welcome-once" "$pkgdir/usr/bin/iprps-welcome-once"
+  install -Dm644 "$_repo/rootfs/etc/xdg/autostart/iprps-welcome.desktop" "$pkgdir/etc/xdg/autostart/iprps-welcome.desktop"
+}
+
+package_iprps-file-viewer() {
+  pkgdesc='IPRPS File Viewer: .iprps, .ipai, .srpatch and .capstone files'
+  depends=(iprps-lib)
+  _web file-viewer file-viewer
+  _menu file-viewer file-viewer/favicon.svg
+}
+
+package_iprps-soundboard() {
+  pkgdesc='Soundboard: sound effects and ambience at a click'
+  depends=(iprps-lib)
+  install=iprps-soundboard.install
+  _web soundboard soundboard
+  _menu soundboard soundboard/favicon.svg
+}
+
+package_iprps-oracle() {
+  pkgdesc='IPRPS Oracle: local AI for Session Masters'
+  depends=(ollama)
+  backup=("$_www/oracle/config.php")
+  _web oracle oracle
+  _menu oracle oracle/oracle-icon.svg
+}
+
+package_iprps-updates-tile() {
+  pkgdesc='IPRPS Updates tile for the Session Master Hub'
+  depends=(iprps-base)
+  _web updates-tile updates
+}

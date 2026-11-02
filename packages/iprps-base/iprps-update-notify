@@ -1,0 +1,23 @@
+#!/bin/bash
+# iprps-update-notify - tell administrators when updates are waiting (desktop autostart, guide 12.12)
+# Reads /var/lib/iprps-updates/status.json, which the update check (a systemd timer) writes.
+id -nG | grep -qw wheel || exit 0                 # only administrators can install them
+S=/var/lib/iprps-updates/status.json
+SEEN=${XDG_CACHE_HOME:-$HOME/.cache}/iprps/updates-notified
+mkdir -p "${SEEN%/*}"
+sleep 120                                         # let the desktop settle first
+while :; do
+  if [ -r "$S" ]; then
+    read -r n sig < <(python3 -c 'import json,sys
+d=json.load(open(sys.argv[1])); u=d.get("updates",[])
+print(len(u), "|".join(sorted(x["name"]+"="+x["new"] for x in u)) or "-")' "$S" 2>/dev/null || echo "0 -")
+    if [ "${n:-0}" -gt 0 ] && [ "$sig" != "$(cat "$SEEN" 2>/dev/null)" ]; then
+      echo "$sig" > "$SEEN"
+      [ "$n" = 1 ] && t="1 update is ready" || t="$n updates are ready"
+      ( a=$(notify-send -a "IPRPS Updates" -i iprps-updates -A open="Open IPRPS Updates" -w \
+             "$t" "Security fixes and new app versions for IPRPS OS. Click to install them.")
+        [ "$a" = open ] && exec /usr/bin/iprps-updates ) &
+    fi
+  fi
+  sleep 3600
+done

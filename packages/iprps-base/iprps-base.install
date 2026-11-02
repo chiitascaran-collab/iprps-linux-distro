@@ -1,0 +1,19 @@
+# iprps-base: post-install steps (guide 12.12)
+post_install() {
+  install -dm755 /var/lib/iprps-updates
+  systemctl enable iprps-update-check.timer iprps-pacman-keyring.service >/dev/null 2>&1 || true
+}
+
+post_upgrade() {
+  install -dm755 /var/lib/iprps-updates
+  # Keep /etc/os-release's version in step with iprps-base; the edition name stays.
+  local v=${1%-*} ed
+  if [ -f /etc/os-release ]; then
+    ed=$(sed -n 's/^VERSION="[^ "]* \(.*\)"$/\1/p' /etc/os-release)
+    sed -i -e "s/^VERSION=.*/VERSION=\"$v${ed:+ $ed}\"/" -e "s/^VERSION_ID=.*/VERSION_ID=$v/" \
+           -e "s/^PRETTY_NAME=.*/PRETTY_NAME=\"IPRPS OS $v${ed:+ $ed}\"/" /etc/os-release
+  fi
+  [ -f /etc/lsb-release ] && sed -i -e "s/^DISTRIB_RELEASE=.*/DISTRIB_RELEASE=\"$v\"/" \
+           -e "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION=\"IPRPS OS $v\"/" /etc/lsb-release
+  return 0
+}

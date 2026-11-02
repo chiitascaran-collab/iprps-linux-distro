@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS Oracle
+GenericName=Session Master AI
+Comment=Local AI for Session Masters: NPCs, scenes, loot, encounters and campaign memory
+Exec=iprps-open oracle/
+Icon=iprps-oracle
+Terminal=false
+Categories=X-IPRPS;

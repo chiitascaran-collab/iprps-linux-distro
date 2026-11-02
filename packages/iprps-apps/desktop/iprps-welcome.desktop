@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS Welcome
+GenericName=Welcome Tour
+Comment=The tour, your first campaign, color scheme and API keys
+Exec=iprps-open welcome/
+Icon=iprps-welcome
+Terminal=false
+Categories=X-IPRPS;

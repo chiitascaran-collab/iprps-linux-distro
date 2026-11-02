@@ -1,0 +1,33 @@
+# IPRPS OS: the public key that IPRPS packages are signed with (guide 12.12)
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+#
+# iprps.gpg      the public signing key, exported with: gpg --export --armor <fingerprint>
+# iprps-trusted  "<fingerprint>:4:" for each key that signs packages
+# iprps-revoked  one fingerprint per line for keys that must no longer be trusted (optional)
+# The PRIVATE key never goes here, into the image or into Git (guide 12.12, step 1).
+
+pkgname=iprps-keyring
+pkgver=2026.11.01
+pkgrel=1
+pkgdesc='The IPRPS OS package signing key'
+arch=(any)
+url='https://infiniteplane.space/'
+license=(GPL-2.0-only)
+install=iprps-keyring.install
+
+prepare() {
+  cd "$startdir"
+  if ! grep -q 'BEGIN PGP PUBLIC KEY BLOCK' iprps.gpg 2>/dev/null; then
+    echo "iprps.gpg is missing or empty: export the IPRPS signing key first (guide 12.12, step 1)." >&2
+    return 1
+  fi
+  grep -Eq '^[0-9A-F]{40}:4:$' iprps-trusted || { echo "iprps-trusted needs '<40-character fingerprint>:4:'" >&2; return 1; }
+}
+
+package() {
+  cd "$startdir"
+  install -Dm644 iprps.gpg      "$pkgdir/usr/share/pacman/keyrings/iprps.gpg"
+  install -Dm644 iprps-trusted  "$pkgdir/usr/share/pacman/keyrings/iprps-trusted"
+  if [ -f iprps-revoked ]; then install -Dm644 iprps-revoked "$pkgdir/usr/share/pacman/keyrings/iprps-revoked"
+  else install -Dm644 /dev/null "$pkgdir/usr/share/pacman/keyrings/iprps-revoked"; fi
+}

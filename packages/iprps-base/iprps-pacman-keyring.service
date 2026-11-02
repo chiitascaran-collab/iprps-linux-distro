@@ -1,0 +1,15 @@
+[Unit]
+Description=IPRPS OS: this computer's package signing keyring
+Documentation=man:pacman-key(8)
+ConditionPathExists=!/etc/pacman.d/gnupg/trustdb.gpg
+After=local-fs.target
+Before=iprps-update-check.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/pacman-key --init
+ExecStart=/usr/bin/pacman-key --populate iprps
+
+[Install]
+WantedBy=multi-user.target

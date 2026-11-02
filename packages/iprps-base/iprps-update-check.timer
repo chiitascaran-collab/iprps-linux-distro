@@ -1,0 +1,10 @@
+[Unit]
+Description=IPRPS OS: look for updates every 6 hours
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=6h
+RandomizedDelaySec=20min
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,36 @@
+# IPRPS OS: pacman, the package manager (guide 12.12)
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+#
+# The same build as 12.12's first install, made into a package so that pacman can update itself.
+# /etc/pacman.conf belongs to iprps-base, not to this package.
+
+pkgname=pacman
+pkgver=7.1.0
+pkgrel=1
+pkgdesc='A library-based package manager with dependency support'
+arch=(x86_64)
+url='https://archlinux.org/pacman/'
+license=(GPL-2.0-or-later)
+backup=(etc/makepkg.conf etc/makepkg.conf.d/rust.conf etc/makepkg.conf.d/fortran.conf)
+options=(!debug)
+source=("https://gitlab.archlinux.org/pacman/pacman/-/releases/v$pkgver/downloads/pacman-$pkgver.tar.xz")
+# Fill in with "makepkg -g" after checking the download (guide 12.12, step 6)
+sha256sums=('SKIP')
+
+build() {
+  meson setup --prefix=/usr --sysconfdir=/etc --localstatedir=/var --buildtype=release \
+        -D doc=disabled -D i18n=true -D crypto=openssl -D gpgme=enabled -D curl=enabled \
+        -D scriptlet-shell=/usr/bin/bash -D ldconfig=/usr/sbin/ldconfig -D pkg-ext=.pkg.tar.zst \
+        "pacman-$pkgver" build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs || echo "Some pacman tests failed: check the log before publishing."
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  rm -f "$pkgdir/etc/pacman.conf"            # iprps-base's
+  install -dm755 "$pkgdir/etc/pacman.d/hooks" "$pkgdir/var/cache/pacman/pkg"
+}

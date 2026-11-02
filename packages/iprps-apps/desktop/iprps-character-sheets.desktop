@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Character Sheets
+GenericName=IPRPS Character Sheets
+Comment=Every player's, NPC's and creature's sheet: import, view, print, and use them at the table
+Exec=iprps-open character-sheets/
+Icon=iprps-character-sheets
+Terminal=false
+Categories=X-IPRPS;Game;
+Keywords=character;sheet;npc;creature;player;stats;

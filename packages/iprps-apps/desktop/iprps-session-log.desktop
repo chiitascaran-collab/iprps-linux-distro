@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Session Log and Recap
+GenericName=Session Log
+Comment=What happened each session, the recap, and who played
+Exec=iprps-open session-log/
+Icon=iprps-session-log
+Terminal=false
+Categories=X-IPRPS;Game;

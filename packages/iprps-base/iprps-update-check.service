@@ -1,0 +1,11 @@
+[Unit]
+Description=IPRPS OS: look for updates
+Documentation=man:pacman(8)
+After=network-online.target iprps-pacman-keyring.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/iprps-update check --quiet
+Nice=10
+IOSchedulingClass=idle

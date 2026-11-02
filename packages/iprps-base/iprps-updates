@@ -1,0 +1,25 @@
+#!/bin/bash
+# iprps-updates - open IPRPS Updates (guide 12.12)
+# Installing software needs an administrator: polkit asks for the password, then the
+# back end (running as root) serves the window on this computer only.
+SERVER=/usr/lib/iprps/updates/iprps-updates-server
+say() { command -v notify-send >/dev/null && notify-send -a "IPRPS Updates" -i iprps-updates "IPRPS Updates" "$1"; echo "$1" >&2; }
+
+coproc SRV { exec pkexec "$SERVER" 2>&1; }
+URL=""
+while IFS= read -r -t 120 line <&"${SRV[0]}"; do
+  case "$line" in http://127.0.0.1:*) URL=$line; break ;; esac
+  MSG=$line
+done
+if [ -z "$URL" ]; then
+  [ -n "${MSG:-}" ] && echo "$MSG" >&2
+  say "IPRPS Updates did not start (the password was cancelled, or this account isn't allowed to install software)."
+  exit 1
+fi
+if command -v chromium >/dev/null; then
+  chromium --app="$URL" >/dev/null 2>&1 &
+else
+  firefox --new-window "$URL" >/dev/null 2>&1 &
+fi
+wait "$SRV_PID" 2>/dev/null
+exit 0

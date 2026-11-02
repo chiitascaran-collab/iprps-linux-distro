@@ -1,0 +1,36 @@
+# IPRPS OS: template for packaging a BLFS (or LFS) package (Part 17)
+# Copy this folder to packages/<name>/ and fill it in from the BLFS 13.1 page.
+#
+# Rules for IPRPS packages:
+#  1. depends=(iprps-base): the release's own libraries are always there. List other IPRPS
+#     *packages* it needs (for example xcb-util-cursor) only if they exist in the repository.
+#  2. BLFS "make install" as root becomes "make DESTDIR=$pkgdir install" (or "ninja install" with
+#     DESTDIR=$pkgdir, or "meson install --destdir $pkgdir"). Never install straight onto the system.
+#  3. Files in /etc: list them in backup=() so users' changes are kept. A file in /etc that already
+#     exists on users' computers can't be taken over: leave it out of the package (iprps-repo.sh check warns).
+#  4. Library version bumps (libfoo.so.3 -> .so.4) need every program using it rebuilt and published at the same time.
+#  5. Test in a copy of a release image before publishing (Part 17).
+
+pkgname=NAME
+pkgver=VERSION
+pkgrel=1
+pkgdesc='ONE LINE FROM THE BLFS PAGE'
+arch=(x86_64)
+url='HOME PAGE'
+license=(LICENSE)
+depends=(iprps-base)
+backup=()
+source=("DOWNLOAD URL with $pkgver")
+md5sums=('MD5 FROM THE BLFS PAGE')
+
+build() {
+  cd "$pkgname-$pkgver"
+  # BLFS's configure/make lines, unchanged
+  ./configure --prefix=/usr --disable-static
+  make
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+}

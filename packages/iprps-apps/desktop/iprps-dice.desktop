@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Dice Roller
+GenericName=IPRPS Dice
+Comment=Any dice and every IPRPS roll, logged to the session
+Exec=iprps-open dice/
+Icon=iprps-dice
+Terminal=false
+Categories=X-IPRPS;Game;

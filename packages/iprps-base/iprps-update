@@ -1,0 +1,368 @@
+#!/usr/bin/python3
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+"""iprps-update - updates and optional software for IPRPS OS, with pacman (guide 12.12)
+
+  iprps-update                     same as "status"
+  iprps-update status              version, edition, last check and the updates waiting
+  iprps-update check [--quiet]     look for updates (downloads the package lists only)
+  iprps-update upgrade [--yes]     install every update
+  iprps-update extras              IPRPS apps and optional software you can add
+  iprps-update install NAME...     add optional software (also installs waiting updates)
+  iprps-update remove NAME...      remove optional software you added
+  iprps-update auto on|off         look for updates automatically every 6 hours, or not
+  iprps-update json                everything above as JSON (for IPRPS Updates)
+
+Everything except status, extras and json needs root: run it with sudo.
+"""
+import json, os, re, subprocess, sys, time
+
+STATE = os.environ.get('IPRPS_UPDATE_STATE', '/var/lib/iprps-updates')
+DBPATH = os.environ.get('IPRPS_DBPATH', '/var/lib/pacman')
+PACMAN = ['pacman'] + os.environ.get('IPRPS_PACMAN_ARGS', '').split()
+CHECKDB = os.path.join(STATE, 'db')
+STATUS = os.path.join(STATE, 'status.json')
+REPOS = ('iprps-core', 'iprps-apps', 'iprps-extra')
+OFFERED = ('iprps-apps', 'iprps-extra')            # what "extras" offers to add
+EDITIONS = ('iprps-lite', 'iprps-medium', 'iprps-advanced')
+PROTECTED = {'pacman', 'iprps-base', 'iprps-keyring', *EDITIONS}
+# The release installed these files without a package. The first update of each package
+# takes them over ("adopts" them); later updates are ordinary. /etc is never overwritten.
+OVERWRITE = ['--overwrite', '/usr/*', '--overwrite', '/opt/*', '--overwrite', '/srv/www/iprps/*']
+# After these, the computer should restart
+RESTART = re.compile(r'^(glibc|systemd|linux|linux-firmware|dbus|mesa|openssl|gnutls|nss|iprps-kernel)$')
+TIMER = 'iprps-update-check.timer'
+
+
+def run(args, **kw):
+    return subprocess.run(args, text=True, capture_output=True, **kw)
+
+
+def need_root():
+    if os.geteuid() != 0:
+        sys.exit('iprps-update: this needs administrator rights. Run: sudo iprps-update ' + ' '.join(sys.argv[1:]))
+
+
+def os_release():
+    d = {}
+    try:
+        for line in open('/etc/os-release'):
+            k, _, v = line.strip().partition('=')
+            if k:
+                d[k] = v.strip('"')
+    except OSError:
+        pass
+    return d
+
+
+def installed():
+    """{name: version} of every package pacman manages."""
+    r = run(PACMAN + ['-Q', '--dbpath', DBPATH])
+    return dict(l.split(None, 1) for l in r.stdout.splitlines() if ' ' in l)
+
+
+def edition(inst):
+    for e in EDITIONS:
+        if e in inst:
+            return e[len('iprps-'):]
+    m = re.search(r'(Lite|Medium|Advanced)', os_release().get('VERSION', ''))
+    return m.group(1).lower() if m else ''
+
+
+def checked_db_ready():
+    return os.path.isdir(os.path.join(CHECKDB, 'sync'))
+
+
+def pending():
+    """Updates waiting, from the last check: [{name, old, new}]"""
+    if not checked_db_ready():
+        return []
+    r = run(PACMAN + ['-Qu', '--dbpath', CHECKDB])
+    out = []
+    for l in r.stdout.splitlines():
+        m = re.match(r'(\S+) (\S+) -> (\S+)', l)
+        if m:
+            out.append({'name': m.group(1), 'old': m.group(2), 'new': m.group(3)})
+    return out
+
+
+def sync_info(names):
+    """Description, version, repo and size of packages, from the last check's lists."""
+    if not names or not checked_db_ready():
+        return {}
+    r = run(PACMAN + ['-Si', '--dbpath', CHECKDB] + list(names))
+    info, cur = {}, {}
+    for l in r.stdout.splitlines() + ['']:
+        if not l.strip():
+            if cur.get('Name'):
+                info[cur['Name']] = cur
+            cur = {}
+            continue
+        m = re.match(r'(\S[^:]*?)\s*: (.*)', l)
+        if m:
+            cur[m.group(1)] = m.group(2)
+    return info
+
+
+def offered():
+    """Packages in iprps-apps and iprps-extra, with whether they're installed."""
+    if not checked_db_ready():
+        return []
+    rows = []
+    for repo in OFFERED:
+        r = run(PACMAN + ['-Sl', repo, '--dbpath', CHECKDB])
+        for l in r.stdout.splitlines():
+            p = l.split()
+            if len(p) >= 3 and p[1] not in PROTECTED:
+                rows.append({'repo': p[0], 'name': p[1], 'version': p[2], 'installed': '[installed' in l})
+    info = sync_info([x['name'] for x in rows])
+    inst = installed()
+    explicit = set(run(PACMAN + ['-Qqe', '--dbpath', DBPATH]).stdout.split())
+    required = {}
+    for x in rows:
+        i = info.get(x['name'], {})
+        x['description'] = i.get('Description', '')
+        x['size'] = i.get('Installed Size', '')
+        if x['installed']:
+            # removable = installed on purpose and nothing else needs it
+            q = run(PACMAN + ['-Qi', '--dbpath', DBPATH, x['name']]).stdout
+            m = re.search(r'^Required By\s*: (.*)$', q, re.M)
+            req = m.group(1).strip() if m else 'None'
+            required[x['name']] = req
+            x['removable'] = x['name'] in explicit and req == 'None'
+            x['required_by'] = '' if req == 'None' else req
+        else:
+            # can it be installed on this edition? (dry run; changes nothing)
+            ok, needs = resolve([x['name']])
+            x['installable'] = ok
+            if not ok:
+                x['needs'] = needs
+    return rows
+
+
+def resolve(names):
+    """Could these be installed here? (dry run, changes nothing) -> (ok, what's missing)
+    pacman would satisfy a need that only another edition provides by installing that edition's
+    package, which swaps editions: that counts as "needs a bigger edition"."""
+    t = run(PACMAN + ['-S', '--print', '--print-format', '%n', '--dbpath', CHECKDB] + OVERWRITE + list(names))
+    if t.returncode:
+        m = re.search(r"unable to satisfy dependency '([^']+)'", t.stdout + t.stderr)
+        return False, m.group(1) if m else 'something this computer lacks'
+    pulled = [e for e in EDITIONS if e in t.stdout.split()]
+    if pulled:
+        return False, 'a bigger edition (pacman would replace this edition with ' + pulled[0] + ')'
+    return True, ''
+
+
+def auto_on():
+    r = run(['systemctl', 'is-enabled', TIMER])
+    return r.stdout.strip() == 'enabled'
+
+
+def read_status():
+    try:
+        return json.load(open(STATUS))
+    except (OSError, ValueError):
+        return {}
+
+
+def write_status(**extra):
+    st = read_status()
+    st.update(extra)
+    ups = pending()
+    st['updates'] = ups
+    st['count'] = len(ups)
+    st['restart'] = os.path.exists(os.path.join(STATE, 'restart-needed'))
+    os.makedirs(STATE, exist_ok=True)
+    tmp = STATUS + '.tmp'
+    with open(tmp, 'w') as f:
+        json.dump(st, f, indent=1)
+    os.chmod(tmp, 0o644)
+    os.replace(tmp, STATUS)        # world-readable: the notifier and the Hub tile read it
+    return st
+
+
+def everything():
+    inst = installed()
+    st = read_status()
+    osr = os_release()
+    iprps = {n: v for n, v in inst.items() if n.startswith('iprps-') or n == 'pacman'}
+    return {
+        'version': osr.get('PRETTY_NAME', 'IPRPS OS'),
+        'edition': edition(inst),
+        'base': inst.get('iprps-base', ''),
+        'checked': st.get('checked', 0),
+        'ok': st.get('ok', None),
+        'error': st.get('error', ''),
+        'updates': pending(),
+        'restart': os.path.exists(os.path.join(STATE, 'restart-needed')),
+        'auto': auto_on(),
+        'packages': len(inst),
+        'iprps': iprps,
+        'extras': offered(),
+    }
+
+
+# ---------------------------------------------------------------------------- commands
+def cmd_check(quiet=False):
+    need_root()
+    os.makedirs(CHECKDB, exist_ok=True)
+    link = os.path.join(CHECKDB, 'local')
+    if not os.path.islink(link):
+        if os.path.exists(link):
+            sys.exit(f'iprps-update: {link} should be a link to {DBPATH}/local')
+        os.symlink(os.path.join(DBPATH, 'local'), link)
+    # A separate copy of the package lists: looking for updates never changes the system's own lists,
+    # so installing something later can't mix old and new packages.
+    r = run(PACMAN + ['-Sy', '--dbpath', CHECKDB, '--logfile', '/dev/null', '--noprogressbar'])
+    if r.returncode:
+        err = (r.stderr or r.stdout).strip().splitlines()
+        msg = err[-1] if err else 'pacman failed'
+        if re.search(r'Could not resolve host|Failed to connect|timed out|Couldn\'t resolve', r.stderr):
+            msg = 'No connection to the update server (offline?)'
+        write_status(ok=False, error=msg, checked=int(time.time()))
+        if not quiet:
+            print('Could not check for updates:', msg, file=sys.stderr)
+        return 1
+    st = write_status(ok=True, error='', checked=int(time.time()))
+    if not quiet:
+        if st['count']:
+            print(f"{st['count']} update(s) ready:")
+            for u in st['updates']:
+                print(f"  {u['name']:28} {u['old']} -> {u['new']}")
+            print('Install them with: sudo iprps-update upgrade   (or the IPRPS Updates app)')
+        else:
+            print('IPRPS OS is up to date.')
+    return 0
+
+
+def pacman_live(args):
+    """Run pacman with its output shown as it happens; returns (exit code, output)."""
+    p = subprocess.Popen(PACMAN + args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+    lines = []
+    for l in p.stdout:
+        sys.stdout.write(l); sys.stdout.flush(); lines.append(l)
+    return p.wait(), ''.join(lines)
+
+
+def after_transaction(out, rc):
+    ups = re.findall(r'^(?:upgrading|installing|reinstalling) (\S+)\.\.\.', out, re.M)
+    if rc == 0 and any(RESTART.match(n) for n in ups):
+        open(os.path.join(STATE, 'restart-needed'), 'w').close()
+        print('\n>> Restart the computer to finish the update.')
+    # The system's lists are fresh now: let the check copy match them
+    if os.path.isdir(os.path.join(DBPATH, 'sync')):
+        os.makedirs(os.path.join(CHECKDB, 'sync'), exist_ok=True)
+        for f in os.listdir(os.path.join(DBPATH, 'sync')):
+            if f.endswith(('.db', '.db.sig', '.files')):
+                subprocess.run(['cp', '-p', os.path.join(DBPATH, 'sync', f), os.path.join(CHECKDB, 'sync', f)])
+    write_status(ok=rc == 0, error='' if rc == 0 else 'The last update did not finish: see /var/log/pacman.log',
+                 checked=int(time.time()) if rc == 0 else read_status().get('checked', 0))
+
+
+def confirm_flag(rest):
+    return ['--noconfirm'] if ('--yes' in rest or '-y' in rest) else []
+
+
+def cmd_upgrade(rest):
+    need_root()
+    yes = confirm_flag(rest)
+    print('== Refreshing the package lists and the IPRPS signing keys')
+    rc, out1 = pacman_live(['-Sy', '--needed', '--noprogressbar'] + yes + ['iprps-keyring'])
+    if rc:
+        after_transaction(out1, rc); return rc
+    print('== Installing updates')
+    rc, out = pacman_live(['-Su', '--noprogressbar'] + yes + OVERWRITE)
+    after_transaction(out1 + out, rc)
+    print('\nDone.' if rc == 0 else '\nThe update stopped: nothing was half-installed. Read the messages above.')
+    return rc
+
+
+def cmd_install(names, rest):
+    need_root()
+    if not names:
+        sys.exit('usage: sudo iprps-update install NAME...')
+    if not checked_db_ready():
+        cmd_check(quiet=True)
+    allowed = {x['name'] for x in offered()}
+    bad = [n for n in names if n not in allowed and '--any' not in rest]
+    if bad:
+        sys.exit('iprps-update: not offered as optional software: ' + ', '.join(bad) + '  (see: iprps-update extras)')
+    ok, needs = resolve(names)
+    if not ok:
+        sys.exit(f'iprps-update: can\'t install {" ".join(names)} on this computer: it needs {needs}.')
+    # -Syu with the new packages: installing never mixes old and new versions of the system
+    rc, out = pacman_live(['-Syu', '--needed', '--noprogressbar'] + confirm_flag(rest) + OVERWRITE + names)
+    after_transaction(out, rc)
+    return rc
+
+
+def cmd_remove(names, rest):
+    need_root()
+    bad = [n for n in names if n in PROTECTED or not n.startswith(('iprps-',)) and n not in {x['name'] for x in offered()}]
+    if bad or not names:
+        sys.exit('iprps-update: only optional software you added can be removed here: ' + ', '.join(bad or ['(nothing named)']))
+    rc, out = pacman_live(['-Rs', '--noprogressbar'] + confirm_flag(rest) + names)
+    write_status()
+    return rc
+
+
+def cmd_auto(rest):
+    need_root()
+    if not rest or rest[0] not in ('on', 'off'):
+        sys.exit('usage: sudo iprps-update auto on|off')
+    r = run(['systemctl', 'enable' if rest[0] == 'on' else 'disable', '--now', TIMER])
+    print(('Automatic checks are on (every 6 hours).' if rest[0] == 'on' else 'Automatic checks are off.')
+          if r.returncode == 0 else r.stderr.strip())
+    return r.returncode
+
+
+def cmd_status():
+    st = everything()
+    when = time.strftime('%Y-%m-%d %H:%M', time.localtime(st['checked'])) if st['checked'] else 'never'
+    print(f"{st['version']}  (iprps-base {st['base'] or 'not installed'}, {st['packages']} packages managed)")
+    print(f"Last check: {when}" + ('' if st['ok'] in (None, True) else f"  - {st['error']}"))
+    print(f"Automatic checks: {'on' if st['auto'] else 'off'}")
+    if st['updates']:
+        print(f"{len(st['updates'])} update(s) ready (install: sudo iprps-update upgrade):")
+        for u in st['updates']:
+            print(f"  {u['name']:28} {u['old']} -> {u['new']}")
+    elif st['checked']:
+        print('Up to date.')
+    if st['restart']:
+        print('Restart the computer to finish the last update.')
+    return 0
+
+
+def cmd_extras():
+    rows = offered()
+    if not rows:
+        print('No list yet: run "sudo iprps-update check" first.')
+        return 0
+    for x in rows:
+        state = 'installed' if x['installed'] else ('available' if x.get('installable') else f"needs {x.get('needs', '?')}")
+        print(f"{x['name']:28} {x['version']:16} {state:22} {x['description']}")
+    return 0
+
+
+def main():
+    a = sys.argv[1:]
+    cmd = a[0] if a else 'status'
+    rest = a[1:]
+    if cmd in ('-h', '--help', 'help'):
+        print(__doc__); return 0
+    if cmd == 'status':  return cmd_status()
+    if cmd == 'json':    print(json.dumps(everything())); return 0
+    if cmd == 'check':   return cmd_check('--quiet' in rest)
+    if cmd == 'upgrade': return cmd_upgrade(rest)
+    if cmd == 'extras':  return cmd_extras()
+    if cmd == 'install': return cmd_install([n for n in rest if not n.startswith('-')], rest)
+    if cmd == 'remove':  return cmd_remove([n for n in rest if not n.startswith('-')], rest)
+    if cmd == 'auto':    return cmd_auto(rest)
+    print(__doc__, file=sys.stderr)
+    return 2
+
+
+if __name__ == '__main__':
+    os.umask(0o022)
+    sys.exit(main())
