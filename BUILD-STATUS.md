@@ -1,6 +1,6 @@
 # Build status
 
-*Last updated: 2026-10-29*
+*Last updated: 2026-11-01*
 
 ## Progress
 
@@ -39,7 +39,7 @@
 | Lite music player | Parole; Session Master Mode plays ambience with mpv. No Audacious / Qt 6 |
 | Distribution | `iprps-os-1.0-<edition>.img.xz` (USB or disk) + `.vhdx` + `.qcow2` + checksums; complete corresponding source per release |
 | Redistribution overrides | FFmpeg without non-free options, Mesa without patented codecs, unbranded Firefox without embedded API keys |
-| Future | Live ISO (1.1), package manager, local AI assistant (Advanced first) |
+| Future | Package manager, persistent live USB, graphical installer, more local AI tools |
 
 ## Lessons learned (built into the guide)
 

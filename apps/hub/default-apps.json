@@ -3,6 +3,12 @@
   "apps": [
     "writer",
     "table",
+    "character-sheets",
+    "character-creator",
+    "session-log",
+    "combat",
+    "dice",
+    "soundboard",
     "prompt_database",
     "expressions",
     "sfx",
@@ -12,6 +18,7 @@
     "reel",
     "language",
     "lighting-generator",
-    "iprps_email"
+    "iprps_email",
+    "file-viewer"
   ]
 }

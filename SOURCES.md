@@ -547,3 +547,4 @@ The LFS base system's packages and patches (94 files), from the LFS book's `wget
 | 4 | Libao-1.2.0 | https://downloads.xiph.org/releases/ao/libao-1.2.0.tar.gz | `9f5dd20d7e95fd0dd72df5353829f097` |
 | 5 | Cdrdao-1.2.6 | https://downloads.sourceforge.net/cdrdao/cdrdao-1.2.6.tar.bz2 | `f59689d847d56647187d4de487e3487d` |
 | 6 | libisoburn-1.5.8.pl02 | https://files.libburnia-project.org/releases/libisoburn-1.5.8.pl02.tar.gz | `008b9adc9ab3545e167495220b453413` |
+| 7 | XCB Utilities | https://xorg.freedesktop.org/archive/individual/lib/ | `—` |

@@ -14,9 +14,14 @@
 // POST ?action=save      {campaign, type: npc|quest|log, text}
 // POST ?action=display   {campaign, title, body}   show on the player display
 // POST ?action=display_clear
+// POST ?action=recap  {session_id, model}   a players' recap of a session from its log (Session Log app)
+// POST ?action=sheet_generate {kind: npc|creature, details, level, campaign, model}   a character sheet, saved to Character Sheets
 
 require __DIR__ . '/config.php';
 require __DIR__ . '/prompts.php';
+// Character Sheets (character-sheets/lib.php): the Oracle reads the Session Master's sheets and writes NPC and creature sheets.
+$CS_LIB = getenv('ORACLE_SHEETS_LIB') ?: __DIR__ . '/../character-sheets/lib.php';
+if (is_file($CS_LIB)) require_once $CS_LIB;
 require getenv('ORACLE_AUTH_CHECK') ?: __DIR__ . '/../auth/auth-check.php';
 
 $USER = ip_require_login_api();
@@ -117,10 +122,50 @@ function campaign_memory(PDO $db, int $uid, ?int $campaign): string {
         $st->execute([$campaign]);
         $pc = $st->fetchAll();
         if ($pc) $parts[] = "PLAYER CHARACTERS:\n" . implode("\n", array_map(fn($r) => "- {$r['name']}" . ($r['species'] ? ", {$r['species']}" : '') . ($r['role'] ? " {$r['role']}" : '') . " (level {$r['level']})", $pc));
+
+        // Character sheets in this campaign: one line each (full sheets are added when a name is mentioned)
+        if (function_exists('cs_summary')) {
+            try {
+                $st = $db->prepare("SELECT kind, sheet_json FROM character_sheets WHERE user_id = ? AND campaign_id = ?
+                                    ORDER BY FIELD(kind,'pc','npc','creature'), name LIMIT 30");
+                $st->execute([$uid, $campaign]);
+                $lines = [];
+                foreach ($st->fetchAll() as $r) {
+                    $s = json_decode($r['sheet_json'], true);
+                    if (is_array($s)) $lines[] = '- ' . cs_summary($s, $r['kind']);
+                }
+                if ($lines) $parts[] = "CHARACTER SHEETS (IPRPS stats of player characters, NPCs and creatures):\n" . implode("\n", $lines);
+            } catch (Throwable $e) { /* Character Sheets not used yet */ }
+        }
     }
     $mem = implode("\n\n", $parts);
     if (mb_strlen($mem) > ORACLE_MEMORY_MAX) $mem = mb_substr($mem, 0, ORACLE_MEMORY_MAX) . "\n[…memory trimmed]";
     return $mem;
+}
+
+// Full sheets for characters the message names (by full name, or a first name of 4+ letters).
+function sheet_details(PDO $db, int $uid, string $message, ?int $campaign): string {
+    if (!function_exists('cs_summary')) return '';
+    try {
+        $st = $db->prepare('SELECT id, kind, name, notes, sheet_json, campaign_id FROM character_sheets WHERE user_id = ?
+                            ORDER BY (campaign_id <=> ?) DESC, updated_at DESC LIMIT 500');
+        $st->execute([$uid, $campaign]);
+    } catch (Throwable $e) { return ''; }
+    $out = [];
+    foreach ($st->fetchAll() as $r) {
+        $name = trim($r['name']);
+        if (mb_strlen($name) < 3) continue;
+        $hit = mb_stripos($message, $name) !== false;
+        if (!$hit) {
+            $first = preg_split('/[\s,]+/u', $name)[0] ?? '';
+            $hit = mb_strlen($first) >= 4 && preg_match('/(?<![\p{L}\p{N}])' . preg_quote($first, '/') . '(?![\p{L}\p{N}])/iu', $message);
+        }
+        if (!$hit) continue;
+        $s = json_decode($r['sheet_json'], true);
+        if (is_array($s)) $out[] = cs_summary($s, $r['kind'], true, $r);
+        if (count($out) >= 3) break;
+    }
+    return implode("\n\n", $out);
 }
 
 function recent_history(PDO $db, int $uid, ?int $campaign): array {
@@ -150,7 +195,8 @@ case 'status':
     $gens = [];
     foreach (ORACLE_GENERATORS as $k => $g) $gens[] = ['key' => $k, 'label' => $g[0], 'icon' => $g[1]];
     out(['ok' => true, 'user' => $USER, 'ollama' => $ver['version'] ?? null, 'models' => $models,
-         'default_model' => resolve_model(null, $models), 'iprps_model' => ORACLE_MODEL, 'generators' => $gens]);
+         'default_model' => resolve_model(null, $models), 'iprps_model' => ORACLE_MODEL, 'generators' => $gens,
+         'sheets' => function_exists('cs_save')]);
 
 case 'campaigns':
     $rows = $db->query("SELECT id, name, setting, status FROM campaigns ORDER BY FIELD(status,'active','planning','paused','finished'), name")->fetchAll();
@@ -247,6 +293,10 @@ case 'chat':
         $mem = campaign_memory($db, $UID, $c);
         if ($mem !== '') $system .= "\n\n=== CAMPAIGN MEMORY ===\n" . $mem . "\n=== END OF CAMPAIGN MEMORY ===";
     }
+    if ($in['use_memory'] ?? true) {
+        $det = sheet_details($db, $UID, $message, $c);
+        if ($det !== '') $system .= "\n\n=== CHARACTER SHEETS NAMED IN THIS MESSAGE ===\n" . $det . "\n=== END OF CHARACTER SHEETS ===";
+    }
     $messages = array_merge([['role' => 'system', 'content' => $system]], recent_history($db, $UID, $c),
                             [['role' => 'user', 'content' => $message]]);
     $shown = $gen !== '' ? '⟡ ' . ORACLE_GENERATORS[$gen][0] . (trim((string)($in['details'] ?? '')) !== '' ? ': ' . trim($in['details']) : '') : $message;
@@ -307,6 +357,88 @@ case 'chat':
     if ($err || $cerr) $emit(['error' => $err ?: "Connection to Ollama lost: $cerr"]);
     $emit(['done' => true, 'id' => $id]);
     exit;
+
+case 'recap':
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Use POST.', 405);
+    $st = $db->prepare('SELECT s.*, c.name AS campaign_name FROM sessions s JOIN campaigns c ON c.id = s.campaign_id WHERE s.id = ?');
+    $st->execute([(int)($in['session_id'] ?? 0)]);
+    $sess = $st->fetch();
+    if (!$sess) fail('That session no longer exists.', 404);
+    $st = $db->prepare('SELECT kind, text FROM session_log WHERE session_id = ? ORDER BY logged_at, id');
+    $st->execute([$sess['id']]);
+    $lines = array_map(fn($r) => "- [{$r['kind']}] " . clip($r['text'], 400), $st->fetchAll());
+    if (!$lines) fail('The session log is empty: there is nothing to recap yet.');
+    $logText = implode("\n", $lines);
+    if (mb_strlen($logText) > 9000) $logText = mb_substr($logText, -9000);          // the end of a long session matters most
+    $models = installed_models();
+    if ($models === null) fail('The local AI service (Ollama) is not running. Start it with: sudo systemctl start ollama', 503);
+    $model = resolve_model($in['model'] ?? null, $models);
+    if (!$model) fail('No AI model is installed. See “AI models” in the IPRPS guide, or run: sudo iprps-ai-model status', 503);
+    $system = ORACLE_SYSTEM;
+    $mem = campaign_memory($db, $UID, (int)$sess['campaign_id']);
+    if ($mem !== '') $system .= "\n\n=== CAMPAIGN MEMORY ===\n" . $mem . "\n=== END OF CAMPAIGN MEMORY ===";
+    $ask = "Write the recap of session {$sess['session_no']}" . ($sess['title'] ? " (\"{$sess['title']}\")" : '') . " of the campaign {$sess['campaign_name']}, for the players.\n"
+         . "Use only what the session log below says happened; don't invent events. Past tense, vivid but short: two to four paragraphs, naming the characters.\n"
+         . "Leave out anything the players' characters couldn't know, and never reveal the Session Master's notes or secrets.\n"
+         . "End with a short list headed \"Threads to follow\" (2-4 open questions or leads).\n\nSESSION LOG:\n" . $logText;
+    $req = ['model' => $model, 'stream' => false, 'messages' => [['role' => 'system', 'content' => $system], ['role' => 'user', 'content' => $ask]],
+            'options' => ['num_ctx' => ORACLE_NUM_CTX, 'temperature' => 0.7]];
+    $show = ollama('/api/show', ['model' => $model]);
+    if (in_array('thinking', $show['capabilities'] ?? [], true)) $req['think'] = false;
+    set_time_limit(0);
+    $r = ollama('/api/chat', $req, 900);
+    $text = trim(preg_replace('/<think>.*?<\/think>/s', '', (string)($r['message']['content'] ?? '')));
+    if ($text === '') fail('The Oracle could not write the recap (Ollama stopped or timed out). Try again.', 502);
+    out(['ok' => true, 'text' => $text, 'model' => $model]);
+
+case 'sheet_generate':
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Use POST.', 405);
+    if (!function_exists('cs_save')) fail('Character Sheets is not installed (/srv/www/iprps/character-sheets).', 503);
+    $kind = ($in['kind'] ?? '') === 'creature' ? 'creature' : 'npc';
+    $c = cid($in['campaign'] ?? 0);
+    $details = mb_substr(trim((string)($in['details'] ?? '')), 0, 1000);
+    $level = isset($in['level']) && (int)$in['level'] > 0 ? min(110, (int)$in['level']) : null;
+    $models = installed_models();
+    if ($models === null) fail('The local AI service (Ollama) is not running. Start it with: sudo systemctl start ollama', 503);
+    $model = resolve_model($in['model'] ?? null, $models);
+    if (!$model) fail('No AI model is installed. See “AI models” in the IPRPS guide, or run: sudo iprps-ai-model status', 503);
+
+    $system = ORACLE_SYSTEM . "\n\n" . ORACLE_SHEET_RULES;
+    if ($c) {
+        $mem = campaign_memory($db, $UID, $c);
+        if ($mem !== '') $system .= "\n\n=== CAMPAIGN MEMORY ===\n" . $mem . "\n=== END OF CAMPAIGN MEMORY ===";
+    }
+    $system .= "\n\nAnswer with the JSON object only.";
+    $req = ['model' => $model, 'stream' => false, 'format' => oracle_sheet_schema($kind),
+            'messages' => [['role' => 'system', 'content' => $system], ['role' => 'user', 'content' => oracle_sheet_prompt($kind, $details, $level)]],
+            'options' => ['num_ctx' => ORACLE_NUM_CTX, 'temperature' => 0.8]];
+    $show = ollama('/api/show', ['model' => $model]);
+    if (in_array('thinking', $show['capabilities'] ?? [], true)) $req['think'] = false;
+    set_time_limit(0);
+    $r = ollama('/api/chat', $req, 900);
+    if ($r === null) fail('The Oracle could not answer (Ollama stopped or timed out). Try again.', 502);
+    $raw = trim(preg_replace('/<think>.*?<\/think>/s', '', (string)($r['message']['content'] ?? '')));
+    if (preg_match('/\{.*\}/s', $raw, $m)) $raw = $m[0];
+    $sheet = json_decode($raw, true);
+    if (!is_array($sheet) || array_is_list($sheet)) fail('The Oracle\'s answer was not a usable sheet. Try again, or describe it differently.', 502);
+    $sheet['sheetType'] = $kind;
+    if ($level) $sheet['level'] = $level;
+    unset($sheet['characterPoints'], $sheet['avatar'], $sheet['playerName']);
+    try {
+        $saved = cs_save($db, $UID, $sheet, ['kind' => $kind, 'source' => 'oracle', 'campaign_id' => $c]);
+    } catch (Throwable $e) { fail('The Oracle\'s sheet could not be saved: ' . $e->getMessage(), 502); }
+    $st = $db->prepare('SELECT kind, notes, sheet_json FROM character_sheets WHERE id = ? AND user_id = ?');
+    $st->execute([$saved['id'], $UID]);
+    $row = $st->fetch();
+    $summary = cs_summary(json_decode($row['sheet_json'], true), $kind, true);
+    $label = $kind === 'creature' ? 'creature' : 'NPC';
+    $text = "**Character sheet saved: {$saved['name']}** ($label, sheet #{$saved['id']})\n\n" . preg_replace('/\n(?!- )/', "\n\n", $summary);
+    $db->prepare("INSERT INTO oracle_messages (user_id, campaign_id, role, content) VALUES (?, ?, 'user', ?)")
+       ->execute([$UID, $c, oracle_sheet_request($kind, $details, $level)]);
+    $db->prepare("INSERT INTO oracle_messages (user_id, campaign_id, role, content) VALUES (?, ?, 'assistant', ?)")
+       ->execute([$UID, $c, $text]);
+    out(['ok' => true, 'id' => $saved['id'], 'name' => $saved['name'], 'kind' => $kind, 'message' => $text,
+         'message_id' => (int)$db->lastInsertId(), 'model' => $model]);
 
 default:
     fail('Unknown action.', 404);

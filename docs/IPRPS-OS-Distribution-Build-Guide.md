@@ -35,7 +35,7 @@ This guide builds **IPRPS OS** for distribution: a generic, ready-to-use Linux s
 | Local AI | — | **IPRPS Oracle** (Ollama, one bundled storyteller model) | Same as Medium |
 | Web browser | Firefox (unbranded) | Chromium (ungoogled, default; IPRPS apps open as their own windows) + Firefox | Same as Medium |
 | Campaign tools | IPRPS Session Master Hub, **character sheets** (Character Creator, Character Sheets), IPRPS Table, player display, dice, initiative, session log | + all Medium IPRPS apps | + all IPRPS apps |
-| Audio | Parole (music and ambience); mpv plays ambience in Session Master Mode | + VLC | + upstream audio tools (Part 16) |
+| Audio | Parole (music and ambience); mpv plays ambience in Session Master Mode; **Soundboard** | + VLC | + upstream audio tools (Part 16) |
 | Video | mpv | + VLC, FFmpeg tools | + upstream video tools |
 | Images | Ristretto (viewer), **Drawing** (simple painting) | + GIMP, Inkscape, ImageMagick | + FontForge, Graphviz, upstream art tools |
 | Documents | **IPRPS Writer** (.docx/.odt/PDF), Evince (PDF), Mousepad (text) | + LibreOffice, printing (CUPS) | + scanning (SANE) |
@@ -22671,23 +22671,23 @@ update-desktop-database /usr/share/applications
 
 | App | What it does | Status | Lite | Medium | Advanced |
 |---|---|---|---|---|---|
-| **Session Master Hub** | Home page with the Session Master's apps and **Manage apps** (12.6); campaigns, player roster, characters, XP, attendance, quests, NPCs to come | **Home page and app manager exist** (`hub/`); campaign tools to build (schema in 10.2) | ✔ | ✔ | ✔ |
+| **Session Master Hub** | Home page with the Session Master's apps and **Manage apps** (12.6); the campaign tools are their own apps (12.9, 12.10) | Exists (`hub/`) | ✔ | ✔ | ✔ |
 | **IPRPS Writer** | Word processor in the Hub: headings, bold/italic, lists, alignment; documents saved per account; opens and saves `.docx`, `.odt`, `.txt`, `.html`, prints to PDF | Exists (`writer/`, 12.6) | ✔ | ✔ | ✔ |
-| **Initiative and Combat Tracker** | Turn order, HP, conditions; feeds the player display | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
-| **Dice Roller** | IPRPS dice mechanics; logs rolls to the session log | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
-| **Session Log and Recap** | Timeline of notes, rolls, loot and XP; exports recaps | **To build** (part of the Hub) | ✔ | ✔ | ✔ |
+| **Initiative and Combat Tracker** | Encounters, initiative, turns and rounds, HP with Damage − AR, conditions, the five combat modes; shows the order to players; logs the fight | Exists (`combat/`, 12.10) | ✔ | ✔ | ✔ |
+| **Dice Roller** | Any dice and every IPRPS roll (the Table's rules); logs rolls and shows them to players | Exists (`dice/`, 12.10) | ✔ | ✔ | ✔ |
+| **Session Log and Recap** | Campaigns and sessions; timeline of notes, events, combat, rolls, loot and XP; recap (from the log or the Oracle) and Session Master notes; attendance and XP | Exists (`session-log/`, 12.10) | ✔ | ✔ | ✔ |
 | **Character Creator** | The IPRPS character sheet (attributes, DP costs, skills, advantages, spells, portrait); exports `.json`; one file players can use anywhere | Exists (`character-creator/`, 12.9) | ✔ | ✔ | ✔ |
 | **Character Sheets** | The Session Master's sheet library: import players' files, view, print, by campaign; NPC and creature sheets; in the Table console; read by the Oracle | Exists (`character-sheets/`, 12.9) | ✔ | ✔ | ✔ |
 | **IPRPS Table** | LAN play: players join from phones, tablets and laptops on the same network; chat (everyone, players only, private), images and audio, IPRPS dice, and the Session Master pushes pictures, video, text and sound to everyone, groups or single players | Exists (`/opt/iprps/table`, 12.7) | ✔ | ✔ | ✔ |
-| **Player Display** | Full-screen handouts, maps and initiative for players | **Exists** (`hub/display.php`, shows text sent to it); maps and initiative to build | ✔ | ✔ | ✔ |
+| **Player Display** | Full-screen handouts, maps and initiative for players | **Exists** (`hub/display.php`, shows text sent to it: Oracle replies, the turn order, rolls, recaps); maps to build | ✔ | ✔ | ✔ |
 | **Infinite Plane Universal Login** | Single sign-on for the local IPRPS apps | Exists | ✔ | ✔ | ✔ |
-| **IPRPS Welcome** | First-run tour; settings for API keys and color scheme | **To build** | ✔ | ✔ | ✔ |
+| **IPRPS Welcome** | First-login tour, first campaign, color scheme, encrypted API key vault | Exists (`welcome/`, 12.10) | ✔ | ✔ | ✔ |
 | **IPRPS Media Player** | Music, ambience, CDs and DVDs; IPRPS radio | Exists (Electron + libVLC) | — | ✔ | ✔ |
 | **Genesis Character Engine** | AI character reference sheets | Exists (needs internet + API key) | — | ✔ | ✔ |
 | **Infinite Plane Writing Assistant** | Writing help for campaigns and lore | Exists (needs internet + API key) | — | ✔ | ✔ |
 | **IPRPS Oracle** | Local AI for the Session Master: chat, quick generators (NPC, location, loot, encounter, plot hook, names, read-aloud), campaign memory, save to the campaign, show on the player display | Exists (`oracle/`, Part 15) | — | ✔ | ✔ |
-| **Soundboard** | One-click sound effects and ambience during play | **To build** | — | ✔ | ✔ |
-| **IPRPS File Viewer** | Open and validate `.iprps`, `.ipai`, `.srpatch` and `.capstone` files | **To build** | — | ✔ | ✔ |
+| **Soundboard** | One-click sound effects and ambience: built-in sounds made by the computer, your own files, boards and hotkeys; plays files on the Table too | Exists (`soundboard/`, 12.11) | ✔ | ✔ | ✔ |
+| **IPRPS File Viewer** | Open and check `.iprps`, `.ipai`, `.srpatch` and `.capstone`/`.pcapstone` files; import sheets | Exists (`file-viewer/`, 12.10) | ✔ | ✔ | ✔ |
 | **Lookbook Studio** | Visual lookbooks for campaigns and settings | Exists | — | — | ✔ |
 | **Reel** | Browser-based audio workstation | Exists | — | — | ✔ |
 | **THE DIRECTOR** | Story maps into AI video Scene Packages | Exists | — | — | ✔ |
@@ -22697,7 +22697,7 @@ update-desktop-database /usr/share/applications
 | **IPRPS CD Burner** | Disc burning for IPRPS media | In progress | — | — | ✔ |
 | **AI Session Master campaign apps** | AI-run campaigns | Exists (React) | — | — | ✔ |
 
-> **Warning:** Apps that call online AI services need internet access and each user's **own** API keys. Never ship keys in the image. The planned **IPRPS Welcome** app stores each user's keys in one protected place.
+> **Warning:** Apps that call online AI services need internet access and each user's **own** API keys. Never ship keys in the image. **IPRPS Welcome** (12.10) stores each user's keys in one protected place.
 
 ### 12.5 Installing the web apps
 
@@ -22855,6 +22855,10 @@ The Hub (`/srv/www/iprps/hub/`, opened by the **Session Master Hub** launcher an
 | `table` | IPRPS Table (opens the LAN play console, 12.7) |
 | `character-sheets` | Character Sheets (12.9) |
 | `character-creator` | Character Creator (12.9) |
+| `session-log` | Session Log and Recap (12.10) |
+| `combat` | Initiative and Combat Tracker (12.10) |
+| `dice` | Dice Roller (12.10) |
+| `soundboard` | Soundboard (12.11) |
 | `prompt_database` | Prompt Database |
 | `expressions` | Expressions |
 | `sfx` | SFX |
@@ -22865,6 +22869,7 @@ The Hub (`/srv/www/iprps/hub/`, opened by the **Session Master Hub** launcher an
 | `language` | Language |
 | `lighting-generator` | Lighting Generator |
 | `iprps_email` | IPRPS Email |
+| `file-viewer` | IPRPS File Viewer (12.10) |
 
 The Hub lists any folder in `/srv/www/iprps` with an `index.php` or `index.html` (except `auth`, `hub` and helper folders such as `sql`). Display names come from `hub/app-names.json`, then the app's page title, then the folder name; icons from the app's own `favicon`/`icon`/`logo` file, then the IPRPS icon theme (an icon named after the folder), then the app's initials. A default app that isn't installed is named under **Manage apps**, so a missing or misnamed folder is easy to spot.
 
@@ -22901,7 +22906,7 @@ for a in $(python3 -c "import json; print(' '.join(json.load(open('/srv/www/iprp
 done
 ```
 
-`ls` shows `api.php`, `app-names.json`, `default-apps.json`, `display.php`, `hub-icon.svg`, `hub.css`, `hub.js` and `index.html`. The loop checks the default apps: each `MISSING` is a folder that isn't installed or has another name. Correct the name in `default-apps.json` (and `app-names.json`), or install the app. `table`, `character-sheets` and `character-creator` show `MISSING` until 12.7 and 12.9 install them. The Hub needs no database setup: it creates its table on first use.
+`ls` shows `api.php`, `app-names.json`, `default-apps.json`, `display.php`, `hub-icon.svg`, `hub.css`, `hub.js` and `index.html`. The loop checks the default apps: each `MISSING` is a folder that isn't installed or has another name. Correct the name in `default-apps.json` (and `app-names.json`), or install the app. `table`, `character-sheets`, `character-creator`, `session-log`, `combat`, `dice`, `soundboard` and `file-viewer` show `MISSING` until 12.7, 12.9, 12.10 and 12.11 install them. The Hub needs no database setup: it creates its table on first use.
 
 **IPRPS Writer** (`/srv/www/iprps/writer/`) is a simple word processor that runs in the browser like the other IPRPS apps (in its own window in Medium and Advanced): headings, bold, italic, underline, lists, alignment, a word count, and a printed-page look. Documents save automatically to the Session Master's account (table `writer_docs` in the core database, created on first use) and are listed on the left. **Open file…** imports `.docx`, `.odt`, `.txt` and `.html` (or drag a file onto the page); **Save as** writes `.docx` (Word), `.odt` (LibreOffice), `.txt` or `.html` to Downloads, or prints/makes a PDF (**Ctrl+P**). It keeps text, headings, bold/italic/underline/strikethrough, lists and alignment; pictures, tables and fonts in imported files are not kept. It's also on the Hub by default and in the menu (**IPRPS Writer**, also under Office).
 
@@ -23187,6 +23192,235 @@ grep -c 'SHEET_PAGE' /opt/iprps/table/server.js
 > **Note:** For the **Lite** release that is already published, add the character sheets with *Lite fixes* at the start of Part 15. Run steps 1 and 2 with `IPRPS_IMG` pointing at the Lite release copy, then clean and pack Lite again (13.4, 13.5), and make its ISO again (13.9).
 
 > **Pro tip:** A Session Master can keep a library of NPCs and creatures with no campaign (**No campaign**) and assign them to a campaign when they're needed. The Oracle reads the sheets of the campaign you choose, plus any sheet you name in a message.
+
+### 12.10 Session tools: Combat, Dice, Session Log, Welcome and File Viewer
+
+Five more apps complete the Session Master's toolkit, in every edition. Like Character Sheets, they're web apps in `/srv/www/iprps`, behind the Universal Login, and they open from the Hub and the menu.
+
+| App | Folder | What it does |
+|---|---|---|
+| **Initiative and Combat Tracker** | `combat` | Encounters per session. Add combatants from Character Sheets (the whole party in one click; *n* goblins numbered) or by hand. Roll initiative (1d20 + DEX − 10), step through turns and rounds, track HP with **Damage − AR**, conditions and who is down. Covers all five combat modes, shows the turn order to the players, and logs the fight |
+| **Dice Roller** | `dice` | Any dice (`2d6+3`, `4d6kh3`, `1d6!`), Band A and B for a d20, and every IPRPS roll: skill check, initiative, Trinity Hand, Dual-Die, Infinite Convergence, RPS, weapon damage. Rolls can be logged to the session and shown to the players; secret rolls stay private |
+| **Session Log and Recap** | `session-log` | Campaigns and sessions; a timeline of notes, events, combat, rolls, loot and XP (the other tools write into it); the players' **recap** and private **Session Master notes**; who played and the XP they got. Drafts a recap from the log (and, in Medium and Advanced, with the Oracle); shows, copies, prints or downloads it |
+| **IPRPS Welcome** | `welcome` | The first-login tour: what's installed, a first campaign, the tools, the **color scheme** (Night, Parchment, Forest, High contrast) and the **API key vault** for online AI apps |
+| **IPRPS File Viewer** | `file-viewer` | Opens and **checks** `.iprps` (character sheets), `.ipai` (AI profiles and Profile Patches), `.srpatch` (Session Run Patches) and `.capstone`/`.pcapstone` files: required fields and sections, value ranges, Development Point totals, DC/AC instead of BTN/AR. Reads them formatted or raw, and imports sheets into Character Sheets |
+
+**How they work together**
+
+- **One campaign and session for all of them.** Combat, Dice and Session Log share a **Campaign / Session** picker at the top. The choice is remembered, so switching apps keeps your place. **+ New campaign…** and **✎** make and edit campaigns; **+ Session** starts the next session (numbered automatically).
+- **One log.** Combat (start, who went down, the end with everyone's HP), dice rolls (when **Add it to the session log** is on), the XP awards and your own entries all land in the chosen session's log. The Oracle reads the latest session's log as campaign memory.
+- **Showing things to the players.** **Show order…**, **Show to the players…** and the dice options send text to the **player display** (second screen, Session Master Mode) and/or the **IPRPS Table** (players' devices, while the table is open). The web server passes these to the Table on this computer, because the Table takes Session Master requests from this computer only.
+- **Shared code:** `/srv/www/iprps/iprps-lib/` holds the common look and color schemes, the campaign picker, the IPRPS dice rules (the same as the Table's `dice.js`), a Markdown reader and the shared API. It isn't an app: the Hub doesn't list it (it has no start page).
+
+**Database additions.** The apps add what they need to the IPRPS core database (10.2) on first use, once. The version is recorded in the `iprps_meta` table, so nothing changes on a fresh install.
+
+| Table | Added |
+|---|---|
+| `encounters` | `mode` (standard, trinity, rps, dual, convergence), `turn_idx` (whose turn), `created_at` |
+| `initiative` | `hp_max`, `ar`, `init_mod` (added to the initiative d20), `side` (party, ally, foe, neutral), `sheet_id` (the Character Sheets sheet it came from), `defeated`, `rolled`, `notes`; `conditions` holds the conditions separated by `\|` |
+| `user_settings` (new) | Per-account settings: `user_id`, `name`, `value` (the color scheme, the tour's progress) |
+| `user_secrets` (new) | The API key vault: `user_id`, `provider`, `label`, `secret_enc` (encrypted), `hint` (the last characters), `updated_at` |
+| `display_items` | The player display's items. It's the same table the Hub and the Oracle use, created here too if it's missing |
+| `iprps_meta` (new) | `k`, `v`: the version of these additions |
+
+**The API key vault.**
+- Keys are encrypted with AES-256-GCM, using a key that IPRPS Welcome creates in `/var/lib/iprps-vault/vault.key`. That folder is readable by the web server only (`apache`, mode 700).
+- Each key is bound to its account and service, and the release cleanup (13.4) deletes the vault key with the test data.
+- Apps that need a key ask for it with the user's sign-in: `GET /iprps/welcome/api.php?action=secret&provider=anthropic` (or `google`, `openai`, `xai`, `leonardo`, `elevenlabs`, `kling`, or a name the user chose) returns `{"ok":true,"secret":"…"}` for that account only.
+- The IPRPS web apps from the live server keep their own key settings until they're changed to ask the vault (12.5).
+
+**1. Copy the apps. [DEBIAN ROOT]** From the newest repository:
+
+```bash
+R=/mnt/g/IPRPS/iprps-os
+cp -rv $R/apps/iprps-lib $R/apps/combat $R/apps/dice $R/apps/session-log $R/apps/welcome $R/apps/file-viewer /mnt/iprps/srv/www/iprps/
+cp -v $R/apps/hub/default-apps.json $R/apps/hub/app-names.json /mnt/iprps/srv/www/iprps/hub/
+[ -d /mnt/iprps/srv/www/iprps/oracle ] && cp -v $R/apps/oracle/api.php /mnt/iprps/srv/www/iprps/oracle/
+```
+
+The last line (Medium and Advanced) gives the Oracle the **recap** action used by **✦ Draft with the Oracle**.
+
+**2. Permissions, the vault folder, menu entries and the first-login tour. [IPRPS CHROOT]**
+
+```bash
+for d in iprps-lib combat dice session-log welcome file-viewer; do
+  chown -R root:apache /srv/www/iprps/$d
+  find /srv/www/iprps/$d -type d -exec chmod 755 {} + ; find /srv/www/iprps/$d -type f -exec chmod 644 {} +
+  [ -f /srv/www/iprps/$d/favicon.svg ] && install -Dm644 /srv/www/iprps/$d/favicon.svg /usr/share/icons/hicolor/scalable/apps/iprps-$d.svg
+done
+install -vdm700 -o apache -g apache /var/lib/iprps-vault
+while IFS='|' read -r app name generic comment cats; do
+cat > /usr/share/applications/iprps-$app.desktop << DESKTOP
+[Desktop Entry]
+Type=Application
+Name=$name
+GenericName=$generic
+Comment=$comment
+Exec=iprps-open $app/
+Icon=iprps-$app
+Terminal=false
+Categories=$cats
+DESKTOP
+done << "LIST"
+combat|Initiative and Combat Tracker|Combat Tracker|Turn order, rounds, HP, Armor Rating and conditions|X-IPRPS;Game;
+dice|Dice Roller|IPRPS Dice|Any dice and every IPRPS roll, logged to the session|X-IPRPS;Game;
+session-log|Session Log and Recap|Session Log|What happened each session, the recap, and who played|X-IPRPS;Game;
+welcome|IPRPS Welcome|Welcome Tour|The tour, your first campaign, color scheme and API keys|X-IPRPS;
+file-viewer|IPRPS File Viewer|IPRPS File Viewer|Open and check .iprps, .ipai, .srpatch and .capstone files|X-IPRPS;Utility;
+LIST
+cat > /usr/bin/iprps-welcome-once << "EOF"
+#!/bin/bash
+# iprps-welcome-once - open IPRPS Welcome at a user's first desktop login (once per user)
+DONE="$HOME/.config/iprps/welcome-shown"
+[ -e "$DONE" ] && exit 0
+mkdir -p "$HOME/.config/iprps" && touch "$DONE"
+sleep 6                               # let the desktop and the web services settle
+exec iprps-open welcome/
+EOF
+chmod 755 /usr/bin/iprps-welcome-once
+cat > /etc/xdg/autostart/iprps-welcome.desktop << "EOF"
+[Desktop Entry]
+Type=Application
+Name=IPRPS Welcome (first login)
+Exec=/usr/bin/iprps-welcome-once
+NoDisplay=true
+EOF
+gtk-update-icon-cache -qtf /usr/share/icons/hicolor
+update-desktop-database /usr/share/applications
+ls /usr/share/applications/iprps-{combat,dice,session-log,welcome,file-viewer}.desktop
+ls -ld /var/lib/iprps-vault
+php -r 'echo function_exists("openssl_encrypt") ? "openssl OK\n" : "openssl MISSING\n";'
+```
+
+**What you should see:**
+- `ls` lists the five launchers.
+- `ls -ld` shows `drwx------ … apache apache`.
+- `php -r` prints **openssl OK** (IPRPS builds PHP with `--with-openssl`, Stage F).
+
+> **Side note:** The Hub's default apps (`hub/default-apps.json`) now also include **Session Log**, **Combat Tracker**, **Dice Roller** and **IPRPS File Viewer**; **IPRPS Welcome** is in the menu and opens once at each user's first login. Accounts that saved their own Hub choice see the new apps switched on until they save again.
+
+**3. The release cleanup forgets the vault key. [DEBIAN ROOT]** Section 13.4's `iprps-release-clean.sh` now empties `/var/lib/iprps-vault` (each install makes its own key at first use). If you installed the script before this change, update it:
+
+```bash
+grep -q 'iprps-vault' /root/iprps-release-clean.sh || sed -i 's|/var/lib/iprps-table/\*   #|/var/lib/iprps-table/* /var/lib/iprps-vault/*   #|' /root/iprps-release-clean.sh
+grep -c 'iprps-vault' /root/iprps-release-clean.sh
+```
+
+It prints **1** or more. Writing the script again from 13.4 does the same.
+
+**4. Test. [TEST VM]** Fresh test copy, new user.
+
+1. **Welcome:**
+   - About six seconds after the first login, **IPRPS Welcome** opens. Go through it: create a campaign, pick **Parchment**, store a test key (it shows only its last characters), then **Finish**.
+   - Log out and in: Welcome doesn't open again. (Menu → **IPRPS Welcome** opens it any time.)
+2. **Session Log:** choose the campaign, then **+ Session**. Add a note and an event.
+3. **Dice Roller:**
+   - With **Add it to the session log** on, roll a d20 and a **Skill check**. Both appear in the Session Log's timeline.
+   - The colors are Parchment here too.
+4. **Combat Tracker:**
+   - **+ New** encounter. Add yourself from **From sheets** (or **Quick add**) and three goblins (**How many** 3, HP 40, AR 1).
+   - **▶ Start combat**, damage a goblin by 45 (it takes 44 after AR 1 and goes down), **Next turn** a few times, then **■ End combat**.
+   - The Session Log shows *Combat started…*, *Goblin 1 is down…* and *Combat ended…*.
+5. **Showing it to the players:**
+   - With the IPRPS Table open and a player joined (12.7), **Show order…** with **IPRPS Table** ticked puts the order on the player's screen.
+   - In Session Master Mode with two screens, **Player display** does the same there.
+6. **Recap:** in the Session Log's **Recap** tab, **Draft from the log** writes a draft. In Medium and Advanced, **✦ Draft with the Oracle** adds the Oracle's version.
+7. **File Viewer:**
+   - Open a Character Creator `.json`/`.iprps` export: **Check** lists its attributes, skills and Development Points; **📜 Import to Character Sheets** adds it.
+   - Open any `.srpatch` or `.capstone` file to see its check.
+
+| Problem | Fix |
+|---|---|
+| *The key vault folder /var/lib/iprps-vault is missing or not writable* | Step 2's `install -vdm700 -o apache -g apache /var/lib/iprps-vault` |
+| *The IPRPS Table service is not running* / *is closed* when showing to players | Start or open the table in the Table console (12.7). The player display works without it |
+| A tool says *Choose or start a session first* | Choose the campaign at the top, then **+ Session** (or pick an existing session) |
+| *That stored key can't be read (the vault key changed)* | The vault key was deleted (for example by the release cleanup on a test image). Delete the key in Welcome and store it again |
+| Colors don't change in the Hub, Writer, Oracle or Character Sheets | The color scheme applies to the session tools and Welcome; the other apps keep their own look for now |
+
+### 12.11 Soundboard
+
+The **Soundboard** (`soundboard`) is the last of the Session Master's tools, in every edition: one-click sound effects and ambience during play.
+
+- **Boards of pads.** A new account starts with two boards:
+  - **Ambience** (loops): rain, storm, wind, campfire, ocean waves, river, cave drips, night crickets, dungeon drone, tavern hum.
+  - **Effects** (one-shots): thunder, sword clash, heavy hit, arrow, spell whoosh, magic chime, gong, church bell, heartbeat, door knock, door creak, coins, dice rattle, war horn, level up, monster growl.
+  - Make more boards (**+ Board**) for a tavern, a battle or a crypt.
+- **Built-in sounds need no files.** The computer makes them as they play (Web Audio), so they work offline, never run out and carry no licenses. Loops vary as they play, so they don't sound like a short recording repeating.
+- **Your own sounds.** **Add files…** (or drop files on the window) adds MP3, OGG/Opus, WAV, M4A/AAC, FLAC or WebM recordings and music, up to 50 MB each and 2 GB per account. **+ Pad** puts one on the board.
+- **Playing.**
+  - A pad marked **∞** loops until you click it again, and several loops play together, each with its own volume slider while it plays. Other pads play once.
+  - Loops can fade in. **■ Stop all** (or **Esc**) fades everything out.
+  - Keys **1**–**0** and **Q**–**P** play the first twenty pads of the board, and the master volume is at the top.
+- **Editing.** **✎ Edit pads**, then click a pad to change its sound, name, emoji, color, once/loop, volume and fade, or to move or delete it. Boards are renamed, moved and deleted the same way.
+- **On the players' devices.**
+  - A pad playing one of **your** files can be set to **Also on players' devices**. While the IPRPS Table is open (12.7), the file then plays on every player's phone or laptop too. The web server hands the file to the Table on this computer the first time.
+  - The Table plays one sound per player at a time. The built-in sounds play on this computer's speakers only.
+
+Every account has its own boards (stored in `user_settings` as `soundboard`) and its own files: the table `sound_files` (`id`, `user_id`, `name`, `file`, `mime`, `size`, `table_media`, `created_at`), created on first use, with the audio in `/var/lib/iprps-sounds/<account>/`. That folder is readable by the web server only, and files are fetched with the sign-in token. The release cleanup (13.4) empties it.
+
+**1. Copy the app. [DEBIAN ROOT]**
+
+```bash
+R=/mnt/g/IPRPS/iprps-os
+cp -rv $R/apps/soundboard /mnt/iprps/srv/www/iprps/
+cp -v $R/apps/hub/default-apps.json $R/apps/hub/app-names.json /mnt/iprps/srv/www/iprps/hub/
+cp -v $R/apps/iprps-lib/api.php /mnt/iprps/srv/www/iprps/iprps-lib/
+cp -v $R/apps/welcome/{welcome.js,index.html} /mnt/iprps/srv/www/iprps/welcome/
+```
+
+The last two lines add the Soundboard to IPRPS Welcome's list of tools.
+
+**2. Permissions, the sound folder and the menu entry. [IPRPS CHROOT]**
+
+```bash
+chown -R root:apache /srv/www/iprps/soundboard
+find /srv/www/iprps/soundboard -type d -exec chmod 755 {} + ; find /srv/www/iprps/soundboard -type f -exec chmod 644 {} +
+install -Dm644 /srv/www/iprps/soundboard/favicon.svg /usr/share/icons/hicolor/scalable/apps/iprps-soundboard.svg
+install -vdm700 -o apache -g apache /var/lib/iprps-sounds
+cat > /usr/share/applications/iprps-soundboard.desktop << "EOF"
+[Desktop Entry]
+Type=Application
+Name=Soundboard
+GenericName=IPRPS Soundboard
+Comment=One-click sound effects and ambience during play
+Exec=iprps-open soundboard/
+Icon=iprps-soundboard
+Terminal=false
+Categories=X-IPRPS;AudioVideo;Audio;
+Keywords=sound;effects;ambience;music;
+EOF
+gtk-update-icon-cache -qtf /usr/share/icons/hicolor
+update-desktop-database /usr/share/applications
+ls -A /srv/www/iprps/soundboard
+ls -ld /var/lib/iprps-sounds
+```
+
+**What you should see:**
+- `ls -A` lists `.user.ini` (allows 50 MB uploads), `api.php`, `favicon.svg`, `index.html`, `sound.css`, `sound.js` and `synth.js`.
+- `ls -ld` shows `drwx------ … apache apache`.
+
+**3. The release cleanup empties the sound folder. [DEBIAN ROOT]** Section 13.4's script now includes `/var/lib/iprps-sounds/*`. To update a script installed earlier:
+
+```bash
+grep -q 'iprps-sounds' /root/iprps-release-clean.sh || sed -i 's|/var/lib/iprps-vault/\*   #|/var/lib/iprps-vault/* /var/lib/iprps-sounds/*   #|' /root/iprps-release-clean.sh
+grep -c 'iprps-sounds' /root/iprps-release-clean.sh
+```
+
+It prints **1** or more. (Do 12.10's step 3 first if `iprps-vault` isn't in the script yet.)
+
+**4. Test. [TEST VM]**
+
+1. **Built-in sounds:** open **Soundboard** from the menu or the Hub. Click **Rain**, then **Campfire**: both loop, glow and show a volume slider. **Esc** fades them out.
+2. **Effects:** on **Effects**, press **1** for thunder.
+3. **Your own file:** **Add files…** with an MP3, then **+ Pad**, then **Save**. The pad plays it.
+4. **On the players' devices:** with the IPRPS Table open and a player joined, edit that pad, tick **Also on players' devices**, and play it. The player hears it after tapping **Tap to turn on the table sound** once.
+
+| Problem | Fix |
+|---|---|
+| *The sound folder /var/lib/iprps-sounds is missing or not writable* | Step 2's `install -vdm700 -o apache -g apache /var/lib/iprps-sounds` |
+| A large file fails with *The file was empty (or larger than the upload limit)* | `ls -A /srv/www/iprps/soundboard/.user.ini` must exist (it allows 64 MB requests). Files over 50 MB aren't accepted |
+| No sound at all | Check the master volume and the desktop's volume (panel). In a QEMU VM started with `-audio none`, there is no sound device |
+| *The IPRPS Table is closed* | Open the table in its console first; built-in sounds and pads without **Also on players' devices** don't need it |
 
 > **Checkpoint:** All Lite IPRPS apps open from the IPRPS menu, and Session Master Mode opens all three windows. Take snapshot **`iprps-apps-lite`**.
 
@@ -23879,7 +24113,7 @@ rm -f /etc/ssh/ssh_host_* /etc/resolv.conf
 : > /etc/machine-id      # empty: a fresh ID at first boot, but not "first boot" (no systemd preset reset)
 BROKEN=$(find /etc/systemd/system /etc/systemd/user -xtype l 2>/dev/null || true)
 if [ -n "$BROKEN" ]; then echo "Removing broken service links:"; echo "$BROKEN" | sed 's/^/  /'; echo "$BROKEN" | xargs -r rm -f; fi
-rm -rf /var/lib/iprps/*-done /var/lib/ollama/.ollama /var/log/journal/* /var/lib/iprps-table/*   # IPRPS Table test chat, players, media
+rm -rf /var/lib/iprps/*-done /var/lib/ollama/.ollama /var/log/journal/* /var/lib/iprps-table/* /var/lib/iprps-vault/* /var/lib/iprps-sounds/*   # Table test data; API key vault key; Soundboard files
 passwd -l root >/dev/null
 sed -i "s/^VERSION=.*/VERSION=\"1.0 $EDC\"/; s/^PRETTY_NAME=.*/PRETTY_NAME=\"IPRPS OS 1.0 $EDC\"/" /etc/os-release
 [ -f /etc/lsb-release ] && sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION=\"IPRPS OS 1.0 $EDC\"/" /etc/lsb-release
@@ -23891,6 +24125,8 @@ echo "  /root:             $( [ -z "$(ls /root)" ] && echo "empty (shell setting
 echo "  first-boot marks:  $(ls /var/lib/iprps/ 2>/dev/null | grep -c done) left (0 expected)"
 echo "  database settings: $( [ -e /etc/iprps/db.php ] && echo 'STILL THERE' || echo removed)"
 echo "  IPRPS Table data:  $( [ -n "$(ls -A /var/lib/iprps-table 2>/dev/null)" ] && echo 'STILL THERE' || echo 'empty')"
+echo "  API key vault:     $( [ -n "$(ls -A /var/lib/iprps-vault 2>/dev/null)" ] && echo 'STILL THERE' || echo 'empty')"
+echo "  Soundboard files:  $( [ -n "$(ls -A /var/lib/iprps-sounds 2>/dev/null)" ] && echo 'STILL THERE' || echo 'empty')"
 echo "  root password:     $(passwd -S root | awk '{print ($2=="L"||$2=="LK")?"locked":"NOT LOCKED"}')"
 echo "  machine ID:        $( [ -s /etc/machine-id ] && echo 'NOT EMPTY' || echo 'empty (new ID at first boot)')"
 echo "  edition:           $(grep ^PRETTY_NAME /etc/os-release)"

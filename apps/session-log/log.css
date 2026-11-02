@@ -1,0 +1,42 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Copyright (C) 2026 Mythical Legends Publishing, LLC */
+/* IPRPS Session Log and Recap */
+.layout { flex: 1; display: grid; grid-template-columns: 240px 1fr; min-height: 0; }
+.side { background: var(--bg2); border-right: 1px solid var(--line); padding: 10px; overflow: auto; }
+.sideh { font: 600 12.5px var(--sans); color: var(--gold); text-transform: uppercase; letter-spacing: .1em; margin: 4px 0 8px; }
+.sesslist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.sesslist li { padding: 6px 8px; border-radius: 7px; border: 1px solid transparent; cursor: pointer; }
+.sesslist li:hover { background: var(--hover); }
+.sesslist li.on { background: var(--panel2); border-color: var(--gold); }
+.sesslist small { display: block; color: var(--dim); font-size: 11.5px; }
+.main { overflow: auto; padding: 14px 20px 40px; min-width: 0; }
+#sess { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.shead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.shead h1 { font: 600 24px var(--serif); color: var(--gold2); margin: 0; white-space: nowrap; }
+.stitle { font: 600 18px var(--serif); background: transparent; border-color: transparent; flex: 1 1 240px; }
+.stitle:hover, .stitle:focus { border-color: var(--line); background: var(--bg2); }
+.addrow { display: flex; gap: 6px; }
+.addrow input { padding: 8px 10px; }
+#filters .chip { cursor: pointer; } #filters .chip.on { border-color: var(--gold); color: var(--gold2); }
+.timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.timeline li { display: grid; grid-template-columns: 70px 28px 1fr auto; gap: 8px; align-items: start; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }
+.timeline time { color: var(--dim); font-size: 12px; padding-top: 2px; }
+.timeline .k { font-size: 16px; text-align: center; }
+.timeline .t { white-space: pre-wrap; word-break: break-word; cursor: text; }
+.timeline textarea { width: 100%; }
+.timeline .acts { display: flex; gap: 2px; opacity: .55; }
+.timeline li:hover .acts { opacity: 1; }
+.timeline li.k-combat { border-left: 3px solid var(--foe); } .timeline li.k-loot { border-left: 3px solid var(--gold); }
+.timeline li.k-xp { border-left: 3px solid var(--good); } .timeline li.k-event { border-left: 3px solid var(--teal); }
+.timeline li.k-roll { border-left: 3px solid var(--party); }
+#recap, #smNotes { width: 100%; font: 14px/1.55 var(--sans); }
+.prev summary { cursor: pointer; color: var(--dim); }
+.prev .prose { margin-top: 6px; }
+table.att { width: 100%; border-collapse: collapse; }
+.att th { text-align: left; color: var(--dim); font-weight: 500; font-size: 12px; border-bottom: 1px solid var(--line); padding: 4px 6px; }
+.att td { border-bottom: 1px dotted var(--line); padding: 4px 6px; }
+.att input[type=number] { width: 90px; } .att input.n { width: 100%; }
+.printonly { display: none; }
+@media print { .layout { display: block; } .side, #tabLog, #tabPlayers { display: none !important; } #tabRecap { display: block !important; }
+  #recap { display: none; } .printonly { display: block; } .card { border: 0; } }
+@media (max-width: 800px) { .layout { grid-template-columns: 1fr; } .side { display: none; } }

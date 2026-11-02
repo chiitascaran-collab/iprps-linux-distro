@@ -111,6 +111,9 @@
       if (a.kind === 'image') el.append(h('img', { class: 'att', src, alt: a.name, loading: 'lazy', onclick: () => T.lightbox(src) }));
       else if (a.kind === 'audio') el.append(h('div', { class: 'attaudio' }, h('span', { text: '♪ ' + a.name }), h('audio', { controls: true, preload: 'none', src })));
       else if (a.kind === 'video') el.append(h('video', { class: 'att', controls: true, preload: 'metadata', src }));
+      else if (a.kind === 'sheet') el.append(h('div', { class: 'attsheet' }, h('span', { text: '📜 ' + a.name }),
+        ctx.onSheet ? h('button', { class: 'gold small', text: 'Import to Character Sheets', title: 'Add it to (or update it in) your Character Sheets', onclick: () => ctx.onSheet(a, m) })
+                    : h('a', { class: 'ghost small btnlink', href: src, download: a.name, text: 'Download' })));
     }
     return el;
   };

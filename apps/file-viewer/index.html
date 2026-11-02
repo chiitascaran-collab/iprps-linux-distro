@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- Copyright (C) 2026 Mythical Legends Publishing, LLC -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPRPS File Viewer</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../iprps-lib/iprps.css">
+<link rel="stylesheet" href="viewer.css">
+<script src="../auth/auth-client.js"></script>
+<script src="../iprps-lib/iprps.js"></script>
+<script src="../iprps-lib/markdown.js"></script>
+</head>
+<body>
+<header class="bar">
+  <div class="brand"><span class="sigil">🔍</span> IPRPS <b>File Viewer</b></div>
+  <label class="btn filebtn" title="Open .iprps, .ipai, .srpatch, .capstone, .pcapstone, .json or .md files">Open files…
+    <input id="files" type="file" multiple hidden accept=".iprps,.ipai,.srpatch,.capstone,.pcapstone,.json,.md,.txt,application/json,text/plain,text/markdown"></label>
+  <div class="spacer"></div>
+  <span id="who" class="who"></span>
+</header>
+<div id="banner" class="banner" hidden></div>
+
+<div class="layout">
+  <aside class="side noprint">
+    <h2 class="sideh">Files</h2>
+    <ul id="fileList" class="filelist"></ul>
+    <h2 class="sideh" id="outlineH" hidden>Outline</h2>
+    <ul id="outline" class="outline"></ul>
+  </aside>
+  <main class="main" id="main">
+    <div class="empty" id="emptyMsg">
+      <div class="sigil big">🔍</div>
+      <h1>IPRPS File Viewer</h1>
+      <p>Open or drop IPRPS files to read them and check them:</p>
+      <table class="types">
+        <tr><td><code>.iprps</code></td><td>Character sheets from the Character Creator (other IPRPS data is shown too)</td></tr>
+        <tr><td><code>.ipai</code></td><td>AI profiles and Profile Patches (the Unified Foundation, campaign and overlay patches)</td></tr>
+        <tr><td><code>.srpatch</code></td><td>Session Run Patches: the Session Master's mission briefing</td></tr>
+        <tr><td><code>.capstone</code> / <code>.pcapstone</code></td><td>The live Session Master and Player Capstones (HP, attitudes, inventory, quests)</td></tr>
+      </table>
+      <p class="fine">Files are read in this window only; nothing is uploaded or changed. A character sheet can be imported into Character Sheets.</p>
+    </div>
+    <section id="doc" hidden>
+      <div class="dhead">
+        <div class="grow"><h1 id="dName"></h1><div id="dType" class="fine"></div></div>
+        <div class="row noprint" id="dActions"></div>
+      </div>
+      <div id="verdict" class="verdict"></div>
+      <div class="tabs noprint" id="tabs"><button data-v="report" class="on">Check</button><button data-v="view">Read</button><button data-v="raw">Raw</button></div>
+      <div id="vReport"></div>
+      <div id="vView" class="prose card" hidden></div>
+      <pre id="vRaw" class="raw" hidden></pre>
+    </section>
+  </main>
+</div>
+<div id="dropzone" class="dropzone" hidden><div>Drop IPRPS files to open them</div></div>
+<div id="toast" class="toast" hidden></div>
+<script src="validators.js"></script>
+<script src="viewer.js"></script>
+</body>
+</html>

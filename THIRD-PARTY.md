@@ -1,6 +1,6 @@
 # Third-party components
 
-IPRPS OS is assembled from 386 BLFS packages, plus the LFS base system, the Linux kernel, linux-firmware, CPU microcode and (Advanced edition) upstream application releases. Each keeps **its own license**; the GPL v2 of this project covers only IPRPS OS's own work. The full list of packages, versions and download addresses is in [SOURCES.md](SOURCES.md).
+IPRPS OS is assembled from 387 BLFS packages, plus the LFS base system, the Linux kernel, linux-firmware, CPU microcode and (Advanced edition) upstream application releases. Each keeps **its own license**; the GPL v2 of this project covers only IPRPS OS's own work. The full list of packages, versions and download addresses is in [SOURCES.md](SOURCES.md).
 
 The main components and their licenses (SPDX identifiers; always check the license files shipped in each source tarball, which are authoritative):
 
@@ -38,6 +38,7 @@ The main components and their licenses (SPDX identifiers; always check the licen
 | GIMP | GPL-3.0-or-later |
 | Inkscape | GPL-2.0-or-later |
 | VLC | GPL-2.0-or-later (libVLC LGPL-2.1-or-later) |
+| Calibre (Advanced; official binary in `/opt/calibre`) | GPL-3.0-only; bundled Qt, Python and other libraries keep their own licenses (listed in Calibre's `bypy/sources.json`). Source: the matching `calibre-<version>.tar.xz`, published with each release |
 | DejaVu fonts | Bitstream-Vera and public-domain changes |
 
 License texts: [LICENSES/](LICENSES/).

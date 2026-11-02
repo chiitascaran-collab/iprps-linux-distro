@@ -42,5 +42,37 @@
   "table": {
     "name": "IPRPS Table",
     "description": "LAN play: players join from phones, tablets and laptops"
+  },
+  "character-sheets": {
+    "name": "Character Sheets",
+    "description": "Every player's, NPC's and creature's sheet: import, view, print"
+  },
+  "character-creator": {
+    "name": "Character Creator",
+    "description": "Fill in an IPRPS character sheet"
+  },
+  "session-log": {
+    "name": "Session Log",
+    "description": "Sessions, the log of what happened, recaps and XP"
+  },
+  "combat": {
+    "name": "Combat Tracker",
+    "description": "Initiative, turns, HP, Armor Rating and conditions"
+  },
+  "dice": {
+    "name": "Dice Roller",
+    "description": "Any dice and every IPRPS roll"
+  },
+  "welcome": {
+    "name": "IPRPS Welcome",
+    "description": "The tour, color scheme and API keys"
+  },
+  "file-viewer": {
+    "name": "IPRPS File Viewer",
+    "description": "Open and check .iprps, .ipai, .srpatch and .capstone files"
+  },
+  "soundboard": {
+    "name": "Soundboard",
+    "description": "Sound effects and ambience at a click"
   }
 }

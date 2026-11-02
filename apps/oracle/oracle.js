@@ -39,6 +39,8 @@
     el.dataset.text = text; if (id) el.dataset.id = id;
     setBody(el, text);
     if (role === 'assistant') addActions(el);
+    const sheet = role === 'assistant' && text.match(/^\*\*Character sheet saved: .*\(\w+, sheet #(\d+)\)/);
+    if (sheet) addSheetLink(el, sheet[1]);
     $('log').appendChild(el);
     el.scrollIntoView({ block: 'end' });
     return el;
@@ -50,12 +52,12 @@
   }
   // Shorten generator requests (stored with their format instructions) for display
   function shownUserText(t) {
-    const m = t.match(/^(Create one NPC|Describe one location|Generate a treasure|Design one encounter|Give three distinct plot hooks|Give 12 names|Write a read-aloud)/);
+    const m = t.match(/^(Create one NPC|Describe one location|Generate a treasure|Design one encounter|Give three distinct plot hooks|Give 12 names|Write a read-aloud|Create an NPC character sheet|Create a creature character sheet)/);
     if (!m) return t;
     const d = t.match(/(?:Extra details[^:]*|The scene): ([^\n]*?)\.?\s*(?:\n|$)/);
     const label = { 'Create one NPC': 'NPC', 'Describe one location': 'Location', 'Generate a treasure': 'Loot',
       'Design one encounter': 'Encounter', 'Give three distinct plot hooks': 'Plot hook', 'Give 12 names': 'Names',
-      'Write a read-aloud': 'Read-aloud' }[m[1]];
+      'Write a read-aloud': 'Read-aloud', 'Create an NPC character sheet': 'NPC sheet', 'Create a creature character sheet': 'Creature sheet' }[m[1]];
     return '⟡ ' + label + (d && d[1] && d[1] !== 'none' ? ': ' + d[1] : '');
   }
 
@@ -77,6 +79,34 @@
       bar.appendChild(b);
     }
     el.appendChild(bar);
+  }
+
+  // A reply that saved a character sheet gets a button that opens it in Character Sheets
+  function addSheetLink(el, id) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'mini gold'; b.textContent = '📇 Open the sheet';
+    b.onclick = () => window.open(`../character-sheets/?id=${encodeURIComponent(id)}`, 'iprps-character-sheets');
+    el.querySelector('.actions')?.prepend(b);
+  }
+
+  // Character sheets from the Oracle (NPCs and creatures), saved to Character Sheets
+  async function sheetGen(kind) {
+    if (busy) return;
+    busy = new AbortController();
+    $('send').disabled = true;
+    const label = kind === 'creature' ? 'Creature sheet' : 'NPC sheet';
+    const d = $('details').value.trim();
+    addMsg('user', '⟡ ' + label + (d ? ': ' + d : ''));
+    const wait = addMsg('assistant', `✦ Writing the ${label.toLowerCase()}… this can take a minute or two.`);
+    wait.classList.add('streaming'); wait.querySelector('.actions')?.remove();
+    try {
+      const j = await api('sheet_generate', { kind, details: d, campaign: campaign(), model: $('model').value });
+      wait.remove();
+      addMsg('assistant', j.message, j.message_id);
+      toast(`Saved “${j.name}” to Character Sheets`);
+      loadMemory();
+    } catch (e) { wait.remove(); toast(e.message, true); }
+    finally { busy = null; $('send').disabled = false; }
   }
 
   // ---------------------------------------------------------------- actions on replies
@@ -192,6 +222,17 @@
         b.innerHTML = `<span>${gen.icon}</span>${gen.label}`;
         b.onclick = () => send({ generator: gen.key, details: $('details').value });
         g.appendChild(b);
+      }
+      $('sheetBox').hidden = !s.sheets;
+      if (s.sheets) {
+        const sg = $('sheetGens'); sg.innerHTML = '';
+        for (const [kind, icon, label] of [['npc', '📇', 'NPC sheet'], ['creature', '🐾', 'Creature sheet']]) {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'gen';
+          b.innerHTML = `<span>${icon}</span>${label}`;
+          b.onclick = () => sheetGen(kind);
+          sg.appendChild(b);
+        }
       }
     } catch (e) { banner(e.message); }
   }

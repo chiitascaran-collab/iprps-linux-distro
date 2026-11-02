@@ -37,12 +37,17 @@
       <h2>Quick generators</h2>
       <input id="details" type="text" placeholder="Details (optional): a nervous smuggler, a jungle ruin…">
       <div id="gens" class="gens"></div>
+      <div id="sheetBox" hidden>
+        <h3 class="subh">Character sheets</h3>
+        <div id="sheetGens" class="gens"></div>
+        <p class="hint">Full IPRPS sheets, saved to <a href="../character-sheets/" target="iprps-character-sheets">Character Sheets</a>. Name a character in your message and the Oracle reads their sheet.</p>
+      </div>
     </section>
 
     <section>
       <h2>Campaign memory</h2>
       <label class="check"><input id="useMemory" type="checkbox" checked> Use campaign memory</label>
-      <p class="hint">The Oracle reads the campaign, its latest sessions and log, NPCs, open quests, characters and your pinned facts.</p>
+      <p class="hint">The Oracle reads the campaign, its latest sessions and log, NPCs, open quests, characters, character sheets and your pinned facts.</p>
       <ul id="pins" class="pins"></ul>
       <div class="pinadd">
         <textarea id="pinText" rows="2" placeholder="Add a fact, e.g. “The Duke secretly funds the raiders.”"></textarea>

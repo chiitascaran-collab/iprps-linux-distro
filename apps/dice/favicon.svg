@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><!-- IPRPS Dice Roller -->
+<rect width="64" height="64" rx="12" fill="#121731"/><path d="M32 8l22 12v24L32 56 10 44V20z" fill="#d9b45a"/><path d="M32 8l22 12-22 12-22-12z" fill="#f1d58c"/>
+<path d="M32 32v24" stroke="#121731" stroke-width="2"/><text x="32" y="25" font-family="DejaVu Serif,serif" font-size="12" font-weight="700" text-anchor="middle" fill="#121731">20</text></svg>

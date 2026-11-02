@@ -129,3 +129,8 @@ body.display { background: radial-gradient(1400px 900px at 50% 30%, #1b2150 0%, 
 .stage .sigil { display: none; }
 .stage.idle .sigil { display: block; font-size: 12vw; color: #d9b45a33; animation: glow 6s ease-in-out infinite; }
 @keyframes glow { 50% { color: #d9b45a66; } }
+
+/* Character sheets */
+.subh { font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 0; }
+#sheetBox .hint a { color: var(--gold2); }
+.mini.gold { border-color: var(--gold); color: var(--gold2); }
