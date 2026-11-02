@@ -17,6 +17,7 @@
   <button id="openBtn" class="gold">Open the table</button>
   <label class="check" title="When locked, no new players can join. Players already at the table can rejoin."><input type="checkbox" id="lockBox"> Lock</label>
   <div class="spacer"></div>
+  <button id="sheetsBtn" class="ghost" title="Everyone's character sheets (Character Sheets app)">📜 Character sheets</button>
   <span id="conn" class="conn" title="Connection">●</span>
 </header>
 
@@ -85,6 +86,12 @@
     </section>
   </aside>
 </main>
+<aside id="sheetsDrawer" class="drawer" hidden aria-label="Character sheets">
+  <div class="drawerhead"><b>📜 Character sheets</b>
+    <div id="sheetInbox" class="inbox"><span class="fine">Players send their sheets with <b>📜 Sheet</b> on their device; they appear here and in the chat.</span></div>
+    <button id="sheetsClose" class="ghost small">Close</button></div>
+  <iframe id="sheetsFrame" title="Character sheets"></iframe>
+</aside>
 <script src="/assets/qr.js"></script>
 <script src="/assets/common.js"></script>
 <script src="/assets/sm.js"></script>

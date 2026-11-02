@@ -5,6 +5,7 @@
 //
 //  Players (any device on the same network):  http://<this computer>:7777/
 //  Session Master console (this computer only): http://localhost:7777/sm/
+//  Character sheet for players:                http://<this computer>:7777/sheet/  (the Character Creator, sent back with /api/p/sheet)
 'use strict';
 const http = require('http'), fs = require('fs'), fsp = fs.promises, path = require('path'), crypto = require('crypto'), os = require('os');
 const Dice = require('./dice');
@@ -17,8 +18,12 @@ const MEDIA = path.join(STATE_DIR, 'media');
 const STATE_FILE = path.join(STATE_DIR, 'state.json');
 const PRESET_FILES = [process.env.IPRPS_TABLE_PRESETS, '/etc/iprps-table/presets.json', path.join(__dirname, 'dice-presets.json')].filter(Boolean);
 const MB = 1 << 20;
+// Character sheets: the Character Creator page for players, and the Session Master's Character Sheets app (shown in the console).
+const SHEET_PAGE = process.env.IPRPS_TABLE_SHEET || '/srv/www/iprps/character-creator/index.html';
+const SHEETS_URL = process.env.IPRPS_TABLE_SHEETS_URL || 'http://localhost/iprps/character-sheets/';
+const hasSheetPage = () => fs.existsSync(SHEET_PAGE);
 const LIM = { players: 40, text: 2000, history: 3000, att: 6, name: 32,
-  playerUpload: (+process.env.IPRPS_TABLE_PLAYER_MB || 15) * MB, smUpload: (+process.env.IPRPS_TABLE_SM_MB || 1024) * MB,
+  playerUpload: (+process.env.IPRPS_TABLE_PLAYER_MB || 15) * MB, sheet: 12 * MB, smUpload: (+process.env.IPRPS_TABLE_SM_MB || 1024) * MB,
   mediaTotal: (+process.env.IPRPS_TABLE_MEDIA_GB || 8) * 1024 * MB };
 
 // Allowed media. Nothing else is accepted (no SVG/HTML: they could run scripts).
@@ -94,8 +99,8 @@ function viewMsg(m, who) {
 }
 function pushRoster() { emit(() => true, 'roster', roster); }
 function tableInfo(who) {
-  const t = { name: S.table.name, open: S.table.open, locked: S.table.locked };
-  if (who === 'sm') Object.assign(t, { code: S.table.code, port: PORT, addresses: lanAddresses(), presetsFrom: PRESETS.from });
+  const t = { name: S.table.name, open: S.table.open, locked: S.table.locked, sheet: hasSheetPage() };
+  if (who === 'sm') Object.assign(t, { code: S.table.code, port: PORT, addresses: lanAddresses(), presetsFrom: PRESETS.from, sheetsUrl: SHEETS_URL });
   return t;
 }
 function snapshot(who) {
@@ -200,12 +205,41 @@ function limited(key, n, ms) {
 setInterval(() => { const now = Date.now(); for (const [k, b] of buckets) if (!b.some(t => now - t < 600000)) buckets.delete(k); }, 600000).unref();
 
 // ---------------------------------------------------------------- static files
-async function serveStatic(res, file) {
+async function serveStatic(res, file, headers = {}) {
   const full = path.join(PUB, file);
   if (!full.startsWith(PUB + path.sep)) throw httpErr(404, 'Not found');
   let data; try { data = await fsp.readFile(full); } catch { throw httpErr(404, 'Not found'); }
-  res.writeHead(200, { ...SEC, 'Content-Type': STATIC[path.extname(full)] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
+  res.writeHead(200, { ...SEC, 'Content-Type': STATIC[path.extname(full)] || 'application/octet-stream', 'Cache-Control': 'no-cache', ...headers });
   res.end(data);
+}
+// The console may show the Character Sheets app (on this computer's web server) in a frame.
+function smHeaders() {
+  const o = new Set();
+  try { const u = new URL(SHEETS_URL); o.add(u.origin); o.add(u.origin.replace('//localhost', '//127.0.0.1')); o.add(u.origin.replace('//127.0.0.1', '//localhost')); } catch {}
+  return { 'Content-Security-Policy': SEC['Content-Security-Policy'] + `; frame-src ${[...o].join(' ') || "'none'"}` };
+}
+// The Character Creator is one self-contained page with its own inline script and styles.
+async function serveSheetPage(res) {
+  let data; try { data = await fsp.readFile(SHEET_PAGE); } catch { throw httpErr(404, 'The character sheet is not installed on this computer.'); }
+  res.writeHead(200, { ...SEC, 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache',
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'" });
+  res.end(data);
+}
+// A player's character sheet (JSON from the Character Creator), private to the Session Master.
+async function receiveSheet(req, me) {
+  if (limited('sheet:' + me.id, 6, 60000)) throw httpErr(429, 'Too many sheets at once. Wait a minute.');
+  const b = await readJson(req, LIM.sheet);
+  const sh = b.sheet;
+  if (!sh || typeof sh !== 'object' || Array.isArray(sh) || typeof sh.stats !== 'object') throw httpErr(400, 'That is not a character sheet from the Character Creator.');
+  const name = clean(sh.characterName, 80);
+  if (!name) throw httpErr(400, 'Give your character a name first.');
+  const data = Buffer.from(JSON.stringify(sh));
+  const used = Object.values(S.media).reduce((a, m) => a + m.size, 0);
+  if (used + data.length > LIM.mediaTotal) throw httpErr(507, 'The table has no room for more files. Tell the Session Master.');
+  const id = nextId('f');
+  await fsp.writeFile(path.join(MEDIA, id), data, { mode: 0o640 });
+  S.media[id] = { id, owner: me.id, kind: 'sheet', type: 'application/json', name: `${name}.json`, size: data.length, ts: Date.now(), ids: [] };
+  return post(me.id, 'sheet', `📜 Character sheet: ${name}`, [id], [me.id, 'sm'], { type: 'sm', label: 'Private: Session Master' });
 }
 
 // ---------------------------------------------------------------- media upload + download
@@ -350,7 +384,7 @@ async function route(req, res) {
   if (p === '/sm' ) { res.writeHead(302, { Location: '/sm/' }); return res.end(); }
   if (p === '/sm/' || p.startsWith('/api/sm/')) {
     if (!local) throw httpErr(403, 'The Session Master console only opens on the Session Master\'s computer.');
-    if (p === '/sm/') return serveStatic(res, 'sm.html');
+    if (p === '/sm/') return serveStatic(res, 'sm.html', smHeaders());
     if (p === '/api/sm/events') return openEvents(req, res, 'sm');
     if (method !== 'POST' || req.headers['x-iprps-sm'] !== '1') throw httpErr(400, 'Bad request');
     if (p === '/api/sm/upload') return upload(req, res, 'sm');
@@ -423,6 +457,8 @@ async function route(req, res) {
   // ---- static pages (anyone)
   if (method === 'GET' && (p === '/' || p === '/join')) return serveStatic(res, 'join.html');
   if (method === 'GET' && p === '/play') return serveStatic(res, 'player.html');
+  if (method === 'GET' && p === '/sheet') { res.writeHead(302, { Location: '/sheet/' }); return res.end(); }
+  if (method === 'GET' && p === '/sheet/') return serveSheetPage(res);
   if (method === 'GET' && p.startsWith('/assets/')) return serveStatic(res, p.slice(8));
   if (method === 'GET' && p === '/favicon.ico') { res.writeHead(302, { Location: '/assets/table-icon.svg' }); return res.end(); }
   if (method === 'GET' && p === '/api/info') {
@@ -469,6 +505,7 @@ async function route(req, res) {
   if (p === '/api/p/events') return openEvents(req, res, me.id);
   if (method !== 'POST') throw httpErr(404, 'Not found');
   if (limited('act:' + me.id, 40, 10000)) throw httpErr(429, 'Slow down a little.');
+  if (p === '/api/p/sheet') return json(res, 200, { ok: true, id: (await receiveSheet(req, me)).id });
   if (p === '/api/p/upload') {
     if (limited('up:' + me.id, 20, 60000)) throw httpErr(429, 'Too many files at once. Wait a minute.');
     return upload(req, res, me.id);

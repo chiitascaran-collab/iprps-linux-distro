@@ -228,3 +228,17 @@ button:disabled { opacity: .5; cursor: default; }
 .textcard input, .textcard textarea { width: 100%; margin-top: 6px; }
 .textcard button { margin-top: 6px; }
 @media (max-width: 1100px) { .smgrid { grid-template-columns: 270px 1fr; } .smright { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); max-height: 45vh; } }
+
+/* ---------------------------------------------------------------- character sheets */
+.btnlink { display: inline-block; text-decoration: none; border-radius: 8px; padding: 6px 12px; }
+.attsheet { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 6px; padding: 8px 10px; background: var(--bg2); border: 1px solid var(--gold); border-radius: 8px; }
+.attsheet span { font-weight: 600; color: var(--gold2); }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(1100px, 78vw); z-index: 15; display: flex; flex-direction: column;
+  background: var(--bg); border-left: 2px solid var(--gold); box-shadow: -12px 0 40px #000c; }
+.drawerhead { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: linear-gradient(#141a36, #0f1430); }
+.drawerhead b { color: var(--gold2); font-family: var(--serif); white-space: nowrap; }
+.drawerhead .fine { margin: 0; }
+.inbox { flex: 1; display: flex; align-items: center; gap: 6px; overflow-x: auto; white-space: nowrap; min-width: 0; }
+.inbox button { flex: none; }
+.drawer iframe { flex: 1; width: 100%; border: 0; background: var(--bg); }
+@media (max-width: 900px) { .drawer { width: 100vw; } }

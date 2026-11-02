@@ -4,7 +4,7 @@
 (() => {
   'use strict';
   const { $, h } = T;
-  const ctx = { me: 'sm' };
+  const ctx = { me: 'sm', onSheet: (a, m) => importSheet(a, m) };
   let table = {}, roster = [], groups = [], library = [];
   const selected = new Set(T.store.get('selected', []));
   const feed = T.feed($('feed'), ctx);
@@ -81,10 +81,12 @@
             h('small', { class: 'dim', text: `${p.device} · ${p.ip} · ${p.online ? 'online' : 'seen ' + T.ago(p.lastSeen)}` }),
             p.groups.length ? h('span', { class: 'gchips' }, p.groups.map(g => h('span', { class: 'gchip', text: (groups.find(x => x.id === g) || {}).name || '' }))) : null)),
         h('div', { class: 'pbtns' },
+          h('button', { class: 'ghost small', text: 'Sheet', title: `${p.name}'s character sheet`, onclick: () => showSheets({ type: 'iprps-table-find', name: p.name, character: p.character || '' }) }),
           h('button', { class: 'ghost small', text: 'Message', onclick: () => { comp.target = 'p:' + p.id; comp.focus(); } }),
           h('button', { class: 'ghost small danger', text: 'Remove', onclick: act(async () => { if (confirm(`Remove ${p.name} from the table?`)) await api('kick', { id: p.id }); }) }))));
     }
     renderTargets();
+    sendRoster();
   }
   function renderGroups() {
     const ul = $('groups'); ul.textContent = '';
@@ -160,6 +162,67 @@
   right.addEventListener('dragleave', () => right.classList.remove('drop'));
   right.addEventListener('drop', e => { right.classList.remove('drop'); if (e.dataTransfer.files.length) { e.preventDefault(); [...e.dataTransfer.files].forEach(uploadMedia); } });
 
+  // ---------------------------------------------------------------- character sheets (the Character Sheets app in a frame)
+  const frame = $('sheetsFrame');
+  let frameOrigin = '', frameReady = false, frameQueue = [];
+  function sheetsSrc() {
+    const u = new URL(table.sheetsUrl || 'http://localhost/iprps/character-sheets/');
+    if (['localhost', '127.0.0.1'].includes(u.hostname) && ['localhost', '127.0.0.1'].includes(location.hostname)) u.hostname = location.hostname;
+    u.searchParams.set('embed', 'table');
+    return u;
+  }
+  function toFrame(msg) {
+    if (frameReady) frame.contentWindow.postMessage(msg, frameOrigin); else frameQueue.push(msg);
+  }
+  function showSheets(msg) {
+    if (!frame.src) { const u = sheetsSrc(); frameOrigin = u.origin; frame.src = u.href; }
+    $('sheetsDrawer').hidden = false; $('sheetsBtn').classList.add('on');
+    if (msg) toFrame(msg);
+  }
+  function sendRoster() {
+    if (!frameReady) return;
+    frame.contentWindow.postMessage({ type: 'iprps-table-roster', roster: roster.map(p => ({ id: p.id, name: p.name, character: p.character || '', online: !!p.online })) }, frameOrigin);
+  }
+  $('sheetsBtn').onclick = () => ($('sheetsDrawer').hidden ? showSheets() : ($('sheetsDrawer').hidden = true, $('sheetsBtn').classList.remove('on')));
+  $('sheetsClose').onclick = () => { $('sheetsDrawer').hidden = true; $('sheetsBtn').classList.remove('on'); };
+  // Sheets players sent this session, also listed at the top of the drawer
+  const inbox = new Map(), imported = new Set();
+  function noteSheet(m) {
+    if (m.kind !== 'sheet' || m.from === 'sm' || !(m.att || []).length) return;
+    inbox.set(m.att[0].id, { a: m.att[0], m }); renderInbox();
+  }
+  function renderInbox() {
+    const box = $('sheetInbox'); if (!inbox.size) return;
+    box.textContent = '';
+    box.append(h('span', { class: 'fine', text: 'Sent to you:' }));
+    for (const [id, { a, m }] of [...inbox].slice(-12)) {
+      box.append(h('button', { class: (imported.has(id) ? 'ghost' : 'gold') + ' small', title: imported.has(id) ? 'Imported. Click to import it again.' : 'Import into Character Sheets',
+        text: `${imported.has(id) ? '✓ ' : '📜 '}${a.name.replace(/\.json$/, '')} · ${m.fromName}`, onclick: () => importSheet(a, m) }));
+    }
+  }
+  async function importSheet(a, m) {
+    const r = await fetch(T.mediaUrl(a.id));
+    if (!r.ok) return T.toast('That sheet is no longer on the table (a new session clears players\' files).', true);
+    let sheet; try { sheet = await r.json(); } catch { return T.toast('That file is not a character sheet.', true); }
+    showSheets({ type: 'iprps-table-import', sheet, fileName: a.name, playerName: m.fromName, ref: a.id });
+  }
+  window.addEventListener('message', e => {
+    if (e.source !== frame.contentWindow || e.origin !== frameOrigin) return;
+    const d = e.data || {};
+    if (d.type === 'iprps-sheets-ready') {
+      frameReady = true; sendRoster();
+      frameQueue.splice(0).forEach(x => frame.contentWindow.postMessage(x, frameOrigin));
+    } else if (d.type === 'iprps-table-push') {
+      api('push', { kind: 'text', title: String(d.title || '').slice(0, 120), text: String(d.text || '').slice(0, 4000), target: d.target || { type: 'all' } })
+        .then(r => frame.contentWindow.postMessage({ type: 'iprps-table-pushed', ok: true, sent: r.sent }, frameOrigin))
+        .catch(err => frame.contentWindow.postMessage({ type: 'iprps-table-pushed', ok: false, error: err.message }, frameOrigin));
+    } else if (d.type === 'iprps-sheets-imported') {
+      T.toast(`${d.updated ? 'Updated' : 'Added'} “${d.name}” in Character Sheets`);
+      if (d.ref) { imported.add(d.ref); renderInbox(); }
+    }
+  });
+  frame.addEventListener('load', () => { frameReady = false; });   // reloads (sign-in) announce themselves again
+
   // ---------------------------------------------------------------- session
   $('newSession').onclick = act(async () => { if (confirm('Start a new session? This clears the chat, the screens and the players\' files. Players, groups and your media stay.')) await api('reset', {}); });
   $('resetAll').onclick = act(async () => { if (confirm('Reset everything? Removes all players, groups, chat and all media, and makes a new join code.')) await api('reset', { everything: true }); });
@@ -170,10 +233,12 @@
     hello: s => {
       table = s.table; roster = s.roster; groups = s.groups; library = s.media;
       feed.clear(); s.messages.forEach(feed.add);
+      inbox.clear(); s.messages.forEach(noteSheet);
+      if (!inbox.size) $('sheetInbox').textContent = '', $('sheetInbox').append(h('span', { class: 'fine', text: 'Players send their sheets with 📜 Sheet on their device; they appear here and in the chat.' }));
       dice.setPresets(s.presets);
       renderTable(); renderRoster(); renderGroups(); renderLibrary();
     },
-    msg: m => feed.add(m),
+    msg: m => { feed.add(m); noteSheet(m); },
     roster: r => { roster = r; renderRoster(); renderGroups(); },
     groups: g => { groups = g; renderGroups(); renderRoster(); },
     table: t => { table = t; renderTable(); },

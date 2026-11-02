@@ -76,6 +76,7 @@
       hello: s => {
         ctx.me = s.me.id; me = s.me; roster = s.roster;
         $('campaign').textContent = s.table.name; document.title = `${s.table.name} · IPRPS Table`;
+        $('sheetBtn').hidden = !s.table.sheet;
         feed.clear(); s.messages.forEach(feed.add);
         dice.setPresets(s.presets);
         renderRoster(); renderMe();
