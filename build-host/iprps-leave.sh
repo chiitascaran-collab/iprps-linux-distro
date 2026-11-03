@@ -4,6 +4,13 @@
 # Unmount everything and detach the IPRPS image (run in Debian, outside the chroot)
 R=/mnt/iprps
 cd /
+# Background helpers started inside the image (gpg-agent and dirmngr from pacman-key or gpg) keep it busy:
+# stop any process whose root directory is the image, except chroot shells, which the user closes
+for p in /proc/[0-9]*; do
+  [ "$(readlink "$p/root" 2>/dev/null)" = "$R" ] || continue
+  case "$(cat "$p/comm" 2>/dev/null)" in gpg-agent|dirmngr|keyboxd|scdaemon) echo "Stopping $(cat "$p/comm") (${p#/proc/})"; kill "${p#/proc/}" ;; esac
+done
+sleep 1
 if fuser -sm "$R" 2>/dev/null; then
   echo "Still in use. Close these first (exit the chroot windows):"
   fuser -vm "$R" 2>&1 | tail -n +2

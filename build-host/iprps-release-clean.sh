@@ -148,6 +148,25 @@ if [ -f /srv/www/iprps/auth/auth.php ]; then
   fi
 fi
 
+say "Package manager: edition package, keyring, cache"
+if command -v pacman >/dev/null 2>&1; then
+  ED=${EDC,,}
+  for e in lite medium advanced; do
+    [ "$e" = "$ED" ] || pacman -Rdd --noconfirm "iprps-$e" >/dev/null 2>&1 || true
+  done
+  if pacman -Q "iprps-$ED" >/dev/null 2>&1; then
+    echo "iprps-$ED is installed."
+  else
+    P=$(ls -t /build/repo/iprps-$ED-[0-9]*.pkg.tar.zst 2>/dev/null | head -1 || true)
+    if [ -n "$P" ]; then pacman -U --noconfirm "$P" >/dev/null && echo "Installed ${P##*/}"
+    else echo "WARNING: no iprps-$ED package in /build/repo (12.12 step 6)"; fi
+  fi
+  pacman -Dk 2>&1 | tail -3 || true
+  rm -rf /etc/pacman.d/gnupg /var/cache/pacman/pkg/* /var/lib/iprps-updates/*   # each computer makes its own keyring
+else
+  echo "pacman isn't installed (12.12): this release has no package manager."
+fi
+
 say "3/4 General cleanup"
 id builder >/dev/null 2>&1 && { userdel -r builder 2>/dev/null || userdel builder; rm -rf /home/builder; }
 rm -f /etc/sudoers.d/90-builder-build-only /etc/sudoers.d/xorg
@@ -156,7 +175,7 @@ rm -f /etc/ssh/ssh_host_* /etc/resolv.conf
 : > /etc/machine-id      # empty: a fresh ID at first boot, but not "first boot" (no systemd preset reset)
 BROKEN=$(find /etc/systemd/system /etc/systemd/user -xtype l 2>/dev/null || true)
 if [ -n "$BROKEN" ]; then echo "Removing broken service links:"; echo "$BROKEN" | sed 's/^/  /'; echo "$BROKEN" | xargs -r rm -f; fi
-rm -rf /var/lib/iprps/*-done /var/lib/ollama/.ollama /var/log/journal/* /var/lib/iprps-table/*   # IPRPS Table test chat, players, media
+rm -rf /var/lib/iprps/*-done /var/lib/ollama/.ollama /var/log/journal/* /var/lib/iprps-table/* /var/lib/iprps-vault/* /var/lib/iprps-sounds/*   # Table test data; API key vault key; Soundboard files
 passwd -l root >/dev/null
 sed -i "s/^VERSION=.*/VERSION=\"1.0 $EDC\"/; s/^PRETTY_NAME=.*/PRETTY_NAME=\"IPRPS OS 1.0 $EDC\"/" /etc/os-release
 [ -f /etc/lsb-release ] && sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION=\"IPRPS OS 1.0 $EDC\"/" /etc/lsb-release
@@ -168,9 +187,13 @@ echo "  /root:             $( [ -z "$(ls /root)" ] && echo "empty (shell setting
 echo "  first-boot marks:  $(ls /var/lib/iprps/ 2>/dev/null | grep -c done) left (0 expected)"
 echo "  database settings: $( [ -e /etc/iprps/db.php ] && echo 'STILL THERE' || echo removed)"
 echo "  IPRPS Table data:  $( [ -n "$(ls -A /var/lib/iprps-table 2>/dev/null)" ] && echo 'STILL THERE' || echo 'empty')"
+echo "  API key vault:     $( [ -n "$(ls -A /var/lib/iprps-vault 2>/dev/null)" ] && echo 'STILL THERE' || echo 'empty')"
+echo "  Soundboard files:  $( [ -n "$(ls -A /var/lib/iprps-sounds 2>/dev/null)" ] && echo 'STILL THERE' || echo 'empty')"
 echo "  root password:     $(passwd -S root | awk '{print ($2=="L"||$2=="LK")?"locked":"NOT LOCKED"}')"
 echo "  machine ID:        $( [ -s /etc/machine-id ] && echo 'NOT EMPTY' || echo 'empty (new ID at first boot)')"
 echo "  edition:           $(grep ^PRETTY_NAME /etc/os-release)"
+echo "  edition package:   $(pacman -Qq 2>/dev/null | grep -xE 'iprps-(lite|medium|advanced)' | tr '\n' ' ' || true)"
+echo "  pacman keyring:    $( [ -d /etc/pacman.d/gnupg ] && echo 'STILL THERE' || echo 'removed (each computer makes its own)')"
 INSIDE_EOF
 chmod 755 "$INSIDE"
 chroot "$MNT" /bin/bash "$INSIDE" "$EDC"
