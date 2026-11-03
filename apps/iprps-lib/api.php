@@ -87,7 +87,7 @@ case 'show':
 
 case 'status':
     $apps = [];
-    foreach (['hub', 'character-sheets', 'character-creator', 'combat', 'dice', 'soundboard', 'session-log', 'welcome', 'file-viewer', 'oracle', 'writer', 'table'] as $a)
+    foreach (['hub', 'character-sheets', 'character-creator', 'combat', 'dice', 'soundboard', 'session-log', 'welcome', 'file-viewer', 'oracle', 'writer', 'table', 'updates'] as $a)
         $apps[$a] = is_file(__DIR__ . "/../$a/index.html") || is_file(__DIR__ . "/../$a/index.php");
     $theme = ip_setting($db, $UID, 'theme', 'night');
     ip_out(['ok' => true, 'user' => $USER, 'theme' => in_array($theme, THEMES, true) ? $theme : 'night', 'apps' => $apps,

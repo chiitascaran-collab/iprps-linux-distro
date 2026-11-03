@@ -74,5 +74,9 @@
   "soundboard": {
     "name": "Soundboard",
     "description": "Sound effects and ambience at a click"
+  },
+  "updates": {
+    "name": "IPRPS Updates",
+    "description": "Security fixes, new app versions and optional software"
   }
 }

@@ -17,6 +17,7 @@
     ['oracle', 'IPRPS Oracle', 'Local AI for Session Masters: NPCs, scenes, loot, recaps and sheets, without the internet.', 'Medium and Advanced'],
     ['writer', 'IPRPS Writer', 'A word processor for handouts and notes: saves Word, OpenDocument and PDF.'],
     ['file-viewer', 'IPRPS File Viewer', 'Open and check .iprps, .ipai, .srpatch and .capstone files.'],
+    ['updates', 'IPRPS Updates', 'Security fixes, new app versions and optional software. Opens from the menu; the Hub tile shows what is waiting.'],
   ];
   const THEMES = [
     ['night', 'Night (default)', ['#0b0e1a', '#161c38', '#d9b45a', '#e6e3d6']],
