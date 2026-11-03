@@ -3,9 +3,9 @@ Type = Path
 Operation = Install
 Operation = Upgrade
 Operation = Remove
-Target = usr/share/icons/hicolor/*
+Target = usr/share/icons/*
 
 [Action]
-Description = Updating the icon cache...
+Description = Updating the icon caches...
 When = PostTransaction
-Exec = /usr/bin/gtk-update-icon-cache --quiet --force --ignore-theme-index /usr/share/icons/hicolor
+Exec = /bin/sh -c 'for t in hicolor IPRPS; do [ -f /usr/share/icons/$t/index.theme ] && gtk-update-icon-cache --quiet --force /usr/share/icons/$t; done; true'

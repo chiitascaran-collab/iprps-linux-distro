@@ -9,14 +9,15 @@
 pkgbase=iprps-base
 pkgname=(iprps-base iprps-lite iprps-medium iprps-advanced)
 pkgver=1.0
-pkgrel=1
+pkgrel=4
 arch=(any)
 url='https://infiniteplane.space/'
 license=(GPL-2.0-only)
 
-# The IPRPS apps every edition has (packages from packages/iprps-apps)
+# The IPRPS apps every edition has (packages from packages/iprps-apps), and the icons (packages/iprps-icons)
 _apps_lite=(iprps-lib iprps-hub iprps-writer iprps-table iprps-character-creator iprps-character-sheets
-            iprps-combat iprps-dice iprps-session-log iprps-welcome iprps-file-viewer iprps-soundboard iprps-updates-tile)
+            iprps-combat iprps-dice iprps-session-log iprps-welcome iprps-file-viewer iprps-soundboard iprps-updates-tile
+            iprps-icons)
 _apps_medium=("${_apps_lite[@]}" iprps-oracle)
 _apps_advanced=("${_apps_medium[@]}")
 

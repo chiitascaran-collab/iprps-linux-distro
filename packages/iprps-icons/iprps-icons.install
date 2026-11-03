@@ -1,0 +1,10 @@
+# The icon theme's cache, and fresh folder pictures for everyone. The thumbnail service (tumblerd) reads
+# the list of thumbnailers when it starts, and remembers old pictures: stop it and clear the pictures.
+# It starts again by itself the next time Thunar asks for a thumbnail.
+post_install() {
+  gtk-update-icon-cache -qf /usr/share/icons/IPRPS 2>/dev/null || true
+  rm -rf /home/*/.cache/thumbnails/*/ /root/.cache/thumbnails/*/ 2>/dev/null
+  pkill -x tumblerd 2>/dev/null
+  return 0
+}
+post_upgrade() { post_install; }

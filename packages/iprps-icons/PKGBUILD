@@ -1,0 +1,33 @@
+# IPRPS OS: the IPRPS icon theme and IPRPS folder icons in Thunar (guide 9.3)
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+#
+# Built from the repository: artwork/icons/*.png (256x256) and the two scripts in rootfs/.
+# New or changed icons: replace the PNGs in artwork/icons, raise pkgver (the date), build, publish (Part 17).
+
+pkgname=iprps-icons
+pkgver=2026.11.02
+pkgrel=2
+pkgdesc='IPRPS icon theme, and IPRPS icons for folders in Thunar'
+arch=(any)
+url='https://github.com/chiitascaran-collab/iprps-linux-distro'
+license=(GPL-2.0-only)
+depends=(iprps-base)
+options=(!strip !debug)
+install=iprps-icons.install
+
+_repo=${IPRPS_REPO:-/build/src/iprps-os}
+
+prepare() {
+  local n; n=$(ls "$_repo"/artwork/icons/*.png 2>/dev/null | wc -l)
+  [ "$n" -ge 24 ] || { echo "Only $n icons in $_repo/artwork/icons" >&2; return 1; }
+}
+
+package() {
+  install -dm755 "$pkgdir/usr/share/iprps/icons"
+  install -m644 "$_repo"/artwork/icons/*.png "$pkgdir/usr/share/iprps/icons/"
+  install -Dm755 "$_repo/rootfs/usr/lib/iprps/iprps-icon-theme" "$pkgdir/usr/lib/iprps/iprps-icon-theme"
+  "$_repo/rootfs/usr/lib/iprps/iprps-icon-theme" "$pkgdir"
+  install -Dm755 "$_repo/rootfs/usr/bin/iprps-folder-thumbnailer" "$pkgdir/usr/bin/iprps-folder-thumbnailer"
+  install -Dm644 "$_repo/rootfs/usr/share/thumbnailers/iprps-folders.thumbnailer" \
+                 "$pkgdir/usr/share/thumbnailers/iprps-folders.thumbnailer"
+}

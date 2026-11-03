@@ -238,11 +238,17 @@ def cmd_check(quiet=False):
 
 def pacman_live(args):
     """Run pacman with its output shown as it happens; returns (exit code, output)."""
-    p = subprocess.Popen(PACMAN + args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
-    lines = []
-    for l in p.stdout:
-        sys.stdout.write(l); sys.stdout.flush(); lines.append(l)
-    return p.wait(), ''.join(lines)
+    # Pass output on as it arrives, not line by line: pacman's questions ("Proceed with installation? [Y/n]")
+    # end without a line break and would otherwise stay hidden while pacman waits for the answer.
+    p = subprocess.Popen(PACMAN + args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    chunks = []
+    while True:
+        b = os.read(p.stdout.fileno(), 4096)
+        if not b:
+            break
+        chunks.append(b)
+        sys.stdout.buffer.write(b); sys.stdout.buffer.flush()
+    return p.wait(), b''.join(chunks).decode('utf-8', 'replace')
 
 
 def after_transaction(out, rc):
@@ -264,16 +270,31 @@ def confirm_flag(rest):
     return ['--noconfirm'] if ('--yes' in rest or '-y' in rest) else []
 
 
+def download_then_install(refresh, names, yes):
+    """Download everything first, then install from the downloaded copies in a SEPARATE pacman run.
+    A pacman that has just downloaded keeps download threads and connections; when it then starts
+    ldconfig or an install script, the copy of itself it makes can inherit a lock held by one of those
+    threads and wait forever (seen with pacman 7.1). Installing with nothing left to download avoids it."""
+    print('== Downloading' + (' (and refreshing the package lists)' if refresh else ''))
+    rc, out1 = pacman_live(['-S' + ('y' if refresh else '') + 'uw', '--needed', '--noprogressbar'] + yes + ['iprps-keyring'] + names)
+    if rc:
+        return rc, out1
+    out2 = ''
+    k = run(PACMAN + ['-Qu', '--dbpath', DBPATH, 'iprps-keyring'])
+    if k.returncode == 0 and k.stdout.strip():
+        print('== Updating the IPRPS signing keys')
+        rc, out2 = pacman_live(['-S', '--needed', '--noprogressbar'] + yes + ['iprps-keyring'])
+        if rc:
+            return rc, out1 + out2
+    print('== Installing')
+    rc, out3 = pacman_live(['-Su', '--needed', '--noprogressbar'] + yes + OVERWRITE + names)
+    return rc, out1 + out2 + out3
+
+
 def cmd_upgrade(rest):
     need_root()
-    yes = confirm_flag(rest)
-    print('== Refreshing the package lists and the IPRPS signing keys')
-    rc, out1 = pacman_live(['-Sy', '--needed', '--noprogressbar'] + yes + ['iprps-keyring'])
-    if rc:
-        after_transaction(out1, rc); return rc
-    print('== Installing updates')
-    rc, out = pacman_live(['-Su', '--noprogressbar'] + yes + OVERWRITE)
-    after_transaction(out1 + out, rc)
+    rc, out = download_then_install(True, [], confirm_flag(rest))
+    after_transaction(out, rc)
     print('\nDone.' if rc == 0 else '\nThe update stopped: nothing was half-installed. Read the messages above.')
     return rc
 
@@ -291,8 +312,8 @@ def cmd_install(names, rest):
     ok, needs = resolve(names)
     if not ok:
         sys.exit(f'iprps-update: can\'t install {" ".join(names)} on this computer: it needs {needs}.')
-    # -Syu with the new packages: installing never mixes old and new versions of the system
-    rc, out = pacman_live(['-Syu', '--needed', '--noprogressbar'] + confirm_flag(rest) + OVERWRITE + names)
+    # With -u: installing never mixes old and new versions of the system
+    rc, out = download_then_install(True, names, confirm_flag(rest))
     after_transaction(out, rc)
     return rc
 

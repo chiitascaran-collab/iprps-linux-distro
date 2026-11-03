@@ -9,7 +9,7 @@ pkgbase=iprps-apps
 pkgname=(iprps-lib iprps-hub iprps-writer iprps-table iprps-character-creator iprps-character-sheets
          iprps-combat iprps-dice iprps-session-log iprps-welcome iprps-file-viewer iprps-soundboard
          iprps-oracle iprps-updates-tile)
-pkgver=2026.11.01
+pkgver=2026.11.04
 pkgrel=1
 arch=(any)
 url='https://github.com/chiitascaran-collab/iprps-linux-distro'

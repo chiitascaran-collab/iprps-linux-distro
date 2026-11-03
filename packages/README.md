@@ -7,6 +7,7 @@ Recipes (PKGBUILDs) for the IPRPS OS package repositories. Guide: **12.12** (set
 | `pacman/` | pacman 7.1.0, so pacman can update itself | `iprps-core` |
 | `iprps-keyring/` | the public IPRPS signing key (`iprps.gpg`, `iprps-trusted`: made by `iprps-repo.sh key`, never shipped in the zips) | `iprps-core` |
 | `iprps-base/` | `iprps-base` (pacman settings, IPRPS Updates, `iprps-update`, update timer, notifications, pacman hooks) and the edition packages `iprps-lite`, `iprps-medium`, `iprps-advanced` | `iprps-core` |
+| `iprps-icons/` | the IPRPS icon theme and Thunar folder icons, from `artwork/icons` (72 PNGs) | `iprps-core` |
 | `iprps-apps/` | one package per IPRPS app, from `apps/` in this repository (menu entries in `iprps-apps/desktop/`) | `iprps-apps` |
 | `examples/curl/` | worked example: a BLFS package as a security update | `iprps-core` |
 | `examples/calibre/` | worked example: an optional extra (official binary) | `iprps-extra` |
