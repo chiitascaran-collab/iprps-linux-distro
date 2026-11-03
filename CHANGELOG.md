@@ -4,7 +4,7 @@
 
 - **Icons (9.3), all editions:** 72 IPRPS icons (was 24), now in the repository (`artwork/icons`) and packaged as **`iprps-icons`**, so installed computers get them with IPRPS Updates (the edition packages depend on it from `iprps-base` 1.0-4).
   - The theme is built by `rootfs/usr/lib/iprps/iprps-icon-theme` (124 names): standard places and folders, Public, Templates, Projects, Campaigns, every other folder, Trash, File System, Thunar, text files and documents, terminal, browser, settings, menu, and the Hub, Session Master Mode, Combat Tracker and Dice Roller.
-  - **Folder icons in Thunar:** `iprps-folder-thumbnailer` gives `/usr`, `/etc`, `/var` and the other system folders, and folders named Campaigns, Maps, NPCs, Players, Creatures, Dungeons, AI Profiles, AI Patches, RPG Vault and others, their own icons, without writing anything into them.
+  - **Folder icons in Thunar:** `iprps-folder-thumbnailer` gives `/` (folder-root-system), `/usr`, `/etc`, `/var` and the other system folders, and folders named Campaigns, Maps, NPCs, Players, Creatures, Dungeons, AI Profiles, AI Patches, RPG Vault and others, their own icons, without writing anything into them.
   - Installing or updating `iprps-icons` restarts the thumbnail service (`tumblerd`) and clears cached pictures, so folder icons appear at once (tested in the VM).
   - The Hub's and Session Master Mode's menu entries use the theme names `iprps-hub` and `iprps-session`. The pacman icon hook refreshes the IPRPS theme's cache too.
 - **Package manager (12.12), all editions:** IPRPS OS now updates without reinstalling, with **pacman 7.1.0** (built with GnuPG 2.5.21, GPGME 2.1.2 and fakeroot 1.37.2).
