@@ -395,6 +395,13 @@ cat > /root/iprps-leave.sh << "EOF"
 # Unmount everything and detach the IPRPS image (run in Debian, outside the chroot)
 R=/mnt/iprps
 cd /
+# Background helpers started inside the image (gpg-agent and dirmngr from pacman-key or gpg) keep it busy:
+# stop any process whose root directory is the image, except chroot shells, which the user closes
+for p in /proc/[0-9]*; do
+  [ "$(readlink "$p/root" 2>/dev/null)" = "$R" ] || continue
+  case "$(cat "$p/comm" 2>/dev/null)" in gpg-agent|dirmngr|keyboxd|scdaemon) echo "Stopping $(cat "$p/comm") (${p#/proc/})"; kill "${p#/proc/}" ;; esac
+done
+sleep 1
 if fuser -sm "$R" 2>/dev/null; then
   echo "Still in use. Close these first (exit the chroot windows):"
   fuser -vm "$R" 2>&1 | tail -n +2
@@ -19343,12 +19350,14 @@ EOF
 | audio | `applications-multimedia`, `multimedia-volume-control` | Multimedia category, volume |
 | menu, apps | `org.xfce.panel.applicationsmenu`, `start-here`; `applications-other`, `applications-all` | The Applications menu button; Other category |
 | hub, session-master-mode, initiative, dice | `iprps-hub`, `iprps-session`, `iprps-combat`, `iprps-dice` | Session Master Hub, Session Master Mode, Combat Tracker, Dice Roller |
-| ai-session-master, media-player, and the rest | `iprps-` names only | IPRPS launchers and the folder icons below |
+| ai-session-master, media-player | `iprps-ai-session-master`, `iprps-media-player` | Reserved for two future apps: the **AI Session Master** (one place for AI profiles, patches and capstones) and the **IPRPS CD/DVD player**; their menu entries use these names |
+| folder-root-system and the folder icons | `iprps-` names | The folder icons below |
 
 **IPRPS folder icons in Thunar.** An icon theme names *kinds* of folders, not particular ones, and Thunar 4.20 has no per-folder icon setting. So IPRPS adds a **folder thumbnailer** (`/usr/bin/iprps-folder-thumbnailer`, the method in Thunar's documentation): Thunar asks it for a "thumbnail" of each folder, and it answers with that folder's IPRPS icon. Nothing is written inside the folders; folders without an IPRPS icon keep the `folder` icon.
 
 | Folders | Icon |
 |---|---|
+| `/` (the top of the file system) | folder-root-system |
 | `/bin` `/boot` `/dev` `/etc` `/home` `/lib` `/lib64` `/media` `/mnt` `/opt` `/proc` `/root` `/run` `/sbin` `/srv` `/sys` `/tmp` `/usr` `/var` | The icon of the same name |
 | `/build`, `/usr/src`, `/build/src` | build, src, sources |
 | By name, anywhere (any capitals): Campaigns, Projects, Public, Templates, Maps, Handouts, NPCs, Players, Creatures, Dungeons, AI Profiles, AI Patches, RPG Vault, Archives, Code / Scripts, Text Files, Audio, debian-kconfig | campaigns, Projects, Public, Templates, folder-maps, folder-handouts, folder-npcs, folder-players, folder-creatures, folder-dungeons, folder-ai-profiles, folder-ai-patches, folder-rpg-vault, folder-archives, folder-code-scripts, folder-text-files, folder-music, debian-kconfig |
@@ -23585,6 +23594,7 @@ find /etc /srv/www/iprps -name '*.pacnew'
 ```bash
 for f in $(find /etc /srv/www/iprps -name '*.pacnew'); do mv -v "$f" "${f%.pacnew}"; done
 pacman-key --init && pacman-key --populate iprps
+gpgconf --homedir /etc/pacman.d/gnupg --kill all      # its background helper would keep the image busy
 pacman -Q | wc -l
 pacman -Qo /usr/bin/pacman /srv/www/iprps/hub/index.html /opt/iprps/table/server.js
 pacman -Dk
@@ -23652,9 +23662,61 @@ It prints **2**.
 | IPRPS Updates: *failed to retrieve some files* / *404* | The upload missed files, or the host refuses `.db` files: `iprps-repo.sh online` names what's missing. On some hosts, `.db` files need a MIME type: add `AddType application/octet-stream .db .files .sig .zst` to `/downloads/iprps/repo/.htaccess` |
 | IPRPS Updates doesn't open after the password | Run `iprps-updates` in a terminal to see the message. Only administrators (group `wheel`) or someone who knows an administrator's password can open it |
 | IPRPS Updates stays at *upgrading …* (iprps-base 1.0-1 only) | pacman 7.1 hung starting `ldconfig` right after downloading in the same run. The package is installed; the transaction just doesn't finish. From 1.0-2, `iprps-update` downloads first and installs in a separate run | In a terminal: `ps -eo pid,etime,args --forest \| grep pacman`, then `sudo kill <PID>` of the **inner** `pacman` (the one whose parent is also `pacman`). pacman then finishes by itself. Then install iprps-base 1.0-2 (Part 17) |
+| `iprps-leave.sh`: *Still in use* with only `gpg-agent` (or `dirmngr`) listed | A key helper started inside the image by `pacman-key` or `gpg` | `kill <PID>` of it, then `iprps-leave.sh` again. The current `iprps-leave.sh` (0.5) stops them itself |
 | *IPRPS Updates is open for another account* | Another user opened it on this computer. It closes 2 minutes after its window closes |
 
-> **Lite.** The Lite release needs pacman too. In the Lite fix copy (*Before Stage H*, step 4): do steps 2–4 here (the libraries and pacman), copy the packages over with **[DEBIAN ROOT]** `mkdir -p /mnt/iprps/build/repo && cp -v /root/iprps-repo/1/iprps-*/x86_64/*.pkg.tar.zst /mnt/iprps/build/repo/` while the Lite copy is entered, `chroot /mnt/iprps chown -R builder: /build/repo`, then step 7 with `ED=lite`. Nothing needs rebuilding: the packages are the same for every edition.
+**Lite: the same in the Lite fix copy.** The Lite release was made before the package manager, so Lite gets it in the Lite fix copy (*Before Stage H*, step 4). Nothing is rebuilt there: the packages are the same for every edition, and installing them also brings Lite's apps up to date (12.9–12.11 and the icons, 9.3), because Lite's edition package depends on them.
+
+**L1. Make the Lite copy and enter it. [DEBIAN ROOT]** Close the build image first:
+
+```bash
+bash /root/iprps-leave.sh
+cp -v --sparse=always /root/snapshots/iprps-RELEASE-lite.img /root/iprps-lite-fix.img
+IPRPS_IMG=/root/iprps-lite-fix.img bash /root/iprps-enter.sh
+grep PRETTY_NAME /mnt/iprps/etc/os-release
+```
+
+`grep` shows **IPRPS OS 1.0** (the build image's name; the release copies get *Lite* in 13.4). Open the **IPRPS CHROOT** and **BUILDER** windows as usual (0.5): they now work on the Lite copy.
+
+**L2. The libraries and pacman.** Do steps **2, 3 and 4** above in the Lite copy (GnuPG, GPGME, fakeroot, pacman, and `builder`'s `~/.makepkg.conf` with the `PKGEXT` line).
+
+**L3. The packages, the first-boot script and one menu icon. [DEBIAN ROOT]** From the master repository (the newest version of every package) and the repository:
+
+```bash
+mkdir -p /mnt/iprps/build/repo
+cp -v /root/iprps-repo/1/iprps-*/x86_64/*.pkg.tar.zst /mnt/iprps/build/repo/
+chroot /mnt/iprps chown -R builder:builder /build/repo
+install -vm755 /mnt/g/IPRPS/iprps-os/rootfs/usr/sbin/iprps-db-init /mnt/iprps/usr/sbin/
+sed -i 's|^Icon=.*|Icon=iprps-session|' /mnt/iprps/usr/share/applications/iprps-session.desktop
+ls /mnt/iprps/build/repo | wc -l
+```
+
+`ls` counts every package in the repository (20 or more: pacman, the keyring, `iprps-base`, three editions, `iprps-icons` and the 14 apps).
+
+**L4. Install them. [IPRPS CHROOT]** Step 7 above with **`ED=lite`** (it leaves out the Oracle and the other editions). `wc -l` prints **18**, and after `pacman -U`, `pacman -Q | wc -l` prints **18** too. Take the `.pacnew` files as step 7 says, then:
+
+```bash
+pacman -Q iprps-lite iprps-icons iprps-hub
+ls /srv/www/iprps/ | grep -cE '^(character-sheets|combat|dice|session-log|welcome|file-viewer|soundboard|updates)$'
+ls -ld /var/lib/iprps-vault /var/lib/iprps-sounds
+/usr/lib/iprps/iprps-icon-theme >/dev/null && find /usr/share/icons/IPRPS -xtype l | wc -l
+```
+
+The `grep -c` prints **8** (the apps from 12.9–12.11 and the Updates tile), both folders show `drwx------ … apache apache`, and the last line prints **0**.
+
+**L5. Test. [TEST VM]** Boot a test copy of `/root/iprps-lite-fix.img` (1.4) and check the apps of 12.9–12.11, the icons, and IPRPS Updates (**Check now**: *up to date*; the Oracle shows *not in this edition*).
+
+**L6. Release Lite, and keep the result. [DEBIAN ROOT]** As in *Before Stage H*, step 4:
+
+```bash
+IPRPS_IMG=/root/iprps-lite-fix.img bash /root/iprps-leave.sh
+IPRPS_IMG=/root/iprps-lite-fix.img /root/iprps-release-clean.sh lite
+/root/iprps-release-pack.sh lite
+cp -v --sparse=always /root/iprps-lite-fix.img /root/snapshots/iprps-RELEASE-lite.img
+bash /root/iprps-enter.sh
+```
+
+13.4's check list now shows **edition package: iprps-lite** and **pacman keyring: removed**. Make the Lite ISO too if you publish one (13.9), and back up the new `RELEASE-lite` snapshot (Appendix F).
 
 > **Checkpoint:** All Lite IPRPS apps open from the IPRPS menu, Session Master Mode opens all three windows, and **IPRPS Updates** opens and checks. Take snapshot **`iprps-apps-lite`**.
 
