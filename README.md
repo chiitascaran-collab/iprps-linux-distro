@@ -36,6 +36,9 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `tools/iprps-clean-apps.py` | Makes a distributable copy of the web apps: no API keys, no hosting passwords, local database names, `@IPRPS_DB_PASS@` placeholder (guide 12.5) |
 | `docs/USEFUL-COMMANDS.md` | File transfers (Windows ↔ WSL ↔ chroot ↔ test VM), QEMU and RealVNC, SSH, Git |
 | `docs/CUSTOMIZING-ICONS.md` | How users and administrators add their own icons on an installed IPRPS OS |
+| `docs/session-master-manual/` | The **Session Master Training Manual**: how to run games with IPRPS OS, with seven walkthroughs (Markdown, PDF, Word, and a website: upload the folder) |
+| `docs/REMOTE-PLAYERS.md` | Players in another city or state join the IPRPS Table through Tailscale, without changing IPRPS OS (Appendix G) |
+| `tools/iprps-remote-play.sh` | Installs Tailscale on the Session Master's computer into `/opt/tailscale` (`install`, `status`, `remove`), for remote players (Appendix G) |
 | `docs/lfs/` | LFS 13.1-systemd companion guides (WSL and Debian editions), checklists, `wget-list-systemd`, `md5sums` |
 | `docs/archive/` | The original planning guide (written under the earlier name "IPRPS Linux") |
 | `build-host/` | `iprps-enter.sh` / `iprps-leave.sh`: mount the image and enter the build chroot from Debian on WSL; `iprps-release-clean.sh` / `iprps-release-pack.sh`: make the release images (13.4, 13.5); `iprps-release-iso.sh`: the live ISO for DVD and USB (13.9); `iprps-backup.sh`: back up the build image and snapshots to another drive, compressed (Appendix F); `iprps-repo.sh`: the package repository: signing key, sign and add packages, check, stage for upload, test server (12.12, Part 17) |

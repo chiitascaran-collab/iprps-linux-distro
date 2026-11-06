@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-06
+
+- **Session Master Training Manual (new):** `docs/session-master-manual/`, a training guide for Session Masters at an 8th-grade reading level: what makes IPRPS OS different from online tabletops, campaign setup, session prep, the IPRPS Table, IPRPS rolls and bands, the Combat Tracker, the Soundboard, the Oracle, the Session Log and recap, updates and remote players, with seven walkthroughs and new screenshots and diagrams. As Markdown, PDF, Word and a self-contained website (the folder uploads as is).
+- **Remote players (Appendix G, new), all editions:** players in another city or state join the IPRPS Table through **Tailscale** (WireGuard-encrypted, no port forwarding), and the Table treats them as local players. `tools/iprps-remote-play.sh` installs Tailscale's official static build on the Session Master's computer into `/opt/tailscale` (checksum checked; `status` and `remove` too) without changing any IPRPS OS package, file, firewall or DNS setting. The Session Master shares only the IPRPS computer with each player, and an access rule limits players to the Table's port 7777. Also as `docs/REMOTE-PLAYERS.md`; 12.7 points to it.
+
 ## 2026-11-01
 
 - **Icons (9.3), all editions:** 72 IPRPS icons (was 24), now in the repository (`artwork/icons`) and packaged as **`iprps-icons`**, so installed computers get them with IPRPS Updates (the edition packages depend on it from `iprps-base` 1.0-4).
