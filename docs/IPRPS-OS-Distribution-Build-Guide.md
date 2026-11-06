@@ -376,8 +376,18 @@ cat > /root/iprps-enter.sh << "EOF"
 #!/bin/bash
 # Mount the IPRPS image and enter the chroot as root (IPRPS_IMG=<file> picks another image, such as a Lite fix copy)
 IMG=${IPRPS_IMG:-/root/iprps-system.img}; R=/mnt/iprps
+# Only one image can be open at a time: refuse if another image is mounted at /mnt/iprps
+if mountpoint -q $R; then
+  CUR=$(losetup -l -n -O NAME,BACK-FILE | awk -v d="$(findmnt -n -o SOURCE $R | sed 's/p[0-9]*$//')" '$1==d {print $2}')
+  if [ "$CUR" != "$IMG" ]; then
+    echo "STOPPED: /mnt/iprps has another image open: ${CUR:-unknown}"
+    echo "Exit its chroot windows and close it first: IPRPS_IMG=${CUR:-<that image>} bash /root/iprps-leave.sh"
+    exit 1
+  fi
+fi
 L=$(losetup -j $IMG | cut -d: -f1 | head -1); [ -n "$L" ] || L=$(losetup -fP --show $IMG)
 mkdir -p $R; mountpoint -q $R || mount ${L}p3 $R
+echo "Image: $IMG ($(. $R/etc/os-release 2>/dev/null; echo "$PRETTY_NAME"))"
 mkdir -p $R/boot/efi $R/build
 mountpoint -q $R/boot/efi || mount ${L}p1 $R/boot/efi
 mountpoint -q $R/build || mount --bind /build $R/build
@@ -413,7 +423,18 @@ for m in dev/shm dev/pts dev proc sys run build boot/efi; do
 done
 mountpoint -q "$R" && umount -v "$R"
 sync
-for L in $(losetup -j "${IPRPS_IMG:-/root/iprps-system.img}" | cut -d: -f1); do losetup -v -d "$L"; done
+# Detach the image, retrying: the kernel can keep a loop device busy for a moment after the last unmount
+IMGF=${IPRPS_IMG:-/root/iprps-system.img}
+for try in 1 2 3 4 5; do
+  LS=$(losetup -j "$IMGF" | cut -d: -f1)
+  [ -z "$LS" ] && break
+  for L in $LS; do losetup -d "$L" 2>/dev/null && echo "Detached $L"; done
+  sleep 1
+done
+if [ -n "$(losetup -j "$IMGF")" ]; then
+  echo "STILL ATTACHED: $(losetup -j "$IMGF" | cut -d: -f1 | tr '\n' ' ')- detach it with: losetup -d /dev/loopN"
+  exit 1
+fi
 echo "Remaining mounts under $R:"; findmnt -R "$R" || echo "  none"
 losetup -a | grep iprps || echo "Image detached."
 EOF
@@ -481,7 +502,7 @@ ls -l /root/iprps-test.img          # must be 42949672960 bytes
 Start the VM:
 
 ```bash
-qemu-system-x86_64 -enable-kvm -m 6G -smp 4 \
+qemu-system-x86_64 -enable-kvm -cpu host -m 6G -smp 4 \
   -bios /usr/share/ovmf/OVMF.fd \
   -drive file=/root/iprps-test.img,format=raw,if=virtio \
   -nic user,model=virtio-net-pci,hostfwd=tcp::2222-:22 \
@@ -24419,7 +24440,7 @@ if command -v pacman >/dev/null 2>&1; then
   else
     P=$(ls -t /build/repo/iprps-$ED-[0-9]*.pkg.tar.zst 2>/dev/null | head -1 || true)
     if [ -n "$P" ]; then pacman -U --noconfirm "$P" >/dev/null && echo "Installed ${P##*/}"
-    else echo "WARNING: no iprps-$ED package in /build/repo (12.12 step 6)"; fi
+    else echo "WARNING: no iprps-$ED package found (publish it first: 12.12 step 8)"; fi
   fi
   pacman -Dk 2>&1 | tail -3 || true
   rm -rf /etc/pacman.d/gnupg /var/cache/pacman/pkg/* /var/lib/iprps-updates/*   # each computer makes its own keyring
@@ -24456,6 +24477,11 @@ echo "  edition package:   $(pacman -Qq 2>/dev/null | grep -xE 'iprps-(lite|medi
 echo "  pacman keyring:    $( [ -d /etc/pacman.d/gnupg ] && echo 'STILL THERE' || echo 'removed (each computer makes its own)')"
 INSIDE_EOF
 chmod 755 "$INSIDE"
+# The edition package (12.12): /build is Debian's folder (iprps-enter.sh mounts it), so the copy doesn't have
+# it. Bring the newest one in, from the published repository or else from the local builds.
+mkdir -p "$MNT/build/repo"
+P=$(ls -t /root/iprps-repo/1/iprps-core/x86_64/iprps-$ED-[0-9]*.pkg.tar.zst /build/repo/iprps-$ED-[0-9]*.pkg.tar.zst 2>/dev/null | head -1 || true)
+[ -n "$P" ] && cp "$P" "$MNT/build/repo/"
 chroot "$MNT" /bin/bash "$INSIDE" "$EDC"
 
 # ---------------------------------------------------------------- close
@@ -24635,7 +24661,7 @@ To write the downloads somewhere else, run `IPRPS_RELEASE_OUT=/mnt/d/somewhere /
 ```bash
 ED=lite        # or medium / advanced
 qemu-img create -f qcow2 -b /root/release/iprps-os-1.0-$ED.qcow2 -F qcow2 /root/rel-uefi.qcow2 40G
-qemu-system-x86_64 -enable-kvm -m 6G -smp 4 -bios /usr/share/ovmf/OVMF.fd \
+qemu-system-x86_64 -enable-kvm -cpu host -m 6G -smp 4 -bios /usr/share/ovmf/OVMF.fd \
   -drive file=/root/rel-uefi.qcow2,format=qcow2,if=virtio \
   -nic user,model=virtio-net-pci,hostfwd=tcp::2222-:22 \
   -audio none -vga virtio -display none -vnc 127.0.0.1:0 -monitor stdio
@@ -24690,7 +24716,7 @@ Next to the `.img.xz`, each edition can ship as a **live ISO**: `iprps-os-1.0-<e
 | Changes are kept | Yes: it *is* the installed system | No: the live session lives in RAM and is gone at shutdown |
 | First start | Setup screens, then the desktop | Straight to the desktop as **IPRPS Live** (no password) |
 | Installing | Optional; copies the running system | Copies the clean system from the disc; its first boot runs the setup screens |
-| Memory | The edition's minimum | The edition's minimum plus about 2 GB (the session's changes are kept in RAM) |
+| Memory | The edition's minimum | The edition's minimum plus about 2 GB (the session's changes are kept in RAM). **The IPRPS Oracle in the live session needs 12 GB or more**: its model is read from the compressed disc |
 
 The ISO is made from the same cleaned release copy as the other downloads (13.4), so it contains exactly the same system.
 
@@ -24904,10 +24930,10 @@ The script checks that the image is cleaned and has live support, compresses the
 
 ```bash
 ED=lite
-qemu-system-x86_64 -enable-kvm -m 8G -smp 4 -bios /usr/share/ovmf/OVMF.fd \
+qemu-system-x86_64 -enable-kvm -cpu host -m 8G -smp 4 -bios /usr/share/ovmf/OVMF.fd \
   -cdrom /root/release/iprps-os-1.0-$ED.iso \
   -audio none -vga virtio -display none -vnc 127.0.0.1:0 -monitor stdio
-qemu-system-x86_64 -enable-kvm -m 8G -smp 4 \
+qemu-system-x86_64 -enable-kvm -cpu host -m 8G -smp 4 \
   -drive if=none,id=stick,file=/root/release/iprps-os-1.0-$ED.iso,format=raw,readonly=on \
   -device qemu-xhci -device usb-storage,drive=stick \
   -audio none -vga virtio -display none -vnc 127.0.0.1:0 -monitor stdio
@@ -29919,6 +29945,7 @@ Done in 1.0: **13.9** makes a live ISO for each edition (DVD or USB, UEFI and BI
 | Black screen on a real PC | Graphics driver or firmware issue | Choose **IPRPS OS (safe graphics)** in GRUB; check `dmesg` for firmware errors |
 | Wi-Fi missing on a real PC | Firmware not loaded | `dmesg \| grep -i firmware`; the file should be under `/usr/lib/firmware` |
 | The Oracle says "The local AI service (Ollama) is not running" | Service stopped or failed | `systemctl status ollama`; `journalctl -u ollama -b` |
+| The Oracle never answers in a QEMU test VM (Ollama green, no text after many minutes) | The VM's processor has no AVX2: QEMU was started without `-cpu host`, so Ollama runs its slowest code (hours per answer). In the live ISO, also too little memory (the model is read from the compressed disc) | Start QEMU with `-enable-kvm -cpu host`; `grep -c avx2 /proc/cpuinfo` in the VM must be above 0. Live ISO: `-m 12G` or more |
 | The Oracle says no model is installed, or `iprps-storyteller` is missing | Step 6 skipped, or the models aren't owned by `ollama` | `sudo iprps-ai-model status`; `chown -R ollama:ollama /var/lib/ollama`; `sudo iprps-ai-model reset` |
 | Oracle answers appear all at once instead of word by word | 10.1's PHP rule (`flushpackets`) missing | `cat /etc/httpd/extra/iprps-php.conf` (10.1); `ls -A /srv/www/iprps/oracle/.user.ini` |
 | Oracle answers are very slow | No usable GPU, or too little free memory | `sudo iprps-ai-model status` (compute device); close other programs; 8 GB is the minimum |
@@ -30050,7 +30077,7 @@ umount /mnt/iprps-test && losetup -d $L
 
 ```bash
 pgrep -a qemu || echo "No QEMU running"
-qemu-system-x86_64 -enable-kvm -m 6G -smp 4 \
+qemu-system-x86_64 -enable-kvm -cpu host -m 6G -smp 4 \
   -bios /usr/share/ovmf/OVMF.fd \
   -drive file=/root/iprps-test.img,format=raw,if=virtio \
   -nic user,model=virtio-net-pci,hostfwd=tcp::2222-:22 \

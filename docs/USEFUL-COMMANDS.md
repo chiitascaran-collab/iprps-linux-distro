@@ -103,7 +103,7 @@ umount /mnt/iprps-test && losetup -d $L
 
 ```bash
 pgrep -a qemu || echo "No QEMU running"
-qemu-system-x86_64 -enable-kvm -m 6G -smp 4 \
+qemu-system-x86_64 -enable-kvm -cpu host -m 6G -smp 4 \
   -bios /usr/share/ovmf/OVMF.fd \
   -drive file=/root/iprps-test.img,format=raw,if=virtio \
   -nic user,model=virtio-net-pci,hostfwd=tcp::2222-:22 \

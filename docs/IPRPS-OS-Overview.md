@@ -85,7 +85,7 @@ Any 64-bit Intel or AMD PC with 6 GB of RAM and 64 GB of storage (128 GB for Adv
 
 | Item | Minimum | Recommended |
 | --- | --- | --- |
-| Processor | 64-bit Intel or AMD (x86-64) | 4 or more cores |
+| Processor | 64-bit Intel or AMD (x86-64) | 4 or more cores; for the IPRPS Oracle, a processor with AVX2 (most Intel and AMD processors from 2013 or later) |
 | Memory (RAM) | 6 GB (Lite), 8 GB (Medium) | 16 GB |
 | Storage | 64 GB (128 GB for Advanced) | SSD, 128 GB or more |
 | Firmware | UEFI or legacy BIOS | UEFI |
@@ -221,8 +221,8 @@ The **IPRPS Oracle** is a storyteller AI for Session Masters that runs **entirel
 | IPRPS Media Player | Music, ambience, CDs, DVDs and IPRPS radio | Included (Medium and up) |
 | Genesis Character Engine | AI character reference sheets | Included (Medium and up; needs internet and your API key) |
 | IPRPS Writing Assistant | AI-assisted writing for lore and prep | Included (Medium and up; needs internet and your API key) |
-| AI Session Master | One place for AI profiles, patches and capstones | Planned |
-| IPRPS CD/DVD Player | Discs at the table | Planned |
+| AI Session Master | One place for AI profiles, patches and capstones | Planned (an update, then 1.1 Medium and Advanced) |
+| IPRPS CD/DVD Player | Discs at the table | Planned (an update, then 1.1 Medium and Advanced) |
 
 ## The IPRPS Desktop and Session Master Mode
 
@@ -272,7 +272,7 @@ Each edition is one compressed disk image. Write it to a USB stick, boot from it
 
 **To install on the computer itself:** run *Install IPRPS OS to This Computer* from the IPRPS menu, choose the internal disk, and confirm. That disk is **completely erased**, so back up anything you need first.
 
-**To try it without touching your PC:** start the live `.iso` from a DVD (Windows: right-click it, **Burn disc image**) or a USB stick (balenaEtcher, or Rufus in DD Image mode), or use the `.vhdx` in Hyper-V (Generation 2, Secure Boot off) or the `.qcow2` in QEMU.
+**To try it without touching your PC:** (the live session keeps everything in memory, so to try the IPRPS Oracle there, use a computer with 12 GB or more) start the live `.iso` from a DVD (Windows: right-click it, **Burn disc image**) or a USB stick (balenaEtcher, or Rufus in DD Image mode), or use the `.vhdx` in Hyper-V (Generation 2, Secure Boot off) or the `.qcow2` in QEMU.
 
 ## Updates: IPRPS Updates
 
@@ -326,8 +326,8 @@ IPRPS apps are by Mythical Legends Publishing; each app states its own license. 
 These are plans, not promises, and dates aren't set; each release's notes say what actually shipped.
 
 1. **Version 1.0:** the three editions, Session Master Mode, the Hub, the IPRPS Table, character sheets, the session tools, the Soundboard, IPRPS Writer, IPRPS Updates and, in Medium and Advanced, the IPRPS Oracle.
-2. **AI Session Master:** one app as the entry point to AI profiles, profile patches, session run patches and capstones.
-3. **IPRPS CD/DVD Player** for music and video discs at the table.
+2. **AI Session Master:** one app as the entry point to AI profiles, profile patches, session run patches and capstones. It arrives first as an update through IPRPS Updates, then comes included in **version 1.1** of Medium and Advanced.
+3. **IPRPS CD/DVD Player** for music and video discs at the table: the same way, first as an update, then included in version 1.1 of Medium and Advanced.
 4. **More optional software** through IPRPS Updates, such as Advanced's creative apps for Medium, and the Oracle for Lite on 16 GB machines.
 5. **A custom-trained IPRPS model** for the Oracle, which can replace the bundled one without changing the app.
 6. **A persistent live USB** that keeps your changes, and a graphical installer.
