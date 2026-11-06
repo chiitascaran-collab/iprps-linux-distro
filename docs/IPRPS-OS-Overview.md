@@ -172,6 +172,17 @@ Open the table and your players join from their own devices: they open the addre
 
 Every roll is made on the Session Master's computer, so nobody can fake one. The Session Master doesn't see players-only or player-to-player private messages.
 
+### Remote players: join from another city or state
+
+A player who can't be in the room can still take a seat at the IPRPS Table. Both computers install **Tailscale**, a free app that links them into a small private network over the internet, encrypted end to end. The remote player then joins exactly like someone on your Wi-Fi, at an address your Table console lists, with the same join code, chat, dice, media and character sheets, and the Table treats them as a local player.
+
+- **Nothing in IPRPS OS changes.** One script, `iprps-remote-play.sh` from the IPRPS OS repository, installs Tailscale on the Session Master's computer in a folder of its own and signs it in; `remove` takes it out again. No router settings are needed on either side.
+- **Players install the Tailscale app** on Windows, macOS, Linux, iPhone, iPad or Android, make a free account, and accept your invite.
+- **They see only the Table.** You share just your IPRPS computer with each player, and one access rule lets them reach only the Table, not your other devices or apps. The table still opens only when you open it, and only with the join code.
+- **Try it first** with a phone on mobile data, Wi-Fi off. Images and video you show come from your home internet's upload, so short clips work best.
+
+Tailscale's free Personal plan covers home campaigns (up to 6 users, non-commercial use). The build guide's Appendix G and `docs/REMOTE-PLAYERS.md` have the full steps.
+
 ### Get help from the IPRPS Oracle (Medium and Advanced)
 
 The **IPRPS Oracle** is a storyteller AI for Session Masters that runs **entirely on your computer**: no internet, no account, no API key, and nothing leaves the machine.
@@ -205,6 +216,7 @@ The **IPRPS Oracle** is a storyteller AI for Session Masters that runs **entirel
 | --- | --- | --- |
 | Session Master Hub | Home page with your apps; Manage apps per account | Included |
 | IPRPS Table | Play over the local network: chat, IPRPS dice, pushed images, video and sound, character sheets | Included |
+| Remote players | Players in another city or state join the Table through Tailscale, encrypted | Optional (one script, no change to IPRPS OS) |
 | Character Creator and Character Sheets | The IPRPS character sheet; the Session Master's library of player, NPC and creature sheets | Included |
 | Initiative and Combat Tracker | Encounters, initiative, turns, HP with Armor Rating, conditions, five combat modes | Included |
 | Dice Roller | Any dice and every IPRPS roll, logged and shown to players | Included |
@@ -293,7 +305,7 @@ New point releases (1.0.1, 1.1…) arrive the same way: the update changes the v
 Your campaigns, players and session records stay on your computer. Nothing is sent anywhere unless you use an online feature.
 
 - **Local web server.** The IPRPS apps run on a web server (Apache with PHP) that accepts connections **only from the computer itself**.
-- **The IPRPS Table** is the one part that other devices can reach, and only while you have a table **open**, only on your local network, and only with the join code. Its console opens only on your computer. Closing the table disconnects everyone; after a restart the table is always closed.
+- **The IPRPS Table** is the one part that other devices can reach, and only while you have a table **open**, only on your local network (or, if you set up remote players, through your own encrypted Tailscale network, limited to the Table), and only with the join code. Its console opens only on your computer. Closing the table disconnects everyone; after a restart the table is always closed.
 - **Local database.** Campaign data lives in a MariaDB database with no network port at all. Each installation gets its own randomly generated database password on first boot.
 - **Local AI.** The IPRPS Oracle runs on your computer and listens only to it. Your campaign never leaves the machine.
 - **Your accounts.** Each person who uses the computer gets their own account, files and settings. The first user can administer the system with their own password; the root account is locked.
@@ -342,6 +354,8 @@ Follow infiniteplane.space and the GitHub repository for announcements.
 
 **Can my players use their own phones or laptops?** Yes, with the IPRPS Table. Players on the same network open the address or scan the QR code shown in your console, enter the join code, and they're at the table: chat, dice, their character sheet, and anything you push to them. They don't need IPRPS OS, an app or an account; any web browser works.
 
+**Can a player in another state join my game?** Yes. Install Tailscale on your computer with the IPRPS script and invite the player; they install the Tailscale app, accept, and join the IPRPS Table like everyone else, over an encrypted connection (*Remote players*, above). IPRPS OS itself doesn't change.
+
 **How do players get their character sheets to me?** Give them the Character Creator file (Character Sheets → **Blank sheet for players**), or have them open their sheet on the IPRPS Table. They send you the finished sheet, and you import it in Character Sheets.
 
 **I only have one monitor. Can I still run a game?** Yes. Session Master Mode opens the IPRPS Table instead of a player display when there's one screen, and your players follow on their own devices.
@@ -374,6 +388,7 @@ Follow infiniteplane.space and the GitHub repository for announcements.
 | **Session Master Hub** | The home page of the Session Master's apps |
 | **IPRPS Table** | Play over the local network: players join from their own devices to chat, roll dice and see what the Session Master shares |
 | **Join code** | The six-character code players type to join an open IPRPS Table |
+| **Remote player** | A player in another place who joins the IPRPS Table through Tailscale, an encrypted private network between the two computers |
 | **IPRPS Oracle** | The storyteller AI that runs on your computer (Medium and Advanced) |
 | **IPRPS Updates** | The window (and `iprps-update` command) that installs updates and optional software |
 | **Player display** | A full-screen window for players on a second screen, showing what the Session Master reveals |

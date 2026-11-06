@@ -1,0 +1,1051 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPRPS OS Session Master Training Manual</title>
+<meta name="description" content="Learn to prepare, run and wrap up IPRPS games with IPRPS OS: the IPRPS Table, IPRPS dice and bands, the Combat Tracker, the Soundboard, the IPRPS Oracle and the Session Log, with step-by-step walkthroughs.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('iprps-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>
+/* SPDX-License-Identifier: GPL-2.0-only · Copyright (C) 2026 Mythical Legends Publishing, LLC */
+@font-face { font-family: "Alegreya"; src: url("assets/fonts/alegreya-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Alegreya"; src: url("assets/fonts/alegreya-latin-800-normal.woff2") format("woff2"); font-weight: 800; font-display: swap; }
+@font-face { font-family: "Alegreya Sans"; src: url("assets/fonts/alegreya-sans-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Alegreya Sans"; src: url("assets/fonts/alegreya-sans-latin-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Alegreya Sans"; src: url("assets/fonts/alegreya-sans-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Alegreya Sans"; src: url("assets/fonts/alegreya-sans-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+
+:root {
+  --bg: #121a3f; --panel: #19224c; --field: #0e1535; --line: #2c3770; --text: #ebe8de; --mist: #b4b8d4;
+  --gold: #d9b45a; --gold-hi: #f1d58c; --on-gold: #1d1606; --teal: #47bfc4; --violet: #b49cf0;
+  --walk-bg: #2a2a3c; --tip-bg: #15304a; --try-bg: #251f4a; --th: #222c5e; --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: "Alegreya Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f4f2ec; --panel: #ffffff; --field: #ebe8df; --line: #d8d3c4; --text: #1b2142; --mist: #545b7c;
+  --gold: #8f6a14; --gold-hi: #6f5110; --on-gold: #fff8e6; --teal: #17777b; --violet: #5b3fb0;
+  --walk-bg: #fbf3df; --tip-bg: #e6f4f4; --try-bg: #f1edfb; --th: #eceaf4; --shadow: 0 8px 24px rgba(27,33,66,.12);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="auto"] {
+    --bg: #f4f2ec; --panel: #ffffff; --field: #ebe8df; --line: #d8d3c4; --text: #1b2142; --mist: #545b7c;
+    --gold: #8f6a14; --gold-hi: #6f5110; --on-gold: #fff8e6; --teal: #17777b; --violet: #5b3fb0;
+    --walk-bg: #fbf3df; --tip-bg: #e6f4f4; --try-bg: #f1edfb; --th: #eceaf4; --shadow: 0 8px 24px rgba(27,33,66,.12);
+    color-scheme: light;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--text); font: 400 1.18rem/1.65 var(--sans); }
+a { color: var(--gold-hi); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; border-radius: 4px; }
+code { font: .86em var(--mono); background: var(--field); border: 1px solid var(--line); border-radius: 5px; padding: .08em .35em; overflow-wrap: anywhere; }
+
+/* header */
+.top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.top .in { max-width: 1240px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; gap: 14px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font: 800 1.25rem/1 var(--serif); }
+.brand img { width: 34px; height: 34px; }
+.brand span { color: var(--gold); }
+.top .sp { flex: 1; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: .45em .95em; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font: 600 1rem/1.2 var(--sans); text-decoration: none; cursor: pointer; white-space: nowrap; }
+.btn.gold { background: var(--gold); color: var(--on-gold); border-color: var(--gold); }
+.btn:hover { border-color: var(--gold); }
+.theme { width: 40px; justify-content: center; padding: .45em 0; }
+
+/* hero */
+.hero { max-width: 1240px; margin: 0 auto; padding: 56px 20px 36px; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.hero h1 { font: 800 clamp(2.2rem, 5vw, 3.5rem)/1.05 var(--serif); margin: 0 0 14px; color: var(--text); }
+.hero h1 em { font-style: normal; color: var(--gold); }
+.hero p.lede { font-size: 1.3rem; color: var(--mist); margin: 0 0 22px; max-width: 34em; }
+.hero .ver { color: var(--mist); font-size: 1rem; margin: -10px 0 20px; letter-spacing: .04em; }
+.hero .cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero .art { border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); }
+.hero .art img { display: block; width: 100%; height: auto; }
+.facts { max-width: 1240px; margin: 0 auto 8px; padding: 0 20px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.facts div { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.facts b { display: block; font: 800 1.5rem/1.1 var(--serif); color: var(--gold); }
+.facts span { color: var(--mist); font-size: 1rem; }
+
+/* layout */
+.layout { max-width: 1240px; margin: 0 auto; padding: 28px 20px 60px; display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 44px; }
+nav.toc { position: sticky; top: 80px; align-self: start; max-height: calc(100vh - 100px); overflow: auto; }
+nav.toc h2 { font: 700 .82rem/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin: 6px 0 12px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; }
+nav.toc a { display: flex; gap: 10px; padding: 7px 10px; border-radius: 8px; color: var(--mist); text-decoration: none; font-size: 1.02rem; line-height: 1.3; }
+nav.toc a:hover { background: var(--panel); color: var(--text); }
+nav.toc a.on { background: var(--panel); color: var(--text); box-shadow: inset 3px 0 0 var(--gold); }
+nav.toc .num { flex: 0 0 1.4em; font: 700 1rem/1.3 var(--serif); color: var(--gold); text-align: right; }
+details.toc-m { display: none; }
+
+main { min-width: 0; max-width: 820px; }
+.chapter { padding-bottom: 18px; margin-bottom: 26px; border-bottom: 1px solid var(--line); }
+main h2 { font: 800 clamp(1.7rem, 3.4vw, 2.3rem)/1.15 var(--serif); margin: 28px 0 14px; color: var(--text); }
+main h3 { font: 700 1.45rem/1.25 var(--serif); margin: 30px 0 8px; color: var(--gold-hi); }
+.anchor { margin-left: .35em; font-size: .7em; color: var(--line); text-decoration: none; opacity: 0; }
+h2:hover .anchor, h3:hover .anchor, .anchor:focus { opacity: 1; }
+main p, main li { max-width: 68ch; }
+main ul, main ol { padding-left: 1.4em; }
+main li { margin: .3em 0; }
+strong { color: var(--text); font-weight: 700; }
+
+figure { margin: 22px 0 26px; }
+figure img { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); box-shadow: var(--shadow); background: #fff; }
+figure.narrow { max-width: 300px; }
+figure.medium { max-width: 560px; }
+figcaption { margin-top: 9px; color: var(--mist); font-size: 1rem; line-height: 1.45; }
+figure a { display: block; }
+
+.box { display: block; margin: 22px 0; padding: 16px 20px 14px; border-radius: 12px; border: 1px solid var(--line); border-left-width: 5px; position: relative; }
+.box p { margin: .4em 0; }
+.box-label { display: inline-block; font: 700 .78rem/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; padding: 5px 9px; border-radius: 99px; margin-bottom: 6px; }
+.box.walk { background: var(--walk-bg); border-color: var(--gold); }
+.box.walk .box-label { background: var(--gold); color: var(--on-gold); }
+.box.walk strong.wt { display: block; font: 800 1.3rem/1.25 var(--serif); color: var(--gold-hi); margin: 2px 0 6px; }
+.box.walk ol { margin: .5em 0; }
+.box.tip { background: var(--tip-bg); border-color: var(--teal); }
+.box.tip .box-label { background: var(--teal); color: #06272a; }
+.box.try { background: var(--try-bg); border-color: var(--violet); }
+.box.try .box-label { background: var(--violet); color: #fff; }
+.box.note .box-label { background: var(--line); }
+
+.table-scroll { overflow-x: auto; margin: 18px 0 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 1.02rem; line-height: 1.45; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+th { background: var(--th); font-weight: 700; }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 500; }
+
+footer { border-top: 1px solid var(--line); color: var(--mist); font-size: .98rem; }
+footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
+.totop { position: fixed; right: 18px; bottom: 18px; z-index: 15; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.totop.show { opacity: 1; pointer-events: auto; }
+
+@media (max-width: 980px) {
+  .hero { grid-template-columns: minmax(0, 1fr); padding-top: 34px; }
+  .hero .art { max-width: 520px; }
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 12px; }
+  nav.toc { display: none; }
+  details.toc-m { display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 18px; }
+  details.toc-m summary { cursor: pointer; padding: 12px 16px; font-weight: 700; color: var(--gold); }
+  details.toc-m nav.toc { display: block; position: static; max-height: none; padding: 0 8px 10px; }
+  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  body { font-size: 1.1rem; }
+  .top .in { padding: 8px 16px; gap: 8px; }
+  .brand { font-size: 1.05rem; } .brand img { width: 28px; height: 28px; }
+  .top .word { display: none; }
+  .hero, .layout, .facts, footer .in { padding-left: 16px; padding-right: 16px; }
+  figure.narrow { max-width: 240px; margin-left: auto; margin-right: auto; }
+  .box { padding: 14px 14px 12px; }
+}
+@media print {
+  :root, :root[data-theme] { --bg: #fff; --panel: #fff; --text: #111; --mist: #444; --line: #ccc; --gold: #8f6a14; --gold-hi: #6f5110; --walk-bg: #fbf3df; --tip-bg: #e6f4f4; --try-bg: #f1edfb; --th: #eee; --shadow: none; color-scheme: light; }
+  .top, nav.toc, details.toc-m, .totop, .hero .cta, .anchor { display: none !important; }
+  .layout { display: block; } .chapter { break-before: page; border: 0; }
+  figure, .box, tr { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="#"><img src="assets/logo.svg" alt="" width="34" height="34">IPRPS <span>OS</span></a>
+  <span class="sp"></span>
+  <a class="btn" href="IPRPS-OS-Session-Master-Training-Manual.pdf" download><span class="word">Download</span> PDF</a>
+  <a class="btn" href="IPRPS-OS-Session-Master-Training-Manual.docx" download><span class="word">Download</span> Word</a>
+  <button class="btn theme" type="button" aria-label="Switch light or dark" title="Switch light or dark"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button>
+</div></header>
+
+<section class="hero">
+  <div>
+    <h1>Session Master <em>Training Manual</em></h1>
+    <p class="lede">Learn to prepare, run and wrap up great games with IPRPS OS. Ten short chapters and seven hands-on walkthroughs take you from your first login to the recap after game night.</p>
+    <p class="ver">IPRPS OS 1.0 · November 2026</p>
+    <div class="cta">
+      <a class="btn gold" href="#chapter-1-what-makes-iprps-os-different">Start with Chapter 1</a>
+      <a class="btn" href="#quick-reference-game-night">Quick reference</a>
+      <a class="btn" href="https://infiniteplane.space/downloads/iprps/1.0">Get IPRPS OS</a>
+    </div>
+  </div>
+  <div class="art"><img src="images/table-console-demo.jpg" alt="The IPRPS Table console during a game of Iron City Blues" width="1800" height="1200"></div>
+</section>
+<div class="facts">
+  <div><b>No internet</b><span>needed to run a game</span></div>
+  <div><b>No accounts</b><span>for players: scan and join</span></div>
+  <div><b>Built for IPRPS</b><span>bands, BTN, five combat modes</span></div>
+  <div><b>Private AI</b><span>on your own computer</span></div>
+</div>
+
+<div class="layout">
+  <nav class="toc" aria-label="Chapters"><h2>Contents</h2><ol><li><a href="#how-to-use-this-manual"><span class="num">·</span>How to use this manual</a></li>
+<li><a href="#chapter-1-what-makes-iprps-os-different"><span class="num">1</span>What makes IPRPS OS different</a></li>
+<li><a href="#chapter-2-get-set-up"><span class="num">2</span>Get set up</a></li>
+<li><a href="#chapter-3-prepare-a-session"><span class="num">3</span>Prepare a session</a></li>
+<li><a href="#chapter-4-open-the-iprps-table"><span class="num">4</span>Open the IPRPS Table</a></li>
+<li><a href="#chapter-5-roll-the-iprps-way"><span class="num">5</span>Roll the IPRPS way</a></li>
+<li><a href="#chapter-6-run-a-fight"><span class="num">6</span>Run a fight</a></li>
+<li><a href="#chapter-7-set-the-mood"><span class="num">7</span>Set the mood</a></li>
+<li><a href="#chapter-8-ask-the-iprps-oracle-medium-and-advanced"><span class="num">8</span>Ask the IPRPS Oracle (Medium and Advanced)</a></li>
+<li><a href="#chapter-9-wrap-up-the-night"><span class="num">9</span>Wrap up the night</a></li>
+<li><a href="#chapter-10-keep-it-running"><span class="num">10</span>Keep it running</a></li>
+<li><a href="#quick-reference-game-night"><span class="num">·</span>Quick reference: game night</a></li>
+<li><a href="#troubleshooting-at-the-table"><span class="num">·</span>Troubleshooting at the table</a></li>
+<li><a href="#glossary"><span class="num">·</span>Glossary</a></li></ol></nav>
+  <main>
+    <details class="toc-m"><summary>Contents</summary><nav class="toc" aria-label="Chapters"><ol><li><a href="#how-to-use-this-manual"><span class="num">·</span>How to use this manual</a></li>
+<li><a href="#chapter-1-what-makes-iprps-os-different"><span class="num">1</span>What makes IPRPS OS different</a></li>
+<li><a href="#chapter-2-get-set-up"><span class="num">2</span>Get set up</a></li>
+<li><a href="#chapter-3-prepare-a-session"><span class="num">3</span>Prepare a session</a></li>
+<li><a href="#chapter-4-open-the-iprps-table"><span class="num">4</span>Open the IPRPS Table</a></li>
+<li><a href="#chapter-5-roll-the-iprps-way"><span class="num">5</span>Roll the IPRPS way</a></li>
+<li><a href="#chapter-6-run-a-fight"><span class="num">6</span>Run a fight</a></li>
+<li><a href="#chapter-7-set-the-mood"><span class="num">7</span>Set the mood</a></li>
+<li><a href="#chapter-8-ask-the-iprps-oracle-medium-and-advanced"><span class="num">8</span>Ask the IPRPS Oracle (Medium and Advanced)</a></li>
+<li><a href="#chapter-9-wrap-up-the-night"><span class="num">9</span>Wrap up the night</a></li>
+<li><a href="#chapter-10-keep-it-running"><span class="num">10</span>Keep it running</a></li>
+<li><a href="#quick-reference-game-night"><span class="num">·</span>Quick reference: game night</a></li>
+<li><a href="#troubleshooting-at-the-table"><span class="num">·</span>Troubleshooting at the table</a></li>
+<li><a href="#glossary"><span class="num">·</span>Glossary</a></li></ol></nav></details>
+    <section class="chapter"><h2 id="how-to-use-this-manual">How to use this manual<a class="anchor" href="#how-to-use-this-manual" aria-label="Link to this section">#</a></h2>
+<p>This manual teaches you to run games with IPRPS OS. You will learn the tools one at a time. Each chapter ends with a <strong>walkthrough</strong>: a short exercise you do on your own computer, step by step.</p>
+<p>All the examples use one campaign, <strong>Iron City Blues</strong>. It is a noir mystery on the Infinite Plane, with rain, gas lamps and a harbor full of secrets. Four players are at the table:</p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Player</th>
+<th>Character</th>
+<th>Who they are</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dana</td>
+<td>Brenna Holt</td>
+<td>Wolffolk tracker who used to work for the Night Watch</td>
+</tr>
+<tr>
+<td>Marcus</td>
+<td>Tobin Fairweather</td>
+<td>Human insurance investigator</td>
+</tr>
+<tr>
+<td>Priya</td>
+<td>Mira Quickstep</td>
+<td>Catfolk cat burglar</td>
+</tr>
+<tr>
+<td>Leo</td>
+<td>Dr. Oro Kessel</td>
+<td>Gemp harbor doctor</td>
+</tr>
+</tbody>
+</table></div>
+<p>If you have run the walkthrough adventure <em>Fog on Pier Nine</em>, you already know these people. That's fine if you haven't.</p>
+<p><strong>How to read the steps:</strong></p>
+<ul>
+<li>Words in <strong>bold</strong> are buttons, menus or labels you will see on the screen.</li>
+<li>An arrow (→) means "then choose". <strong>IPRPS → IPRPS Welcome</strong> means: open the IPRPS menu, then choose IPRPS Welcome.</li>
+<li>Boxes that start with <strong>Try it</strong> are short practice tasks.</li>
+<li>Boxes that start with <strong>Tip</strong> share a shortcut or a good habit.</li>
+</ul>
+<p><strong>What you need:</strong> a computer running IPRPS OS (any edition), and a Wi-Fi network. For the Table chapters, borrow one or two phones, or use a tablet or laptop. The IPRPS Oracle chapter needs the Medium or Advanced edition.</p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Chapter</th>
+<th>You will learn to</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. What makes IPRPS OS different</td>
+<td>Know when IPRPS OS is the right tool</td>
+<td>10 minutes</td>
+</tr>
+<tr>
+<td>2. Get set up</td>
+<td>Create your campaign and choose your apps</td>
+<td>15 minutes</td>
+</tr>
+<tr>
+<td>3. Prepare a session</td>
+<td>Collect characters, notes, pictures and sound</td>
+<td>20 minutes</td>
+</tr>
+<tr>
+<td>4. Open the IPRPS Table</td>
+<td>Get players connected on their phones</td>
+<td>15 minutes</td>
+</tr>
+<tr>
+<td>5. Roll the IPRPS way</td>
+<td>Read checks, bands and BTN</td>
+<td>15 minutes</td>
+</tr>
+<tr>
+<td>6. Run a fight</td>
+<td>Track initiative, HP, AR and conditions</td>
+<td>20 minutes</td>
+</tr>
+<tr>
+<td>7. Set the mood</td>
+<td>Use the Soundboard and the Table's sound</td>
+<td>10 minutes</td>
+</tr>
+<tr>
+<td>8. Ask the IPRPS Oracle</td>
+<td>Improvise NPCs and scenes with private AI</td>
+<td>15 minutes</td>
+</tr>
+<tr>
+<td>9. Wrap up the night</td>
+<td>Write the recap and track XP</td>
+<td>10 minutes</td>
+</tr>
+<tr>
+<td>10. Keep it running</td>
+<td>Install updates and invite remote players</td>
+<td>10 minutes</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="chapter"><h2 id="chapter-1-what-makes-iprps-os-different">Chapter 1: What makes IPRPS OS different<a class="anchor" href="#chapter-1-what-makes-iprps-os-different" aria-label="Link to this section">#</a></h2>
+<p>Most digital tools for tabletop games are <strong>websites</strong>. You and your players sign in, and the game lives on the company's computers. IPRPS OS is different. It is a <strong>whole computer system</strong> made for the Session Master. It runs on your own PC, and your game lives there too.</p>
+<figure class="wide"><a href="images/diagram-where.png" target="_blank" rel="noopener"><img src="images/diagram-where.png" alt="Where your game lives: online tabletop websites keep your campaign on the company&#x27;s servers, and everyone needs the internet; IPRPS OS keeps it on your computer, and players join over your Wi-Fi" loading="lazy" decoding="async"></a><figcaption>Where your game lives: online tabletop websites keep your campaign on the company&#x27;s servers, and everyone needs the internet; IPRPS OS keeps it on your computer, and players join over your Wi-Fi</figcaption></figure>
+<h3 id="five-things-that-set-iprps-os-apart">Five things that set IPRPS OS apart<a class="anchor" href="#five-things-that-set-iprps-os-apart" aria-label="Link to this section">#</a></h3>
+<p><strong>1. It works with no internet at all.</strong> Your players join from their own phones, tablets or laptops over your home Wi-Fi. They don't need an account, an app or a password. They scan a QR code, type a six-letter join code, and they are in. If the internet goes down on game night, nothing stops.</p>
+<p><strong>2. It speaks IPRPS.</strong> Other tools are made for many game systems, or for one other system. IPRPS OS is made for the Infinite Plane Role Playing System. The dice know the <strong>success bands</strong>, the <strong>BTN</strong> (Base Target Number), <strong>Skill Shift</strong> and <strong>Attribute Shift</strong>. The combat tracker subtracts <strong>AR</strong> (Armor Rating) from damage and supports all <strong>five IPRPS combat modes</strong>. The Character Creator counts <strong>Development Points</strong> for you.</p>
+<p><strong>3. It has a private AI helper.</strong> In the Medium and Advanced editions, the <strong>IPRPS Oracle</strong> runs on your own computer. It can invent an NPC, a place or a read-aloud description in seconds. It reads your campaign, so its ideas fit your story. Nothing you type leaves your computer, and there is no account or fee.</p>
+<p><strong>4. Every tool is connected.</strong> The dice roller and the combat tracker write into the <strong>session log</strong> as you play. After the game, the log turns into a <strong>recap</strong> with one click. Character sheets you import show up in the combat tracker, the Table and the Oracle. One click on <strong>Session Master Mode</strong> opens everything you need for game night.</p>
+<p><strong>5. Your game is yours.</strong> Your campaigns, notes, sheets and recordings stay on your computer. There is no subscription to keep paying, and no company can close your account or lose your campaign.</p>
+<h3 id="how-it-compares-with-popular-online-tools">How it compares with popular online tools<a class="anchor" href="#how-it-compares-with-popular-online-tools" aria-label="Link to this section">#</a></h3>
+<p>Here is a short, fair comparison with five well-known tools. These tools are good at many things, and many groups use them happily. The details below are a summary as of November 2026; check each website for current features and prices.</p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>What it is</th>
+<th>What it does best</th>
+<th>How it differs from IPRPS OS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Roll20</strong></td>
+<td>A virtual tabletop website for many game systems</td>
+<td>Battle maps and tokens, character sheets for many systems, a big store of official adventures, voice and video chat</td>
+<td>Runs on Roll20's servers and needs the internet. Some features, like dynamic lighting and more storage, need a paid subscription</td>
+</tr>
+<tr>
+<td><strong>Owlbear Rodeo</strong></td>
+<td>A simple map-and-token website</td>
+<td>Quick, clean battle maps with very little setup, plus add-on extensions</td>
+<td>Online only. Focused on maps, so rules, notes and campaign records happen somewhere else. Paid plans add storage</td>
+</tr>
+<tr>
+<td><strong>Alchemy RPG</strong></td>
+<td>A "cinematic" virtual tabletop website</td>
+<td>Mood: animated scenes, music and a story-first, theater-of-mind feel</td>
+<td>Online only, with free and paid plans. Built for other publishers' games, not for IPRPS rolls</td>
+</tr>
+<tr>
+<td><strong>Fantasy Grounds</strong></td>
+<td>A desktop program for many game systems</td>
+<td>Deep rules automation for supported systems, and a large content library</td>
+<td>The base program is free, but most official content is sold. It is a program on top of your computer, not a whole system with prep, writing and AI tools</td>
+</tr>
+<tr>
+<td><strong>D&amp;D Beyond</strong></td>
+<td>The official online toolset for <em>Dungeons &amp; Dragons</em></td>
+<td>D&amp;D character building, rules lookup and its own maps tool</td>
+<td>Made only for D&amp;D, and needs an account and the internet. Custom maps need a paid tier</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>When another tool is a better fit.</strong> IPRPS OS 1.0 doesn't have battle maps with movable tokens, fog of war, or built-in voice and video chat. If your group plays mostly online, every week, with a battle grid, a website tool may suit you better for that part. You can still use one: open it in the web browser on IPRPS OS, and keep using the IPRPS tools for dice, combat, notes and recaps.</p>
+<p><strong>When IPRPS OS shines.</strong> IPRPS OS is at its best when your group meets <strong>in person</strong>, with phones and tablets around the table. It is also the best fit when you play <strong>IPRPS</strong>, when the internet is slow or missing, and when you want your campaign kept <strong>private</strong>.</p>
+<aside class="box tip"><span class="box-label">Tip</span>
+<p>A player in another city can still join your IPRPS Table. Chapter 10 shows how.</p>
+</aside>
+</section>
+<section class="chapter"><h2 id="chapter-2-get-set-up">Chapter 2: Get set up<a class="anchor" href="#chapter-2-get-set-up" aria-label="Link to this section">#</a></h2>
+<h3 id="your-first-login">Your first login<a class="anchor" href="#your-first-login" aria-label="Link to this section">#</a></h3>
+<p>The first time you log in, <strong>IPRPS Welcome</strong> opens. It is a short tour that takes about five minutes. You can skip any step and come back later from <strong>IPRPS → IPRPS Welcome</strong>.</p>
+<figure class="wide"><a href="images/welcome.jpg" target="_blank" rel="noopener"><img src="images/welcome.jpg" alt="IPRPS Welcome lists the IPRPS apps on this computer" loading="lazy" decoding="async"></a><figcaption>IPRPS Welcome lists the IPRPS apps on this computer</figcaption></figure>
+<p>The tour has five parts:</p>
+<ol>
+<li><strong>On this computer:</strong> which edition you have and which IPRPS apps are installed.</li>
+<li><strong>Your campaign:</strong> create your first campaign.</li>
+<li><strong>Your tools:</strong> every IPRPS app, with a short description and an <strong>Open</strong> button.</li>
+<li><strong>Color scheme:</strong> how the session tools look. Choose <strong>Night</strong>, <strong>Parchment</strong>, <strong>Forest</strong> or <strong>High contrast</strong>.</li>
+<li><strong>API keys for online AI apps:</strong> only needed for the two online AI apps. The offline tools never need keys.</li>
+</ol>
+<h3 id="campaigns-hold-everything">Campaigns hold everything<a class="anchor" href="#campaigns-hold-everything" aria-label="Link to this section">#</a></h3>
+<p>A <strong>campaign</strong> is the folder for your whole story. Sessions, the session log, fights, character sheets, NPCs and quests all belong to a campaign. The Oracle reads it too. So create your campaign first.</p>
+<h3 id="the-session-master-hub">The Session Master Hub<a class="anchor" href="#the-session-master-hub" aria-label="Link to this section">#</a></h3>
+<p>The <strong>Session Master Hub</strong> is your home page. Each tile opens an app. Open it from the panel at the top of the screen or from the <strong>IPRPS</strong> menu. The first time, it asks you to sign in. That one sign-in covers every IPRPS app on the computer.</p>
+<figure class="wide"><a href="images/hub.jpg" target="_blank" rel="noopener"><img src="images/hub.jpg" alt="The Session Master Hub: your apps as tiles" loading="lazy" decoding="async"></a><figcaption>The Session Master Hub: your apps as tiles</figcaption></figure>
+<p>You decide which tiles appear. Choose <strong>Manage apps</strong>, switch apps on or off, and choose <strong>Save</strong>. Each Session Master on the computer keeps their own choice. <strong>Reset to defaults</strong> brings back the standard set.</p>
+<figure class="medium"><a href="images/hub-manage-apps.jpg" target="_blank" rel="noopener"><img src="images/hub-manage-apps.jpg" alt="Manage apps: switch each app on or off for your Hub" loading="lazy" decoding="async"></a><figcaption>Manage apps: switch each app on or off for your Hub</figcaption></figure>
+<aside class="box walk"><span class="box-label">Walkthrough 1</span>
+<p><strong class="wt">Set up Iron City Blues</strong></p>
+<ol>
+<li>Open <strong>IPRPS → IPRPS Welcome</strong> and go to the <strong>Your campaign</strong> step.</li>
+<li>Type the <strong>Name</strong>: <em>Iron City Blues</em>. Type the <strong>Setting</strong>: <em>Iron City, the Infinite Plane</em>. Under <strong>What it's about</strong>, type one sentence: <em>A noir mystery in a rain-soaked harbor where the Guild rules the docks.</em></li>
+<li>Choose <strong>Create campaign</strong>.</li>
+<li>Go to the <strong>Color scheme</strong> step and pick the one that's easiest for you to read.</li>
+<li>Choose <strong>Open the Session Master Hub</strong>.</li>
+<li>Choose <strong>Manage apps</strong>. Make sure these are on: IPRPS Table, Character Sheets, Character Creator, Combat Tracker, Dice Roller, Session Log, Soundboard and IPRPS Writer. Choose <strong>Save</strong>.</li>
+</ol>
+<p><strong>Check:</strong> the Hub shows your apps as tiles. In the Combat Tracker, the <strong>Campaign</strong> menu at the top now lists <em>Iron City Blues</em>.</p>
+<p><strong>Tip:</strong> You can add more campaigns later from any session tool. Open the <strong>Campaign</strong> menu at the top and choose <strong>+ New campaign…</strong>, or choose the <strong>✎</strong> button next to it to edit one.</p>
+</aside>
+</section>
+<section class="chapter"><h2 id="chapter-3-prepare-a-session">Chapter 3: Prepare a session<a class="anchor" href="#chapter-3-prepare-a-session" aria-label="Link to this section">#</a></h2>
+<p>Good prep makes game night smooth. IPRPS OS gives you a place for each kind of material.</p>
+<h3 id="your-campaign-folders">Your campaign folders<a class="anchor" href="#your-campaign-folders" aria-label="Link to this section">#</a></h3>
+<p>Your home folder has a <strong>Campaigns</strong> folder with three folders inside it:</p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Folder</th>
+<th>Put this inside</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Campaigns/Handouts</strong></td>
+<td>Letters, clues, portraits of NPCs</td>
+<td>The IPRPS Table (<strong>Add media…</strong>)</td>
+</tr>
+<tr>
+<td><strong>Campaigns/Maps</strong></td>
+<td>Maps of cities, buildings and dungeons</td>
+<td>The IPRPS Table and the player display</td>
+</tr>
+<tr>
+<td><strong>Campaigns/Audio</strong></td>
+<td>Music and background sound (MP3, OGG, WAV, M4A)</td>
+<td>Session Master Mode plays it as looping ambience</td>
+</tr>
+</tbody>
+</table></div>
+<p>Use pictures and sounds that you made yourself, or that you have the right to use.</p>
+<h3 id="notes-in-iprps-writer">Notes in IPRPS Writer<a class="anchor" href="#notes-in-iprps-writer" aria-label="Link to this section">#</a></h3>
+<p><strong>IPRPS Writer</strong> is a word processor. Use it for scene notes, NPC lists and read-aloud text. It saves by itself as you type. <strong>Save as</strong> makes a Word file (.docx), an OpenDocument file (.odt), plain text or a web page. <strong>Ctrl+P</strong> prints, or saves a PDF.</p>
+<figure class="wide"><a href="images/writer.jpg" target="_blank" rel="noopener"><img src="images/writer.jpg" alt="IPRPS Writer with session notes" loading="lazy" decoding="async"></a><figcaption>IPRPS Writer with session notes</figcaption></figure>
+<h3 id="character-sheets">Character sheets<a class="anchor" href="#character-sheets" aria-label="Link to this section">#</a></h3>
+<p>IPRPS OS has two character sheet apps that work together:</p>
+<ul>
+<li><strong>Character Creator</strong> is the IPRPS character sheet. It tracks attributes, skills, advantages, spells and a portrait. It also counts the <strong>Development Points</strong> you spend, so players can't overspend by mistake.</li>
+<li><strong>Character Sheets</strong> is your library. It keeps every player character, NPC and creature, sorted by campaign.</li>
+</ul>
+<figure class="wide"><a href="images/character-sheets.jpg" target="_blank" rel="noopener"><img src="images/character-sheets.jpg" alt="Character Sheets: your library of player, NPC and creature sheets" loading="lazy" decoding="async"></a><figcaption>Character Sheets: your library of player, NPC and creature sheets</figcaption></figure>
+<p>There are two ways to get your players' characters:</p>
+<ol>
+<li><strong>Before the game.</strong> In Character Sheets, choose <strong>Blank sheet for players</strong>. This saves the Character Creator as one file. Give it to your players by USB stick, email or a shared folder. They open it in any web browser, make their character, and send you the <code>.json</code> file it saves. You choose <strong>Import sheets…</strong>, or simply drop the files onto the Character Sheets window.</li>
+<li><strong>At the table.</strong> Players open <strong>📜 Sheet</strong> on their phone or laptop in the IPRPS Table and fill it in there. When they send it, it appears in your Table console under <strong>📜 Character sheets</strong>, and you choose <strong>Import to Character Sheets</strong>.</li>
+</ol>
+<figure class="wide"><a href="images/character-creator.jpg" target="_blank" rel="noopener"><img src="images/character-creator.jpg" alt="The Character Creator counts Development Points as players build" loading="lazy" decoding="async"></a><figcaption>The Character Creator counts Development Points as players build</figcaption></figure>
+<aside class="box walk"><span class="box-label">Walkthrough 2</span>
+<p><strong class="wt">Get the characters in</strong></p>
+<ol>
+<li>Open <strong>Character Sheets</strong> from the Hub. Set <strong>Campaign</strong> to <em>Iron City Blues</em>.</li>
+<li>Choose <strong>Blank sheet for players</strong> and save the file. Open it yourself to see what players will see.</li>
+<li>In the file, make Brenna Holt: Wolffolk, STR 14, DEX 12, CON 14, WIS 14, and the skills Tracking 30, Brawling 20 and Intimidation 20. Watch the Development Points change as you go. Save it as a <code>.json</code> file.</li>
+<li>Back in Character Sheets, drop the <code>.json</code> file onto the window, or choose <strong>Import sheets…</strong>. Choose <strong>Import</strong>.</li>
+<li>Now make an NPC: choose <strong>New ▾ → NPC sheet</strong> and create <em>Inspector Hale Ostrander</em>, a gruff Wolffolk detective.</li>
+</ol>
+<p><strong>Check:</strong> the list shows Brenna under <strong>Players</strong> and Ostrander under <strong>NPCs</strong>. Both will show up in the Combat Tracker's <strong>From sheets</strong> list.</p>
+</aside>
+</section>
+<section class="chapter"><h2 id="chapter-4-open-the-iprps-table">Chapter 4: Open the IPRPS Table<a class="anchor" href="#chapter-4-open-the-iprps-table" aria-label="Link to this section">#</a></h2>
+<p>The <strong>IPRPS Table</strong> is the heart of in-person play. Your players join from their own devices. They can chat, roll IPRPS dice, see pictures and hear sound you send, and fill in their character sheets. You control everything from the <strong>console</strong> on your computer.</p>
+<figure class="wide"><a href="images/diagram-connect.png" target="_blank" rel="noopener"><img src="images/diagram-connect.png" alt="How players join: your computer, your Wi-Fi router, and each player&#x27;s device. A remote player can join too, through an encrypted link" loading="lazy" decoding="async"></a><figcaption>How players join: your computer, your Wi-Fi router, and each player&#x27;s device. A remote player can join too, through an encrypted link</figcaption></figure>
+<h3 id="session-master-mode-game-night-in-one-click">Session Master Mode: game night in one click<a class="anchor" href="#session-master-mode-game-night-in-one-click" aria-label="Link to this section">#</a></h3>
+<p>About fifteen minutes before players arrive, choose <strong>Session Master Mode</strong> on the panel. With one click, it:</p>
+<ol>
+<li>opens the <strong>Session Master Hub</strong>;</li>
+<li>plays your <strong>Campaigns/Audio</strong> folder as shuffled, looping background sound, in a small window with play, pause and volume buttons;</li>
+<li>with a <strong>second screen</strong> (TV, projector or monitor), opens the full-screen <strong>player display</strong> there; with <strong>one screen</strong>, it opens the <strong>IPRPS Table</strong> console instead;</li>
+<li>in Medium and Advanced, warms up the <strong>IPRPS Oracle</strong>, so its first answer comes quickly.</li>
+</ol>
+<figure class="wide"><a href="images/diagram-flow.png" target="_blank" rel="noopener"><img src="images/diagram-flow.png" alt="Game night at a glance: prepare, one click, players join, play, wrap up" loading="lazy" decoding="async"></a><figcaption>Game night at a glance: prepare, one click, players join, play, wrap up</figcaption></figure>
+<h3 id="opening-the-table">Opening the table<a class="anchor" href="#opening-the-table" aria-label="Link to this section">#</a></h3>
+<p>The table starts <strong>Closed</strong>. Nobody can join until you open it.</p>
+<ol>
+<li>In the console, click the name at the top and type the campaign name. Players see it.</li>
+<li>Choose <strong>Open the table</strong>. The status changes to <strong>Open</strong>.</li>
+<li>The <strong>Players join here</strong> box shows the <strong>join code</strong>, the computer's address and a <strong>QR code</strong>.</li>
+</ol>
+<figure class="wide"><a href="images/table-console-demo.jpg" target="_blank" rel="noopener"><img src="images/table-console-demo.jpg" alt="The IPRPS Table console: the join code, address and QR code on the left, chat and rolls in the middle, and the tools for pictures, text cards and sound on the right" loading="lazy" decoding="async"></a><figcaption>The IPRPS Table console: the join code, address and QR code on the left, chat and rolls in the middle, and the tools for pictures, text cards and sound on the right</figcaption></figure>
+<h3 id="how-players-join">How players join<a class="anchor" href="#how-players-join" aria-label="Link to this section">#</a></h3>
+<p>Each player, on a device connected to the <strong>same Wi-Fi</strong>:</p>
+<ol>
+<li>scans the QR code with the camera (this fills in the code), or opens the address in any web browser;</li>
+<li>types their name and, if they like, their character's name;</li>
+<li>taps <strong>Join the table</strong>.</li>
+</ol>
+<figure class="narrow"><a href="images/table-join.jpg" target="_blank" rel="noopener"><img src="images/table-join.jpg" alt="The join screen on a player&#x27;s phone" loading="lazy" decoding="async"></a><figcaption>The join screen on a player&#x27;s phone</figcaption></figure>
+<p>Each player appears under <strong>At the table</strong> with a green dot when they are online. When everyone is in, tick <strong>Lock</strong> so nobody else can join.</p>
+<h3 id="what-you-can-do-from-the-console">What you can do from the console<a class="anchor" href="#what-you-can-do-from-the-console" aria-label="Link to this section">#</a></h3>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>You want to</th>
+<th>Do this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Talk to everyone</td>
+<td>Type in the message box with <strong>Everyone</strong> selected, then <strong>Send</strong></td>
+</tr>
+<tr>
+<td>Whisper to one player</td>
+<td>Choose their name in the <strong>To</strong> menu, or choose <strong>Message</strong> under their name</td>
+</tr>
+<tr>
+<td>Talk to part of the party</td>
+<td>Tick the players, type a name under <strong>Groups</strong>, choose <strong>Make from selected</strong></td>
+</tr>
+<tr>
+<td>Show a picture or video</td>
+<td>Under <strong>Push to screens</strong>, choose who sees it, then <strong>Add media…</strong> and <strong>Show</strong></td>
+</tr>
+<tr>
+<td>Read a scene aloud</td>
+<td>Open <strong>Show a text card</strong>, type a title and the text, then <strong>Show on screens</strong></td>
+</tr>
+<tr>
+<td>Play music or sound on their devices</td>
+<td>Choose <strong>♪ Play</strong> on an audio file in your media list; tick <strong>Loop</strong> to repeat it</td>
+</tr>
+<tr>
+<td>Clear the players' screens</td>
+<td><strong>Clear screens</strong></td>
+</tr>
+<tr>
+<td>Roll in secret</td>
+<td>Set the dice menu to <strong>Secret (only me)</strong></td>
+</tr>
+<tr>
+<td>Start fresh next time</td>
+<td><strong>Session → New session (clear chat)</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Your players see what you send at the top of their screens. The dice bar is at the bottom.</p>
+<figure class="narrow"><a href="images/table-phone-demo.jpg" target="_blank" rel="noopener"><img src="images/table-phone-demo.jpg" alt="A player&#x27;s phone: a text card from the Session Master at the top, then the chat, a skill check and the dice bar" loading="lazy" decoding="async"></a><figcaption>A player&#x27;s phone: a text card from the Session Master at the top, then the chat, a skill check and the dice bar</figcaption></figure>
+<p><strong>Privacy at the table.</strong> You see messages sent to everyone and to you. Messages that players send only to other players stay between them. Every roll is made on your computer, so nobody can fake a roll.</p>
+<aside class="box tip"><span class="box-label">Tip</span>
+<p>Phones stay silent until the player touches the page once. If you start a sound and someone hasn't, they will see <strong>🔊 Tap to turn on the table sound</strong>.</p>
+<p><strong>Walkthrough 3: Get your players in</strong></p>
+<ol>
+<li>Choose <strong>Session Master Mode</strong> on the panel. If you have one screen, the Table console opens. If not, open <strong>IPRPS Table</strong> from the Hub.</li>
+<li>Rename the table <em>Iron City Blues</em> and choose <strong>Open the table</strong>.</li>
+<li>On a phone on the same Wi-Fi, scan the QR code. Type <em>Dana</em> as the name and <em>Brenna Holt</em> as the character. Tap <strong>Join the table</strong>.</li>
+<li>Join from a second device as <em>Priya</em>, playing <em>Mira Quickstep</em>.</li>
+<li>In the console, tick Priya, type <em>Rooftop</em> under <strong>Groups</strong>, and choose <strong>Make from selected</strong>.</li>
+<li>Open <strong>Show a text card</strong>. Title: <em>The Gaslight Bridge</em>. Text: <em>Rain hisses on the gas lamps. Three figures in oilcloth coats step out of the fog.</em> Choose <strong>Show on screens</strong>.</li>
+<li>Tick <strong>Lock</strong>.</li>
+</ol>
+<p><strong>Check:</strong> both devices show the text card at the top. Priya has a <strong>Rooftop</strong> tag under her name. A third device can't join while the table is locked.</p>
+</aside>
+</section>
+<section class="chapter"><h2 id="chapter-5-roll-the-iprps-way">Chapter 5: Roll the IPRPS way<a class="anchor" href="#chapter-5-roll-the-iprps-way" aria-label="Link to this section">#</a></h2>
+<p>IPRPS uses a d20 for skill checks. The roll has two parts, and IPRPS OS shows both every time.</p>
+<p><strong>The total.</strong> Roll 1d20, then add the <strong>Skill Shift</strong> (the skill divided by 10, rounded down) and the <strong>Attribute Shift</strong> (the attribute minus 10). Compare the total with the <strong>BTN</strong> (Base Target Number) that you set for the task.</p>
+<p><strong>The band.</strong> The d20 by itself also falls in a <strong>band</strong>. <strong>Band A</strong> answers "yes or no?". <strong>Band B</strong> answers "how well?".</p>
+<figure class="wide"><a href="images/diagram-bands.png" target="_blank" rel="noopener"><img src="images/diagram-bands.png" alt="The two IPRPS bands. Band A: Failure 1–6, Zone of Uncertainty 7–12, Success 13–20. Band B: Weak 1–6, Standard 7–14, Strong 15–19, Peak 20" loading="lazy" decoding="async"></a><figcaption>The two IPRPS bands. Band A: Failure 1–6, Zone of Uncertainty 7–12, Success 13–20. Band B: Weak 1–6, Standard 7–14, Strong 15–19, Peak 20</figcaption></figure>
+<p><strong>An example.</strong> Brenna tracks the smugglers. Her player rolls a <strong>9</strong> on the d20. Tracking 30 gives a Skill Shift of <strong>+3</strong>, and WIS 14 gives an Attribute Shift of <strong>+4</strong>. The total is <strong>16</strong>, which beats BTN 14. But the 9 lands in the <strong>Zone of Uncertainty</strong>, so you, the Session Master, decide the twist. Maybe she finds the trail, but the smugglers hear her coming.</p>
+<p>You never have to do this math. The Table, the Dice Roller and the Combat Tracker do it, and they name the band for you.</p>
+<h3 id="three-places-to-roll">Three places to roll<a class="anchor" href="#three-places-to-roll" aria-label="Link to this section">#</a></h3>
+<p><strong>1. On the IPRPS Table.</strong> Players open <strong>IPRPS ▾</strong> on the dice bar and pick a roll: <strong>Skill check</strong>, <strong>Initiative</strong>, <strong>Reaction</strong>, <strong>Trinity Hand</strong>, <strong>Dual-Die attack</strong>, <strong>Infinite Convergence</strong>, <strong>RPS stance</strong>, or a weapon's damage. They type their numbers and roll. They choose who sees it: <strong>Everyone sees</strong>, <strong>Only the SM sees</strong> or <strong>Only I see</strong>.</p>
+<figure class="narrow"><a href="images/table-iprps-menu.jpg" target="_blank" rel="noopener"><img src="images/table-iprps-menu.jpg" alt="On a phone: the IPRPS rolls menu with a Skill check ready to roll" loading="lazy" decoding="async"></a><figcaption>On a phone: the IPRPS rolls menu with a Skill check ready to roll</figcaption></figure>
+<p><strong>2. In the Dice Roller on your computer.</strong> It has every die, any dice formula (such as <code>2d6+3</code>), and the same IPRPS rolls. Under <strong>After each roll</strong> you choose what happens next: <strong>Add it to the session log</strong>, <strong>Show it on the player display</strong>, <strong>Show it on the IPRPS Table</strong>, or <strong>Secret roll (only you see it)</strong>. The <strong>History</strong> keeps every roll.</p>
+<figure class="wide"><a href="images/dice.jpg" target="_blank" rel="noopener"><img src="images/dice.jpg" alt="The Dice Roller: a Skill check for Brenna, with its band and BTN result" loading="lazy" decoding="async"></a><figcaption>The Dice Roller: a Skill check for Brenna, with its band and BTN result</figcaption></figure>
+<p><strong>3. In the Combat Tracker</strong> during fights (Chapter 6), with <strong>Quick roll</strong>.</p>
+<aside class="box walk"><span class="box-label">Walkthrough 4</span>
+<p><strong class="wt">A skill check, start to finish</strong></p>
+<ol>
+<li>With your players at the Table, send everyone a message: <em>Brenna, roll Tracking against BTN 14.</em></li>
+<li>On Dana's phone: <strong>IPRPS ▾ → Skill check</strong>. Attribute <strong>14</strong>, Skill <strong>30</strong>, BTN <strong>14</strong>, Band <strong>A</strong>. Tap <strong>Roll</strong>.</li>
+<li>Read the result in the console's chat. It shows the d20, the shifts, the total, the band, and <strong>Beats it</strong> or <strong>Falls short</strong>.</li>
+<li>Now roll a secret one yourself. In the <strong>Dice Roller</strong>, type <em>Ostrander</em> under <strong>Who rolls</strong>, pick <strong>Reaction</strong>, tick <strong>Secret roll (only you see it)</strong>, and roll.</li>
+<li>Untick <strong>Secret roll</strong> and tick <strong>Add it to the session log</strong>. Roll a Skill check for Brenna.</li>
+</ol>
+<p><strong>Check:</strong> the players saw Brenna's roll but not Ostrander's reaction. The Session Log (Chapter 9) shows Brenna's second roll.</p>
+</aside>
+</section>
+<section class="chapter"><h2 id="chapter-6-run-a-fight">Chapter 6: Run a fight<a class="anchor" href="#chapter-6-run-a-fight" aria-label="Link to this section">#</a></h2>
+<p>The <strong>Initiative and Combat Tracker</strong> keeps a fight moving. It tracks turn order, rounds, HP, Armor Rating and conditions for every fighter. Fights are saved by session, so you can stop and pick up later.</p>
+<figure class="wide"><a href="images/combat.jpg" target="_blank" rel="noopener"><img src="images/combat.jpg" alt="The Combat Tracker in round 2: turn order on the left, HP bars, AR and conditions for each fighter, and sheets to add on the right" loading="lazy" decoding="async"></a><figcaption>The Combat Tracker in round 2: turn order on the left, HP bars, AR and conditions for each fighter, and sheets to add on the right</figcaption></figure>
+<h3 id="the-five-iprps-combat-modes">The five IPRPS combat modes<a class="anchor" href="#the-five-iprps-combat-modes" aria-label="Link to this section">#</a></h3>
+<p>Pick the mode in the <strong>Combat mode</strong> menu. The tracker shows a short reminder of how that mode works.</p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Best for</th>
+<th>In one line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 · Standard</strong></td>
+<td>Most fights</td>
+<td>Initiative 1d20 + DEX modifier. Attack 1d20 + Skill Shift + Attribute Shift against Guard. Damage − AR</td>
+</tr>
+<tr>
+<td><strong>2 · Trinity Hand</strong></td>
+<td>Bosses, hordes, player-versus-player</td>
+<td>Everyone rolls 1d3 Velocity, 1d20 Impact and 1d12 Guard at once. Bosses roll extra Impact dice (Hydra Hand)</td>
+</tr>
+<tr>
+<td><strong>3 · Rock-Paper-Scissors</strong></td>
+<td>Quick story skirmishes</td>
+<td>Rock beats Scissors, Scissors beats Paper, Paper beats Rock</td>
+</tr>
+<tr>
+<td><strong>4 · Dual-Die</strong></td>
+<td>Gritty, dangerous fights</td>
+<td>On a hit, roll 1d6 Impact: Glancing, Solid or Critical wounds</td>
+</tr>
+<tr>
+<td><strong>5 · Infinite Convergence</strong></td>
+<td>One big, decisive clash</td>
+<td>Each fighter picks a Blur level: more dice for speed, or bigger dice for precision. Top results explode</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="the-main-controls">The main controls<a class="anchor" href="#the-main-controls" aria-label="Link to this section">#</a></h3>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Control</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>+ New</strong></td>
+<td>Makes a new encounter in tonight's session</td>
+</tr>
+<tr>
+<td><strong>From sheets</strong></td>
+<td>Adds characters from Character Sheets. <strong>+ Whole party</strong> adds every player character at once</td>
+</tr>
+<tr>
+<td><strong>Quick add</strong></td>
+<td>Adds fighters by hand: name, how many, HP, AR and initiative modifier</td>
+</tr>
+<tr>
+<td><strong>🎲 Roll initiative</strong></td>
+<td>Rolls for every fighter who doesn't have a number yet</td>
+</tr>
+<tr>
+<td><strong>▶ Start combat</strong> / <strong>Next turn ▶</strong></td>
+<td>Starts the fight and moves to the next fighter. The <strong>N</strong> key does the same</td>
+</tr>
+<tr>
+<td>Damage box</td>
+<td>Type the damage and press <strong>Enter</strong>. With <strong>Damage − AR</strong> ticked, the tracker subtracts the target's AR for you. <strong>+</strong> heals</td>
+</tr>
+<tr>
+<td><strong>+ condition</strong></td>
+<td>Adds a condition such as <em>Bleeding</em> or <em>Hidden</em></td>
+</tr>
+<tr>
+<td><strong>Keep players updated</strong></td>
+<td>Shows the turn order to players after each turn</td>
+</tr>
+<tr>
+<td><strong>■ End combat</strong></td>
+<td>Ends the fight and records it in the session log</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="box walk"><span class="box-label">Walkthrough 5</span>
+<p><strong class="wt">Ambush on the Gaslight Bridge</strong></p>
+<p>The smugglers spring a trap on the party in the rain. Use Dual-Die, the gritty mode.</p>
+<ol>
+<li>Open the <strong>Combat Tracker</strong>. Set <strong>Campaign</strong> to <em>Iron City Blues</em>. Choose <strong>+ Session</strong> to start tonight's session.</li>
+<li>Under <strong>Encounters</strong>, choose <strong>+ New</strong>. Name it <em>Ambush on the Gaslight Bridge</em>. Set <strong>Combat mode</strong> to <strong>4 · Dual-Die</strong>.</li>
+<li>Under <strong>Add combatants → From sheets</strong>, choose <strong>+ Whole party</strong>. Your player characters join with their HP and AR.</li>
+<li>Choose <strong>Quick add</strong>. Name <em>Guild enforcer</em>, <strong>How many</strong> 2, <strong>HP</strong> 165, <strong>AR</strong> 2, <strong>Side</strong> Foe. Choose <strong>+ Add</strong>. Add <em>Sully Marr</em>, HP 215, AR 3, the same way.</li>
+<li>Choose <strong>🎲 Roll initiative</strong>, then <strong>▶ Start combat</strong>.</li>
+<li>Mira hits an enforcer for 12. Type <strong>12</strong> in his damage box and press <strong>Enter</strong>. His HP drops by <strong>10</strong>, because his AR of 2 is taken off.</li>
+<li>The hit was a Solid wound. Choose <strong>+ condition</strong> and add <strong>Bleeding</strong>.</li>
+<li>Press <strong>N</strong> to move to the next fighter. Tick <strong>Keep players updated</strong> so the players see whose turn it is.</li>
+<li>When Sully flees, choose <strong>■ End combat</strong>.</li>
+</ol>
+<p><strong>Check:</strong> the fight shows the round number and each fighter's HP bar. The Session Log has a combat entry for the ambush.</p>
+<p><strong>Tip:</strong> Click any initiative number to change it, for example when a player delays their turn.</p>
+</aside>
+</section>
+<section class="chapter"><h2 id="chapter-7-set-the-mood">Chapter 7: Set the mood<a class="anchor" href="#chapter-7-set-the-mood" aria-label="Link to this section">#</a></h2>
+<p>Sound turns a description into a scene. IPRPS OS gives you three ways to play it.</p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Sound</th>
+<th>Where it plays</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ambience playlist</strong></td>
+<td>Your computer's speakers</td>
+<td>Session Master Mode plays your <strong>Campaigns/Audio</strong> folder</td>
+</tr>
+<tr>
+<td><strong>Soundboard pads</strong></td>
+<td>Your speakers, and players' devices if you choose</td>
+<td>Click a pad, or press its key</td>
+</tr>
+<tr>
+<td><strong>Table sound</strong></td>
+<td>Players' phones and laptops</td>
+<td><strong>♪ Play</strong> in the Table console</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="the-soundboard">The Soundboard<a class="anchor" href="#the-soundboard" aria-label="Link to this section">#</a></h3>
+<p>The <strong>Soundboard</strong> puts sounds on big buttons called <strong>pads</strong>. The built-in sounds are made by the computer as they play, so they need no files and no internet.</p>
+<ul>
+<li><strong>∞ pads loop</strong> until you click them again: rain, storm, wind, campfire, ocean, river, cave drips, night crickets, a dungeon drone and a tavern hum. Several can play together.</li>
+<li><strong>Effect pads</strong> play once: thunder, a sword clash, an arrow, a spell, a gong, a war horn, level up and more.</li>
+<li><strong>Keys 1–0 and Q–P</strong> play the first twenty pads. <strong>Esc</strong> fades everything out.</li>
+</ul>
+<figure class="wide"><a href="images/soundboard.jpg" target="_blank" rel="noopener"><img src="images/soundboard.jpg" alt="The Soundboard&#x27;s ambience board, with your own sounds on the right" loading="lazy" decoding="async"></a><figcaption>The Soundboard&#x27;s ambience board, with your own sounds on the right</figcaption></figure>
+<p>Add your own music and recordings with <strong>Add files…</strong>, or drop them on the window. Choose <strong>+ Pad</strong> to put one on a board. Make a new board, such as <em>Tavern</em> or <em>Battle</em>, with <strong>+ Board</strong>. To change a pad, choose <strong>✎ Edit pads</strong> and click it. A pad set to <strong>Also on players' devices</strong> plays your file on the players' phones too, while the Table is open.</p>
+<aside class="box try"><span class="box-label">Try it</span>
+<p>Make a board called <em>Iron City</em>. Put <strong>Rain</strong> and <strong>Tavern hum</strong> on it, plus <strong>Thunder</strong> as an effect. Start the rain, then press the thunder pad's key during the ambush.</p>
+</aside>
+</section>
+<section class="chapter"><h2 id="chapter-8-ask-the-iprps-oracle-medium-and-advanced">Chapter 8: Ask the IPRPS Oracle (Medium and Advanced)<a class="anchor" href="#chapter-8-ask-the-iprps-oracle-medium-and-advanced" aria-label="Link to this section">#</a></h2>
+<p>Players often go somewhere you didn't plan. The <strong>IPRPS Oracle</strong> helps you keep up. It is a storyteller AI that runs <strong>entirely on your computer</strong>. It needs no internet, no account and no API key. Nothing you type leaves the machine.</p>
+<figure class="wide"><a href="images/oracle.jpg" target="_blank" rel="noopener"><img src="images/oracle.jpg" alt="The IPRPS Oracle: quick generators, character sheets and campaign memory on the left, the conversation on the right" loading="lazy" decoding="async"></a><figcaption>The IPRPS Oracle: quick generators, character sheets and campaign memory on the left, the conversation on the right</figcaption></figure>
+<p><strong>What it can do:</strong></p>
+<ul>
+<li><strong>Quick generators:</strong> <strong>NPC</strong>, <strong>Location</strong>, <strong>Loot</strong>, <strong>Encounter</strong>, <strong>Plot hook</strong>, <strong>Names</strong> and <strong>Read-aloud</strong>. Type a few words, such as <em>a nervous dockhand</em>, then choose a generator.</li>
+<li><strong>Character sheets:</strong> <strong>NPC sheet</strong> and <strong>Creature sheet</strong> write complete IPRPS sheets and save them to Character Sheets.</li>
+<li><strong>Campaign memory:</strong> it reads your campaign, its latest sessions and log, NPCs, open quests and character sheets. <strong>Pin</strong> facts it must always respect.</li>
+<li><strong>Share it:</strong> under each answer, <strong>Show players</strong> puts it on the player display, <strong>Pin to memory</strong> saves it as a fact, and <strong>Save NPC</strong> keeps a character for later.</li>
+</ul>
+<p><strong>Good habits:</strong></p>
+<ul>
+<li>Set the <strong>Campaign</strong> menu at the top before you ask, so the Oracle knows your story.</li>
+<li>Pin the facts that matter, like who is secretly working for whom.</li>
+<li>Treat answers as ideas. You are the Session Master, so change anything you like.</li>
+<li>The first answer of the day is slower while the AI loads. Session Master Mode warms it up for you.</li>
+</ul>
+<aside class="box walk"><span class="box-label">Walkthrough 6</span>
+<p><strong class="wt">When the players go off script</strong></p>
+<p>Tobin decides to visit a pawnshop you never planned.</p>
+<ol>
+<li>Open the <strong>IPRPS Oracle</strong>. Set <strong>Campaign</strong> to <em>Iron City Blues</em>.</li>
+<li>Under <strong>Campaign memory</strong>, type <em>The Harbor Guild pays the Night Watch to look away on Thursdays.</em> Choose <strong>Pin</strong>.</li>
+<li>In the message box, type <em>a pawnbroker near the docks who hears everything</em>. Choose <strong>NPC</strong>.</li>
+<li>Read the answer. If you like the character, choose <strong>Save NPC</strong>.</li>
+<li>Type <em>the pawnshop at night, in the rain</em> and choose <strong>Read-aloud</strong>. Choose <strong>Show players</strong> to put it on the player display, or copy it into a Table text card.</li>
+<li>Need stats in a hurry? Type a short description of the pawnbroker and choose <strong>NPC sheet</strong>. It takes a minute or two.</li>
+</ol>
+<p><strong>Check:</strong> the new sheet appears in Character Sheets under <strong>NPCs</strong>, ready to add to a fight.</p>
+</aside>
+</section>
+<section class="chapter"><h2 id="chapter-9-wrap-up-the-night">Chapter 9: Wrap up the night<a class="anchor" href="#chapter-9-wrap-up-the-night" aria-label="Link to this section">#</a></h2>
+<p>The <strong>Session Log and Recap</strong> keeps a record of every game night. Notes, events, rolls, fights, loot and XP go in as you play. The Dice Roller, the Combat Tracker and the Oracle add their own entries, so your log fills up by itself.</p>
+<figure class="wide"><a href="images/session-log.jpg" target="_blank" rel="noopener"><img src="images/session-log.jpg" alt="The Session Log for tonight: notes, an event, a roll and a fight, with filters by type" loading="lazy" decoding="async"></a><figcaption>The Session Log for tonight: notes, an event, a roll and a fight, with filters by type</figcaption></figure>
+<h3 id="during-the-game">During the game<a class="anchor" href="#during-the-game" aria-label="Link to this section">#</a></h3>
+<p>Start each game night with <strong>+ Session</strong> at the top. Then add your own entries as you go. Pick the type (<strong>📝 Note</strong>, <strong>✦ Event</strong>, <strong>⚔ Combat</strong>, <strong>🎲 Roll</strong>, <strong>💰 Loot</strong> or <strong>⭐ XP</strong>), type what happened, and press <strong>Enter</strong>.</p>
+<h3 id="after-the-game">After the game<a class="anchor" href="#after-the-game" aria-label="Link to this section">#</a></h3>
+<p>Open the <strong>Recap</strong> tab:</p>
+<ul>
+<li><strong>Draft from the log</strong> writes a first draft of the recap from tonight's entries. In Medium and Advanced, <strong>✦ Draft with the Oracle</strong> writes it as a short story instead.</li>
+<li>Edit the draft. It's for the players, so keep secrets out of it.</li>
+<li>Put your secrets in <strong>Session Master notes</strong>. Players never see them, but the Oracle reads them.</li>
+<li><strong>Copy</strong>, <strong>Download .md</strong> and <strong>Print</strong> let you share the recap outside IPRPS OS.</li>
+</ul>
+<figure class="wide"><a href="images/recap.jpg" target="_blank" rel="noopener"><img src="images/recap.jpg" alt="The Recap tab: a recap drafted from the log, and private Session Master notes below" loading="lazy" decoding="async"></a><figcaption>The Recap tab: a recap drafted from the log, and private Session Master notes below</figcaption></figure>
+<p>Use the <strong>Players</strong> tab to record who came and the XP each player earned. XP here is a record. Update each character's XP on their sheet too.</p>
+<aside class="box walk"><span class="box-label">Walkthrough 7</span>
+<p><strong class="wt">Close out the night</strong></p>
+<ol>
+<li>In the <strong>Session Log</strong>, check that tonight's session is selected. Add a <strong>💰 Loot</strong> entry: <em>A brass key from Sully's coat.</em></li>
+<li>Open the <strong>Recap</strong> tab and choose <strong>Draft from the log</strong>. Shorten it to a few sentences.</li>
+<li>In <strong>Session Master notes</strong>, type the secret: <em>The buyer is Lady Corvane of the Heights.</em></li>
+<li>Open the <strong>Players</strong> tab. Mark who played, and enter the XP you awarded.</li>
+<li>In the Table console, choose <strong>Close the table</strong>. Everyone is disconnected, but the chat and media are kept for next time.</li>
+<li>Next game night, start the new session with <strong>+ Session</strong>. On its <strong>Recap</strong> tab, open <strong>Last time</strong> and choose <strong>Show “last time” to the players…</strong> to begin with last session's recap.</li>
+</ol>
+<p><strong>Check:</strong> the session list on the left shows "recap ✓" next to tonight's session.</p>
+</aside>
+</section>
+<section class="chapter"><h2 id="chapter-10-keep-it-running">Chapter 10: Keep it running<a class="anchor" href="#chapter-10-keep-it-running" aria-label="Link to this section">#</a></h2>
+<h3 id="iprps-updates">IPRPS Updates<a class="anchor" href="#iprps-updates" aria-label="Link to this section">#</a></h3>
+<p>IPRPS OS updates itself without reinstalling. About 10 minutes after you start the computer, and every 6 hours while you're online, it checks for updates. When some are ready, a notice appears on the desktop and on the Hub's <strong>IPRPS Updates</strong> tile.</p>
+<figure class="medium"><a href="images/updates.jpg" target="_blank" rel="noopener"><img src="images/updates.jpg" alt="IPRPS Updates" loading="lazy" decoding="async"></a><figcaption>IPRPS Updates</figcaption></figure>
+<p>To install them, open <strong>IPRPS → IPRPS Updates</strong>, type your password, and choose <strong>Install updates</strong>. Your campaigns, sheets, settings and files are kept. The same window lists extra IPRPS apps and optional software you can add with <strong>Install</strong>.</p>
+<aside class="box tip"><span class="box-label">Tip</span>
+<p>Install updates the day before game night, not an hour before.</p>
+</aside>
+<h3 id="remote-players">Remote players<a class="anchor" href="#remote-players" aria-label="Link to this section">#</a></h3>
+<p>A friend who moved away can still join your IPRPS Table. Both computers install <strong>Tailscale</strong>, a free app that links them over the internet with strong encryption. Your friend then joins exactly like a player on your Wi-Fi, at an address your Table console lists. IPRPS OS itself doesn't change.</p>
+<p>In short:</p>
+<ol>
+<li>On your computer, run the <code>iprps-remote-play.sh</code> script from the IPRPS OS repository, and sign in to Tailscale.</li>
+<li>In Tailscale's admin page, <strong>share</strong> your IPRPS computer with your friend, and add the rule that lets players reach only the Table.</li>
+<li>Your friend installs the Tailscale app, accepts your invite, and opens the <code>http://100.x.y.z:7777/</code> address with the join code.</li>
+</ol>
+<p>Full steps are in <code>docs/REMOTE-PLAYERS.md</code> and in Appendix G of the build guide. Test it with a phone on mobile data first. Pictures and video you show come from your home internet's upload speed, so short clips work best.</p>
+</section>
+<section class="chapter"><h2 id="quick-reference-game-night">Quick reference: game night<a class="anchor" href="#quick-reference-game-night" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Moment</th>
+<th>Tool</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open everything for game night</td>
+<td>Session Master Mode</td>
+<td>Panel at the top of the screen</td>
+</tr>
+<tr>
+<td>Let players in</td>
+<td><strong>Open the table</strong>, then <strong>Lock</strong></td>
+<td>Table console, top</td>
+</tr>
+<tr>
+<td>Show a map or handout</td>
+<td><strong>Push to screens → Add media… → Show</strong></td>
+<td>Table console, right</td>
+</tr>
+<tr>
+<td>Read a scene aloud</td>
+<td><strong>Show a text card → Show on screens</strong></td>
+<td>Table console, right</td>
+</tr>
+<tr>
+<td>Music on players' devices</td>
+<td><strong>♪ Play</strong>, <strong>Loop</strong>, <strong>■ Stop sound</strong></td>
+<td>Table console, right</td>
+</tr>
+<tr>
+<td>Whisper to one player</td>
+<td><strong>To</strong> menu → their name</td>
+<td>Table console, message box</td>
+</tr>
+<tr>
+<td>Talk to a split party</td>
+<td><strong>Make from selected</strong>, then <strong>To</strong> → the group</td>
+<td>Table console, left</td>
+</tr>
+<tr>
+<td>Secret roll</td>
+<td><strong>Secret (only me)</strong>, or <strong>Secret roll</strong> in the Dice Roller</td>
+<td>Dice bar / Dice Roller</td>
+</tr>
+<tr>
+<td>An IPRPS check</td>
+<td><strong>IPRPS ▾ → Skill check</strong></td>
+<td>Dice bar on any device</td>
+</tr>
+<tr>
+<td>Start a fight</td>
+<td><strong>+ New</strong>, <strong>+ Whole party</strong>, <strong>Roll initiative</strong></td>
+<td>Combat Tracker</td>
+</tr>
+<tr>
+<td>Next turn</td>
+<td><strong>Next turn ▶</strong> or the <strong>N</strong> key</td>
+<td>Combat Tracker</td>
+</tr>
+<tr>
+<td>Thunder!</td>
+<td>Click the pad, or press its key</td>
+<td>Soundboard</td>
+</tr>
+<tr>
+<td>A quick NPC or place</td>
+<td><strong>NPC</strong>, <strong>Location</strong></td>
+<td>IPRPS Oracle (Medium and up)</td>
+</tr>
+<tr>
+<td>End of the night</td>
+<td><strong>Draft from the log</strong>, then <strong>Close the table</strong></td>
+<td>Session Log, Table console</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="chapter"><h2 id="troubleshooting-at-the-table">Troubleshooting at the table<a class="anchor" href="#troubleshooting-at-the-table" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A player can't open the Table address</td>
+<td>Their device must be on the <strong>same Wi-Fi</strong> as your computer. Guest Wi-Fi networks often block devices from seeing each other, so use your main network. Check that the table says <strong>Open</strong></td>
+</tr>
+<tr>
+<td>"The table is closed"</td>
+<td>Choose <strong>Open the table</strong> in the console. After a restart, the table always starts closed</td>
+</tr>
+<tr>
+<td>A player can't join</td>
+<td>You may have ticked <strong>Lock</strong>. Untick it, let them in, then lock again</td>
+</tr>
+<tr>
+<td>A phone plays no sound</td>
+<td>The player must tap the page once. Look for <strong>🔊 Tap to turn on the table sound</strong></td>
+</tr>
+<tr>
+<td>Someone saw the join code who shouldn't have</td>
+<td>Choose <strong>New code</strong>. Players already at the table stay connected</td>
+</tr>
+<tr>
+<td>The Combat Tracker says to choose a session</td>
+<td>Choose <strong>+ Session</strong> at the top to start tonight's session</td>
+</tr>
+<tr>
+<td>A character isn't in the <strong>From sheets</strong> list</td>
+<td>Import their sheet into Character Sheets, and set its campaign to this one</td>
+</tr>
+<tr>
+<td>The Oracle is slow</td>
+<td>The first answer of the day takes longest. Start Session Master Mode early. The Oracle needs a fairly recent processor and plenty of memory (16 GB is best)</td>
+</tr>
+<tr>
+<td>The players see an old picture</td>
+<td>Choose <strong>Clear screens</strong>, then show the new one</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="chapter"><h2 id="glossary">Glossary<a class="anchor" href="#glossary" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AR (Armor Rating)</strong></td>
+<td>Armor's protection. It is subtracted from damage: Damage − AR</td>
+</tr>
+<tr>
+<td><strong>Band A / Band B</strong></td>
+<td>How to read the d20. Band A: Failure, Zone of Uncertainty, Success. Band B: Weak, Standard, Strong, Peak</td>
+</tr>
+<tr>
+<td><strong>BTN (Base Target Number)</strong></td>
+<td>The number a check's total must reach</td>
+</tr>
+<tr>
+<td><strong>Campaign</strong></td>
+<td>Your whole story. Sessions, sheets, fights and notes belong to it</td>
+</tr>
+<tr>
+<td><strong>Console</strong></td>
+<td>The Session Master's screen of the IPRPS Table</td>
+</tr>
+<tr>
+<td><strong>Development Points (DP)</strong></td>
+<td>The points players spend to build characters</td>
+</tr>
+<tr>
+<td><strong>IPRPS</strong></td>
+<td>The Infinite Plane Role Playing System, by Mythical Legends Publishing</td>
+</tr>
+<tr>
+<td><strong>IPRPS Oracle</strong></td>
+<td>The private storyteller AI that runs on your computer (Medium and Advanced)</td>
+</tr>
+<tr>
+<td><strong>IPRPS Table</strong></td>
+<td>Lets players join from their own devices to chat, roll and see what you share</td>
+</tr>
+<tr>
+<td><strong>Join code</strong></td>
+<td>The six-character code players type to join an open table</td>
+</tr>
+<tr>
+<td><strong>Player display</strong></td>
+<td>A full-screen window for players on a second screen</td>
+</tr>
+<tr>
+<td><strong>Session</strong></td>
+<td>One game night. Its log, fights and recap belong to it</td>
+</tr>
+<tr>
+<td><strong>Session Master (SM)</strong></td>
+<td>The person who runs the game</td>
+</tr>
+<tr>
+<td><strong>Session Master Mode</strong></td>
+<td>One click that opens the Hub, ambience and the players' screen</td>
+</tr>
+<tr>
+<td><strong>Skill Shift / Attribute Shift</strong></td>
+<td>What a check adds to the d20: skill ÷ 10, and attribute − 10</td>
+</tr>
+<tr>
+<td><strong>Zone of Uncertainty</strong></td>
+<td>A d20 of 7 to 12 in Band A. The SM decides what happens, often success with a cost</td>
+</tr>
+</tbody>
+</table></div></section>
+  </main>
+</div>
+<footer><div class="in">IPRPS OS and the Infinite Plane Role Playing System are by Mythical Legends Publishing, LLC (infiniteplane.space). Screenshots show IPRPS OS 1.0 with example data. Roll20, Owlbear Rodeo, Alchemy RPG, Fantasy Grounds and D&amp;D Beyond are trademarks of their owners and are named only for comparison. Their features and prices change; check their websites for current details.</div></footer>
+<a class="btn totop" href="#" aria-label="Back to the top">↑ Top</a>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  document.querySelector('.theme').addEventListener('click', () => {
+    const dark = getComputedStyle(root).colorScheme.includes('dark');
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('iprps-theme', root.dataset.theme); } catch (e) {}
+  });
+  // highlight the chapter being read
+  const links = [...document.querySelectorAll('.layout > nav.toc a')];
+  const byId = Object.fromEntries(links.map(a => [a.getAttribute('href').slice(1), a]));
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { links.forEach(a => a.classList.remove('on')); const a = byId[e.target.id]; if (a) a.classList.add('on'); }
+    }), { rootMargin: '-80px 0px -70% 0px' });
+    document.querySelectorAll('main h2[id]').forEach(h => io.observe(h));
+  }
+  // close the phone contents after a choice
+  document.querySelectorAll('details.toc-m a').forEach(a => a.addEventListener('click', () => a.closest('details').open = false));
+  const top = document.querySelector('.totop');
+  addEventListener('scroll', () => top.classList.toggle('show', scrollY > 900), { passive: true });
+})();
+</script>
+</body>
+</html>

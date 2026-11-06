@@ -1,0 +1,142 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  :root { --navy:#18204a; --ink:#1f2433; --mist:#5a6178; --gold:#c9962f; --goldbg:#fbf3df; --teal:#1f8f94; --tealbg:#e3f4f4; --red:#b9473f; --redbg:#f8e6e4; --line:#d6d9e3; --paper:#ffffff; }
+  body { margin:0; background:#eee; font-family: "Inter", "Segoe UI", "DejaVu Sans", sans-serif; color:var(--ink); }
+  .d { background:var(--paper); width:1200px; padding:36px 40px; box-sizing:border-box; margin:20px; }
+  h2 { font: 700 30px/1.2 "DejaVu Serif", Georgia, serif; color:var(--navy); margin:0 0 6px; }
+  .sub { color:var(--mist); font-size:19px; margin:0 0 26px; }
+  svg text { font-family: "Inter", "Segoe UI", "DejaVu Sans", sans-serif; }
+  /* flow */
+  .flow { display:grid; grid-template-columns: repeat(5, 1fr); gap:14px; }
+  .step { border:2px solid var(--line); border-radius:14px; padding:16px 14px 18px; position:relative; }
+  .step .n { display:inline-grid; place-items:center; width:38px; height:38px; border-radius:50%; background:var(--navy); color:#fff; font:700 19px/1 sans-serif; }
+  .step h3 { font-size:21px; margin:12px 0 6px; color:var(--navy); }
+  .step p { font-size:16.5px; line-height:1.38; margin:0; color:var(--ink); }
+  .step .tools { margin-top:10px; font-size:14.5px; color:var(--teal); font-weight:600; line-height:1.4; }
+  .step.hl { border-color:var(--gold); background:var(--goldbg); }
+  /* compare */
+  .cmp { display:grid; grid-template-columns: 1fr 1fr; gap:26px; }
+  .col { border-radius:16px; padding:22px; }
+  .col.web { background:#f3f4f8; border:2px solid var(--line); }
+  .col.ip { background:var(--goldbg); border:2px solid var(--gold); }
+  .col h3 { margin:0 0 4px; font-size:23px; color:var(--navy); }
+  .col .t { color:var(--mist); font-size:16px; margin:0 0 14px; }
+  .col ul { margin:12px 0 0; padding-left:22px; font-size:17px; line-height:1.5; }
+  /* bands */
+  table.bands { border-collapse:separate; border-spacing:0 10px; width:100%; }
+  .bands td { font-size:18px; padding:0; }
+  .bands .lab { width:150px; font-weight:700; color:var(--navy); vertical-align:middle; }
+  .bar { display:flex; height:66px; border-radius:10px; overflow:hidden; }
+  .seg { display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; font-weight:700; font-size:18px; text-align:center; line-height:1.15; }
+  .seg small { font-weight:500; font-size:14.5px; opacity:.95; }
+  .scale { display:flex; margin-left:150px; font-size:14px; color:var(--mist); }
+  .scale span { flex:1; text-align:center; }
+  .note { font-size:16.5px; color:var(--ink); margin:18px 0 0; line-height:1.45; }
+</style></head><body>
+
+<!-- 1. How players connect -->
+<div class="d" id="connect">
+  <h2>How players join the IPRPS Table</h2>
+  <p class="sub">Everything stays inside your home network. No accounts, no app, no internet needed.</p>
+  <svg viewBox="0 0 1120 470" width="1120" height="470">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f8f94"/></marker></defs>
+    <!-- house -->
+    <rect x="10" y="20" width="770" height="430" rx="22" fill="#fbf3df" stroke="#c9962f" stroke-width="2.5" stroke-dasharray="10 7"/>
+    <text x="34" y="56" font-size="20" font-weight="700" fill="#8a6418">Your home network (Wi-Fi)</text>
+    <!-- SM computer -->
+    <rect x="44" y="150" width="230" height="150" rx="12" fill="#18204a"/>
+    <rect x="58" y="164" width="202" height="104" rx="6" fill="#2a3470"/>
+    <text x="159" y="205" text-anchor="middle" font-size="18" font-weight="700" fill="#e2b552">IPRPS Table</text>
+    <text x="159" y="232" text-anchor="middle" font-size="14.5" fill="#cfd5ef">join code NMZBAK</text>
+    <text x="159" y="255" text-anchor="middle" font-size="14.5" fill="#cfd5ef">+ QR code</text>
+    <rect x="124" y="300" width="70" height="16" fill="#18204a"/><rect x="94" y="314" width="130" height="10" rx="4" fill="#18204a"/>
+    <text x="159" y="356" text-anchor="middle" font-size="18" font-weight="700" fill="#18204a">Session Master's computer</text>
+    <text x="159" y="380" text-anchor="middle" font-size="15.5" fill="#5a6178">IPRPS OS · http://192.168.1.20:7777</text>
+    <!-- router -->
+    <rect x="345" y="205" width="120" height="50" rx="10" fill="#fff" stroke="#18204a" stroke-width="2.5"/>
+    <text x="405" y="236" text-anchor="middle" font-size="16" font-weight="700" fill="#18204a">Wi-Fi router</text>
+    <path d="M385 205 v-22 M425 205 v-22" stroke="#18204a" stroke-width="3"/>
+    <line x1="276" y1="230" x2="342" y2="230" stroke="#1f8f94" stroke-width="3" marker-start="url(#ar)" marker-end="url(#ar)"/>
+    <!-- devices -->
+    <g>
+      <rect x="560" y="72" width="62" height="112" rx="10" fill="#fff" stroke="#18204a" stroke-width="2.5"/><circle cx="591" cy="172" r="4" fill="#18204a"/>
+      <text x="640" y="122" font-size="17" font-weight="700" fill="#18204a">Phone</text><text x="640" y="144" font-size="15" fill="#5a6178">Dana · Brenna Holt</text>
+      <rect x="548" y="208" width="104" height="80" rx="9" fill="#fff" stroke="#18204a" stroke-width="2.5"/>
+      <text x="668" y="244" font-size="17" font-weight="700" fill="#18204a">Tablet</text><text x="668" y="266" font-size="15" fill="#5a6178">Marcus · Tobin</text>
+      <rect x="556" y="318" width="90" height="56" rx="5" fill="#fff" stroke="#18204a" stroke-width="2.5"/><rect x="540" y="374" width="122" height="10" rx="4" fill="#18204a"/>
+      <text x="676" y="350" font-size="17" font-weight="700" fill="#18204a">Laptop</text><text x="676" y="372" font-size="15" fill="#5a6178">Priya · Mira</text>
+    </g>
+    <line x1="467" y1="220" x2="555" y2="135" stroke="#1f8f94" stroke-width="3" marker-start="url(#ar)" marker-end="url(#ar)"/>
+    <line x1="467" y1="232" x2="545" y2="246" stroke="#1f8f94" stroke-width="3" marker-start="url(#ar)" marker-end="url(#ar)"/>
+    <line x1="467" y1="244" x2="553" y2="336" stroke="#1f8f94" stroke-width="3" marker-start="url(#ar)" marker-end="url(#ar)"/>
+    <!-- remote -->
+    <rect x="830" y="150" width="270" height="200" rx="16" fill="#f3f4f8" stroke="#a9aec0" stroke-width="2"/>
+    <text x="965" y="186" text-anchor="middle" font-size="18" font-weight="700" fill="#18204a">Optional: a remote player</text>
+    <rect x="915" y="206" width="100" height="62" rx="5" fill="#fff" stroke="#18204a" stroke-width="2.5"/><rect x="899" y="268" width="132" height="10" rx="4" fill="#18204a"/>
+    <text x="965" y="306" text-anchor="middle" font-size="15" fill="#5a6178">Another city or state,</text>
+    <text x="965" y="327" text-anchor="middle" font-size="15" fill="#5a6178">through Tailscale (encrypted)</text>
+    <path d="M880 352 C 860 430, 760 440, 640 440 L 340 440 C 312 440, 310 292, 280 288" fill="none" stroke="#a9aec0" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#ar)"/>
+  </svg>
+</div>
+
+<!-- 2. Game night flow -->
+<div class="d" id="flow">
+  <h2>Game night at a glance</h2>
+  <p class="sub">Five steps, one computer. Every app writes into the same campaign.</p>
+  <div class="flow">
+    <div class="step"><span class="n">1</span><h3>Prepare</h3><p>Write notes. Gather maps and music. Import players' sheets.</p><div class="tools">IPRPS Writer · Character Sheets · Oracle</div></div>
+    <div class="step hl"><span class="n">2</span><h3>One click</h3><p>Session Master Mode opens the Hub, starts ambience and opens the players' screen.</p><div class="tools">Session Master Mode</div></div>
+    <div class="step"><span class="n">3</span><h3>Players join</h3><p>They scan the QR code on their phones and type the join code.</p><div class="tools">IPRPS Table</div></div>
+    <div class="step"><span class="n">4</span><h3>Play</h3><p>Roll, fight, show pictures, play sound. Rolls and fights go into the log by themselves.</p><div class="tools">Dice · Combat · Soundboard · Table</div></div>
+    <div class="step"><span class="n">5</span><h3>Wrap up</h3><p>Draft the recap from the log. Show it to players next time.</p><div class="tools">Session Log and Recap</div></div>
+  </div>
+</div>
+
+<!-- 3. Where your game lives -->
+<div class="d" id="where">
+  <h2>Where your game lives</h2>
+  <p class="sub">The biggest difference between IPRPS OS and online tabletop websites.</p>
+  <div class="cmp">
+    <div class="col web"><h3>Online tabletop websites</h3><p class="t">Roll20, Owlbear Rodeo, Alchemy, D&amp;D Beyond and others</p>
+      <svg viewBox="0 0 500 170" width="100%" height="170">
+        <ellipse cx="250" cy="44" rx="120" ry="34" fill="#fff" stroke="#5a6178" stroke-width="2"/><text x="250" y="40" text-anchor="middle" font-size="16" font-weight="700" fill="#18204a">The company's servers</text><text x="250" y="60" text-anchor="middle" font-size="13.5" fill="#5a6178">your campaign is stored here</text>
+        <g fill="#18204a" font-size="14" text-anchor="middle"><rect x="40" y="120" width="80" height="40" rx="6" fill="#fff" stroke="#18204a" stroke-width="2"/><text x="80" y="145">You</text>
+        <rect x="170" y="120" width="70" height="40" rx="6" fill="#fff" stroke="#18204a" stroke-width="2"/><text x="205" y="145">Player</text>
+        <rect x="270" y="120" width="70" height="40" rx="6" fill="#fff" stroke="#18204a" stroke-width="2"/><text x="305" y="145">Player</text>
+        <rect x="380" y="120" width="80" height="40" rx="6" fill="#fff" stroke="#18204a" stroke-width="2"/><text x="420" y="145">Player</text></g>
+        <g stroke="#5a6178" stroke-width="2" stroke-dasharray="6 5"><line x1="80" y1="120" x2="190" y2="74"/><line x1="205" y1="120" x2="235" y2="78"/><line x1="305" y1="120" x2="265" y2="78"/><line x1="420" y1="120" x2="310" y2="74"/></g>
+      </svg>
+      <ul><li>Everyone needs the internet the whole time</li><li>Accounts and logins, often a subscription</li><li>Made for many game systems, or for one (D&amp;D)</li><li>Great for battle maps, tokens and play over long distances</li></ul></div>
+    <div class="col ip"><h3>IPRPS OS</h3><p class="t">A whole computer system made for the Session Master</p>
+      <svg viewBox="0 0 500 170" width="100%" height="170">
+        <rect x="130" y="14" width="240" height="70" rx="10" fill="#18204a"/><text x="250" y="45" text-anchor="middle" font-size="16" font-weight="700" fill="#e2b552">Your computer</text><text x="250" y="66" text-anchor="middle" font-size="13.5" fill="#cfd5ef">your campaign is stored here</text>
+        <g fill="#18204a" font-size="14" text-anchor="middle">
+        <rect x="70" y="120" width="70" height="40" rx="6" fill="#fff" stroke="#18204a" stroke-width="2"/><text x="105" y="145">Player</text>
+        <rect x="215" y="120" width="70" height="40" rx="6" fill="#fff" stroke="#18204a" stroke-width="2"/><text x="250" y="145">Player</text>
+        <rect x="360" y="120" width="70" height="40" rx="6" fill="#fff" stroke="#18204a" stroke-width="2"/><text x="395" y="145">Player</text></g>
+        <g stroke="#1f8f94" stroke-width="3"><line x1="105" y1="120" x2="200" y2="84"/><line x1="250" y1="120" x2="250" y2="84"/><line x1="395" y1="120" x2="300" y2="84"/></g>
+        <text x="250" y="108" text-anchor="middle" font-size="13" fill="#1f8f94" font-weight="700"></text>
+      </svg>
+      <ul><li>Runs games with no internet at all</li><li>No accounts for players, no subscription</li><li>Built for IPRPS: its rolls, bands and five combat modes</li><li>Private AI helper on your own computer (Medium and up)</li></ul></div>
+  </div>
+</div>
+
+<!-- 4. Bands -->
+<div class="d" id="bands">
+  <h2>Reading an IPRPS roll: the two bands</h2>
+  <p class="sub">The Table, the Dice Roller and the Combat Tracker name the band for you. This is what it means.</p>
+  <table class="bands">
+    <tr><td class="lab">Band A<br><span style="font-weight:500;color:#5a6178;font-size:15px">Yes or no?</span></td><td><div class="bar">
+      <div class="seg" style="flex:6;background:#b9473f">Failure<small>1 – 6</small></div>
+      <div class="seg" style="flex:6;background:#c9962f">Zone of Uncertainty<small>7 – 12 · the SM decides</small></div>
+      <div class="seg" style="flex:8;background:#1f8f94">Success<small>13 – 20</small></div></div></td></tr>
+    <tr><td class="lab">Band B<br><span style="font-weight:500;color:#5a6178;font-size:15px">How well?</span></td><td><div class="bar">
+      <div class="seg" style="flex:6;background:#b9473f">Weak<small>1 – 6</small></div>
+      <div class="seg" style="flex:8;background:#c9962f">Standard<small>7 – 14</small></div>
+      <div class="seg" style="flex:5;background:#1f8f94">Strong<small>15 – 19</small></div>
+      <div class="seg" style="flex:1;background:#18204a">Peak<small>20</small></div></div></td></tr>
+  </table>
+  <p class="note">The band comes from the <b>d20 alone</b>. The <b>total</b> (d20 + Skill Shift + Attribute Shift) is compared with the <b>BTN</b>. Example: Brenna rolls a 9, plus 3 for Tracking 30 and plus 4 for WIS 14, for a total of 16. That beats BTN 14, and the 9 lands in the Zone of Uncertainty, so she succeeds, but with a twist the SM chooses.</p>
+</div>
+</body></html>
