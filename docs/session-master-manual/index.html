@@ -325,7 +325,7 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 <h3 id="five-things-that-set-iprps-os-apart">Five things that set IPRPS OS apart<a class="anchor" href="#five-things-that-set-iprps-os-apart" aria-label="Link to this section">#</a></h3>
 <p><strong>1. It works with no internet at all.</strong> Your players join from their own phones, tablets or laptops over your home Wi-Fi. They don't need an account, an app or a password. They scan a QR code, type a six-letter join code, and they are in. If the internet goes down on game night, nothing stops.</p>
 <p><strong>2. It speaks IPRPS.</strong> Other tools are made for many game systems, or for one other system. IPRPS OS is made for the Infinite Plane Role Playing System. The dice know the <strong>success bands</strong>, the <strong>BTN</strong> (Base Target Number), <strong>Skill Shift</strong> and <strong>Attribute Shift</strong>. The combat tracker subtracts <strong>AR</strong> (Armor Rating) from damage and supports all <strong>five IPRPS combat modes</strong>. The Character Creator counts <strong>Development Points</strong> for you.</p>
-<p><strong>3. It has a private AI helper.</strong> In the Medium and Advanced editions, the <strong>IPRPS Oracle</strong> runs on your own computer. It can invent an NPC, a place or a read-aloud description in seconds. It reads your campaign, so its ideas fit your story. Nothing you type leaves your computer, and there is no account or fee.</p>
+<p><strong>3. It has a private AI helper.</strong> In the Medium and Advanced editions, the <strong>IPRPS Oracle</strong> runs on your own computer. It can invent an NPC, a place or a read-aloud description for you. It reads your campaign, so its ideas fit your story. Its own model keeps everything on your computer, with no account or fee. If you want faster answers, you can switch it to Claude, an online AI, with your own key.</p>
 <p><strong>4. Every tool is connected.</strong> The dice roller and the combat tracker write into the <strong>session log</strong> as you play. After the game, the log turns into a <strong>recap</strong> with one click. Character sheets you import show up in the combat tracker, the Table and the Oracle. One click on <strong>Session Master Mode</strong> opens everything you need for game night.</p>
 <p><strong>5. Your game is yours.</strong> Your campaigns, notes, sheets and recordings stay on your computer. There is no subscription to keep paying, and no company can close your account or lose your campaign.</p>
 <h3 id="how-it-compares-with-popular-online-tools">How it compares with popular online tools<a class="anchor" href="#how-it-compares-with-popular-online-tools" aria-label="Link to this section">#</a></h3>
@@ -737,7 +737,7 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 </aside>
 </section>
 <section class="chapter"><h2 id="chapter-8-ask-the-iprps-oracle-medium-and-advanced">Chapter 8: Ask the IPRPS Oracle (Medium and Advanced)<a class="anchor" href="#chapter-8-ask-the-iprps-oracle-medium-and-advanced" aria-label="Link to this section">#</a></h2>
-<p>Players often go somewhere you didn't plan. The <strong>IPRPS Oracle</strong> helps you keep up. It is a storyteller AI that runs <strong>entirely on your computer</strong>. It needs no internet, no account and no API key. Nothing you type leaves the machine.</p>
+<p>Players often go somewhere you didn't plan. The <strong>IPRPS Oracle</strong> helps you keep up. It is a storyteller AI. Its model, <strong>Llama 3.2 3B</strong>, runs <strong>entirely on your computer</strong>. It needs no internet, no account and no API key, and nothing you type leaves the machine. <em>Built with Llama.</em></p>
 <figure class="wide"><a href="images/oracle.jpg" target="_blank" rel="noopener"><img src="images/oracle.jpg" alt="The IPRPS Oracle: quick generators, character sheets and campaign memory on the left, the conversation on the right" loading="lazy" decoding="async"></a><figcaption>The IPRPS Oracle: quick generators, character sheets and campaign memory on the left, the conversation on the right</figcaption></figure>
 <p><strong>What it can do:</strong></p>
 <ul>
@@ -752,6 +752,7 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 <li>Pin the facts that matter, like who is secretly working for whom.</li>
 <li>Treat answers as ideas. You are the Session Master, so change anything you like.</li>
 <li>The first answer of the day is slower while the AI loads. Session Master Mode warms it up for you.</li>
+<li>On an older computer, a long answer can take a minute or more. <strong>Clear this chat</strong> between scenes, and untick <strong>Use campaign memory</strong> for <strong>Names</strong> and <strong>Loot</strong>. Both make answers start sooner.</li>
 </ul>
 <aside class="box walk"><span class="box-label">Walkthrough 6</span>
 <p><strong class="wt">When the players go off script</strong></p>
@@ -759,12 +760,58 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 <ol>
 <li>Open the <strong>IPRPS Oracle</strong>. Set <strong>Campaign</strong> to <em>Iron City Blues</em>.</li>
 <li>Under <strong>Campaign memory</strong>, type <em>The Harbor Guild pays the Night Watch to look away on Thursdays.</em> Choose <strong>Pin</strong>.</li>
-<li>In the message box, type <em>a pawnbroker near the docks who hears everything</em>. Choose <strong>NPC</strong>.</li>
+<li>In the <strong>Details</strong> box above the generators, type <em>a pawnbroker near the docks who hears everything</em>. Choose <strong>NPC</strong>.</li>
 <li>Read the answer. If you like the character, choose <strong>Save NPC</strong>.</li>
-<li>Type <em>the pawnshop at night, in the rain</em> and choose <strong>Read-aloud</strong>. Choose <strong>Show players</strong> to put it on the player display, or copy it into a Table text card.</li>
-<li>Need stats in a hurry? Type a short description of the pawnbroker and choose <strong>NPC sheet</strong>. It takes a minute or two.</li>
+<li>In the <strong>Details</strong> box, type <em>the pawnshop at night, in the rain</em> and choose <strong>Read-aloud</strong>. Choose <strong>Show players</strong> to put it on the player display, or copy it into a Table text card.</li>
+<li>Need stats in a hurry? Type a short description of the pawnbroker in <strong>Details</strong> and choose <strong>NPC sheet</strong>. It takes a minute or two with the local model.</li>
 </ol>
 <p><strong>Check:</strong> the new sheet appears in Character Sheets under <strong>NPCs</strong>, ready to add to a fight.</p>
+</aside>
+<h3 id="optional-claude-the-online-ai">Optional: Claude, the online AI<a class="anchor" href="#optional-claude-the-online-ai" aria-label="Link to this section">#</a></h3>
+<p>The local model is free and private, but it can be slow on older computers. If you have internet, the Oracle can use <strong>Claude</strong>, an AI made by Anthropic, instead. Claude usually answers in seconds and writes richer scenes. You need your own <strong>Anthropic API key</strong>, and Anthropic charges your account a small amount for each answer.</p>
+<figure class="medium"><a href="images/oracle-online.jpg" target="_blank" rel="noopener"><img src="images/oracle-online.jpg" alt="The Online AI window: your saved key, the four Claude models, and Check for new models" loading="lazy" decoding="async"></a><figcaption>The Online AI window: your saved key, the four Claude models, and Check for new models</figcaption></figure>
+<p><strong>Set it up once:</strong></p>
+<ol>
+<li>Get a key at <strong>console.anthropic.com</strong>, under <strong>API keys</strong>. It starts with <code>sk-ant-</code>.</li>
+<li>In the Oracle, choose <strong>Online AI…</strong> next to the <strong>Model</strong> menu.</li>
+<li>Paste the key and choose <strong>Check and save</strong>. The Oracle tests the key first. Then it stores it, locked with encryption, on your computer.</li>
+</ol>
+<p><strong>Choose a model</strong> in the <strong>Model</strong> menu, under <em>Online: Claude</em>:</p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Good for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claude Haiku</strong></td>
+<td>The fastest and cheapest. Quick NPCs and names at the table</td>
+</tr>
+<tr>
+<td><strong>Claude Sonnet</strong></td>
+<td>Fast and very capable. A good everyday choice</td>
+</tr>
+<tr>
+<td><strong>Claude Opus</strong></td>
+<td>Richer writing, at a higher cost. Prep work between sessions</td>
+</tr>
+<tr>
+<td><strong>Claude Fable</strong></td>
+<td>Anthropic's most capable model, at the highest cost</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>What changes when Claude is on:</strong></p>
+<ul>
+<li>The top bar turns teal and says <strong>Online</strong>. A notice above the message box reminds you that your message, the campaign memory and any character sheets you name go to Anthropic.</li>
+<li>Recaps (<strong>✦ Draft with the Oracle</strong>) and <strong>NPC sheet</strong> use Claude too.</li>
+<li>To go back, choose <strong>iprps-storyteller</strong> under <em>On this computer</em>. <strong>Remove key</strong> deletes your key.</li>
+</ul>
+<p><strong>New Claude models.</strong> When Anthropic releases a new model, choose <strong>Check for new models</strong> in <strong>Online AI…</strong>. The Oracle also checks once a week by itself. The new model shows up in the menu. You don't need an IPRPS update.</p>
+<aside class="box tip"><span class="box-label">Tip</span>
+<p>Use the local model when your campaign holds secrets you'd rather keep at home. Use Claude when speed matters most, like a busy game night.</p>
 </aside>
 </section>
 <section class="chapter"><h2 id="chapter-9-wrap-up-the-night">Chapter 9: Wrap up the night<a class="anchor" href="#chapter-9-wrap-up-the-night" aria-label="Link to this section">#</a></h2>
@@ -889,6 +936,11 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 <td>IPRPS Oracle (Medium and up)</td>
 </tr>
 <tr>
+<td>A faster Oracle</td>
+<td><strong>Model</strong> menu → a Claude model (online, your key)</td>
+<td>IPRPS Oracle, <strong>Online AI…</strong></td>
+</tr>
+<tr>
 <td>End of the night</td>
 <td><strong>Draft from the log</strong>, then <strong>Close the table</strong></td>
 <td>Session Log, Table console</td>
@@ -935,7 +987,15 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 </tr>
 <tr>
 <td>The Oracle is slow</td>
-<td>The first answer of the day takes longest. Start Session Master Mode early. The Oracle needs a fairly recent processor and plenty of memory (16 GB is best)</td>
+<td>The first answer of the day takes longest, so start Session Master Mode early. <strong>Clear this chat</strong> between scenes. The local model needs a fairly recent processor and plenty of memory (16 GB is best). For answers in seconds, choose a Claude model (Chapter 8)</td>
+</tr>
+<tr>
+<td>The Oracle says <em>A new local model is ready</em></td>
+<td>An update brought a new local model. Open a terminal and type <code>sudo iprps-ai-model upgrade</code> once (it downloads 3.4 GB). The old model keeps working until then</td>
+</tr>
+<tr>
+<td>Claude: <em>refused the API key</em>, or <em>out of credit</em></td>
+<td>Copy the key again from console.anthropic.com, or add credit to your Anthropic account. The local model always works</td>
 </tr>
 <tr>
 <td>The players see an old picture</td>
@@ -983,7 +1043,11 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 </tr>
 <tr>
 <td><strong>IPRPS Oracle</strong></td>
-<td>The private storyteller AI that runs on your computer (Medium and Advanced)</td>
+<td>The storyteller AI (Medium and Advanced). Llama 3.2 runs on your computer; Claude is an optional online choice</td>
+</tr>
+<tr>
+<td><strong>API key</strong></td>
+<td>A secret code from a company like Anthropic that lets an app use its online AI and charges your account</td>
 </tr>
 <tr>
 <td><strong>IPRPS Table</strong></td>
@@ -1021,7 +1085,7 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 </table></div></section>
   </main>
 </div>
-<footer><div class="in">IPRPS OS and the Infinite Plane Role Playing System are by Mythical Legends Publishing, LLC (infiniteplane.space). Screenshots show IPRPS OS 1.0 with example data. Roll20, Owlbear Rodeo, Alchemy RPG, Fantasy Grounds and D&amp;D Beyond are trademarks of their owners and are named only for comparison. Their features and prices change; check their websites for current details.</div></footer>
+<footer><div class="in">IPRPS OS and the Infinite Plane Role Playing System are by Mythical Legends Publishing, LLC (infiniteplane.space). The IPRPS Oracle&#x27;s local model is Built with Llama: Llama 3.2 is licensed under the Llama 3.2 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved. Claude is a product of Anthropic. Screenshots show IPRPS OS 1.0 with example data. Roll20, Owlbear Rodeo, Alchemy RPG, Fantasy Grounds and D&amp;D Beyond are trademarks of their owners and are named only for comparison. Their features and prices change; check their websites for current details.</div></footer>
 <a class="btn totop" href="#" aria-label="Back to the top">↑ Top</a>
 
 <script>

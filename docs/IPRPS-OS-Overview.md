@@ -1,6 +1,6 @@
 # IPRPS OS — What It Is and What It Can Do
 
-*Reference guide for users · Updated November 3, 2026*
+*Reference guide for users · Updated November 7, 2026*
 
 ![IPRPS OS wallpaper artwork](images/iprps-wallpaper.jpg "w=4.4")
 
@@ -110,7 +110,7 @@ At each person's first login, **IPRPS Welcome** opens a short tour: what's insta
 
 ![IPRPS Welcome's "Your tools" step: every IPRPS app, with a short description and an Open button](images/welcome-tools.jpg "w=6.5")
 
-API keys are stored **encrypted**, for your account only, and never leave the computer. The offline tools (Combat, Dice, Session Log, Character Sheets, the Table and the Oracle) need no keys at all.
+API keys are stored **encrypted**, for your account only, and never leave the computer. The offline tools (Combat, Dice, Session Log, Character Sheets, the Table and the Oracle's local model) need no keys at all. A key for **Anthropic (Claude)** also unlocks the Oracle's optional online models.
 
 ### Run sessions
 
@@ -185,12 +185,13 @@ Tailscale's free Personal plan covers home campaigns (up to 6 users, non-commerc
 
 ### Get help from the IPRPS Oracle (Medium and Advanced)
 
-The **IPRPS Oracle** is a storyteller AI for Session Masters that runs **entirely on your computer**: no internet, no account, no API key, and nothing leaves the machine.
+The **IPRPS Oracle** is a storyteller AI for Session Masters. Its model, **Llama 3.2 3B**, runs **entirely on your computer**: no internet, no account, no API key, and nothing leaves the machine. *Built with Llama.*
 
 - **Ask anything** about your scene, or use the quick generators: NPC, location, loot, encounter, plot hook, names, and read-aloud descriptions.
 - **Character sheets:** **NPC sheet** and **Creature sheet** write complete IPRPS sheets and save them to Character Sheets. Name a character in your message and the Oracle reads their sheet.
 - **It knows your campaign.** It reads the campaign, its latest sessions and log, NPCs, open quests, characters, character sheets and facts you pin.
 - **Show players** sends a description to the player display.
+- **Optional: Claude online.** For faster, richer answers, choose **Claude Haiku, Sonnet, Opus or Fable** in the Oracle's Model menu. This needs internet and your own Anthropic API key (**Online AI…**), and Anthropic charges your account for each reply. While Claude is chosen, your message and campaign memory go to Anthropic, and the Oracle says so on screen. **Check for new models** adds new Claude releases to the menu without an update.
 
 ![The IPRPS Oracle: quick generators, character sheets and campaign memory on the left, the conversation on the right](images/oracle.jpg "w=6.5")
 
@@ -227,7 +228,7 @@ The **IPRPS Oracle** is a storyteller AI for Session Masters that runs **entirel
 | IPRPS Welcome | First-login tour, color scheme, encrypted API keys | Included |
 | IPRPS Updates | Security fixes, new app versions and optional software, without reinstalling | Included |
 | Player display | Full-screen view for players on a second screen | Included |
-| IPRPS Oracle | Local storyteller AI with campaign memory and character sheets | Included (Medium and up) |
+| IPRPS Oracle | Storyteller AI with campaign memory and character sheets: Llama 3.2 on your computer, or Claude online with your own key | Included (Medium and up) |
 | Campaign database | Campaigns, sessions, the session log, encounters, character sheets, NPCs, quests | Included |
 | Universal Login | One sign-in for all local IPRPS apps | Included |
 | IPRPS Media Player | Music, ambience, CDs, DVDs and IPRPS radio | Included (Medium and up) |
@@ -307,7 +308,7 @@ Your campaigns, players and session records stay on your computer. Nothing is se
 - **Local web server.** The IPRPS apps run on a web server (Apache with PHP) that accepts connections **only from the computer itself**.
 - **The IPRPS Table** is the one part that other devices can reach, and only while you have a table **open**, only on your local network (or, if you set up remote players, through your own encrypted Tailscale network, limited to the Table), and only with the join code. Its console opens only on your computer. Closing the table disconnects everyone; after a restart the table is always closed.
 - **Local database.** Campaign data lives in a MariaDB database with no network port at all. Each installation gets its own randomly generated database password on first boot.
-- **Local AI.** The IPRPS Oracle runs on your computer and listens only to it. Your campaign never leaves the machine.
+- **Local AI.** The IPRPS Oracle's own model runs on your computer and listens only to it, so your campaign never leaves the machine. Only if you choose a Claude model and add your own Anthropic key does the Oracle send your request to Anthropic.
 - **Your accounts.** Each person who uses the computer gets their own account, files and settings. The first user can administer the system with their own password; the root account is locked.
 - **Online AI apps are opt-in.** The Genesis Character Engine and the Writing Assistant send your prompts to an online AI service using **your own API key**, kept encrypted by IPRPS Welcome. No keys ship with IPRPS OS. Without a key and internet, those two apps don't work; everything else does.
 - **Update checks** download the package lists from infiniteplane.space: an ordinary web request, with nothing about you or the computer sent. Switch them off in IPRPS Updates (**Settings**).
@@ -329,7 +330,7 @@ Your campaigns, players and session records stay on your computer. Nothing is se
 - **Firefox** is built without Mozilla's official branding, so it carries a generic name and icon; it's the same browser. **Chromium** is the open-source, ungoogled build.
 - **Media formats.** FFmpeg is built without its non-free options, and some patent-encumbered hardware video acceleration is turned off. Common formats still play; users who need more can add it themselves where it's legal.
 - **Firmware.** Hardware firmware comes from the official linux-firmware collection, with its license texts included.
-- **The Oracle's model** is an openly licensed (Apache-2.0) language model with IPRPS instructions on top.
+- **The Oracle's model** is Meta's Llama 3.2 3B Instruct with IPRPS instructions on top. Built with Llama. Llama 3.2 is licensed under the Llama 3.2 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved; the license ships with the model.
 
 IPRPS apps are by Mythical Legends Publishing; each app states its own license. IPRPS OS's own system scripts, configuration, apps it adds (the Hub, the IPRPS Table, IPRPS Writer, the IPRPS Oracle, the session tools, IPRPS Updates), icons and build guide are free software under the GNU General Public License, version 2.
 
@@ -360,9 +361,11 @@ Follow infiniteplane.space and the GitHub repository for announcements.
 
 **I only have one monitor. Can I still run a game?** Yes. Session Master Mode opens the IPRPS Table instead of a player display when there's one screen, and your players follow on their own devices.
 
-**Does it need the internet?** No, not for running games. The Hub, the IPRPS Table, the session tools, the Soundboard, IPRPS Writer and the IPRPS Oracle all work offline. You need internet to download IPRPS OS, for updates, and for the online AI apps (Genesis Character Engine, Writing Assistant).
+**Does it need the internet?** No, not for running games. The Hub, the IPRPS Table, the session tools, the Soundboard, IPRPS Writer and the IPRPS Oracle (with its local model) all work offline. You need internet to download IPRPS OS, for updates, for the Oracle's optional Claude models, and for the online AI apps (Genesis Character Engine, Writing Assistant).
 
-**How is the IPRPS Oracle different from the online AI apps?** The Oracle runs on your computer, needs no account or key, and keeps your campaign private. The online apps use a larger AI service over the internet with your own API key.
+**How is the IPRPS Oracle different from the online AI apps?** The Oracle's own model runs on your computer, needs no account or key, and keeps your campaign private. You can also point the Oracle at Claude, a larger AI service over the internet, with your own API key, the same way the online apps work.
+
+**Can the Oracle be faster?** On a computer without a usable graphics chip, a long NPC can take a minute or more with the local model. Choosing a Claude model makes answers arrive in seconds (online, with your own key). The build guide's Part 15 also lists settings that speed up the local model.
 
 **How do I get updates?** IPRPS Updates tells you when they're ready; open it and click **Install updates**. No reinstalling, and your campaigns and files stay as they are.
 
@@ -389,7 +392,7 @@ Follow infiniteplane.space and the GitHub repository for announcements.
 | **IPRPS Table** | Play over the local network: players join from their own devices to chat, roll dice and see what the Session Master shares |
 | **Join code** | The six-character code players type to join an open IPRPS Table |
 | **Remote player** | A player in another place who joins the IPRPS Table through Tailscale, an encrypted private network between the two computers |
-| **IPRPS Oracle** | The storyteller AI that runs on your computer (Medium and Advanced) |
+| **IPRPS Oracle** | The storyteller AI for Session Masters (Medium and Advanced): Llama 3.2 on your computer, or Claude online with your own key |
 | **IPRPS Updates** | The window (and `iprps-update` command) that installs updates and optional software |
 | **Player display** | A full-screen window for players on a second screen, showing what the Session Master reveals |
 | **BTN and AR** | Base Target Number and Armor Rating, the IPRPS targets for rolls and damage |

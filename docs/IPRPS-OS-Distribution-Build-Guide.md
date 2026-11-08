@@ -29049,17 +29049,20 @@ The `ls` should show a `chromium.desktop` helper (it comes with Xfce's exo). If 
 
 ### Local AI: Ollama and the IPRPS Oracle (Medium and Advanced)
 
-Medium and Advanced include a **local AI** for Session Masters: the **IPRPS Oracle**, an app in Session Master Mode that improvises NPCs, scenes, locations, loot, encounters, plot hooks and names, answers questions about the campaign, and sends descriptions to the players' screen. It runs **entirely on the computer**: no internet, no account, no API key, and nothing leaves the machine.
+Medium and Advanced include a **local AI** for Session Masters: the **IPRPS Oracle**, an app in Session Master Mode that improvises NPCs, scenes, locations, loot, encounters, plot hooks and names, answers questions about the campaign, and sends descriptions to the players' screen. Its default model runs **entirely on the computer**: no internet, no account, no API key, and nothing leaves the machine. A Session Master who wants faster or richer answers can switch the Oracle to **Claude**, Anthropic's online AI, with their own API key (step 10); that part needs internet and is never on unless they add a key.
 
 | Part | What it is | Size |
 |---|---|---|
 | **Ollama** | The service that runs AI models (MIT license), `/usr/bin/ollama` + `/usr/lib/ollama` | about 0.3–0.6 GB (after removing the NVIDIA libraries) |
-| **iprps-storyteller** | The Oracle's model: **Qwen3.5 4B** (Apache-2.0) plus the IPRPS Modelfile (Session Master voice, BTN/AR terminology) | about 3.4 GB |
-| **IPRPS Oracle** | The app, `/srv/www/iprps/oracle`, with the Universal Login | under 100 KB |
+| **iprps-storyteller** | The Oracle's model: Meta's **Llama 3.2 3B Instruct**, 8-bit (`llama3.2:3b-instruct-q8_0`, Llama 3.2 Community License) plus the IPRPS Modelfile (Session Master voice, BTN/AR terminology) | about 3.4 GB |
+| **IPRPS Oracle** | The app, `/srv/www/iprps/oracle`, with the Universal Login | under 150 KB |
+| **Claude** (optional) | Anthropic's online models (Haiku, Sonnet, Opus, Fable), used only with the Session Master's own API key | nothing on disk |
 
-It needs about **5 GB of free memory** while answering, so 8 GB machines work (16 GB is comfortable). Graphics cards help through **Vulkan** (AMD and Intel, with Mesa's drivers from Stage B); without a usable GPU it runs on the processor, more slowly. **NVIDIA** acceleration needs NVIDIA's own driver, which IPRPS OS can't ship; it runs on the processor there.
+The local model needs about **5 GB of free memory** while answering, so 8 GB machines work (16 GB is comfortable). Graphics cards help through **Vulkan** (AMD and Intel, with Mesa's drivers from Stage B); without a usable GPU it runs on the processor, more slowly. **NVIDIA** acceleration needs NVIDIA's own driver, which IPRPS OS can't ship; it runs on the processor there.
 
 Later, a **custom-trained IPRPS model** replaces the bundled one with one command (`iprps-ai-model install`, below); the app keeps working unchanged because it always asks for the model named `iprps-storyteller`.
+
+> **Warning:** **Llama's license terms.** Llama 3.2 comes under the *Llama 3.2 Community License*, not an open-source license. Shipping it in IPRPS OS requires three things, all handled in this part: a copy of the license with the model (`LICENSE-llama3.2.txt`, step 6), the notice *"Llama 3.2 is licensed under the Llama 3.2 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved."* (`ai/NOTICE`), and **"Built with Llama"** shown in the product or its documentation (the Oracle shows it, with a **Licenses** page, and so do the Overview and the manual). Users agree to Meta's Acceptable Use Policy (https://www.llama.com/llama3_2/use-policy). A model **trained** from Llama or its outputs must have a name that starts with "Llama" (see the custom-model tip below).
 
 **Before you start:** unzip the newest IPRPS OS repository over your local copy (`G:\IPRPS\iprps-os`, E.3). It contains the app (`apps/oracle/`) and the AI files (`ai/`).
 
@@ -29150,7 +29153,7 @@ Settings for one computer (for example `OLLAMA_KEEP_ALIVE=60m`) go into `/etc/ip
 ```bash
 R=/mnt/g/IPRPS/iprps-os
 install -vdm755 /mnt/iprps/usr/share/iprps/ai
-install -vm644 $R/ai/Modelfile $R/ai/system-prompt.txt /mnt/iprps/usr/share/iprps/ai/
+install -vm644 $R/ai/Modelfile $R/ai/system-prompt.txt $R/ai/NOTICE /mnt/iprps/usr/share/iprps/ai/
 install -vm755 $R/ai/iprps-ai-model /mnt/iprps/usr/bin/
 ```
 
@@ -29163,20 +29166,25 @@ tar --zstd -xf /build/src/ollama-linux-amd64.tar.zst -C /root/ollama-host
 export OLLAMA_HOST=127.0.0.1:11500
 OLLAMA_MODELS=/mnt/iprps/var/lib/ollama/models /root/ollama-host/bin/ollama serve > /root/ollama-host.log 2>&1 &
 sleep 5
-/root/ollama-host/bin/ollama pull qwen3.5:4b
+/root/ollama-host/bin/ollama pull llama3.2:3b-instruct-q8_0
 /root/ollama-host/bin/ollama create iprps-storyteller -f /mnt/iprps/usr/share/iprps/ai/Modelfile
 /root/ollama-host/bin/ollama list
-/root/ollama-host/bin/ollama show qwen3.5:4b --license > /mnt/iprps/usr/share/iprps/ai/LICENSE-qwen3.5.txt
-head -3 /mnt/iprps/usr/share/iprps/ai/LICENSE-qwen3.5.txt
+/root/ollama-host/bin/ollama show llama3.2:3b-instruct-q8_0 --license > /mnt/iprps/usr/share/iprps/ai/LICENSE-llama3.2.txt
+head -3 /mnt/iprps/usr/share/iprps/ai/LICENSE-llama3.2.txt
+rm -f /mnt/iprps/usr/share/iprps/ai/LICENSE-qwen3.5.txt
+/root/ollama-host/bin/ollama rm qwen3.5:4b 2>/dev/null
 /root/ollama-host/bin/ollama run iprps-storyteller "In two sentences, describe a smugglers' tavern."
 pkill -f 'ollama-host/bin/ollama serve'; unset OLLAMA_HOST
 du -sh /mnt/iprps/var/lib/ollama/models
 ```
 
-- `ollama pull` downloads about 3.4 GB; `ollama list` must show **qwen3.5:4b** and **iprps-storyteller:latest**.
-- The license file must start with the Apache License header; it ships with the model, as Apache-2.0 requires.
-- The test answer may first print a "Thinking…" section (the Oracle app switches thinking off). Answers in Debian are slow; that's the processor of a WSL machine, not the target computer.
-- If `pull` says the model isn't found, its name changed: check **https://ollama.com/library/qwen3.5** for the 4B tag, and change both the `pull` line and the `FROM` line of `ai/Modelfile`.
+- `ollama pull` downloads about 3.4 GB; `ollama list` must show **llama3.2:3b-instruct-q8_0** and **iprps-storyteller:latest**.
+- The license file must start with **LLAMA 3.2 COMMUNITY LICENSE AGREEMENT**; it ships with the model, as the license requires.
+- The last two lines remove the earlier default model (Qwen3.5 4B) from an image that had it; on a new image they do nothing.
+- Answers in Debian are slow; that's the processor of a WSL machine, not the target computer.
+- If `pull` says the model isn't found, its name changed: check **https://ollama.com/library/llama3.2** (the *Tags* list) for the 3B instruct Q8_0 tag, and change the `pull` line, the `show` line and the `FROM` line of `ai/Modelfile`.
+
+> **Side note:** **Q8_0 or Q4_K_M?** `llama3.2:3b-instruct-q8_0` (3.4 GB) keeps nearly all of the model's quality. On a computer without a usable graphics chip, `llama3.2:3b-instruct-q4_K_M` (2.0 GB) writes about 1.7 times faster with slightly plainer text. To ship that one instead, change the three names above; to switch one computer, see the speed note in step 9.
 
 Then give the model files to the service user:
 
@@ -29225,7 +29233,7 @@ gtk-update-icon-cache -qtf /usr/share/icons/hicolor
 update-desktop-database /usr/share/applications
 ```
 
-`ls -A` lists `api.php`, `config.php`, `display.php`, `index.html`, `markdown.js`, `oracle.css`, `oracle.js`, `oracle-icon.svg`, `prompts.php` and `.user.ini` (which turns PHP's output buffering off for this folder). The Oracle needs **no database setup**: on first use it creates its tables (`oracle_messages`, `oracle_memory`, `display_items`) in the IPRPS core database, using the password `iprps-db-init` writes to `/etc/iprps/db.php` (13.1). It reads the campaign memory from the core tables the Session Master Hub fills: `campaigns`, `sessions` (recap, Session Master notes), `session_log`, `npcs`, `quests` and `characters`, and the campaign's sheets in `character_sheets` (12.9). With Character Sheets installed, its **Character sheets** buttons (**NPC sheet**, **Creature sheet**) write complete IPRPS sheets and save them there. The model answers in a fixed JSON layout (Ollama's structured outputs), and the values are checked before they're stored.
+`ls -A` lists `about-models.html`, `api.php`, `config.php`, `display.php`, `index.html`, `llm.php`, `markdown.js`, `oracle.css`, `oracle.js`, `oracle-icon.svg`, `prompts.php` and `.user.ini` (which turns PHP's output buffering off for this folder). The Oracle needs **no database setup**: on first use it creates its tables (`oracle_messages`, `oracle_memory`, `display_items`) in the IPRPS core database, using the password `iprps-db-init` writes to `/etc/iprps/db.php` (13.1). It reads the campaign memory from the core tables the Session Master Hub fills: `campaigns`, `sessions` (recap, Session Master notes), `session_log`, `npcs`, `quests` and `characters`, and the campaign's sheets in `character_sheets` (12.9). With Character Sheets installed, its **Character sheets** buttons (**NPC sheet**, **Creature sheet**) write complete IPRPS sheets and save them there. The model answers in a fixed JSON layout (Ollama's structured outputs), and the values are checked before they're stored.
 
 **9. Test** (fresh test copy, `-m 8G`, log in):
 
@@ -29236,9 +29244,9 @@ systemctl status ollama --no-pager | head -5
 iprps-ai-model status
 ```
 
-The service is **active (running)**; the status lists `iprps-storyteller` "built from: qwen3.5:4b", and the log line shows which compute device was found (in QEMU: the processor).
+The service is **active (running)**; the status lists `iprps-storyteller` "built from: llama3.2:3b-instruct-q8_0", and the log line shows which compute device was found (in QEMU: the processor).
 
-Then open **IPRPS Oracle** from the menu (or Session Master Mode): it asks for the Universal Login once, the top bar shows **Ollama** in green, and the model menu shows `iprps-storyteller`. Click **NPC**: the first answer takes longer (the model loads), then text appears word by word. Try **Show players**, then open **Player display ↗**: the text appears full-screen. With a campaign chosen (create one in the Hub, or `INSERT INTO campaigns (name) VALUES ('Test')` in `mariadb -u root iprps`), **Save NPC** adds it to the campaign, and **What the Oracle knows** shows it.
+Then open **IPRPS Oracle** from the menu (or Session Master Mode): it asks for the Universal Login once, the top bar shows **On this computer** in green, and the **Model** menu shows `iprps-storyteller (Llama 3.2 3B)` under *On this computer*, and the four Claude models under *Online*. The left column ends with **Built with Llama** and a **Licenses** link. Click **NPC**: the first answer takes longer (the model loads), then text appears word by word. Try **Show players**, then open **Player display ↗**: the text appears full-screen. With a campaign chosen (create one in the Hub, or `INSERT INTO campaigns (name) VALUES ('Test')` in `mariadb -u root iprps`), **Save NPC** adds it to the campaign, and **What the Oracle knows** shows it.
 
 | What the Session Master does | Where it goes |
 |---|---|
@@ -29247,9 +29255,22 @@ Then open **IPRPS Oracle** from the menu (or Session Master Mode): it asks for t
 | **Save NPC**, **Save quest**, **Add to log** | The campaign's `npcs`, `quests`, and the latest session's `session_log` |
 | **Show players**, **Clear display** | `display_items`, shown by the player display |
 
-> **Side note:** **Speed.** On a recent 4–8 core processor, the 4B model writes roughly a sentence every one to three seconds; a Vulkan GPU is several times faster. Session Master Mode loads the model when it starts, so the first question at the table doesn't wait for it. Inside QEMU everything is slower.
+> **Side note:** **Speed.** On a processor, the local model first reads the request (the instructions, campaign memory and recent chat: often 3,000–4,500 tokens), then writes the answer, roughly a sentence every one to three seconds; a Vulkan GPU is several times faster. An NPC can take one to three minutes on an older processor. What helps, per computer: in `/etc/iprps/ollama.conf`, `OLLAMA_FLASH_ATTENTION=1`, `OLLAMA_KV_CACHE_TYPE=q8_0` and `OLLAMA_KEEP_ALIVE=60m` (then `systemctl restart ollama`); with AMD or Intel integrated graphics also `OLLAMA_IGPU_ENABLE=1` (compare the speed before and after); **Clear this chat** between scenes; untick **Use campaign memory** for Names and Loot. For a faster model, `sudo iprps-ai-model pull llama3.2:3b-instruct-q4_K_M`, then make a copy of `/usr/share/iprps/ai/Modelfile` with that `FROM` line and `sudo iprps-ai-model install-modelfile` it (`reset` goes back). `ollama run iprps-storyteller --verbose "hi"` prints the reading speed (*prompt eval rate*) and writing speed (*eval rate*). Or switch the Oracle to Claude (step 10), which answers in seconds. Session Master Mode loads the local model when it starts. Inside QEMU everything is slower, and the VM needs `-cpu host`.
 
-> **Pro tip:** **A custom IPRPS model.** When the trained IPRPS storyteller model exists (as a `.gguf` file, the format Ollama imports), one command makes it the Oracle's model on any IPRPS OS computer: `sudo iprps-ai-model install iprps-storyteller-v1.Q4_K_M.gguf`. It keeps the IPRPS system prompt (`/usr/share/iprps/ai/system-prompt.txt`); a model that needs its own chat template comes with a Modelfile instead: `sudo iprps-ai-model install-modelfile Modelfile`. `sudo iprps-ai-model reset` returns to the shipped model. To ship the custom model in a release instead, change the `FROM` line of `ai/Modelfile` to the `.gguf` file's path and repeat step 6 with that file instead of the `pull`. The license of the model it was trained from still applies.
+**10. Claude, the optional online AI.** The Oracle's **Model** menu has two groups: *On this computer* (the local models) and *Online: Claude*, with the newest **Claude Haiku**, **Sonnet**, **Opus** and **Fable**. Claude answers in seconds and writes richer NPCs and scenes, but it needs **internet** and the Session Master's **own Anthropic API key**, and Anthropic charges their account for each reply. Nothing is sent anywhere until a key is added.
+
+| | |
+|---|---|
+| **Adding the key** | **Online AI…** (next to the Model menu), paste the key from **console.anthropic.com → API keys**, **Check and save**. The Oracle tries the key with Anthropic first, then stores it encrypted in the Session Master's IPRPS key vault (12.10; the same vault as **IPRPS Welcome → API keys**, provider *Anthropic*). The key never reaches the browser or the players; **Remove key** deletes it. |
+| **What is sent** | Only while a Claude model is chosen: the message, recent Oracle chat, the campaign memory (when **Use campaign memory** is on) and named character sheets. A teal **Online** notice above the message box says so. Recaps (**✦ Draft with the Oracle** in the Session Log) and **NPC sheet** / **Creature sheet** use the Session Master's chosen model too. |
+| **New Claude models** | **Check for new models** asks Anthropic's Models API which models the key can use and keeps the newest of each family; the Oracle also checks by itself once a week. A new release (say *Sonnet 5.6*) then appears in the Model menu with no IPRPS update, and a chosen model moves to its family's newest. The starting list is in `llm.php` (`CLAUDE_FAMILIES`); code changes come through IPRPS Updates as usual. |
+| **Where it's set** | `/srv/www/iprps/oracle/llm.php`: the address, API version (`2023-06-01`), the longest reply (`CLAUDE_MAX_TOKENS`, 2048) and the check interval. Override any of them in `config.php` with `define(...)`. |
+
+**Test Claude** (needs internet and a key; skip it otherwise): **Online AI…**, add the key: the list shows four models with their IDs. Choose a Claude model, click **NPC**: the top bar shows **Online · Claude …** in teal, the notice appears, and the answer arrives within seconds. Choose `iprps-storyteller` again and the notice disappears.
+
+> **Side note:** **An installed computer.** IPRPS Updates brings the new Oracle (with Claude) like any app update. The new local model is a separate 3.4 GB download: the update leaves the current model working, the Oracle shows *A new local model is ready*, and the Session Master runs `sudo iprps-ai-model upgrade` once. It downloads Llama 3.2, rebuilds `iprps-storyteller`, writes `LICENSE-llama3.2.txt`, and offers to delete the old model.
+
+> **Pro tip:** **A custom IPRPS model.** When the trained IPRPS storyteller model exists (as a `.gguf` file, the format Ollama imports), one command makes it the Oracle's model on any IPRPS OS computer: `sudo iprps-ai-model install iprps-storyteller-v1.Q4_K_M.gguf`. It keeps the IPRPS system prompt (`/usr/share/iprps/ai/system-prompt.txt`); a model that needs its own chat template comes with a Modelfile instead: `sudo iprps-ai-model install-modelfile Modelfile`. `sudo iprps-ai-model reset` returns to the shipped model. To ship the custom model in a release instead, change the `FROM` line of `ai/Modelfile` to the `.gguf` file's path and repeat step 6 with that file instead of the `pull`. The license of the model it was trained from still applies: a model trained from Llama 3.2 (or from its outputs) must be named starting with "Llama" (for example `Llama-IPRPS-Storyteller`), ship the Llama license and notice, and say "Built with Llama".
 
 > **Side note:** **Updating Ollama.** Repeat steps 2 and 3 (the `rm -rf /usr/lib/ollama` comes first) and restart the service: `systemctl restart ollama`. The models in `/var/lib/ollama` stay. Users can download other models with `sudo iprps-ai-model pull <name>` (from **https://ollama.com/library**, needs internet) and choose them in the Oracle's **Model** menu; IPRPS's prompts are written for `iprps-storyteller`.
 
@@ -29951,6 +29972,11 @@ Done in 1.0: **13.9** makes a live ISO for each edition (DVD or USB, UEFI and BI
 | The Oracle says no model is installed, or `iprps-storyteller` is missing | Step 6 skipped, or the models aren't owned by `ollama` | `sudo iprps-ai-model status`; `chown -R ollama:ollama /var/lib/ollama`; `sudo iprps-ai-model reset` |
 | Oracle answers appear all at once instead of word by word | 10.1's PHP rule (`flushpackets`) missing | `cat /etc/httpd/extra/iprps-php.conf` (10.1); `ls -A /srv/www/iprps/oracle/.user.ini` |
 | Oracle answers are very slow | No usable GPU, or too little free memory | `sudo iprps-ai-model status` (compute device); close other programs; 8 GB is the minimum |
+| The Oracle shows *A new local model is ready* | The Oracle was updated (IPRPS Updates) but the Llama 3.2 model isn't downloaded yet | `sudo iprps-ai-model upgrade` (3.4 GB, needs internet); the old model keeps working until then |
+| **Online AI…**: *Anthropic refused the API key* | Mistyped or revoked key | Copy it again from console.anthropic.com → API keys; keys start with `sk-ant-` |
+| Claude: *Can't reach Anthropic* | No internet, or a firewall blocks `api.anthropic.com` (HTTPS) | Check the connection (`curl -sI https://api.anthropic.com`); choose the local model meanwhile |
+| Claude: *out of credit*, *rate limit*, or *busy (overloaded)* | The Anthropic account needs credit, or too many requests | Add credit in the Anthropic Console, or wait a minute; the local model always works |
+| Claude: *isn't available to your key* | That model was retired, or the key's workspace can't use it | **Online AI… → Check for new models** |
 | First boot: "database could not be created", apps can't log in | MariaDB's first start was slower than `iprps-db-init` waited (slow USB stick) | Fixed in 13.1 (waits up to 3 minutes). On an affected computer: `sudo systemctl restart iprps-db-init`, or reboot (it runs again until it succeeds) |
 | Saving Wi-Fi (or another admin task) asks for a password and rejects it | polkit asks for **root's** password, and root is locked | 13.2 polkit rule (`/etc/polkit-1/rules.d/10-iprps.rules`); users then type their own password, and Wi-Fi needs none |
 | IPRPS Table: players' phones can't open `http://<address>:7777/` | The table isn't open; the phone is on another network (mobile data, guest Wi-Fi with client isolation); a firewall blocks TCP 7777 | Click **Open the table**; put the phone on the same Wi-Fi as the Session Master's computer (turn off mobile data to check), or use a phone hotspot for everyone; allow TCP 7777 (12.7) |
@@ -30604,4 +30630,4 @@ It signs out, stops and removes the service, and deletes `/opt/tailscale` and `/
 
 ---
 
-*Credits: Built with Linux From Scratch and Beyond Linux From Scratch 13.1 (https://www.linuxfromscratch.org/). BLFS commands are reproduced from the book under its MIT-licensed command terms; BLFS text is under a Creative Commons license. IPRPS design, scripts and explanations are original to this guide. "Linux" is a registered trademark of Linus Torvalds. Firefox is a trademark of the Mozilla Foundation; IPRPS ships an unbranded build. Medium and Advanced include ungoogled-chromium, an unbranded Chromium (BSD license), Ollama (MIT license) and the Qwen3.5 4B model (Apache-2.0, by the Qwen team). Tailscale (Appendix G) is a product of Tailscale Inc., installed by the user from its official builds; IPRPS OS doesn't ship it.*
+*Credits: Built with Linux From Scratch and Beyond Linux From Scratch 13.1 (https://www.linuxfromscratch.org/). BLFS commands are reproduced from the book under its MIT-licensed command terms; BLFS text is under a Creative Commons license. IPRPS design, scripts and explanations are original to this guide. "Linux" is a registered trademark of Linus Torvalds. Firefox is a trademark of the Mozilla Foundation; IPRPS ships an unbranded build. Medium and Advanced include ungoogled-chromium, an unbranded Chromium (BSD license), Ollama (MIT license) and Meta's Llama 3.2 3B Instruct model: Built with Llama. Llama 3.2 is licensed under the Llama 3.2 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved. Claude, the Oracle's optional online AI, is a service of Anthropic used with each Session Master's own API key. Tailscale (Appendix G) is a product of Tailscale Inc., installed by the user from its official builds; IPRPS OS doesn't ship it.*
