@@ -7,10 +7,12 @@
 #   sudo iprps-ai-model install FILE.gguf     make a custom IPRPS model the Oracle's model
 #   sudo iprps-ai-model install-modelfile F   same, from a complete Ollama Modelfile
 #   sudo iprps-ai-model reset                 back to the model IPRPS OS shipped with
+#   sudo iprps-ai-model upgrade               download the IPRPS default model (after an Oracle update) and switch to it
 #   sudo iprps-ai-model pull NAME             download another model (needs internet)
 #   sudo iprps-ai-model remove NAME           delete a model
 set -e
 NAME=iprps-storyteller
+OLD_DEFAULTS="qwen3.5:4b"    # earlier default models, offered for removal by upgrade
 SHARE=/usr/share/iprps/ai
 
 die() { echo "iprps-ai-model: $*" >&2; exit 1; }
@@ -65,6 +67,31 @@ reset)
   need_root; need_ollama
   ollama create "$NAME" -f "$SHARE/Modelfile"
   echo "Done: $NAME is back to the IPRPS OS default."
+  ;;
+
+upgrade)
+  need_root; need_ollama
+  base=$(awk '/^FROM /{print $2; exit}' "$SHARE/Modelfile")
+  [ -n "$base" ] || die "no FROM line in $SHARE/Modelfile"
+  echo "The IPRPS Oracle's default model is $base."
+  if ollama show "$base" >/dev/null 2>&1; then
+    echo "It is already downloaded."
+  else
+    echo "Downloading it (about 3.4 GB; needs internet)..."
+    ollama pull "$base" || die "the download failed: check the internet connection and try again"
+  fi
+  ollama create "$NAME" -f "$SHARE/Modelfile"
+  lic="$SHARE/LICENSE-$(echo "$base" | sed 's/:.*//').txt"
+  ollama show "$base" --license > "$lic" 2>/dev/null && [ -s "$lic" ] && echo "License: $lic" || rm -f "$lic"
+  echo "Done: the IPRPS Oracle now uses $base (as $NAME)."
+  # Older default models that nothing uses any more
+  for m in $OLD_DEFAULTS; do
+    [ "$m" = "$base" ] && continue
+    ollama show "$m" >/dev/null 2>&1 || continue
+    printf 'Remove the previous default model %s to free disk space? [Y/n] ' "$m"
+    read -r a || a=n
+    case "$a" in [nN]*) echo "Kept $m.";; *) ollama rm "$m" && echo "Removed $m.";; esac
+  done
   ;;
 
 pull)

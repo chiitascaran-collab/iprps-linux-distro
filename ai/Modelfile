@@ -1,9 +1,11 @@
 # IPRPS Storyteller - the default model of the IPRPS Oracle (Medium and Advanced).
-# Built with:  ollama create iprps-storyteller -f /usr/share/iprps/ai/Modelfile
-# Base model: Qwen3.5 4B (Apache-2.0). Replace it with a custom IPRPS model using
-# "sudo iprps-ai-model install <file.gguf>"; the name iprps-storyteller stays the same.
-FROM qwen3.5:4b
-PARAMETER temperature 0.85
+# Built with:  ollama create iprps-storyteller -f /usr/share/iprps/ai/Modelfile   (sudo iprps-ai-model upgrade)
+# Base model: Meta Llama 3.2 3B Instruct, 8-bit (Q8_0). Built with Llama.
+# Llama 3.2 is licensed under the Llama 3.2 Community License, Copyright (c) Meta Platforms, Inc. All Rights Reserved.
+# For faster answers on slow processors, llama3.2:3b-instruct-q4_K_M (2.0 GB) works the same way.
+# Replace it with a custom IPRPS model using "sudo iprps-ai-model install <file.gguf>"; the name iprps-storyteller stays.
+FROM llama3.2:3b-instruct-q8_0
+PARAMETER temperature 0.8
 PARAMETER top_p 0.9
 PARAMETER repeat_penalty 1.08
 PARAMETER num_ctx 8192
