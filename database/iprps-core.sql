@@ -123,3 +123,30 @@ CREATE TABLE IF NOT EXISTS session_log (
   text          TEXT NOT NULL,
   FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Character sheets (players, NPCs, creatures) for the Character Sheets app (12.9); one owner account each
+CREATE TABLE IF NOT EXISTS character_sheets (
+  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id       INT NOT NULL,
+  campaign_id   INT UNSIGNED NULL,
+  kind          ENUM('pc','npc','creature') NOT NULL DEFAULT 'pc',
+  name          VARCHAR(120) NOT NULL,
+  player_name   VARCHAR(100),
+  race          VARCHAR(80),
+  class         VARCHAR(80),
+  level         SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+  hp            INT,
+  mp            BIGINT,
+  armor         SMALLINT,
+  sheet_json    LONGTEXT NOT NULL,
+  avatar        MEDIUMTEXT,
+  thumb         TEXT,
+  source        ENUM('import','editor','oracle','table') NOT NULL DEFAULT 'import',
+  file_name     VARCHAR(200),
+  notes         TEXT,
+  created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_owner (user_id, kind, name),
+  INDEX idx_campaign (campaign_id),
+  FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -159,7 +159,7 @@ if command -v pacman >/dev/null 2>&1; then
   else
     P=$(ls -t /build/repo/iprps-$ED-[0-9]*.pkg.tar.zst 2>/dev/null | head -1 || true)
     if [ -n "$P" ]; then pacman -U --noconfirm "$P" >/dev/null && echo "Installed ${P##*/}"
-    else echo "WARNING: no iprps-$ED package in /build/repo (12.12 step 6)"; fi
+    else echo "WARNING: no iprps-$ED package found (publish it first: 12.12 step 8)"; fi
   fi
   pacman -Dk 2>&1 | tail -3 || true
   rm -rf /etc/pacman.d/gnupg /var/cache/pacman/pkg/* /var/lib/iprps-updates/*   # each computer makes its own keyring
@@ -196,6 +196,11 @@ echo "  edition package:   $(pacman -Qq 2>/dev/null | grep -xE 'iprps-(lite|medi
 echo "  pacman keyring:    $( [ -d /etc/pacman.d/gnupg ] && echo 'STILL THERE' || echo 'removed (each computer makes its own)')"
 INSIDE_EOF
 chmod 755 "$INSIDE"
+# The edition package (12.12): /build is Debian's folder (iprps-enter.sh mounts it), so the copy doesn't have
+# it. Bring the newest one in, from the published repository or else from the local builds.
+mkdir -p "$MNT/build/repo"
+P=$(ls -t /root/iprps-repo/1/iprps-core/x86_64/iprps-$ED-[0-9]*.pkg.tar.zst /build/repo/iprps-$ED-[0-9]*.pkg.tar.zst 2>/dev/null | head -1 || true)
+[ -n "$P" ] && cp "$P" "$MNT/build/repo/"
 chroot "$MNT" /bin/bash "$INSIDE" "$EDC"
 
 # ---------------------------------------------------------------- close

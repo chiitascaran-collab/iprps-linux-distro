@@ -3,8 +3,18 @@
 # Copyright (C) 2026 Mythical Legends Publishing, LLC
 # Mount the IPRPS image and enter the chroot as root (IPRPS_IMG=<file> picks another image, such as a Lite fix copy)
 IMG=${IPRPS_IMG:-/root/iprps-system.img}; R=/mnt/iprps
+# Only one image can be open at a time: refuse if another image is mounted at /mnt/iprps
+if mountpoint -q $R; then
+  CUR=$(losetup -l -n -O NAME,BACK-FILE | awk -v d="$(findmnt -n -o SOURCE $R | sed 's/p[0-9]*$//')" '$1==d {print $2}')
+  if [ "$CUR" != "$IMG" ]; then
+    echo "STOPPED: /mnt/iprps has another image open: ${CUR:-unknown}"
+    echo "Exit its chroot windows and close it first: IPRPS_IMG=${CUR:-<that image>} bash /root/iprps-leave.sh"
+    exit 1
+  fi
+fi
 L=$(losetup -j $IMG | cut -d: -f1 | head -1); [ -n "$L" ] || L=$(losetup -fP --show $IMG)
 mkdir -p $R; mountpoint -q $R || mount ${L}p3 $R
+echo "Image: $IMG ($(. $R/etc/os-release 2>/dev/null; echo "$PRETTY_NAME"))"
 mkdir -p $R/boot/efi $R/build
 mountpoint -q $R/boot/efi || mount ${L}p1 $R/boot/efi
 mountpoint -q $R/build || mount --bind /build $R/build

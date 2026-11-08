@@ -22,6 +22,17 @@ for m in dev/shm dev/pts dev proc sys run build boot/efi; do
 done
 mountpoint -q "$R" && umount -v "$R"
 sync
-for L in $(losetup -j "${IPRPS_IMG:-/root/iprps-system.img}" | cut -d: -f1); do losetup -v -d "$L"; done
+# Detach the image, retrying: the kernel can keep a loop device busy for a moment after the last unmount
+IMGF=${IPRPS_IMG:-/root/iprps-system.img}
+for try in 1 2 3 4 5; do
+  LS=$(losetup -j "$IMGF" | cut -d: -f1)
+  [ -z "$LS" ] && break
+  for L in $LS; do losetup -d "$L" 2>/dev/null && echo "Detached $L"; done
+  sleep 1
+done
+if [ -n "$(losetup -j "$IMGF")" ]; then
+  echo "STILL ATTACHED: $(losetup -j "$IMGF" | cut -d: -f1 | tr '\n' ' ')- detach it with: losetup -d /dev/loopN"
+  exit 1
+fi
 echo "Remaining mounts under $R:"; findmnt -R "$R" || echo "  none"
 losetup -a | grep iprps || echo "Image detached."
