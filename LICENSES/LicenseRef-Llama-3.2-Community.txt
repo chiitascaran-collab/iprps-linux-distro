@@ -1,0 +1,20 @@
+Llama 3.2 Community License Agreement (reference)
+
+Used by: Llama 3.2 3B Instruct, the IPRPS Oracle's local model in IPRPS OS Medium and Advanced.
+
+Llama 3.2 is licensed under the Llama 3.2 Community License, Copyright (c) Meta Platforms, Inc. All Rights Reserved.
+Built with Llama.
+
+This repository contains no Llama model files: only the recipe (ai/Modelfile) that builds the IPRPS Oracle's
+model from the copy Ollama downloads. The complete license text is distributed with that download, and IPRPS OS
+installs it next to the model as /usr/share/iprps/ai/LICENSE-llama3.2.txt (build guide Part 15, step 6, and
+"iprps-ai-model upgrade"). The official text is published by Meta at:
+
+    https://www.llama.com/llama3_2/license/
+
+Use of Llama 3.2 is subject to Meta's Acceptable Use Policy: https://www.llama.com/llama3_2/use-policy
+
+This is not an open-source license. Among its terms: a copy of the license must accompany any redistribution,
+"Built with Llama" must be displayed prominently on a related website, user interface, blog post, about page or
+product documentation, and an AI model created, trained or fine-tuned from Llama materials or their outputs that
+is distributed must have a name that begins with "Llama". Read the full text for all terms.

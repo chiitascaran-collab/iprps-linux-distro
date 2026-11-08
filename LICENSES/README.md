@@ -14,7 +14,8 @@ Reference copies of the licenses that apply to IPRPS OS and to the main componen
 | [ISC.txt](ISC.txt) | sudo and others |
 | [Zlib.txt](Zlib.txt) | zlib |
 | [MPL-2.0.txt](MPL-2.0.txt) | Firefox, NSS, LibreOffice |
-| [Apache-2.0.txt](Apache-2.0.txt) | Apache HTTP Server, OpenSSL 3, Rust parts, the Qwen3.5 4B AI model (Medium and Advanced) |
+| [Apache-2.0.txt](Apache-2.0.txt) | Apache HTTP Server, OpenSSL 3, Rust parts |
+| [LicenseRef-Llama-3.2-Community.txt](LicenseRef-Llama-3.2-Community.txt) | Llama 3.2 3B Instruct, the IPRPS Oracle's local model (Medium and Advanced); a reference file, the full text ships with the model. Built with Llama |
 | [LLVM-exception.txt](LLVM-exception.txt) | LLVM/Clang (Apache-2.0 WITH LLVM-exception) |
 | [GCC-exception-3.1.txt](GCC-exception-3.1.txt) | GCC runtime libraries |
 | [PHP-3.01.txt](PHP-3.01.txt) | PHP |
