@@ -25,7 +25,7 @@ INTRO = {
        '> **Warning:** Firefox is a very large build (Rust and C++). Give the VM its full memory, limit jobs as in 0.3, and expect several hours.'),
  'H': ('The Medium edition\'s apps: **LibreOffice**, **GIMP**, **Inkscape**, **VLC**, **FFmpeg**, **ImageMagick**, **CUPS** printing with Gutenprint and Ghostscript, **Xfburn**, and hardware video decoding for Intel (libva, intel-media-driver).',
        '> **Warning:** LibreOffice is the largest build in the Medium stage. As with Firefox, give it time and memory.'),
- 'I': ('The Advanced edition\'s extra BLFS packages: **SANE** (scanners), **FontForge** (fonts and symbols), **Graphviz** (relationship and story diagrams), **cdrdao** and **libisoburn** (disc mastering), and **FUSE 3** (for AppImage apps in 16.1).', ''),
+ 'I': ('The Advanced edition\'s extra BLFS packages: **SANE** (scanners), **FontForge** (fonts and symbols), **Graphviz** (relationship and story diagrams), **cdrdao** and **libisoburn** (disc mastering), **FUSE 3** (for AppImage apps in 16.1) and **XCB Utilities** (`libxcb-cursor` for Calibre, 16.2).', ''),
 }
 
 def title(p):

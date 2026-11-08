@@ -83,7 +83,7 @@ def label_text(el):
 
 NOTE_TAGS = ('note', 'important', 'warning', 'caution', 'tip')
 # Steps BLFS marks optional that IPRPS needs (NetworkManager drives Wi-Fi through wpa_supplicant's D-Bus interface)
-REQUIRED_MARKERS = ('rm -rf freetype lcms2mt jpeg libpng openjpeg', 'CONFIG_CTRL_IFACE_DBUS_NEW', 'dbus/fi.w1.wpa_supplicant1.service', 'make install-httpd', 'make install-php-fpm', 'make install-mariadb')
+REQUIRED_MARKERS = ('usermod -G scanner -a', 'rm -rf freetype lcms2mt jpeg libpng openjpeg', 'CONFIG_CTRL_IFACE_DBUS_NEW', 'dbus/fi.w1.wpa_supplicant1.service', 'make install-httpd', 'make install-php-fpm', 'make install-mariadb')
 OPTIONAL_RE = re.compile(r'^(if you\'ve|if you\'re|if you (wish|want|have|need|prefer|are|built|installed|downloaded|used|did|do not)|if desired|optionally|to test|to run the test|the test|tests? |before running the tests)'
                          r'|\b(test suite|run the tests|testsuite|doxygen|sphinx|api documentation|build the documentation|install the documentation|manual pages)\b', re.I)
 
@@ -366,3 +366,18 @@ OVERRIDES['libreoffice'] = ([
     ('--with-system-postgresql    \\', '--disable-postgresql-sdbc   \\'),
     ('--with-system-redland       \\\n', ''),
 ], """> **Warning:** **IPRPS changes to the configure line.** IPRPS OS has no Java (JDK), GPGME, unixODBC, PostgreSQL or Redland, so BLFS's line stops at `configure: error: /opt/jdk/bin/java not found`. The commands below already use `--without-java` (LibreOffice works fully; only Java extensions and the old HSQLDB database engine are missing: Base uses its built-in Firebird engine), `--disable-gpgmepp` (no OpenPGP document signing; certificate signing still works), `--disable-postgresql-sdbc`, the bundled ODBC headers and the bundled Redland, and English (US) only. `LO_PREFIX=/usr`, so the `/opt` link steps after the install are skipped automatically. If `autogen.sh` already failed: `export LO_PREFIX=/usr` again in this window and run the corrected `./autogen.sh` in the same folder; nothing was installed.""")
+
+# IPRPS (Oct 29): imagemagick.org keeps only the newest releases; take the same version's tagged source from GitHub
+OVERRIDES['imagemagick'] = ([
+    ('MD5 sum of `ImageMagick-7.1.2-13.tar.xz`: `a28a5d65a58fce9c24e8cf4b47cb5c5c` (check with `md5sum ImageMagick-7.1.2-13.tar.xz`).',
+     'GitHub makes this archive itself, so BLFS\'s MD5 sum doesn\'t apply. Check that it is a real archive: `tar -tzf ImageMagick-7.1.2-13.tar.gz | head -3` lists `ImageMagick-7.1.2-13/...` files.'),
+    ('wget https://www.imagemagick.org/archive/releases/ImageMagick-7.1.2-13.tar.xz',
+     'wget -O ImageMagick-7.1.2-13.tar.gz https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-13.tar.gz'),
+    ('ImageMagick-7.1.2-13.tar.xz', 'ImageMagick-7.1.2-13.tar.gz'),
+], """> **Warning:** **IPRPS download change.** imagemagick.org keeps only its newest releases, so BLFS's address for 7.1.2-13 now answers **404 Not Found**. The commands below download the same version from ImageMagick's official GitHub repository (the `7.1.2-13` tag) as a `.tar.gz`; everything else is unchanged. Newer 7.1.2 releases also build with these commands and include security fixes: to use one, replace `7.1.2-13` everywhere in this section with the newest tag listed at https://github.com/ImageMagick/ImageMagick/tags.""")
+
+# IPRPS (Oct 30): SANE - the builder must be in the scanner group before configure (sg scanner), and USB scanners need libusb
+OVERRIDES['sane'] = ([
+    ('usermod -G scanner -a username', 'usermod -G scanner -a builder'),
+    ('                           --with-lockdir=/run/lock \\', '                           --with-lockdir=/run/lock \\\n                           --enable-libusb_1_0  \\'),
+], """> **Warning:** **IPRPS: order matters.** Run the two root steps first (create the `scanner` group, then add `builder` to it), **then** configure and build in BUILDER, then `make install` as root. BLFS's configure line runs through `sg scanner`, which fails if the group or the membership doesn't exist yet, and then `make install` says *No rule to make target 'install'*. `--enable-libusb_1_0` is added for USB scanners (libusb is in the build).""")

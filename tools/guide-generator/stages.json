@@ -437,7 +437,8 @@
 "fontforge",
 "libao",
 "cdrdao",
-"libisoburn"
+"libisoburn",
+"xcb-utilities"
 ]
 ]
 ],

@@ -21,7 +21,7 @@ const CALLOUT = {
 // ---------- inline parsing ----------
 function inline(text, base = {}) {
   const runs = [];
-  const re = /(`[^`]+`)|(\*\*(.+?)\*\*)|(\*([^*\s][^*]*?)\*)|(https?:\/\/[^\s)|]+)/;
+  const re = /(`[^`]+`)|(\*\*(.+?)\*\*)|(\*([^*\s][^*]*?)\*)|(https?:\/\/[^\s)|]+)|(\[([^\]]+)\]\((https?:[^)\s]+)\))/;
   let rest = text;
   while (rest.length) {
     const m = rest.match(re);
@@ -34,6 +34,8 @@ function inline(text, base = {}) {
       runs.push(...inline(m[3], { ...base, bold: true }));
     } else if (m[4]) {
       runs.push(...inline(m[5], { ...base, italics: true }));
+    } else if (m[7]) {
+      runs.push(new ExternalHyperlink({ link: m[9], children: [new TextRun({ text: m[8], ...base, style: 'Hyperlink' })] }));
     } else if (m[6]) {
       let url = m[6]; let trail = '';
       while (/[.,;:]$/.test(url)) { trail = url.slice(-1) + trail; url = url.slice(0, -1); }
@@ -142,18 +144,18 @@ while (i < src.length) {
     table(buf); continue;
   }
   if (line.startsWith('# ')) {
-    P({ alignment: AlignmentType.CENTER, spacing: { before: 2400, after: 240 },
+    P({ alignment: process.env.NO_PAGEBREAK ? AlignmentType.LEFT : AlignmentType.CENTER, spacing: { before: process.env.NO_PAGEBREAK ? 120 : 2400, after: 240, line: 240, lineRule: 'auto' },
       children: [new TextRun({ text: line.slice(2), bold: true, size: 52, color: '1E3A5F', font: FONT })] });
     i++; continue;
   }
   if (line.startsWith('## ')) {
     const t = line.slice(3);
-    if (!titleDone) { // subtitle on cover page
+    if (!titleDone && !process.env.NO_PAGEBREAK && !process.env.NO_SUBTITLE) { // subtitle on cover page
       P({ alignment: AlignmentType.CENTER, spacing: { after: 480 }, children: [new TextRun({ text: t, size: 30, color: '475569', font: FONT })] });
       titleDone = true; i++; continue;
     }
     h2count++;
-    P({ heading: HeadingLevel.HEADING_1, pageBreakBefore: true, children: [new TextRun(t)] });
+    P({ heading: HeadingLevel.HEADING_1, pageBreakBefore: !process.env.NO_PAGEBREAK, children: [new TextRun(t)] });
     i++; continue;
   }
   if (line.startsWith('### ')) { P({ heading: HeadingLevel.HEADING_2, keepNext: true, children: inline(line.slice(4)) }); i++; continue; }

@@ -21,7 +21,7 @@ STAGES = [
  ('F','Web server and database','apache php mariadb'),
  ('G','Lite edition apps','firefox evince parole mpv'),
  ('H','Medium edition apps','libreoffice gimp inkscape vlc ffmpeg imagemagick cups cups-filters gutenprint gs xfburn libva intel-media-driver'),
- ('I','Advanced edition apps (BLFS part)','sane fontforge graphviz cdrdao libisoburn fuse3'),
+ ('I','Advanced edition apps (BLFS part)','sane fontforge graphviz cdrdao libisoburn fuse3 xcb-utilities'),
 ]
 # Pages that build several packages (e.g. xorg7-input-driver): the page inherits every sub-package's
 # dependencies, and a dependency on a sub-package means a dependency on the page.
