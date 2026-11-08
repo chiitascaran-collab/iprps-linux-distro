@@ -47,7 +47,7 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `apps/table/` | The **IPRPS Table**: LAN play. A Node.js service (no npm packages) on port 7777: players join from phones, tablets and laptops; chat with private messages, images and audio; IPRPS dice (`dice-presets.json`); the Session Master pushes images, video, text and sound to everyone, groups or single players |
 | `apps/table-tile/` | The Hub tile that opens the IPRPS Table console (installed as `/srv/www/iprps/table`) |
 | `apps/writer/` | **IPRPS Writer**: a simple word processor (per-account documents; opens and saves .docx, .odt, .txt, .html; PDF via print) |
-| `apps/oracle/` | The **IPRPS Oracle**: local AI for Session Masters (Medium and Advanced), PHP + JavaScript, Universal Login; reads character sheets and writes NPC and creature sheets |
+| `apps/oracle/` | The **IPRPS Oracle**: AI for Session Masters (Medium and Advanced), PHP + JavaScript, Universal Login; local Llama 3.2 3B, or Claude online with the Session Master's own API key (`llm.php`); reads character sheets and writes NPC and creature sheets |
 | `apps/character-creator/` | The **Character Creator**: the IPRPS character sheet as one self-contained HTML file (attributes, DP costs, skills, advantages, spells, portrait; exports `.json`). Works in the Hub, on the IPRPS Table (`/sheet/`) and on its own |
 | `apps/iprps-lib/` | Shared code for the session tools: look and color schemes, campaign/session picker, the IPRPS dice (made from `apps/table/dice.js`), Markdown, the shared API (campaigns, sessions, log, player display and Table bridge) |
 | `apps/combat/` | **Initiative and Combat Tracker** (12.10) |
@@ -59,7 +59,7 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `apps/updates-tile/` | The Hub tile for **IPRPS Updates**: what the last update check found (installed as `/srv/www/iprps/updates`, 12.12) |
 | `packages/` | **Package recipes** (PKGBUILDs) for pacman: `pacman`, `iprps-keyring`, `iprps-base` (pacman settings, **IPRPS Updates**, `iprps-update`, the update timer, the edition packages), `iprps-apps` (one package per IPRPS app), and worked examples (`examples/curl`, `examples/calibre`, a BLFS template). Rules in `packages/README.md` (12.12, Part 17) |
 | `apps/character-sheets/` | **Character Sheets**: the Session Master's sheet library (import players' files, view, print, by campaign; NPC and creature sheets; `character_sheets` table); shown inside the IPRPS Table console |
-| `ai/` | Ollama service, the `iprps-storyteller` Modelfile and system prompt, and `iprps-ai-model` (swap in a custom IPRPS model) |
+| `ai/` | Ollama service, the `iprps-storyteller` Modelfile (Llama 3.2 3B Instruct) and system prompt, the Llama `NOTICE`, and `iprps-ai-model` (`upgrade` to the current default model, or swap in a custom IPRPS model) |
 | `database/` | `iprps-core.sql`, the campaign and player-tracking schema |
 | `kernel/` | Generic kernel adjustment script and the BLFS-required kernel options |
 | `initramfs/` | IPRPS changes to the BLFS `mkinitramfs` script |

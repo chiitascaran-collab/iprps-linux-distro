@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-11-07
+
+- **IPRPS Oracle: new local model, and Claude online (Medium and Advanced, Part 15):**
+  - **Local model:** Meta's **Llama 3.2 3B Instruct** (8-bit, `llama3.2:3b-instruct-q8_0`) replaces Qwen3.5 4B as `iprps-storyteller`. Built with Llama: the license, the notice (`ai/NOTICE`) and "Built with Llama" ship with it (the Oracle shows it, with a **Licenses** page, `about-models.html`).
+  - **Claude (optional, online):** the Oracle's **Model** menu adds the newest **Claude Haiku, Sonnet, Opus and Fable**. The Session Master adds their own Anthropic API key under **Online AI…**; the Oracle checks it with Anthropic, then stores it encrypted in the IPRPS key vault (shared with IPRPS Welcome). The key never reaches the browser. A notice says what is sent while Claude is chosen. Chat streams; recaps and NPC/creature sheets (a forced tool call with the sheet schema) use the chosen model too.
+  - **New Claude models without an update:** **Check for new models** (and a weekly automatic check) asks Anthropic's Models API for the newest model of each family; the Model menu follows, and a chosen model moves to its family's newest.
+  - **Fix:** a question that got no answer (an error, or **Stop** before any text) is removed from the chat history, so it isn't sent again with the next question.
+  - **Packages:** `iprps-oracle` 2026.11.07 now carries `iprps-ai-model`, the Modelfile, the system prompt and the notice. Its install message, and a notice in the Oracle, tell the Session Master to run `sudo iprps-ai-model upgrade` (new command) once: it downloads Llama 3.2 (3.4 GB), rebuilds `iprps-storyteller`, writes the license file and offers to remove the old model.
+  - **Testing:** tested with MariaDB, PHP and Chromium, with stand-ins for Ollama and for Anthropic's API (key check, model list with a newly released model, streaming, errors, tool calls): 40 API checks and a browser test.
+
 ## 2026-11-06
 
 - **Session Master Training Manual (new):** `docs/session-master-manual/`, a training guide for Session Masters at an 8th-grade reading level: what makes IPRPS OS different from online tabletops, campaign setup, session prep, the IPRPS Table, IPRPS rolls and bands, the Combat Tracker, the Soundboard, the Oracle, the Session Log and recap, updates and remote players, with seven walkthroughs and new screenshots and diagrams. As Markdown, PDF, Word and a self-contained website (the folder uploads as is).
