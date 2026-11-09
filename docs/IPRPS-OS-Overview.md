@@ -1,6 +1,6 @@
 # IPRPS OS — What It Is and What It Can Do
 
-*Reference guide for users · Updated November 7, 2026*
+*Reference guide for users · Updated November 9, 2026*
 
 ![IPRPS OS wallpaper artwork](images/iprps-wallpaper.jpg "w=4.4")
 
@@ -282,8 +282,9 @@ Each edition is one compressed disk image. Write it to a USB stick, boot from it
 4. Boot from the stick, using the computer's one-time boot menu (often F12, F11, F8 or Esc).
 5. **First boot:** IPRPS OS expands to fill the stick, creates swap space, and asks for your user name, full name, password, computer name and time zone.
 6. Log in. IPRPS Welcome opens on the IPRPS Desktop.
+7. **Give it 10–30 minutes, then restart once.** Right after installing, IPRPS OS keeps working in the background: it prepares the disk and builds the caches that make apps open quickly. Until it's done, apps can open slowly. A message tells you when setup is finished. Then restart (menu → **Log Out** → **Restart**), and it runs at full speed from then on. A large hard drive takes longer than an SSD.
 
-**To install on the computer itself:** run *Install IPRPS OS to This Computer* from the IPRPS menu, choose the internal disk, and confirm. That disk is **completely erased**, so back up anything you need first.
+**To install on the computer itself:** run *Install IPRPS OS to This Computer* from the IPRPS menu, choose the internal disk, and confirm. That disk is **completely erased**, so back up anything you need first. Preparing a large hard drive can take several minutes. After the first start from the internal disk, allow the same 10–30 minutes and one restart (step 7).
 
 **To try it without touching your PC:** (the live session keeps everything in memory, so to try the IPRPS Oracle there, use a computer with 12 GB or more) start the live `.iso` from a DVD (Windows: right-click it, **Burn disc image**) or a USB stick (balenaEtcher, or Rufus in DD Image mode), or use the `.vhdx` in Hyper-V (Generation 2, Secure Boot off) or the `.qcow2` in QEMU.
 
@@ -366,6 +367,8 @@ Follow infiniteplane.space and the GitHub repository for announcements.
 **How is the IPRPS Oracle different from the online AI apps?** The Oracle's own model runs on your computer, needs no account or key, and keeps your campaign private. You can also point the Oracle at Claude, a larger AI service over the internet, with your own API key, the same way the online apps work.
 
 **Can the Oracle be faster?** On a computer without a usable graphics chip, a long NPC can take a minute or more with the local model. Choosing a Claude model makes answers arrive in seconds (online, with your own key). The build guide's Part 15 also lists settings that speed up the local model.
+
+**Why is it slow right after I install it?** For the first 10–30 minutes, IPRPS OS finishes setting itself up in the background: it prepares the disk and builds caches for fonts, menus and apps. It isn't the campaign database, which is created in a few seconds. Leave the computer on until the "setup is finished" message, then restart once. After that, it opens apps at normal speed every time.
 
 **How do I get updates?** IPRPS Updates tells you when they're ready; open it and click **Install updates**. No reinstalling, and your campaigns and files stay as they are.
 

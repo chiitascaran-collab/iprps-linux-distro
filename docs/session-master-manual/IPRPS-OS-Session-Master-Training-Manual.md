@@ -81,6 +81,8 @@ Here is a short, fair comparison with five well-known tools. These tools are goo
 
 ### Your first login
 
+> **Tip:** **Give a new computer 30 minutes before game night.** Right after IPRPS OS is installed, it keeps working in the background for 10 to 30 minutes. It gets the disk ready and builds the lists that help apps open fast. During that time, apps can open slowly. Leave the computer on. A message says **IPRPS OS setup is finished** when it's done. Then restart once (menu → **Log Out** → **Restart**). After that, it runs at full speed every time.
+
 The first time you log in, **IPRPS Welcome** opens. It is a short tour that takes about five minutes. You can skip any step and come back later from **IPRPS → IPRPS Welcome**.
 
 ![IPRPS Welcome lists the IPRPS apps on this computer](images/welcome.jpg "w=6.3")
@@ -508,6 +510,7 @@ Full steps are in `docs/REMOTE-PLAYERS.md` and in Appendix G of the build guide.
 | The Oracle is slow | The first answer of the day takes longest, so start Session Master Mode early. **Clear this chat** between scenes. The local model needs a fairly recent processor and plenty of memory (16 GB is best). For answers in seconds, choose a Claude model (Chapter 8) |
 | The Oracle says *A new local model is ready* | An update brought a new local model. Open a terminal and type `sudo iprps-ai-model upgrade` once (it downloads 3.4 GB). The old model keeps working until then |
 | Claude: *refused the API key*, or *out of credit* | Copy the key again from console.anthropic.com, or add credit to your Anthropic account. The local model always works |
+| The computer is slow right after installing IPRPS OS | This happens only once. It is finishing its setup in the background. Wait for the message **IPRPS OS setup is finished** (10 to 30 minutes), then restart once |
 | The players see an old picture | Choose **Clear screens**, then show the new one |
 
 ## Glossary

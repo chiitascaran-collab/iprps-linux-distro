@@ -23267,6 +23267,30 @@ LIST
 cat > /usr/bin/iprps-welcome-once << "EOF"
 #!/bin/bash
 # iprps-welcome-once - open IPRPS Welcome at a user's first desktop login (once per user)
+# Within 3 hours of a new installation's first boot (a USB image or a fresh install to disk), the
+# computer is still finishing its setup in the background: disk preparation, font and app caches.
+# Say so once per user and installation, and say again when it's done.
+FB=/var/lib/iprps/firstboot-done
+if [ -n "$(find "$FB" -mmin -180 2>/dev/null)" ] && command -v notify-send >/dev/null; then
+  SEEN="$HOME/.config/iprps/first-start-$(stat -c %Y "$FB")"
+  if [ ! -e "$SEEN" ]; then
+    mkdir -p "$HOME/.config/iprps" && touch "$SEEN"
+    notify-send -i iprps-logo -t 30000 "IPRPS OS is finishing its setup" \
+      "For the next 10-30 minutes, apps may open slowly while the computer prepares itself. Please leave it on. You'll get a message when it's done."
+    (
+      sleep 300; calm=0
+      for _ in $(seq 330); do              # up to about 55 more minutes
+        busy=0
+        pgrep -x ext4lazyinit >/dev/null && busy=1
+        awk -v n="$(nproc)" '{exit !($1 < n * 0.6)}' /proc/loadavg || busy=1
+        if [ $busy = 0 ]; then calm=$((calm + 1)); [ $calm -ge 3 ] && break; else calm=0; fi
+        sleep 10
+      done
+      notify-send -i iprps-logo -t 0 "IPRPS OS setup is finished" \
+        "Restart the computer once (menu, Log Out, Restart). After that, it runs at full speed."
+    ) &
+  fi
+fi
 DONE="$HOME/.config/iprps/welcome-shown"
 [ -e "$DONE" ] && exit 0
 mkdir -p "$HOME/.config/iprps" && touch "$DONE"
@@ -24107,7 +24131,7 @@ sed -i "/^127\.0\.1\.1/d" /etc/hosts; echo "127.0.1.1 $HN" >> /etc/hosts
 ln -sf "/usr/share/zoneinfo/$TZ" /etc/localtime
 unset P
 touch /var/lib/iprps/setup-done
-msg --title " All set " --msgbox "Welcome, ${FN:-$U}!\n\nThe login screen appears next. Sign in as \"$U\".\n\nTip: Session Master Mode is in the IPRPS menu." 12 60
+msg --title " All set " --msgbox "Welcome, ${FN:-$U}!\n\nThe login screen appears next. Sign in as \"$U\".\n\nThe first 10-30 minutes can feel slow: IPRPS OS is still finishing its setup in the background. A message tells you when it's done. Then restart once.\n\nTip: Session Master Mode is in the IPRPS menu." 17 64
 EOF
 chmod 755 /usr/sbin/iprps-setup
 cat > /usr/lib/systemd/system/iprps-setup.service << "EOF"
@@ -24205,7 +24229,10 @@ PARTS
 partx -u "$TARGET"; sleep 2
 case "$T" in nvme*|mmcblk*) P="${TARGET}p" ;; *) P="$TARGET" ;; esac
 mkfs.vfat -F 32 "${P}1"
-mkfs.ext4 -F "${P}3"
+echo "Preparing the disk. On a large hard drive this can take several minutes..."
+# Initialize the whole file system now. By default ext4 leaves this to a background task
+# (ext4lazyinit) that keeps the disk busy for 10-30 minutes after the first start.
+mkfs.ext4 -F -E lazy_itable_init=0,lazy_journal_init=0 "${P}3"
 
 NEW=/mnt/iprps-target
 mkdir -p "$NEW"
@@ -24233,6 +24260,8 @@ rm -f "$NEW/var/lib/iprps/firstboot-done" "$NEW/etc/ssh/ssh_host_"*
 : > "$NEW/etc/machine-id"        # empty: a new ID at first boot, without systemd's preset reset
 umount -R "$NEW"
 echo; echo "Done. Shut down, remove the USB drive or DVD, and start the computer."
+echo "The first start takes a little longer, and the first 10-30 minutes on the desktop can be slow"
+echo "while IPRPS OS finishes setting up. After that, restart once."
 EOF
 chmod 755 /usr/sbin/iprps-install
 cat > /usr/share/applications/iprps-install.desktop << "EOF"
@@ -24243,6 +24272,26 @@ Exec=xfce4-terminal --title "IPRPS Installer" -x sudo /usr/sbin/iprps-install
 Icon=drive-harddisk
 Categories=X-IPRPS;System;
 EOF
+```
+
+**The first 10–30 minutes after installing.** A new installation is slower for its first 10–30 minutes, then normal. Apps open slowly, and the disk light stays busy. Restarting once afterwards brings full speed right away. The database isn't the cause: `iprps-db-init` creates one small database in a few seconds, and each app makes its own tables in milliseconds the first time it's used. The work happens in this order:
+
+| When | What | How long |
+|---|---|---|
+| Before the setup screens | `iprps-firstboot` (13.1): grow the disk, make the swap file, make SSH keys. `iprps-db-init`: start MariaDB and set its password. `iprps-pacman-keyring`: make this computer's signing keys | Seconds to a few minutes |
+| First minutes after login | **Disk preparation:** a new or grown ext4 file system zeroes its inode tables in the background (the `ext4lazyinit` kernel task). It runs at low priority, but on a hard drive its writes slow every read | About 1–3 minutes per 100 GB on a hard drive, much less on an SSD |
+| First time each app opens | Font cache (if out of date), the browser's new profile and its first downloads, menu and icon caches, folder thumbnails | Seconds each, once per user |
+| 10–30 minutes after start | The first update check downloads the package lists (12.12) | Seconds, when online |
+
+The installer (above) now zeroes the file system while it installs (`lazy_itable_init=0`), and 13.4 refreshes the font and icon caches in the image, so most of this no longer happens after installing. A computer written straight from a release image still does the rest. At the first login, `iprps-welcome-once` (12.5) shows a notice and a second one when the background work has finished. It watches for `ext4lazyinit` and for the system load to drop.
+
+**To see what a slow first start is doing [TEST VM]** (or a real computer), open a terminal:
+
+```bash
+ps -e | grep -E 'ext4lazyinit|fc-cache|mariadbd|pacman'   # what's still running
+cat /proc/pressure/io                                      # "some avg60" above 20 means waiting on the disk
+systemd-analyze blame | head -10                           # the slowest start-up services
+journalctl -b -u iprps-firstboot -u iprps-db-init -u iprps-pacman-keyring --no-pager | tail -20
 ```
 
 > **Warning:** Test the installer in a VM with a second empty virtual disk before every release. Installed from a USB image, the new system keeps the user account created at first boot, and its next boot re-runs `iprps-firstboot`, which creates swap and new SSH keys for the new disk. Installed from the **live ISO** (13.9), it copies the clean system from the disc instead of the live session, so its first boot runs the full setup (account, computer name, time zone).
@@ -24270,6 +24319,7 @@ What it does, in order:
    - empties `/etc/machine-id`, so each computer gets its own ID at first boot. It's left **empty**, not `uninitialized`: `uninitialized` tells systemd "first boot", which resets every service to systemd's default presets (and would switch off IPRPS's own services);
    - removes broken service links (left behind by packages that were rebuilt or removed), listing them;
    - locks root's password;
+   - refreshes the system caches (fonts, file types, settings, icons, menus and libraries), so the first login doesn't rebuild them for each user;
    - sets the edition name (`IPRPS OS 1.0 Lite`) in `/etc/os-release`. The first-boot setup (13.2) shows that name.
 
    It then prints a check list.
@@ -24460,6 +24510,13 @@ BROKEN=$(find /etc/systemd/system /etc/systemd/user -xtype l 2>/dev/null || true
 if [ -n "$BROKEN" ]; then echo "Removing broken service links:"; echo "$BROKEN" | sed 's/^/  /'; echo "$BROKEN" | xargs -r rm -f; fi
 rm -rf /var/lib/iprps/*-done /var/lib/ollama/.ollama /var/log/journal/* /var/lib/iprps-table/* /var/lib/iprps-vault/* /var/lib/iprps-sounds/*   # Table test data; API key vault key; Soundboard files
 passwd -l root >/dev/null
+# Fresh system caches, so nothing is rebuilt per user at the first login
+command -v fc-cache >/dev/null && fc-cache -sf
+command -v update-mime-database >/dev/null && update-mime-database /usr/share/mime
+command -v glib-compile-schemas >/dev/null && glib-compile-schemas /usr/share/glib-2.0/schemas
+for t in /usr/share/icons/*/; do [ -f "$t/index.theme" ] && gtk-update-icon-cache -qf "$t"; done
+command -v update-desktop-database >/dev/null && update-desktop-database -q /usr/share/applications
+ldconfig
 sed -i "s/^VERSION=.*/VERSION=\"1.0 $EDC\"/; s/^PRETTY_NAME=.*/PRETTY_NAME=\"IPRPS OS 1.0 $EDC\"/" /etc/os-release
 [ -f /etc/lsb-release ] && sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION=\"IPRPS OS 1.0 $EDC\"/" /etc/lsb-release
 
@@ -24654,6 +24711,7 @@ To write the downloads somewhere else, run `IPRPS_RELEASE_OUT=/mnt/d/somewhere /
 | 6 GB RAM machine or VM (Lite) | Desktop + Firefox + Hub usable; `free -h` shows swap |
 | `iprps-install` to a second disk | Installed system boots without the USB drive |
 | Live ISO (13.9) as DVD and as USB, UEFI and BIOS | Live desktop as IPRPS Live; installing to a second disk gives the setup screens at its first boot |
+| First login after installing | The "finishing its setup" notice, then "setup is finished" within about 30 minutes; after one restart, apps open at normal speed |
 | `systemctl --failed` | Shows nothing |
 
 **Without Hyper-V** (Windows 11 Home, for example), run the VM tests in QEMU on an **overlay**: a small file on top of the release `.qcow2` that leaves it unchanged and acts as a 40 GB disk, so first boot has room to grow. The backing file needs its **full path**:
@@ -29991,6 +30049,7 @@ Done in 1.0: **13.9** makes a live ISO for each edition (DVD or USB, UEFI and BI
 | The Oracle has no **Character sheets** buttons | Character Sheets isn't installed, or the Oracle files are older than 12.9 | 12.9 step 1 (the Oracle line), then reload the Oracle |
 | The Oracle: *the answer was not a usable sheet* | The model's answer didn't fit the sheet layout | Try again; a shorter description helps. Check `ollama --version` is 0.5 or newer (structured outputs) |
 | Session Master Mode: closing the browser leaves a white full-screen page | The full-screen player display stayed open on a single screen (and in Lite no display page exists yet) | 12.2 `iprps-session` update (full screen only with two screens); right now press **Alt+F4** |
+| A new installation is very slow for the first 10–30 minutes, then fine (or fine after a restart) | One-time background work: disk preparation (`ext4lazyinit`), first-use caches, the first update check. Not the database | Normal. Leave it on until the "setup is finished" message, then restart once. To see it: `ps -e \| grep ext4lazyinit` (13.3). Images and installers from 2026-11-09 do most of it before the first login |
 | Everything is slow when running from a USB stick | USB 2 sticks (and ports) have very slow small reads and writes | Use a USB 3 stick in a USB 3 (often blue) port, or install to the internal disk; the first boot is the slowest (disk growth, swap, database) |
 | Boot shows many "Failed to preset all unit … Read-only file system" lines | The release image's `/etc/machine-id` said `uninitialized` (first boot), so systemd tried to reset all services | 13.4: the release script now leaves it **empty**. On an affected image it's harmless (the reset failed); new releases don't show it |
 | "Driver 'pcspkr' is already registered, aborting" at boot | Two PC-speaker drivers | Harmless; 4.9 blacklists them (`/etc/modprobe.d/iprps-blacklist.conf`) |

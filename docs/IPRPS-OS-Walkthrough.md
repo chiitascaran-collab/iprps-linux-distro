@@ -10,7 +10,7 @@ This tutorial takes you through IPRPS OS the way you'll actually use it: set the
 
 | Part | What you do | Time |
 | --- | --- | --- |
-| 1. First boot | Create your account, connect to Wi-Fi | 10 minutes |
+| 1. First boot | Create your account, connect to Wi-Fi, let setup finish | 10 minutes, plus 10 to 30 minutes of background setup |
 | 2. The desktop and the Hub | Find your apps, choose what the Hub shows | 10 minutes |
 | 3. Prepare the session | Gather pictures and sound, write notes in IPRPS Writer | 20 minutes |
 | 4. Open the IPRPS Table | Get your players connected | 10 minutes |
@@ -41,6 +41,8 @@ Setup runs in a blue and gold text window. Use **Tab** and the arrow keys to mov
 8. **Ready:** check the summary and choose **Create account**, or **Change something** to go back.
 
 The login screen appears next. Sign in with the user name and password you just chose.
+
+> **Tip:** **The first half hour is slower.** After a new installation, IPRPS OS spends 10 to 30 minutes finishing its setup in the background: it prepares the disk and builds the caches that make apps open quickly. A message says so when you log in, and a second message, **IPRPS OS setup is finished**, appears when it's done. Then restart once (menu → **Log Out** → **Restart**). After that, everything opens at normal speed. Do this well before your players arrive. It's a good time to connect to Wi-Fi (1.3) and look around the desktop (Part 2).
 
 > **Tip:** Every person who uses the computer can have their own account, with their own files, documents and Hub choices. To add one, open **Terminal** and run `sudo useradd -m -G users,audio,video,iprps sam` then `sudo passwd sam` (replace `sam` with the new name).
 
