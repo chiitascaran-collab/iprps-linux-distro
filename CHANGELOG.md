@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-09
+
+- **The first 10-30 minutes after installing (13.3, 13.4, 12.5, 13.2):** a new installation was slow until its background setup finished. The installer now initializes the whole file system while it installs (`mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0`), so the disk isn't busy afterwards. The release cleanup refreshes the font, file-type, settings, icon, menu and library caches in each image. At the first login, `iprps-welcome-once` says the computer is finishing its setup, and says again when the background work is done, with a reminder to restart once. The setup's last screen and the installer say the same. 13.3 lists what runs at first start, and how to see it; new rows in 13.6 and Appendix B.
+
 ## 2026-11-07
 
 - **IPRPS Oracle: new local model, and Claude online (Medium and Advanced, Part 15):**
