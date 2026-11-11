@@ -9,7 +9,7 @@ pkgbase=iprps-apps
 pkgname=(iprps-lib iprps-hub iprps-writer iprps-table iprps-character-creator iprps-character-sheets
          iprps-combat iprps-dice iprps-session-log iprps-welcome iprps-file-viewer iprps-soundboard
          iprps-oracle iprps-updates-tile)
-pkgver=2026.11.04
+pkgver=2026.11.07
 pkgrel=1
 arch=(any)
 url='https://github.com/chiitascaran-collab/iprps-linux-distro'
@@ -129,11 +129,17 @@ package_iprps-soundboard() {
 }
 
 package_iprps-oracle() {
-  pkgdesc='IPRPS Oracle: local AI for Session Masters'
+  pkgdesc='IPRPS Oracle: AI for Session Masters (local Llama 3.2, or Claude online with your own API key)'
   depends=(ollama)
   backup=("$_www/oracle/config.php")
+  install=iprps-oracle.install
   _web oracle oracle
   _menu oracle oracle/oracle-icon.svg
+  # The local model's recipe and tool (guide Part 15); "iprps-ai-model upgrade" downloads the model itself
+  install -Dm755 "$_repo/ai/iprps-ai-model" "$pkgdir/usr/bin/iprps-ai-model"
+  install -Dm644 "$_repo/ai/Modelfile" "$pkgdir/usr/share/iprps/ai/Modelfile"
+  install -Dm644 "$_repo/ai/system-prompt.txt" "$pkgdir/usr/share/iprps/ai/system-prompt.txt"
+  install -Dm644 "$_repo/ai/NOTICE" "$pkgdir/usr/share/iprps/ai/NOTICE"
 }
 
 package_iprps-updates-tile() {

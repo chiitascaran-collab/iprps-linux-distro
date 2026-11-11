@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-oracle: tell the Session Master when the Oracle's default local model changed.
+
+_model_note() {
+  base=$(awk '/^FROM /{print $2; exit}' /usr/share/iprps/ai/Modelfile 2>/dev/null)
+  [ -n "$base" ] || return 0
+  if ! ollama show "$base" >/dev/null 2>&1; then
+    echo ">>> IPRPS Oracle: the new local model is $base (Llama 3.2 3B, about 3.4 GB)."
+    echo ">>> To download it and switch, open a terminal and run:  sudo iprps-ai-model upgrade"
+    echo ">>> Until then the Oracle keeps using the current model. Claude (online) is in the Oracle's Model menu."
+  fi
+  return 0
+}
+
+post_install() { _model_note; }
+post_upgrade() { _model_note; }
