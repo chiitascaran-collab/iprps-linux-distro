@@ -24411,6 +24411,23 @@ for d in dev proc sys run; do mount --rbind "/$d" "$MNT/$d"; done
 mount --make-rslave "$MNT"
 echo "Copy: $IMG (root file system on $LP)"
 
+# IPRPS Updates needs the IPRPS repositories in pacman.conf. 12.12 step 7 takes the packaged
+# version from /etc/pacman.conf.pacnew; a build that skipped it keeps the temporary file
+# ("no usable package repositories configured" on the released computer).
+if ! grep -q '^\[iprps-core\]' "$MNT/etc/pacman.conf" 2>/dev/null; then
+  if grep -q '^\[iprps-core\]' "$MNT/etc/pacman.conf.pacnew" 2>/dev/null; then
+    mv -f "$MNT/etc/pacman.conf.pacnew" "$MNT/etc/pacman.conf"
+    echo "Fixed in the copy: /etc/pacman.conf now has the IPRPS repositories (from pacman.conf.pacnew)."
+    echo "Fix the build image too (12.12 step 7's .pacnew line), or the next release repeats this."
+  else
+    die "the image's /etc/pacman.conf has no IPRPS repositories, so IPRPS Updates can't work: in the build image run 12.12 step 7's .pacnew line, or reinstall iprps-base"
+  fi
+fi
+grep -q '^Server *= *https://' "$MNT/etc/pacman.d/iprps-mirrorlist" 2>/dev/null \
+  || die "the image's /etc/pacman.d/iprps-mirrorlist has no https Server line (a test line from 12.12 left in?): put the real line back (12.12)"
+PN=$(find "$MNT/etc" "$MNT/srv/www/iprps" -name '*.pacnew' 2>/dev/null | sed "s|^$MNT||")
+[ -z "$PN" ] || { echo "Note: these package files are waiting (12.12 step 7 takes them):"; echo "$PN"; }
+
 # ---------------------------------------------------------------- the cleanup inside the copy
 cat > "$INSIDE" << 'INSIDE_EOF'
 #!/bin/bash
@@ -30050,6 +30067,7 @@ Done in 1.0: **13.9** makes a live ISO for each edition (DVD or USB, UEFI and BI
 | The Oracle has no **Character sheets** buttons | Character Sheets isn't installed, or the Oracle files are older than 12.9 | 12.9 step 1 (the Oracle line), then reload the Oracle |
 | The Oracle: *the answer was not a usable sheet* | The model's answer didn't fit the sheet layout | Try again; a shorter description helps. Check `ollama --version` is 0.5 or newer (structured outputs) |
 | Session Master Mode: closing the browser leaves a white full-screen page | The full-screen player display stayed open on a single screen (and in Lite no display page exists yet) | 12.2 `iprps-session` update (full screen only with two screens); right now press **Alt+F4** |
+| IPRPS Updates: "Could not check for updates: error: no usable package repositories configured" | `/etc/pacman.conf` is still the temporary file from 12.12 step 3 (`head -1 /etc/pacman.conf` says "Temporary"): step 7's `.pacnew` line was skipped in this edition's build | On that computer: `sudo mv /etc/pacman.conf.pacnew /etc/pacman.conf`, then **Check now**. In the build image, run step 7's `.pacnew` line again. Release scripts from 2026-11-11 fix the copy and stop if they can't |
 | A new installation is very slow for the first 10–30 minutes, then fine (or fine after a restart) | One-time background work: disk preparation (`ext4lazyinit`), first-use caches, the first update check. Not the database | Normal. Leave it on until the "setup is finished" message, then restart once. To see it: `ps -e \| grep ext4lazyinit` (13.3). Images and installers from 2026-11-09 do most of it before the first login |
 | Everything is slow when running from a USB stick | USB 2 sticks (and ports) have very slow small reads and writes | Use a USB 3 stick in a USB 3 (often blue) port, or install to the internal disk; the first boot is the slowest (disk growth, swap, database) |
 | Boot shows many "Failed to preset all unit … Read-only file system" lines | The release image's `/etc/machine-id` said `uninitialized` (first boot), so systemd tried to reset all services | 13.4: the release script now leaves it **empty**. On an affected image it's harmless (the reset failed); new releases don't show it |

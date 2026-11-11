@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-11
+
+- **IPRPS Updates: "no usable package repositories configured" (13.4, Appendix B):** found in Advanced. The image kept the temporary `/etc/pacman.conf` from 12.12 step 3 because step 7's `.pacnew` line wasn't run in that build. `iprps-release-clean.sh` now checks the copy: it takes `pacman.conf.pacnew` when it's there, stops when the IPRPS repositories are missing or the mirror list has no https server, and lists any other `.pacnew` files. Appendix B has the one-line fix for a computer already installed.
+
 ## 2026-11-10
 
 - **Writing the live ISO to a USB stick (13.9, Appendix B, download site):** tested on real hardware. Rufus's *recommended* ISO Image mode copies the files to an NTFS stick (the ISO holds a file over 4 GB), and the live startup stops at "The IPRPS OS live medium … was not found". The instructions now say to click **Start**, then choose **Write in DD Image mode**, which boots. balenaEtcher doesn't open the IPRPS `.iso`, so it is now listed for the `.img.xz` only, and USBImager is added as a tool that writes either file as it is.
