@@ -25010,13 +25010,14 @@ For the installer test, add an empty disk (`qemu-img create -f qcow2 /root/iso-t
 **Writing the ISO** (also for the release notes and the download page):
 
 - **DVD (Windows):** right-click the `.iso`, then **Burn disc image**.
-- **USB stick:** **balenaEtcher**, or **Rufus**: when Rufus asks how to write the image, choose **DD Image mode**. On Linux: `sudo dd if=iprps-os-1.0-lite.iso of=/dev/sdX bs=4M status=progress conv=fsync`.
+- **USB stick, Rufus (Windows):** choose the `.iso` and click **Start**. Rufus then asks how to write it: choose **Write in DD Image mode**, not **Write in ISO Image mode** (the one marked *recommended*). ISO Image mode copies the files to an NTFS stick (the ISO holds a file over 4 GB, too big for FAT32), and the live startup can't use it (Appendix B). Tested on real hardware.
+- **USB stick, other tools:** **USBImager** (Windows, macOS, Linux) writes the `.iso` as it is, with nothing to choose. balenaEtcher doesn't open the IPRPS `.iso`: use it for the `.img.xz` only. On Linux: `sudo dd if=iprps-os-1.0-lite.iso of=/dev/sdX bs=4M status=progress conv=fsync`.
 - **Secure Boot must be off**, as for the other downloads.
 
 | Problem | Fix |
 |---|---|
 | The script stops: *the image has no live boot support* or *the initramfs is older* | Step 1 wasn't done in the image that was released: do it in the build image (or the Lite release copy), then clean and release again (13.4) |
-| Boot stops at "The IPRPS OS live medium (IPRPS_OS_1_0_…) was not found" | The stick was written in Rufus's *ISO mode*, which changes the volume name: write it again in **DD Image mode**. In a VM, check the ISO is attached |
+| Boot stops at "The IPRPS OS live medium (IPRPS_OS_1_0_…) was not found" | The stick was written in Rufus's *ISO Image mode* (its recommended choice). In the shell, `blkid` shows the label on an `ntfs` (or `vfat`) partition and a second partition labeled `RUFUS_BOOT`. Write it again: click **Start**, then choose **Write in DD Image mode**. Or use USBImager. In a VM, check the ISO is attached |
 | *Could not open live/filesystem.squashfs* | The download or the disc is damaged: check it against `SHA256SUMS-<edition>-iso`, and burn DVDs at a slower speed |
 | The desktop gets slow, or programs close, after a while | The live session keeps every change in RAM: install IPRPS OS, or use the `.img.xz` on a USB stick to keep changes |
 | The ISO is too big for a DVD | Use a dual-layer DVD or a USB stick (step 4) |

@@ -286,7 +286,7 @@ Each edition is one compressed disk image. Write it to a USB stick, boot from it
 
 **To install on the computer itself:** run *Install IPRPS OS to This Computer* from the IPRPS menu, choose the internal disk, and confirm. That disk is **completely erased**, so back up anything you need first. Preparing a large hard drive can take several minutes. After the first start from the internal disk, allow the same 10–30 minutes and one restart (step 7).
 
-**To try it without touching your PC:** (the live session keeps everything in memory, so to try the IPRPS Oracle there, use a computer with 12 GB or more) start the live `.iso` from a DVD (Windows: right-click it, **Burn disc image**) or a USB stick (balenaEtcher, or Rufus in DD Image mode), or use the `.vhdx` in Hyper-V (Generation 2, Secure Boot off) or the `.qcow2` in QEMU.
+**To try it without touching your PC:** (the live session keeps everything in memory, so to try the IPRPS Oracle there, use a computer with 12 GB or more) start the live `.iso` from a DVD (Windows: right-click it, **Burn disc image**) or a USB stick (Rufus: click **Start**, then choose **Write in DD Image mode**, not the recommended ISO Image mode; or USBImager), or use the `.vhdx` in Hyper-V (Generation 2, Secure Boot off) or the `.qcow2` in QEMU.
 
 ## Updates: IPRPS Updates
 
