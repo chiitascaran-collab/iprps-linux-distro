@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Random Character Reference Sheet Prompt Builder</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script src="../auth/auth-client.js"></script>
+<style>
+:root{
+  --bg:#f3f4f6;
+  --panel:#fff;
+  --soft:#f9fafb;
+  --ink:#111827;
+  --muted:#6b7280;
+  --line:#d1d5db;
+  --accent:#2563eb;
+  --accent2:#1d4ed8;
+  --danger:#991b1b;
+  --good:#166534;
+  --radius:16px;
+  --shadow:0 12px 28px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+}
+header{
+  background:linear-gradient(135deg,#111827,#374151);
+  color:#fff;
+  padding:28px 18px;
+}
+.wrap{max-width:1380px;margin:0 auto}
+h1{
+  margin:0 0 8px;
+  font-size:clamp(1.75rem,3vw,3rem);
+  letter-spacing:-.035em;
+}
+header p{
+  margin:0;
+  max-width:940px;
+  color:#e5e7eb;
+  line-height:1.45;
+}
+.app{
+  max-width:1380px;
+  margin:22px auto 40px;
+  padding:0 14px;
+  display:grid;
+  grid-template-columns:minmax(340px,540px) minmax(360px,1fr);
+  gap:18px;
+  align-items:start;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.card-header{
+  padding:16px 18px;
+  background:var(--soft);
+  border-bottom:1px solid var(--line);
+}
+.card-header h2{margin:0 0 4px;font-size:1.1rem}
+.card-header p{margin:0;color:var(--muted);font-size:.92rem}
+.form{padding:16px}
+details{
+  border:1px solid var(--line);
+  border-radius:12px;
+  margin-bottom:12px;
+  background:#fff;
+  overflow:hidden;
+}
+summary{
+  cursor:pointer;
+  padding:12px 14px;
+  background:#f9fafb;
+  font-weight:700;
+  list-style:none;
+  display:flex;
+  justify-content:space-between;
+}
+summary::-webkit-details-marker{display:none}
+summary:after{content:"+";color:var(--accent);font-weight:900}
+details[open] summary:after{content:"−"}
+.section{
+  padding:14px;
+  display:grid;
+  gap:12px;
+}
+label{
+  display:grid;
+  gap:6px;
+  font-size:.9rem;
+  font-weight:700;
+}
+label small{color:var(--muted);font-weight:400}
+input,select,textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px 11px;
+  font:inherit;
+  color:var(--ink);
+  background:#fff;
+}
+textarea{min-height:82px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.triple{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:16px 18px 0;
+}
+button{
+  border:0;
+  border-radius:999px;
+  padding:10px 15px;
+  background:var(--accent);
+  color:#fff;
+  font:inherit;
+  font-weight:700;
+  cursor:pointer;
+}
+button:hover{background:var(--accent2)}
+button.secondary{background:#e5e7eb;color:#111827}
+button.secondary:hover{background:#d1d5db}
+button.danger{background:#fee2e2;color:var(--danger)}
+button.danger:hover{background:#fecaca}
+.output{padding:12px 18px 18px;display:grid;gap:10px}
+#promptOutput{
+  min-height:720px;
+  font-family:Consolas, Monaco, monospace;
+  font-size:.92rem;
+  line-height:1.48;
+  background:#0b1020;
+  color:#e5e7eb;
+  border-color:#111827;
+  white-space:pre-wrap;
+}
+.status{min-height:22px;color:var(--good);font-weight:700;font-size:.9rem}
+.counter{color:var(--muted);font-size:.86rem}
+.preset-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.preset{
+  border:1px solid var(--line);
+  background:#fff;
+  color:#111827;
+  border-radius:12px;
+  padding:10px;
+  text-align:left;
+}
+.preset:hover{background:#eef2ff;border-color:#bfdbfe}
+.checks{display:grid;gap:8px}
+.check{display:flex;gap:8px;align-items:center;font-weight:400}
+.check input{width:auto}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  border:1px solid var(--line);
+  background:#fff;
+  color:#111827;
+  border-radius:999px;
+  padding:8px 10px;
+  font-size:.86rem;
+}
+.random-result{
+  border:1px solid var(--line);
+  background:#f8fafc;
+  border-radius:12px;
+  padding:12px;
+  color:#111827;
+  white-space:pre-wrap;
+  font-family:Consolas, Monaco, monospace;
+  font-size:.9rem;
+}
+@media(max-width:980px){
+  .app{grid-template-columns:1fr}
+  #promptOutput{min-height:460px}
+}
+@media(max-width:620px){
+  .row,.triple,.preset-grid{grid-template-columns:1fr}
+}
+@media print{
+  header,.card:first-child,.toolbar,.status,.counter{display:none}
+  body{background:#fff}
+  .app{display:block;margin:0;padding:0}
+  .card{box-shadow:none;border:0}
+  #promptOutput{background:#fff;color:#000;border:0;min-height:auto}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Random Character Reference Sheet Prompt Builder</h1>
+    <p>Choose random pools or lock exact traits, then generate a prompt for a photorealistic four-panel character reference sheet with front, side, 45-degree, and back views.</p>
+  </div>
+</header>
+
+<main class="app">
+<section class="card">
+  <div class="card-header">
+    <h2>Character Prompt Controls</h2>
+    <p>Use Randomize Traits for instant values, or keep the prompt as randomized lists.</p>
+  </div>
+
+  <div class="form">
+    <details open>
+      <summary>Quick Actions</summary>
+      <div class="section">
+        <div class="preset-grid">
+          <button type="button" class="preset" id="randomizeBtn">Randomize Traits</button>
+          <button type="button" class="preset" id="randomPromptBtn">Use Random Lists</button>
+          <button type="button" class="preset" data-preset="studio">Studio Reference</button>
+          <button type="button" class="preset" data-preset="video">AI Video Continuity</button>
+        </div>
+        <div class="random-result" id="randomResult">No randomized traits yet.</div>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Generation Mode</summary>
+      <div class="section">
+        <label>Trait mode
+          <select id="traitMode">
+            <option value="randomLists">Prompt asks the AI to randomly choose from lists</option>
+            <option value="locked">Use the currently selected locked values</option>
+          </select>
+        </label>
+        <label>Output goal
+          <select id="outputGoal">
+            <option>single 16:9 character reference sheet</option>
+            <option>production-ready profile reference sheet</option>
+            <option>AI video continuity reference sheet</option>
+            <option>photorealistic model turnaround sheet</option>
+          </select>
+        </label>
+        <label>Aspect ratio
+          <select id="aspectRatio">
+            <option>16:9 widescreen</option>
+            <option>3:2 landscape</option>
+            <option>21:9 cinematic wide</option>
+            <option>4:5 portrait</option>
+            <option>1:1 square</option>
+          </select>
+        </label>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Random Trait Pools</summary>
+      <div class="section">
+        <label>Gender pool
+          <input id="genderPool" value="male, female, non-binary">
+        </label>
+        <label>Race or ethnicity pool
+          <textarea id="ethnicityPool">East Asian, South Asian, Black, White, Hispanic/Latino, Middle Eastern, Indigenous, Mixed race</textarea>
+        </label>
+        <label>Height pool
+          <input id="heightPool" value="5'2&quot;, 5'4&quot;, 5'6&quot;, 5'8&quot;, 5'10&quot;, 6'0&quot;">
+        </label>
+        <label>Build pool
+          <input id="buildPool" value="slim, average, fit, athletic, muscular">
+        </label>
+        <label>Skin tone pool
+          <input id="skinTonePool" value="porcelain, fair, light brown, olive, tan, brown, deep brown, dark">
+        </label>
+        <label>Age pool
+          <input id="agePool" value="22, 26, 30, 34, 38, 42, 46, 50, 54, 56">
+        </label>
+        <label>Hair length pool
+          <input id="hairLengthPool" value="short, medium, long">
+        </label>
+        <label>Hair color pool
+          <input id="hairColorPool" value="black, dark brown, light brown, auburn, blonde, gray, white, red">
+        </label>
+        <label>Eye color pool
+          <input id="eyeColorPool" value="brown, hazel, green, blue, gray, amber, dark brown">
+        </label>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Locked Trait Values</summary>
+      <div class="section">
+        <div class="row">
+          <label>Gender
+            <select id="gender">
+              <option>random</option>
+              <option>male</option>
+              <option>female</option>
+              <option>non-binary</option>
+            </select>
+          </label>
+          <label>Race or ethnicity
+            <select id="ethnicity">
+              <option>random</option>
+              <option>East Asian</option>
+              <option>South Asian</option>
+              <option>Black</option>
+              <option>White</option>
+              <option>Hispanic/Latino</option>
+              <option>Middle Eastern</option>
+              <option>Indigenous</option>
+              <option>Mixed race</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Height
+            <select id="height">
+              <option>random</option>
+              <option>5'2"</option>
+              <option>5'4"</option>
+              <option>5'6"</option>
+              <option>5'8"</option>
+              <option>5'10"</option>
+              <option>6'0"</option>
+            </select>
+          </label>
+          <label>Build
+            <select id="build">
+              <option>random</option>
+              <option>slim</option>
+              <option>average</option>
+              <option>fit</option>
+              <option>athletic</option>
+              <option>muscular</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Skin tone
+            <select id="skinTone">
+              <option>random</option>
+              <option>porcelain</option>
+              <option>fair</option>
+              <option>light brown</option>
+              <option>olive</option>
+              <option>tan</option>
+              <option>brown</option>
+              <option>deep brown</option>
+              <option>dark</option>
+            </select>
+          </label>
+          <label>Age
+            <select id="age">
+              <option>random</option>
+              <option>22</option>
+              <option>26</option>
+              <option>30</option>
+              <option>34</option>
+              <option>38</option>
+              <option>42</option>
+              <option>46</option>
+              <option>50</option>
+              <option>54</option>
+              <option>56</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Hair length
+            <select id="hairLength">
+              <option>random</option>
+              <option>short</option>
+              <option>medium</option>
+              <option>long</option>
+            </select>
+          </label>
+          <label>Hair color
+            <select id="hairColor">
+              <option>random</option>
+              <option>black</option>
+              <option>dark brown</option>
+              <option>light brown</option>
+              <option>auburn</option>
+              <option>blonde</option>
+              <option>gray</option>
+              <option>white</option>
+              <option>red</option>
+            </select>
+          </label>
+        </div>
+        <label>Eye color
+          <select id="eyeColor">
+            <option>random</option>
+            <option>brown</option>
+            <option>hazel</option>
+            <option>green</option>
+            <option>blue</option>
+            <option>gray</option>
+            <option>amber</option>
+            <option>dark brown</option>
+          </select>
+        </label>
+      </div>
+    </details>
+
+    <details>
+      <summary>Outfit and Styling</summary>
+      <div class="section">
+        <label>Outfit
+          <textarea id="outfit">light neutral gray cotton bodysuit, fitted, always a bodysuit, long sleeves or short sleeves as appropriate for the gender presentation</textarea>
+        </label>
+        <label>Style
+          <textarea id="style">photorealistic, realistic anatomy, full-body shot, front-facing reference design, neutral background, soft natural lighting, clean studio presentation</textarea>
+        </label>
+        <label>Background
+          <input id="background" value="neutral light gray studio background">
+        </label>
+        <label>Lighting
+          <input id="lighting" value="soft natural lighting with even illumination and subtle shadows">
+        </label>
+      </div>
+    </details>
+
+    <details>
+      <summary>Panel Layout</summary>
+      <div class="section">
+        <label>Required panels
+          <textarea id="panels">four full-body panels: front view, side view, 45-degree view, back view</textarea>
+        </label>
+        <label>Panel arrangement
+          <select id="panelArrangement">
+            <option>left to right in one clean horizontal row</option>
+            <option>two by two grid</option>
+            <option>front view larger, side 45-degree and back smaller</option>
+            <option>model-sheet layout with labels under each panel</option>
+          </select>
+        </label>
+        <label>View consistency rules
+          <textarea id="viewRules">Use the same person in every panel. Keep the same face, age, height, body type, skin tone, hairstyle, hair color, eye color, bodysuit, and proportions across all four views. Use consistent scale and camera distance in every panel.</textarea>
+        </label>
+        <label>Labels
+          <input id="labels" value="add simple labels: Front, Side, 45-Degree, Back">
+        </label>
+      </div>
+    </details>
+
+    <details>
+      <summary>Camera and Rendering</summary>
+      <div class="section">
+        <div class="row">
+          <label>Camera angle
+            <select id="cameraAngle">
+              <option>eye-level camera</option>
+              <option>slightly low camera</option>
+              <option>slightly high camera</option>
+              <option>orthographic reference camera</option>
+            </select>
+          </label>
+          <label>Lens feel
+            <select id="lensFeel">
+              <option>natural portrait lens with minimal distortion</option>
+              <option>orthographic model-sheet look</option>
+              <option>studio fashion lens</option>
+              <option>documentary reference lens</option>
+            </select>
+          </label>
+        </div>
+        <label>Rendering quality
+          <textarea id="renderQuality">high-resolution, sharp focus, clean anatomy, realistic skin texture, realistic fabric texture, natural hands, natural feet, accurate proportions, professional character reference sheet quality</textarea>
+        </label>
+      </div>
+    </details>
+
+    <details>
+      <summary>Negative Prompt</summary>
+      <div class="section">
+        <div class="checks">
+          <label class="check"><input type="checkbox" class="neg" value="different person in each panel" checked> Different person in each panel</label>
+          <label class="check"><input type="checkbox" class="neg" value="changing face between panels" checked> Changing face</label>
+          <label class="check"><input type="checkbox" class="neg" value="changing body type between panels" checked> Changing body type</label>
+          <label class="check"><input type="checkbox" class="neg" value="changing outfit between panels" checked> Changing outfit</label>
+          <label class="check"><input type="checkbox" class="neg" value="extra limbs" checked> Extra limbs</label>
+          <label class="check"><input type="checkbox" class="neg" value="missing fingers" checked> Missing fingers</label>
+          <label class="check"><input type="checkbox" class="neg" value="warped hands" checked> Warped hands</label>
+          <label class="check"><input type="checkbox" class="neg" value="distorted anatomy" checked> Distorted anatomy</label>
+          <label class="check"><input type="checkbox" class="neg" value="cropped feet" checked> Cropped feet</label>
+          <label class="check"><input type="checkbox" class="neg" value="cropped head" checked> Cropped head</label>
+          <label class="check"><input type="checkbox" class="neg" value="busy background" checked> Busy background</label>
+          <label class="check"><input type="checkbox" class="neg" value="dramatic action pose" checked> Dramatic action pose</label>
+          <label class="check"><input type="checkbox" class="neg" value="sexualized pose" checked> Sexualized pose</label>
+          <label class="check"><input type="checkbox" class="neg" value="unreadable labels" checked> Unreadable labels</label>
+        </div>
+        <label>Additional negative instructions
+          <textarea id="extraNegative" placeholder="Add any project-specific problems to avoid."></textarea>
+        </label>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-header">
+    <h2>Generated Prompt</h2>
+    <p>Generate, copy, download, save, load, reset, or print the finished prompt.</p>
+  </div>
+  <div class="toolbar">
+    <button id="generateBtn" type="button">Generate Prompt</button>
+    <button id="copyBtn" type="button" class="secondary">Copy</button>
+    <button id="downloadBtn" type="button" class="secondary">Download .txt</button>
+    <button id="saveBtn" type="button" class="secondary">Save Draft</button>
+    <button id="loadBtn" type="button" class="secondary">Load Draft</button>
+    <button id="printBtn" type="button" class="secondary">Print</button>
+    <button id="resetBtn" type="button" class="danger">Reset</button>
+  </div>
+  <div class="output">
+    <div class="counter" id="counter">Words: 0 | Characters: 0</div>
+    <textarea id="promptOutput" spellcheck="false"></textarea>
+    <div class="status" id="status"></div>
+  </div>
+</section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function splitPool(text){
+  return text.split(",").map(x => x.trim()).filter(Boolean);
+}
+function pick(list){
+  return list[Math.floor(Math.random() * list.length)];
+}
+function val(id){
+  return $(id).value.trim();
+}
+function setVal(id, value){
+  if($(id)) $(id).value = value;
+}
+
+const presets = {
+  studio:{
+    outputGoal:"single 16:9 character reference sheet",
+    aspectRatio:"16:9 widescreen",
+    background:"neutral light gray studio background",
+    lighting:"soft natural lighting with even illumination and subtle shadows",
+    panelArrangement:"left to right in one clean horizontal row",
+    cameraAngle:"eye-level camera",
+    lensFeel:"natural portrait lens with minimal distortion"
+  },
+  video:{
+    outputGoal:"AI video continuity reference sheet",
+    aspectRatio:"16:9 widescreen",
+    background:"neutral studio background with no scene distractions",
+    lighting:"soft even production lighting, consistent across all panels",
+    panelArrangement:"model-sheet layout with labels under each panel",
+    cameraAngle:"orthographic reference camera",
+    lensFeel:"orthographic model-sheet look"
+  }
+};
+
+function selectedNegatives(){
+  const list = Array.from(document.querySelectorAll(".neg:checked")).map(x => x.value);
+  const extra = val("extraNegative");
+  if(extra) list.push(extra);
+  return list.join(", ");
+}
+
+function randomizeTraits(){
+  const choices = {
+    gender: pick(splitPool(val("genderPool"))),
+    ethnicity: pick(splitPool(val("ethnicityPool"))),
+    height: pick(splitPool(val("heightPool"))),
+    build: pick(splitPool(val("buildPool"))),
+    skinTone: pick(splitPool(val("skinTonePool"))),
+    age: pick(splitPool(val("agePool"))),
+    hairLength: pick(splitPool(val("hairLengthPool"))),
+    hairColor: pick(splitPool(val("hairColorPool"))),
+    eyeColor: pick(splitPool(val("eyeColorPool")))
+  };
+  Object.entries(choices).forEach(([id,value]) => setVal(id,value));
+  setVal("traitMode","locked");
+  $("randomResult").textContent =
+`Randomized Traits
+Gender: ${choices.gender}
+Race or ethnicity: ${choices.ethnicity}
+Height: ${choices.height}
+Build: ${choices.build}
+Skin tone/color: ${choices.skinTone}
+Age: ${choices.age}
+Hair length: ${choices.hairLength}
+Hair color: ${choices.hairColor}
+Eye color: ${choices.eyeColor}`;
+  generatePrompt();
+}
+
+function useRandomLists(){
+  setVal("traitMode","randomLists");
+  ["gender","ethnicity","height","build","skinTone","age","hairLength","hairColor","eyeColor"].forEach(id => setVal(id,"random"));
+  $("randomResult").textContent = "The prompt will ask the AI model to randomly choose traits from your custom pools.";
+  generatePrompt();
+}
+
+function traitLine(label, fieldId, poolId){
+  if(val("traitMode") === "locked"){
+    return `${label}: ${val(fieldId)}`;
+  }
+  return `${label}: [random: ${val(poolId)}]`;
+}
+
+function generatePrompt(){
+  const prompt = `Generate a photorealistic character with the following traits.
+
+${traitLine("Gender", "gender", "genderPool")}
+
+${traitLine("Race or ethnicity", "ethnicity", "ethnicityPool")}
+
+${traitLine("Height in feet/inches", "height", "heightPool")}
+
+${traitLine("Build", "build", "buildPool")}
+
+${traitLine("Skin tone/color", "skinTone", "skinTonePool")}
+
+${traitLine("Age in years", "age", "agePool")}
+
+${traitLine("Hair length", "hairLength", "hairLengthPool")}
+
+${traitLine("Hair color", "hairColor", "hairColorPool")}
+
+${traitLine("Eye color", "eyeColor", "eyeColorPool")}
+
+Outfit:
+${val("outfit")}
+
+Style:
+${val("style")}
+
+Output goal:
+${val("outputGoal")}
+
+Aspect ratio:
+${val("aspectRatio")}
+
+Panel layout:
+Show the character in ${val("panels")}. Arrange the panels ${val("panelArrangement")}.
+
+Panel labels:
+${val("labels")}
+
+View consistency:
+${val("viewRules")}
+
+Background:
+${val("background")}
+
+Lighting:
+${val("lighting")}
+
+Camera:
+${val("cameraAngle")}, ${val("lensFeel")}.
+
+Rendering quality:
+${val("renderQuality")}
+
+Composition:
+Create a clean reference-sheet layout. Show the entire body from head to feet in every full-body panel. Keep the figure centered in each panel with enough margin around the body. Use a neutral professional studio presentation with no props unless requested.
+
+Accuracy rules:
+The character must wear a light neutral gray fitted cotton bodysuit in every panel. Keep the bodysuit consistent across the front, side, 45-degree, and back views. Keep the same person, same height, same body proportions, same hairstyle, same skin tone, same facial structure, and same outfit across every view. Do not redesign the character between panels. Make the sheet useful for character continuity, model reference, AI video generation, and story bible use.
+
+Negative prompt:
+${selectedNegatives()}`;
+
+  $("promptOutput").value = prompt;
+  updateCounter();
+  flash("Prompt generated.");
+}
+
+function updateCounter(){
+  const t = $("promptOutput").value.trim();
+  const words = t ? t.split(/\s+/).length : 0;
+  $("counter").textContent = `Words: ${words} | Characters: ${t.length}`;
+}
+
+async function copyPrompt(){
+  if(!$("promptOutput").value.trim()) generatePrompt();
+  await navigator.clipboard.writeText($("promptOutput").value);
+  flash("Copied to clipboard.");
+}
+
+function downloadPrompt(){
+  if(!$("promptOutput").value.trim()) generatePrompt();
+  const blob = new Blob([$("promptOutput").value], {type:"text/plain"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "random-character-reference-sheet-prompt.txt";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  flash("Downloaded prompt file.");
+}
+
+function flash(msg){
+  $("status").textContent = msg;
+  setTimeout(() => $("status").textContent = "", 2200);
+}
+
+function getState(){
+  const fields = Array.from(document.querySelectorAll("input,select,textarea")).filter(x => x.id);
+  const state = {};
+  fields.forEach(x => state[x.id] = x.value);
+  state.negatives = Array.from(document.querySelectorAll(".neg")).map(x => x.checked);
+  state.randomText = $("randomResult").textContent;
+  return state;
+}
+
+function setState(state){
+  Object.entries(state).forEach(([id,v]) => {
+    if($(id) && id !== "promptOutput") $(id).value = v;
+  });
+  if(state.negatives){
+    Array.from(document.querySelectorAll(".neg")).forEach((x,i) => x.checked = !!state.negatives[i]);
+  }
+  if(state.randomText) $("randomResult").textContent = state.randomText;
+  generatePrompt();
+}
+
+function saveDraft(){
+  localStorage.setItem("randomCharacterPromptBuilderDraft", JSON.stringify(getState()));
+  flash("Draft saved in this browser.");
+}
+
+function loadDraft(){
+  const raw = localStorage.getItem("randomCharacterPromptBuilderDraft");
+  if(!raw){ flash("No saved draft found."); return; }
+  setState(JSON.parse(raw));
+  flash("Draft loaded.");
+}
+
+function resetApp(){
+  localStorage.removeItem("randomCharacterPromptBuilderDraft");
+  location.reload();
+}
+
+document.querySelectorAll(".preset").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const data = presets[btn.dataset.preset];
+    if(!data) return;
+    Object.entries(data).forEach(([id,value]) => setVal(id,value));
+    generatePrompt();
+  });
+});
+
+$("randomizeBtn").addEventListener("click", randomizeTraits);
+$("randomPromptBtn").addEventListener("click", useRandomLists);
+$("generateBtn").addEventListener("click", generatePrompt);
+$("copyBtn").addEventListener("click", copyPrompt);
+$("downloadBtn").addEventListener("click", downloadPrompt);
+$("saveBtn").addEventListener("click", saveDraft);
+$("loadBtn").addEventListener("click", loadDraft);
+$("printBtn").addEventListener("click", () => window.print());
+$("resetBtn").addEventListener("click", resetApp);
+$("promptOutput").addEventListener("input", updateCounter);
+
+Array.from(document.querySelectorAll("input,select,textarea")).forEach(el => {
+  if(el.id !== "promptOutput") el.addEventListener("change", generatePrompt);
+});
+
+generatePrompt();
+</script>
+</body>
+</html>
