@@ -78,6 +78,27 @@ for d in dev proc sys run; do mount --rbind "/$d" "$MNT/$d"; done
 mount --make-rslave "$MNT"
 echo "Copy: $IMG (root file system on $LP)"
 
+# IPRPS Updates needs the IPRPS repositories in pacman.conf. 12.12 step 7 takes the packaged
+# version from /etc/pacman.conf.pacnew; a build that skipped it keeps the temporary file
+# ("no usable package repositories configured" on the released computer).
+if ! grep -q '^\[iprps-core\]' "$MNT/etc/pacman.conf" 2>/dev/null; then
+  if grep -q '^\[iprps-core\]' "$MNT/etc/pacman.conf.pacnew" 2>/dev/null; then
+    mv -f "$MNT/etc/pacman.conf.pacnew" "$MNT/etc/pacman.conf"
+    echo "Fixed in the copy: /etc/pacman.conf now has the IPRPS repositories (from pacman.conf.pacnew)."
+    echo "Fix the build image too (12.12 step 7's .pacnew line), or the next release repeats this."
+  elif grep -q '^\[iprps-core\]' "$MNT/build/src/iprps-os/packages/iprps-base/pacman.conf" 2>/dev/null; then
+    install -m644 "$MNT/build/src/iprps-os/packages/iprps-base/pacman.conf" "$MNT/etc/pacman.conf"
+    echo "Fixed in the copy: /etc/pacman.conf restored from the iprps-base package source (packages/iprps-base/pacman.conf)."
+    echo "Fix the build image too (Appendix B), or the next release repeats this."
+  else
+    die "the image's /etc/pacman.conf has no IPRPS repositories, so IPRPS Updates can't work: restore it in the build image (Appendix B, \"no usable package repositories\")"
+  fi
+fi
+grep -q '^Server *= *https://' "$MNT/etc/pacman.d/iprps-mirrorlist" 2>/dev/null \
+  || die "the image's /etc/pacman.d/iprps-mirrorlist has no https Server line (a test line from 12.12 left in?): put the real line back (12.12)"
+PN=$(find "$MNT/etc" "$MNT/srv/www/iprps" -name '*.pacnew' 2>/dev/null | sed "s|^$MNT||")
+[ -z "$PN" ] || { echo "Note: these package files are waiting (12.12 step 7 takes them):"; echo "$PN"; }
+
 # ---------------------------------------------------------------- the cleanup inside the copy
 cat > "$INSIDE" << 'INSIDE_EOF'
 #!/bin/bash
