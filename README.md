@@ -39,6 +39,7 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `docs/session-master-manual/` | The **Session Master Training Manual**: how to run games with IPRPS OS, with seven walkthroughs (Markdown, PDF, Word, and a website: upload the folder) |
 | `docs/REMOTE-PLAYERS.md` | Players in another city or state join the IPRPS Table through Tailscale, without changing IPRPS OS (Appendix G) |
 | `tools/iprps-remote-play.sh` | Installs Tailscale on the Session Master's computer into `/opt/tailscale` (`install`, `status`, `remove`), for remote players (Appendix G) |
+| `tools/release-desk/` | The **IPRPS Release Desk**: walks you through updating, adding and retiring apps, security updates, point releases, publishing the package repository and GitHub, as a browser page or a terminal menu; runs the BUILDER and IPRPS CHROOT steps from DEBIAN ROOT; checks for passwords and keys before anything ships (guide 17.7) |
 | `docs/lfs/` | LFS 13.1-systemd companion guides (WSL and Debian editions), checklists, `wget-list-systemd`, `md5sums` |
 | `docs/archive/` | The original planning guide (written under the earlier name "IPRPS Linux") |
 | `build-host/` | `iprps-enter.sh` / `iprps-leave.sh`: mount the image and enter the build chroot from Debian on WSL; `iprps-release-clean.sh` / `iprps-release-pack.sh`: make the release images (13.4, 13.5); `iprps-release-iso.sh`: the live ISO for DVD and USB (13.9); `iprps-backup.sh`: back up the build image and snapshots to another drive, compressed (Appendix F); `iprps-repo.sh`: the package repository: signing key, sign and add packages, check, stage for upload, test server (12.12, Part 17) |
@@ -56,6 +57,8 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `apps/session-log/` | **Session Log and Recap** (12.10) |
 | `apps/welcome/` | **IPRPS Welcome**: first-login tour, color scheme, encrypted API key vault (12.10) |
 | `apps/file-viewer/` | **IPRPS File Viewer**: opens and checks `.iprps`, `.ipai`, `.srpatch`, `.capstone` files (12.10) |
+| `apps/master_db/` | **IPRPS Master Database**: one catalog for bestiary, taverns, species, weapons, grimoire, flora and fauna, gear, covenants and traps; starter datasets in `seed_data/`; database `iprps_master` created on first use (12.10) |
+| `apps/character-prompt-builder/` | **Character Prompt Builder**: random character reference-sheet prompts for image generators (12.10) |
 | `apps/updates-tile/` | The Hub tile for **IPRPS Updates**: what the last update check found (installed as `/srv/www/iprps/updates`, 12.12) |
 | `packages/` | **Package recipes** (PKGBUILDs) for pacman: `pacman`, `iprps-keyring`, `iprps-base` (pacman settings, **IPRPS Updates**, `iprps-update`, the update timer, the edition packages), `iprps-apps` (one package per IPRPS app), and worked examples (`examples/curl`, `examples/calibre`, a BLFS template). Rules in `packages/README.md` (12.12, Part 17) |
 | `apps/character-sheets/` | **Character Sheets**: the Session Master's sheet library (import players' files, view, print, by campaign; NPC and creature sheets; `character_sheets` table); shown inside the IPRPS Table console |
