@@ -1,0 +1,497 @@
+{
+  "version": "1.0",
+  "exported_at": "2026-02-04T22:00:00.000Z",
+  "trap_count": 50,
+  "traps": [
+    {
+      "trap_name": "Gravity Reversal Corridor",
+      "trap_type": "Magical",
+      "trap_dimensions": "40ft corridor x 10ft wide",
+      "damage_points": "6d6 (fall up) + 6d6 (fall down)",
+      "trap_description": "Gravity randomly flips in this corridor, sometimes multiple times. Victims fall to the ceiling, then back to the floor, taking damage each time.",
+      "trap_effect": "Every 1d4 rounds, gravity reverses. All creatures fall to opposite surface (ceiling or floor), taking fall damage. Equipment scatters. Disorientation causes disadvantage on attacks and saves for 1 round after each flip. Trap continues for 1 minute.",
+      "damage_method": "Repeated fall damage from both directions. Impact injuries compound. Equipment damage from repeated drops. Severe disorientation and nausea.",
+      "countermeasures": "Feather Fall prevents damage but subject still flips. Spider Climb allows clinging to any surface. Fly spell negates entirely. Athletics (DC 15) to grab handhold during flip. Dispel Magic (DC 17) stabilizes gravity."
+    },
+    {
+      "trap_name": "Zero Gravity Sphere",
+      "trap_type": "Magical",
+      "trap_dimensions": "30ft radius sphere",
+      "damage_points": "Special (helplessness)",
+      "trap_description": "A zone of complete weightlessness. Everything floats freely with no up or down. Movement requires pushing off surfaces or other objects.",
+      "trap_effect": "All creatures and objects float freely. Normal walking impossible. Movement requires Athletics check (DC 14) to push off surfaces, moving in straight line until hitting something. Combat has disadvantage (no stable platform). Liquids form floating spheres.",
+      "damage_method": "No direct damage but complete loss of mobility control. Cannot position effectively. Ranged attacks nearly impossible. Spellcasting with somatic components difficult. Vomiting from motion sickness common.",
+      "countermeasures": "Fly spell allows controlled movement. Spider Climb provides traction on walls. Rope between party members helps. Heavy weights don't help (everything weightless). Air Walk allows normal movement. Dispel Magic (DC 16) restores gravity."
+    },
+    {
+      "trap_name": "Crushing Gravity Field",
+      "trap_type": "Magical",
+      "trap_dimensions": "25ft x 25ft room",
+      "damage_points": "8d6 force per round",
+      "trap_description": "Gravity increases to 10 times normal strength. The crushing weight makes movement nearly impossible and causes internal injuries.",
+      "trap_effect": "All creatures make Strength save (DC 18) or be knocked prone and pinned. Movement speed reduced to 5ft. Standing up requires Strength check (DC 20). Each round in field deals damage as body is crushed by own weight. Metal armor adds 2d6 damage.",
+      "damage_method": "Extreme gravitational pressure crushes body from all directions. Bones crack, organs compressed, blood vessels rupture. Breathing becomes labored. Eventual unconsciousness from trauma.",
+      "countermeasures": "Levitation counteracts increased gravity. Freedom of Movement allows normal movement. Strength (DC 22) can operate semi-normally. Gaseous Form immune to crushing. Dispel Magic (DC 18) normalizes gravity. Exit field immediately."
+    },
+    {
+      "trap_name": "Blinding Light Burst",
+      "trap_type": "Magical",
+      "trap_dimensions": "30ft radius burst",
+      "damage_points": "6d8 radiant + permanent blindness risk",
+      "trap_description": "A flash of divine light bright as the sun itself. The intensity can permanently damage eyes if victims fail to protect themselves.",
+      "trap_effect": "All creatures make Constitution save (DC 17) or take damage and be blinded for 1 hour. On natural 1, blindness is permanent (requires Greater Restoration). Even on save, blinded for 1 round. Undead and light-sensitive creatures have disadvantage and take double damage.",
+      "damage_method": "Searing radiant light burns retinas and exposed skin. Permanent eye damage possible. Undead suffer additional burning. Flash-blindness causes complete disorientation.",
+      "countermeasures": "Closing eyes or averting gaze grants advantage but disadvantage on all actions. Sunglasses/dark goggles reduce damage by half. Blindness spell ironically protects. Light Resistance helps. Darkness spell suppresses light."
+    },
+    {
+      "trap_name": "Absolute Darkness Chamber",
+      "trap_type": "Magical",
+      "trap_dimensions": "30ft x 30ft room",
+      "damage_points": "Special (fear and confusion)",
+      "trap_description": "Magical darkness so complete that even darkvision cannot penetrate it. Sound is also dampened, creating complete sensory deprivation.",
+      "trap_effect": "All light sources fail, even magical ones. Darkvision doesn't function. Sound muffled (Perception -10). All creatures blinded. Each round, Wisdom save (DC 15) or become frightened and move randomly (may trigger other hazards). Lasts 1 minute.",
+      "damage_method": "No direct damage but complete sensory deprivation causes panic. Random movement can lead to falling, hitting walls, triggering other traps. Psychological trauma. Party separation.",
+      "countermeasures": "True Seeing penetrates darkness. Blindsight allows navigation. Tremorsense detects movement. Rope keeps party together. Dispel Magic (DC 16) removes darkness. Devil's Sight penetrates. Staying still prevents most harm."
+    },
+    {
+      "trap_name": "Shadow Realm Pocket Dimension",
+      "trap_type": "Magical",
+      "trap_dimensions": "15ft diameter portal",
+      "damage_points": "Special (isolation + shadow damage)",
+      "trap_description": "Stepping on this circle opens portal to shadow realm pocket dimension. Victim is pulled in and trapped in twisted mirror of reality where shadows are solid and life drains away.",
+      "trap_effect": "Charisma save (DC 18) or be pulled into shadow dimension. Inside, victim takes 3d8 necrotic damage per round as shadows drain life force. Time flows differently (1 hour inside = 1 round outside). Escaping requires finding exit (Investigation DC 20) or magical means.",
+      "damage_method": "Life force drained by hungry shadows. Isolation and time distortion cause psychological damage. May be trapped for subjective hours while party only experiences seconds. Aging accelerated.",
+      "countermeasures": "Dimensional Anchor prevents pull. Banishment can retrieve victim. Plane Shift escapes dimension. Dispel Magic (DC 19) closes portal from outside. Protection from Evil grants advantage on save. Shadow resistance helps with damage."
+    },
+    {
+      "trap_name": "Demiplane Prison Trap",
+      "trap_type": "Magical",
+      "trap_dimensions": "10ft x 10ft demiplane cell",
+      "damage_points": "None (imprisonment)",
+      "trap_description": "Victim is shunted into a tiny demiplane - a featureless 10x10 stone cell with no exits. Time passes normally but escape is nearly impossible without outside help.",
+      "trap_effect": "Touching trigger object requires Wisdom save (DC 19) or be teleported to demiplane prison. Cell has no doors, windows, or features. Walls are impenetrable. No magic works except Plane Shift or Wish. Victim remains until freed by someone outside.",
+      "damage_method": "No damage but complete imprisonment. Starvation and dehydration threats. Psychological trauma from isolation. Party loses member until they find way to retrieve them.",
+      "countermeasures": "Don't trigger trap. Dimensional Anchor prevents teleport. Plane Shift (DC 20) can retrieve victim if caster knows plane exists. Wish spell frees victim. Dispel Magic (DC 20) on trigger object prevents future traps but doesn't free current victim."
+    },
+    {
+      "trap_name": "Teleportation to Dragon Lair",
+      "trap_type": "Magical",
+      "trap_dimensions": "12ft diameter circle",
+      "damage_points": "Varies (dragon encounter)",
+      "trap_description": "This malicious teleportation circle sends entire party directly into an ancient dragon's lair, specifically into the dragon's treasure hoard where it's most territorial.",
+      "trap_effect": "Entire party teleported together (no save) into dragon's lair, 20ft from sleeping dragon. Dragon wakes immediately, hostile. Party appears in treasure hoard (dragon gets lair actions). Must fight, flee, or negotiate. Return circle appears after dragon defeated or 10 minutes.",
+      "damage_method": "Ancient dragon breath weapon, claws, bite, tail, and frightful presence. Lair effects add environmental hazards. Party likely exhausted resources before this encounter.",
+      "countermeasures": "Arcana (DC 18) identifies malicious destination before triggering. Dispel Magic (DC 19) disables circle. Dimensional Anchor on party prevents teleport. Teleportation Circle can redirect to safe location. Once triggered, diplomacy or tactical retreat only options."
+    },
+    {
+      "trap_name": "Teleport to Lava Chamber",
+      "trap_type": "Magical",
+      "trap_dimensions": "10ft circle to 30ft x 30ft chamber",
+      "damage_points": "20d10 fire",
+      "trap_description": "Party is teleported into a chamber with floor of molten lava. Stone platforms provide temporary refuge but are slowly sinking into the magma.",
+      "trap_effect": "Entire party teleports to lava chamber. Appear on stone platforms (5ft squares, 1d4+2 platforms). Each round, platforms sink 1ft into lava. After 5 rounds, all platforms submerged. Swimming in lava is instant death. Exit portal appears after 1 minute.",
+      "damage_method": "Heat damage increases as platforms sink (5d10, 10d10, 15d10, 20d10). Standing on platform as it goes under means immersion in lava. Metal equipment melts. Suffocation from heat and fumes.",
+      "countermeasures": "Fly or Levitate to avoid platforms. Fire Immunity essential. Ice magic can create temporary platforms. Teleportation or Plane Shift escapes immediately. Feather Fall slows sinking. Water Walk on lava (DM discretion)."
+    },
+    {
+      "trap_name": "Toxic Pollen Cloud",
+      "trap_type": "Environmental",
+      "trap_dimensions": "25ft radius cloud",
+      "damage_points": "6d6 poison + allergic reaction",
+      "trap_description": "Disturbing ancient magical plants releases cloud of toxic pollen. The pollen causes severe allergic reactions, swelling, and respiratory distress.",
+      "trap_effect": "All in cloud make Constitution save (DC 16) each round or take poison damage and suffer allergic reaction (swollen eyes, throat, face - disadvantage on Perception, can't speak clearly for spells). Cloud persists 1 minute. Failed save by 5+ causes anaphylaxis (choking, death in 2d4 rounds without healing).",
+      "damage_method": "Toxic pollen irritates respiratory system and skin. Severe swelling can close throat. Choking and suffocation. Extreme discomfort even with successful saves. Blindness from swollen eyes.",
+      "countermeasures": "Holding breath helps but can't do forever. Wet cloth over face grants advantage. Create Water or Gust of Wind disperses pollen. Poison Resistance halves damage. Lesser Restoration cures allergic reaction. Don't disturb plants."
+    },
+    {
+      "trap_name": "Arrow Storm Ceiling",
+      "trap_type": "Projectile",
+      "trap_dimensions": "40ft x 40ft ceiling area",
+      "damage_points": "10d8 piercing",
+      "trap_description": "Hundreds of arrows fire from ceiling simultaneously, creating a deadly rain of projectiles. The sheer volume makes dodging nearly impossible.",
+      "trap_effect": "All creatures in room make Dexterity save (DC 18) or be struck by 3d4 arrows (full damage). Even on save, hit by 1d4 arrows (half damage). Arrows continue firing for 3 rounds. Shields provide +2 to AC against arrows. Metal armor attracts more arrows (+1d4).",
+      "damage_method": "Multiple arrow strikes from above pierce armor and flesh. Bleeding from numerous wounds (1d6 per round until healed). Being prone provides cover (advantage on save).",
+      "countermeasures": "Shield spell blocks all arrows for one round. Flipping tables/furniture for cover. Stone Shape creates shelter. Getting against walls reduces exposure. Running out of room quickly. Feather Fall doesn't help (arrows too fast)."
+    },
+    {
+      "trap_name": "Spear Walls Closing",
+      "trap_type": "Mechanical",
+      "trap_dimensions": "20ft corridor, walls 15ft apart",
+      "damage_points": "12d10 piercing",
+      "trap_description": "Walls studded with spears slide together from both sides. The spears interlock, creating an impaling cage that crushes and skewers simultaneously.",
+      "trap_effect": "Walls close over 4 rounds (3ft per round). Creatures between walls take increasing damage: Round 1 (2d10), Round 2 (4d10), Round 3 (8d10), Round 4 (12d10 and crushed flat). Spears impale from both sides. Escape requires reaching end of corridor.",
+      "damage_method": "Progressive impalement as spears from both walls pierce body. Crushing pressure between walls. Multiple penetrating wounds. Eventual death from combined piercing and crushing trauma.",
+      "countermeasures": "Running to corridor end before walls close. Strength (DC 20) can hold walls briefly. Immovable rod jams mechanism. Passwall creates escape. Gaseous Form allows escaping between spears. Stone Shape widens corridor."
+    },
+    {
+      "trap_name": "Choking Dust Cloud",
+      "trap_type": "Environmental",
+      "trap_dimensions": "30ft x 30ft dust cloud",
+      "damage_points": "4d6 + suffocation",
+      "trap_description": "Fine magical dust fills the air, so thick visibility drops to zero. The dust clogs lungs and airways, making breathing increasingly difficult.",
+      "trap_effect": "Dust fills room in 1 round. All creatures blinded (can't see beyond 5ft). Each round must make Constitution save (DC 15) or take damage and be unable to speak (can't cast verbal spells). Three failed saves = choking (unconscious in 1d4 rounds). Dust settles after 1 minute.",
+      "damage_method": "Fine particles clog respiratory system. Suffocation begins quickly. Coughing prevents spellcasting. Complete blindness causes disorientation. Dust in eyes extremely painful.",
+      "countermeasures": "Wet cloth over nose/mouth grants advantage. Gust of Wind clears area. Create Water settles dust. Air Bubble provides clean air. Water Breathing doesn't help (no water to breathe). Running out of cloud best option."
+    },
+    {
+      "trap_name": "Silence Sphere Trap",
+      "trap_type": "Magical",
+      "trap_dimensions": "30ft radius sphere",
+      "damage_points": "None (silence only)",
+      "trap_description": "Absolute magical silence fills the area. No sound can be made or heard. Verbal communication and spellcasting impossible.",
+      "trap_effect": "Complete silence - no sounds work, even magical ones. Verbal spellcasting fails. Communication only through gestures. Stealth automatic but can't hear enemies. Alarm spells don't work. Persists 10 minutes or until dispelled.",
+      "damage_method": "No damage but devastating for casters relying on verbal components. Cannot coordinate tactics verbally. Cannot hear approaching enemies. Party coordination severely impaired. Psychological discomfort.",
+      "countermeasures": "Dispel Magic (DC 15) removes silence. Leaving area restores sound. Still spell metamagic allows casting. Subtle spell works. Telepathy allows communication. Sign language if pre-arranged. Fighting in silence requires tactical adjustment."
+    },
+    {
+      "trap_name": "Cacophony Chamber",
+      "trap_type": "Magical",
+      "trap_dimensions": "25ft x 25ft room",
+      "damage_points": "8d6 thunder + deafened",
+      "trap_description": "Overwhelming noise fills the room - screaming, thunder, grinding metal, all amplified to excruciating levels. The sound is physically painful.",
+      "trap_effect": "All creatures make Constitution save (DC 17) or take thunder damage and be deafened for 1 hour. Even on save, take half damage and deafened for 1 minute. Cannot concentrate on spells. Verbal spellcasting requires DC 15 Constitution check. Lasts 1 minute.",
+      "damage_method": "Extreme noise causes physical pain, ruptured eardrums, internal ear damage. Disorientation and nausea. Concentration broken. Lasting hearing damage possible. Psychological distress.",
+      "countermeasures": "Plugging ears reduces damage by half. Silence spell counters noise. Thunder Resistance halves damage. Leaving room immediately. Deafness spell ironically protects (can't hear noise). Resilient Sphere blocks sound."
+    },
+    {
+      "trap_name": "Seismic Shatter Trap",
+      "trap_type": "Environmental",
+      "trap_dimensions": "40ft radius area",
+      "damage_points": "6d8 bludgeoning + difficult terrain",
+      "trap_description": "Violent earthquake shatters floor into jagged chunks while bringing ceiling down in pieces. The ground becomes treacherous broken stone.",
+      "trap_effect": "All creatures make Dexterity save (DC 17) or fall prone and take damage from falling debris. Floor becomes difficult terrain (movement halved). Cracks open randomly (1d3 creatures each round fall 10ft for 1d6 damage). Spell concentration broken. Lasts 3 rounds.",
+      "damage_method": "Falling debris causes head trauma and crushing injuries. Falling into cracks causes additional damage and potential entrapment. Difficult movement makes positioning impossible. Cannot maintain balance.",
+      "countermeasures": "Flying or Levitation avoids ground effects. Acrobatics (DC 16) maintains footing. Earthquake spell can counter-vibrate to stabilize. Stone Shape can close cracks. Getting to doorway provides relative stability."
+    },
+    {
+      "trap_name": "Acid Rain Chamber",
+      "trap_type": "Environmental",
+      "trap_dimensions": "30ft x 30ft room",
+      "damage_points": "8d6 acid per round",
+      "trap_description": "Ceiling sprinklers release concentrated acid rain that dissolves flesh, metal, and stone. The acid pools on floor, making entire room hazardous.",
+      "trap_effect": "Acid rains from ceiling continuously. Each round, all exposed creatures take damage. Acid pools on floor (1ft deep after 3 rounds) deals additional 2d6 to those standing in it. Metal equipment corrodes (AC -1 per round, weapons -1 damage). Lasts 1 minute.",
+      "damage_method": "Acid burns through clothing and armor to reach skin. Breathing acidic fumes damages lungs. Pooling acid traps victims. Equipment destroyed rapidly. Severe chemical burns.",
+      "countermeasures": "Acid Resistance essential. Umbrella or shield overhead provides partial protection. Create Water dilutes acid. Stone Shape creates raised platform above pooling. Climbing walls keeps above acid pool. Dispel Magic (DC 17) stops sprinklers."
+    },
+    {
+      "trap_name": "Living Room - Carnivorous Chamber",
+      "trap_type": "Environmental",
+      "trap_dimensions": "30ft x 30ft room",
+      "damage_points": "6d8 acid + grappled",
+      "trap_description": "The room itself is alive - a massive organism. Walls, floor, and ceiling are actually the interior of a creature's mouth. When door closes, it begins digesting.",
+      "trap_effect": "Door seals. Walls begin secreting digestive acid. All creatures take acid damage each round. Floor becomes sticky (Strength DC 15 to move, half speed). Walls pulse and contract (everyone must save or be pushed together and grappled). Room attempts to swallow party whole over 1 minute.",
+      "damage_method": "Progressive acid digestion. Grappled victims cannot escape. Walls contract, crushing victims together. Eventually entire party could be consumed. Suffocation begins as room compresses.",
+      "countermeasures": "Dealing 100 damage to any wall section forces room to 'vomit' party out. Fire causes room pain, opening briefly. Passwall creates escape. Freedom of Movement prevents grapple. Acid Resistance essential for survival."
+    },
+    {
+      "trap_name": "Mimic Chamber",
+      "trap_type": "Environmental",
+      "trap_dimensions": "20ft x 20ft room",
+      "damage_points": "8d8+6 + adhesive",
+      "trap_description": "The entire room is one enormous mimic. Walls, floor, ceiling, even the door - all one creature. When victims are inside, it seals and begins digesting.",
+      "trap_effect": "Room appears normal until door closes. Then entire room revealed as mimic. All surfaces adhesive (Strength DC 16 to pull free). Walls close in, biting with hidden mouths (8d8 damage per round). Acid secretion begins (2d6 per round). Escape very difficult.",
+      "damage_method": "Multiple bite attacks from surfaces. Adhesive holds victims in place. Acid digestion. Walls crushing inward. Suffocation as room compresses. Psychological horror of being eaten by room itself.",
+      "countermeasures": "Detect Magic reveals transmutation before entering. Universal solvent weakens adhesive. Fire deals damage to mimic, may cause release. Dealing 150 HP damage forces mimic to release prey. Dimension Door escapes."
+    },
+    {
+      "trap_name": "Vertigo Vortex",
+      "trap_type": "Magical",
+      "trap_dimensions": "20ft radius area",
+      "damage_points": "Special (nausea and falls)",
+      "trap_description": "Magical effect scrambles inner ear and spatial perception. Victims lose all sense of balance and direction. Up becomes down, walls seem to spin.",
+      "trap_effect": "All creatures make Wisdom save (DC 17) or suffer extreme vertigo. Cannot tell up from down. Movement in random direction (1d8). Attacks and skill checks at disadvantage. Must make Dexterity save (DC 15) each round or fall prone and vomit (lose action). Lasts 1 minute.",
+      "damage_method": "No direct damage but complete loss of coordination. Severe nausea causes weakness. Random movement may trigger other traps or cause falls. Cannot fight effectively. May stumble off ledges.",
+      "countermeasures": "Closing eyes helps (blind but no vertigo). Lesser Restoration cures effect. Calm Emotions suppresses nausea. Sitting or lying prone prevents falls. Dispel Magic (DC 16) ends effect. Rope keeps party together."
+    },
+    {
+      "trap_name": "Gravity Well Pit",
+      "trap_type": "Pit",
+      "trap_dimensions": "15ft diameter x 60ft deep",
+      "damage_points": "10d6 + difficult escape",
+      "trap_description": "A pit with magical gravity well at bottom. Falling in is normal, but climbing out requires fighting increasing gravity that pulls victims back down.",
+      "trap_effect": "Falling in deals normal fall damage (6d6). Climbing out requires Athletics checks against increasing DC: 10ft up = DC 12, 20ft = DC 15, 30ft = DC 18, 40ft+ = DC 22. Failure means falling back to bottom for another 6d6. Rope doesn't help (gravity pulls rope-holder in too unless DC 18 Strength).",
+      "damage_method": "Initial fall damage plus repeated falls from failed escape attempts. Exhaustion from repeated climbing attempts. Eventual hopelessness as gravity makes escape nearly impossible.",
+      "countermeasures": "Levitation or Fly negates gravity. Feather Fall prevents fall damage. Spider Climb provides advantage on Athletics. Immovable rod creates anchor points. Dispel Magic (DC 17) normalizes gravity in pit."
+    },
+    {
+      "trap_name": "Twilight Maze Pocket Dimension",
+      "trap_type": "Magical",
+      "trap_dimensions": "Pocket maze, seemingly infinite",
+      "damage_points": "Special (starvation and madness)",
+      "trap_description": "Door leads to pocket dimension maze of twisting passages. Time flows normally but maze seems endless. Victims can wander for days while only minutes pass outside.",
+      "trap_effect": "Passing through door enters maze pocket dimension. Maze constantly shifts (Investigation DC 20 to map, but map becomes obsolete in 10 minutes). Exit appears randomly after 2d4 hours of wandering. Starvation and exhaustion threats. Wisdom save (DC 14) each hour or gain temporary madness.",
+      "damage_method": "Starvation, dehydration, exhaustion. Psychological breakdown from endless wandering. Madness from temporal distortion. Party may emerge days later (subjectively) though only hour passed outside.",
+      "countermeasures": "Plane Shift escapes immediately. Arcana (DC 19) recognizes pocket dimension before entering. Breadcrumb trail doesn't work (dimension shifts). True Seeing reveals exit. Dispel Magic (DC 20) might reveal exit early."
+    },
+    {
+      "trap_name": "Kaleidoscope Light Prison",
+      "trap_type": "Magical",
+      "trap_dimensions": "20ft x 20ft room",
+      "damage_points": "4d8 radiant + confusion",
+      "trap_description": "Room fills with spinning, multicolored lights that refract off crystal walls. The mesmerizing display causes confusion and disorientation while dealing radiant damage.",
+      "trap_effect": "Spinning lights cause Intelligence save (DC 16) each round or become confused (roll 1d10 for behavior). All creatures take radiant damage per round. Lights are hypnotic - Wisdom save (DC 15) or stand mesmerized (lose action). Lasts 1 minute.",
+      "damage_method": "Radiant light burns exposed skin. Confusion causes chaotic behavior (may attack allies). Hypnotic effect leaves victims vulnerable. Severe disorientation and nausea. Lasting vision distortion.",
+      "countermeasures": "Closing eyes prevents confusion and hypnosis but blinds you. Blindfold works same way. Darkness spell suppresses lights. Radiant Resistance halves damage. Calm Emotions suppresses confusion. Breaking crystals stops refraction."
+    },
+    {
+      "trap_name": "Shadow Tentacle Darkness",
+      "trap_type": "Magical",
+      "trap_dimensions": "25ft radius darkness",
+      "damage_points": "6d6 necrotic + grappled",
+      "trap_description": "Magical darkness spawns tentacles of living shadow that grab and drain life from victims. The darkness is so complete that even the tentacles are invisible until they strike.",
+      "trap_effect": "Darkness fills area (even darkvision fails). Each round, 1d4+1 shadow tentacles attack random creatures (+8 to hit, 6d6 necrotic, grappled on hit). Grappled victims take automatic damage each round. Cannot see tentacles to target them. Tentacles have AC 15, 30 HP each.",
+      "damage_method": "Life-draining tentacles hold victims while sapping vitality. Cannot see attackers. Multiple tentacles can grapple one victim. Necrotic damage resists healing. Fear of unseen threat.",
+      "countermeasures": "Daylight or similar magic illuminates tentacles. True Seeing reveals tentacles. Radiant damage destroys tentacles quickly. Freedom of Movement prevents grapple. Dispel Magic (DC 17) removes darkness and tentacles."
+    },
+    {
+      "trap_name": "Teleportation Scatter Mines",
+      "trap_type": "Magical",
+      "trap_dimensions": "Multiple 5ft circles in room",
+      "damage_points": "Varies (separation and danger)",
+      "trap_description": "Floor has invisible teleportation circles that activate randomly. Each teleports victim to different dangerous location. Party becomes completely separated across dungeon.",
+      "trap_effect": "Walking triggers random circle (Perception DC 18 to notice shimmer). Each circle teleports to different location: 1-lava room, 2-underwater, 3-gelatinous cube, 4-spike pit, 5-monster lair, 6-collapsing room, 7-poison gas, 8-back to start. No save. Party scattered.",
+      "damage_method": "Each destination has own hazards. Party members separated cannot help each other. Multiple simultaneous crises. Some destinations immediately life-threatening. Regrouping very difficult.",
+      "countermeasures": "See Invisibility reveals circles. Arcana (DC 17) identifies teleportation magic. Flying avoids floor circles. Touching circles with object from distance tests safely. Dispel Magic (DC 18) disables one circle. Careful movement."
+    },
+    {
+      "trap_name": "Pressure Spear Gauntlet",
+      "trap_type": "Mechanical",
+      "trap_dimensions": "30ft corridor with floor plates",
+      "damage_points": "4d10 piercing per spear",
+      "trap_description": "Every 5 feet has pressure plate. Stepping on plate causes spear to shoot from wall at chest height. Plates reset after 6 seconds, potentially hitting same victim multiple times.",
+      "trap_effect": "Each floor section (5ft) has plate. Stepping on plate triggers spear (+8 to hit, 4d10 piercing). Can trigger multiple plates crossing corridor. Plates reset every round, potentially hitting again. Running through triggers all plates in path.",
+      "damage_method": "Impalement from spears. Multiple hits possible. Bleeding from penetrating wounds (1d6 per wound per round until healed). Running creates gauntlet of spears.",
+      "countermeasures": "Perception (DC 14) spots plates. Triggering with thrown object from distance. Jumping between safe spots (Acrobatics DC 15). Shield provides AC bonus. Crossing one at a time limits exposure. Jam mechanism with iron spike."
+    },
+    {
+      "trap_name": "Bone Dust Storm",
+      "trap_type": "Environmental",
+      "trap_dimensions": "40ft x 40ft area",
+      "damage_points": "5d6 necrotic + disease",
+      "trap_description": "Powdered bones of plague victims whipped into choking storm. The cursed dust carries ancient diseases and drains life force.",
+      "trap_effect": "Dust storm fills area. All creatures take necrotic damage each round and must make Constitution save (DC 16) or contract bone fever (lose 1d4 HP maximum per day, cannot regain HP naturally). Blinded by dust. Coughing prevents verbal spells. Storm lasts 1 minute.",
+      "damage_method": "Necrotic dust drains life. Disease wastes body progressively. Choking and blindness. Psychological horror of breathing dead remains. Infection spreads if untreated.",
+      "countermeasures": "Gust of Wind disperses dust. Protection from Disease prevents infection. Lesser Restoration cures disease. Wet cloth grants advantage on saves. Create Water settles dust. Leave area immediately."
+    },
+    {
+      "trap_name": "Arrow Wave Doors",
+      "trap_type": "Projectile",
+      "trap_dimensions": "Two door-sized walls, 20ft apart",
+      "damage_points": "8d8 piercing",
+      "trap_description": "When triggered, two doors at opposite ends of room simultaneously fire waves of arrows at each other. The crossfire is nearly inescapable.",
+      "trap_effect": "Arrows fire in waves from both doors meeting in middle. All in room make Dexterity save (DC 18) or be struck by arrows from both directions. Three waves fire (first, third, and sixth seconds). Total exposure 24d8 if hit by all three waves.",
+      "damage_method": "Crossfire makes dodging difficult. Arrows from multiple directions. Repeated waves catch those who dodged first wave. Severe bleeding from multiple wounds.",
+      "countermeasures": "Diving prone after first wave provides cover. Shield spell blocks one wave. Heavy table/furniture provides cover. Hugging wall opposite one door halves exposure. Running between waves possible (Dash action)."
+    },
+    {
+      "trap_name": "Spear Bed Pit",
+      "trap_type": "Pit",
+      "trap_dimensions": "10ft x 10ft x 30ft deep",
+      "damage_points": "3d6 (fall) + 8d10 (spears)",
+      "trap_description": "Pit bottom is packed with hundreds of spears pointing upward at various angles, creating a bed of deadly points. Falling means multiple impalements.",
+      "trap_effect": "Falling into pit means landing on 2d6 spears. Each spear deals 4d10 piercing damage. Pulling self off spears requires Strength check (DC 15) and deals additional 2d10 per spear. Climbing out while impaled nearly impossible (DC 20 Athletics, disadvantage).",
+      "damage_method": "Multiple impalement injuries. Massive bleeding (2d6 per round from all wounds). Movement causes spears to tear larger wounds. Shock from trauma. Rescue required for survival.",
+      "countermeasures": "Jump or pushed - Acrobatics (DC 15) to grab edge during fall. Feather Fall eliminates fall damage but still land on spears. Rope allows lowering safely. Levitate allows hovering above spears to heal before climbing."
+    },
+    {
+      "trap_name": "Allergic Pollen Explosion",
+      "trap_type": "Environmental",
+      "trap_dimensions": "30ft radius burst",
+      "damage_points": "8d6 poison + anaphylaxis",
+      "trap_description": "Magical plant bulb explodes, releasing concentrated pollen in violent burst. Those with vulnerabilities suffer potentially fatal allergic reactions.",
+      "trap_effect": "All creatures make Constitution save (DC 18) or take full poison damage and anaphylactic shock (can't breathe, death in 1d4+1 rounds without healing). Even on save, sneezing fits (disadvantage on everything for 1 minute). Pollen coats everything, persists 10 minutes.",
+      "damage_method": "Toxic pollen triggers massive allergic response. Throat swells shut, cutting off air. Hives and swelling. Chemical asphyxiation. Quick death without intervention.",
+      "countermeasures": "Holding breath when explosion occurs grants advantage. Poison Resistance reduces severity. Lesser Restoration cures anaphylaxis. Create Water washes off pollen. Burning plant before it explodes (if detected) prevents trap."
+    },
+    {
+      "trap_name": "Sound Amplification Trap",
+      "trap_type": "Magical",
+      "trap_dimensions": "20ft x 20ft room",
+      "damage_points": "6d8 thunder per loud sound",
+      "trap_description": "Room magically amplifies all sounds to painful levels. Even whispers become shouts. Spell with verbal components or combat sounds become devastating sonic attacks.",
+      "trap_effect": "Any sound made in room amplified 100x. Speaking causes 2d8 thunder damage to all in room. Verbal spellcasting causes 6d8 to all. Weapon clashes, footsteps, all cause damage. Each sound requires Constitution save (DC 15) or be deafened 1 hour. Move silently or suffer.",
+      "damage_method": "Thunderous amplification ruptures eardrums. Sound waves cause internal damage. Cannot communicate verbally. Cannot cast verbal spells without harming party. Psychological stress of enforced silence.",
+      "countermeasures": "Complete silence essential - remove armor, communicate via gestures, use still/silent spells. Deafness spell prevents hearing amplified sounds (immune). Dispel Magic (DC 16) removes amplification. Leave room immediately."
+    },
+    {
+      "trap_name": "Whisper Madness Chamber",
+      "trap_type": "Magical",
+      "trap_dimensions": "25ft x 25ft room",
+      "damage_points": "Special (madness)",
+      "trap_description": "Thousands of overlapping whispers fill the room, each speaking dark secrets and forbidden knowledge. The whispers drive listeners slowly insane.",
+      "trap_effect": "Constant whispering from all directions. Each minute, Wisdom save (DC 16) or gain one short-term madness. After three failed saves, progress to long-term madness. Whispers reveal truths you don't want to know. Cannot unhear them. Lasts until leave room.",
+      "damage_method": "No physical damage but progressive mental breakdown. Paranoia, hallucinations, compulsions. Some madnesses permanent without Greater Restoration. Psychological trauma lingers even after cure.",
+      "countermeasures": "Deafness prevents hearing whispers. Calm Emotions suppresses madness effects temporarily. Mind Blank provides immunity. Greater Restoration cures madness. Leave room before accumulating saves. Plugging ears reduces but doesn't eliminate effect."
+    },
+    {
+      "trap_name": "Earthquake Fissure Trap",
+      "trap_type": "Environmental",
+      "trap_dimensions": "50ft x 20ft area",
+      "damage_points": "8d6 (fall) + trapped",
+      "trap_description": "Violent tremor opens massive fissure across floor. The crack is 10ft wide and 80ft deep. Those who fall find the fissure slowly closing, threatening to crush them.",
+      "trap_effect": "Earthquake opens fissure across area. All must make Dexterity save (DC 17) or fall into fissure (8d6 damage). Fissure walls are rough (Athletics DC 15 to climb). After 1 minute, fissure begins closing (10ft per round). Being caught in closing fissure is instant death (crushed).",
+      "damage_method": "Fall damage from initial drop. Crushing death if caught in closing fissure. Panic as walls close in. Rescue attempt must be fast. No escape if timing wrong.",
+      "countermeasures": "Jump across fissure (Athletics DC 12). Rope allows quick descent/ascent. Levitate or Fly avoids fall. Spider Climb makes climbing easy. Stone Shape can stop closing. Dimension Door escapes fissure."
+    },
+    {
+      "trap_name": "Acid Fountain Spray",
+      "trap_type": "Mechanical",
+      "trap_dimensions": "Four fountains in corners",
+      "damage_points": "6d6 acid each",
+      "trap_description": "Four decorative fountains in room corners simultaneously spray acid in sweeping arcs, covering entire room. The acid jets rotate continuously.",
+      "trap_effect": "Fountains spray acid in sweeping patterns. Each round, all in room targeted by 1d4 acid sprays. Each spray requires Dexterity save (DC 16) or take acid damage. Acid pools on floor (after 3 rounds, standing in acid deals 2d6 per round). Pattern repeats for 1 minute.",
+      "damage_method": "Multiple acid burns from different angles. Continuing burn damage from acid on skin/clothes. Pooling acid traps victims. Equipment corrosion. Breathing acid mist damages lungs.",
+      "countermeasures": "Acid Resistance essential. Shield provides cover from one direction. Destroying fountains stops spray but triggers immediate acid geyser (10d6, Dex DC 18). Create Water dilutes pooling acid. Running out quickly."
+    },
+    {
+      "trap_name": "Living Floor - Tongue Trap",
+      "trap_type": "Environmental",
+      "trap_dimensions": "20ft x 20ft floor section",
+      "damage_points": "8d8 acid + swallowed",
+      "trap_description": "Floor is actually massive creature's tongue. When enough weight is on it, tongue curls up and pulls victims into mouth in ceiling. The 'mouth' then digests prey.",
+      "trap_effect": "Walking on floor seems normal until tongue activates. All on floor are pulled toward 'mouth' (Strength save DC 17 or be pulled 20ft). Those pulled into mouth are swallowed (blinded, restrained, taking 8d8 acid per round). Can cut way out (AC 12, 50 HP from inside).",
+      "damage_method": "Acid digestion in creature's stomach. Restrained and blinded. Suffocation threat. Psychological horror of being eaten alive. Party member disappears into ceiling.",
+      "countermeasures": "Perception (DC 16) notices floor is too soft/warm. Dealing damage to floor causes creature to 'spit' victims out. Flying avoids floor entirely. Freedom of Movement prevents swallowing. Cure critical wounds on 'stomach' from inside forces vomiting."
+    },
+    {
+      "trap_name": "Gravity Displacement Field",
+      "trap_type": "Magical",
+      "trap_dimensions": "30ft x 30ft room",
+      "damage_points": "Special (disorientation)",
+      "trap_description": "Gravity points in random direction each round - sometimes toward wall, ceiling, floor, or corners. Constant direction changes cause extreme disorientation.",
+      "trap_effect": "Each round, gravity shifts to random direction (roll 1d8 - floor, ceiling, 4 walls, 2 corners). All fall toward new gravity source. Dexterity save (DC 16) or take 3d6 from impact. Constitution save (DC 15) or nauseated (disadvantage). Lasts 1 minute.",
+      "damage_method": "Repeated impacts from different angles. Severe motion sickness. Complete loss of spatial awareness. Equipment scattered everywhere. Impossible to maintain stable position.",
+      "countermeasures": "Feather Fall reduces impact damage. Fly spell allows controlled movement. Spider Climb provides stability on any surface. Dispel Magic (DC 18) normalizes gravity. Closing eyes helps with nausea but makes dodging impacts harder."
+    },
+    {
+      "trap_name": "Blinding Radiance Prison",
+      "trap_type": "Magical",
+      "trap_dimensions": "15ft diameter sphere",
+      "damage_points": "10d6 radiant + permanent blindness",
+      "trap_description": "Sphere of pure radiant light so bright it burns like staring into the sun. Prolonged exposure causes permanent blindness and severe burns.",
+      "trap_effect": "All inside sphere take radiant damage each round. Constitution save (DC 18) each round or be blinded for 1 hour. After 3 failed saves, blindness becomes permanent (requires Regenerate or Greater Restoration). Undead take double damage. Sphere persists 1 minute.",
+      "damage_method": "Intense radiant burns skin and retinas. Progressive eye damage leads to permanent blindness. Cannot see to escape. Disorientation and panic. Severe pain.",
+      "countermeasures": "Radiant Resistance halves damage. Closing eyes prevents blindness but makes navigation impossible. Darkness spell suppresses radiance. Sunglasses provide advantage on saves. Blindness spell ironically protects eyes. Dimension Door escapes sphere."
+    },
+    {
+      "trap_name": "Shadow Realm Banishment",
+      "trap_type": "Magical",
+      "trap_dimensions": "Affects individual creature",
+      "damage_points": "Special (isolation + shadow creatures)",
+      "trap_description": "Victim is banished to shadow realm where hostile shadow creatures hunt them. Must survive and find way back while party continues without them.",
+      "trap_effect": "Touch trigger requires Charisma save (DC 19) or be banished to shadow realm. There, hunted by 2d4 shadow creatures. Must defeat creatures and find portal (Investigation DC 18) to return. Time passes normally. Party must continue without them.",
+      "damage_method": "Shadow creatures drain Strength (1d4 per hit, dies at 0 Strength). Isolation from party. May be trapped for hours. Psychological trauma from dark realm. Possible death if overwhelmed.",
+      "countermeasures": "Dimensional Anchor prevents banishment. Plane Shift can retrieve victim (if party knows what happened). Banishment spell can pull victim back. Dispel Magic (DC 20) on trigger prevents future banishments. Protection from Evil grants advantage on save."
+    },
+    {
+      "trap_name": "Teleport to Sphere of Annihilation",
+      "trap_type": "Magical",
+      "trap_dimensions": "Circle teleports to 20ft from sphere",
+      "damage_points": "Instant death if touched",
+      "trap_description": "Circle teleports party to chamber containing sphere of annihilation. Sphere slowly drifts toward party. Touching it means instant obliteration.",
+      "trap_effect": "Party teleports to sealed chamber with sphere of annihilation. Sphere moves 10ft toward nearest creature each round. Touch means instant disintegration (no save, no resurrection possible). Exit portal appears after 1 minute. Must avoid sphere that long.",
+      "damage_method": "Sphere annihilates anything it touches completely - body, soul, equipment all gone. No coming back. Sphere is invisible to normal vision. Psychological terror of approaching doom.",
+      "countermeasures": "Detect Magic reveals sphere location. True Seeing shows sphere. Running away from sphere. Flying or Levitation maintains distance. Dimension Door escapes chamber immediately. Tenser's Floating Disk can block sphere briefly. Control Sphere requires DC 25 Arcana check."
+    },
+    {
+      "trap_name": "Vertigo Pillar Room",
+      "trap_type": "Magical",
+      "trap_dimensions": "40ft x 40ft room with pillars",
+      "damage_points": "Varies (fall damage)",
+      "trap_description": "Room has pillars of different heights. Gravity randomly reassigns floor - sometimes a pillar top becomes 'down', sometimes a wall. Constant reorientation causes extreme vertigo.",
+      "trap_effect": "Each round, gravity shifts to random surface (1d20 - various pillar tops, walls, actual floor). All fall to new 'floor'. Distances vary (1d6 x 10 feet). Wisdom save (DC 16) or vertigo (disadvantage on everything, must save vs falling prone each round). Lasts 1 minute.",
+      "damage_method": "Multiple falls from varying heights. Severe disorientation. Nausea and vomiting. Impossible to plan movement. May land on other creatures. Accumulated damage from repeated falls.",
+      "countermeasures": "Feather Fall essential. Fly allows controlled movement. Closing eyes reduces vertigo but causes blindness. Dispel Magic (DC 18) normalizes gravity. Spider Climb provides stability when gravity shifts. Sitting/staying still minimizes damage."
+    },
+    {
+      "trap_name": "Pollen Swarm Cloud",
+      "trap_type": "Environmental",
+      "trap_dimensions": "35ft radius swarm",
+      "damage_points": "6d6 poison + blindness",
+      "trap_description": "Cloud of carnivorous pollen particles swarms around victims like bees. Each grain tries to burrow into skin, eyes, lungs. The swarm is semi-intelligent and pursues fleeing victims.",
+      "trap_effect": "Pollen swarm attacks all in area. Constitution save (DC 17) each round or take poison damage. Pollen gets in eyes (blinded until removed with action and DC 14 Medicine check). Breathing pollen causes choking (disadvantage on all checks). Swarm pursues at 30ft per round for 1 minute.",
+      "damage_method": "Millions of burrowing pollen grains cause intense pain and poison. Blindness from pollen in eyes. Respiratory distress. Cannot escape easily as swarm follows. Psychological horror of being covered in biting pollen.",
+      "countermeasures": "Gust of Wind disperses swarm temporarily. Fire destroys pollen. Create Water washes pollen off. Running fast and far. Poison Resistance halves damage. Underwater safe from pollen. Smoke obscures swarm's vision."
+    },
+    {
+      "trap_name": "Arrow Volley Crossfire",
+      "trap_type": "Projectile",
+      "trap_dimensions": "30ft x 30ft room with four corners",
+      "damage_points": "12d8 piercing",
+      "trap_description": "All four corners of room fire volleys of arrows toward center simultaneously. The crossfire from four directions makes survival nearly impossible without cover.",
+      "trap_effect": "Four arrow volleys from corners converge on center. All in center area make Dexterity save (DC 19) or be struck by arrows from all directions (full damage). Even on save, struck by one volley (3d8). Volleys fire three times (rounds 1, 3, 5). Total potential 36d8 damage.",
+      "damage_method": "Overwhelming crossfire. Multiple wounds from different angles. Bleeding from dozens of arrow strikes. Near certain death if caught in center during all three volleys.",
+      "countermeasures": "Standing in corner (behind arrow sources) provides safety. Shield spell blocks one direction's arrows. Total cover behind furniture. Dodge action grants advantage. Getting to corner after first volley. Armor class very important."
+    },
+    {
+      "trap_name": "Spear Rising Floor",
+      "trap_type": "Mechanical",
+      "trap_dimensions": "20ft x 20ft room",
+      "damage_points": "Progressive: 2d10, 4d10, 8d10, 16d10",
+      "trap_description": "Floor studded with retractable spears. They extend upward in stages, starting at ankle height and progressively rising. Final stage has 10ft tall spears filling entire room.",
+      "trap_effect": "Round 1: Spears extend 1ft (hit legs, 2d10, half speed). Round 2: Extend to 3ft (hit torso, 4d10, quarter speed). Round 3: Extend to 6ft (hit chest/head, 8d10, movement 0). Round 4: Extend to 10ft (impaled, 16d10, likely death). Must escape before Round 4.",
+      "damage_method": "Progressive impalement. Starting with legs, working up to vital organs. Mobility increasingly restricted. Eventually completely impaled from multiple angles. Bleeding out.",
+      "countermeasures": "Levitation or Fly avoids spears entirely. Climbing walls as spears rise. Very difficult Acrobatics (DC 20) to navigate between spears. Breaking spears (AC 18, 15 HP each). Door usually locks, requiring quick lockpicking or breaking down."
+    },
+    {
+      "trap_name": "Choking Dust Cocoon",
+      "trap_type": "Environmental",
+      "trap_dimensions": "Affects individual creature",
+      "damage_points": "6d6 + suffocation",
+      "trap_description": "Magical dust swirls around single victim, forming thick cocoon. The dust hardens, immobilizing victim while dust inside cocoon chokes them.",
+      "trap_effect": "Dust targets one creature, requires Constitution save (DC 17) or be encased in dust cocoon. Cocoon restrains victim completely (can't move, blinded, suffocating). Takes 6d6 damage each round from dust in lungs. Cocoon has AC 15, 40 HP. Must be broken from outside or victim suffocates in 1d4 minutes.",
+      "damage_method": "Suffocation as dust fills lungs. Complete immobility. Blindness and panic. Cannot self-rescue. Depends entirely on party breaking cocoon. Slow death by asphyxiation.",
+      "countermeasures": "Gust of Wind prevents cocoon formation. Freedom of Movement prevents restraint. Allies must destroy cocoon quickly. Create Water softens cocoon (-5 AC). Stone Shape can crack cocoon. Dispel Magic (DC 16) dissolves cocoon."
+    },
+    {
+      "trap_name": "Silent Scream Chamber",
+      "trap_type": "Magical",
+      "trap_dimensions": "25ft x 25ft room",
+      "damage_points": "8d8 psychic",
+      "trap_description": "Room forces victims to scream but steals all sound. The scream builds internally with nowhere to go, causing severe psychic damage and internal injuries.",
+      "trap_effect": "All in room compelled to scream (Wisdom save DC 17 to resist). Screams produce no sound - stolen by room. Each round screaming causes psychic damage and Constitution save (DC 15) or ruptured blood vessels (1d6 bleed per round). Cannot stop screaming. Lasts 1 minute.",
+      "damage_method": "Psychic trauma from screaming with no release. Internal injuries from pressure. Throat damage. Psychological horror of silent screaming. Blood vessels burst from pressure. Mental breakdown.",
+      "countermeasures": "Calm Emotions suppresses compulsion to scream. Silence spell ironically allows quiet screaming (no additional damage). Mind Blank provides immunity. Dispel Magic (DC 17) ends effect. Leave room immediately. Hold Person prevents screaming (paralyzed but safe)."
+    },
+    {
+      "trap_name": "Thunderous Echo Chamber",
+      "trap_type": "Magical",
+      "trap_dimensions": "30ft x 30ft room",
+      "damage_points": "10d6 thunder per echo",
+      "trap_description": "Room amplifies and echoes all sounds infinitely. Each sound triggers louder echoes that build to devastating crescendo. Even breathing becomes dangerous.",
+      "trap_effect": "Any sound creates echoes that build exponentially. Whisper causes 2d6 thunder (all in room). Speaking causes 6d6. Loud noise or spell causes 10d6. Each sound triggers its own cascade of echoes. Room fills with overlapping thunderous echoes within seconds.",
+      "damage_method": "Cascading thunder damage from multiple overlapping echoes. Eardrums rupture. Internal organs damaged by sonic pressure. Deafness (often permanent). Unconsciousness from trauma. Death by sound.",
+      "countermeasures": "Complete silence essential - no breathing sounds, no footsteps, remove armor. Deafness spell prevents hearing echoes (immune to thunder). Silence spell in room prevents all sound and echoes. Dispel Magic (DC 18) stops effect. Leave immediately without making sound."
+    },
+    {
+      "trap_name": "Seismic Fracture Trap",
+      "trap_type": "Environmental",
+      "trap_dimensions": "Large room with stone floor",
+      "damage_points": "Variable (falls and crushing)",
+      "trap_description": "Powerful earthquake causes floor to fracture into separate chunks that tilt, fall, or rise unpredictably. Standing on wrong chunk means falling into newly opened pit or being crushed against ceiling.",
+      "trap_effect": "Floor breaks into 2d6 chunks. Each round, 1d4 chunks either: tilt (Dex DC 16 or slide into pit for 6d6), rise rapidly (Dex DC 16 or crushed against ceiling for 8d6), or fall away (Dex DC 18 or fall with it for 10d6). Must jump between stable chunks. Lasts 1 minute.",
+      "damage_method": "Multiple hazards - falling, crushing, sliding. Unpredictable chunk behavior. Must constantly reposition. May be trapped on isolated chunk. Accumulated damage from multiple events.",
+      "countermeasures": "Levitation or Fly avoids floor hazards. Acrobatics (DC 15) to jump between chunks. Feather Fall reduces fall damage. Stone Shape can stabilize chunks. Earthquake spell can counter-stabilize. Get to doorway or wall."
+    },
+    {
+      "trap_name": "Acid Mist Fog",
+      "trap_type": "Environmental",
+      "trap_dimensions": "40ft x 40ft fog cloud",
+      "damage_points": "6d6 acid per round",
+      "trap_description": "Fog of aerosolized acid fills area. Breathing it causes severe internal burns. Contact with skin causes external burns. The mist is thick enough to obscure vision.",
+      "trap_effect": "Acidic fog fills area. All creatures inside take acid damage each round. Breathing acid causes internal damage (additional 2d6, Constitution save DC 16 to hold breath each round). Vision obscured (heavily obscured beyond 5ft). Fog persists 1 minute, slowly drifting.",
+      "damage_method": "External acid burns on skin. Internal burns to lungs and throat from breathing acid. Cannot hold breath forever. Blindness from fog. Equipment corrosion. Choking and suffocation.",
+      "countermeasures": "Acid Resistance essential. Gust of Wind disperses fog. Wet cloth over face reduces lung damage. Running through quickly limits exposure. Create Water dilutes acid. Underwater breathing doesn't help (breathing acid not water)."
+    },
+    {
+      "trap_name": "Living Ceiling - Digestive Membrane",
+      "trap_type": "Environmental",
+      "trap_dimensions": "25ft x 25ft ceiling",
+      "damage_points": "8d8 acid + restrained",
+      "trap_description": "Ceiling is living membrane that drops down to envelope party. Once covered, membrane begins digesting everything it touches while preventing escape.",
+      "trap_effect": "Ceiling drops down as stretchy membrane, covering all below. All creatures must make Dexterity save (DC 17) or be covered (restrained, blinded). Membrane secretes acid (8d8 per round). Membrane has AC 10 but regenerates 20 HP per round. Must destroy faster than it heals.",
+      "damage_method": "Acid digestion while restrained. Cannot see or breathe properly. Suffocation threat. Membrane tough and regenerating. Psychological horror of being slowly digested alive.",
+      "countermeasures": "Cutting way out requires dealing massive damage quickly. Fire damage prevents regeneration. Freedom of Movement prevents restraint. Dimension Door escapes. Acid Resistance essential. Damaging 'stomach' from inside eventually forces vomiting."
+    }
+  ]
+}

@@ -1,0 +1,507 @@
+{
+  "version": "1.0",
+  "exported_at": "2026-02-04T21:00:00.000Z",
+  "trap_count": 50,
+  "traps": [
+    {
+      "trap_name": "Inferno Chamber",
+      "trap_type": "Magical",
+      "trap_dimensions": "20ft x 20ft x 15ft high",
+      "damage_points": "12d6 fire",
+      "trap_description": "A chamber that erupts into a raging inferno when triggered. Flames burst from all walls, floor, and ceiling simultaneously, creating an oven effect that incinerates everything inside.",
+      "trap_effect": "Room becomes superheated instantly. All creatures make Dexterity save (DC 18) or take full fire damage. Heat persists for 3 rounds, dealing 6d6 fire damage each round. Metal armor becomes red-hot (additional 2d6 per round).",
+      "damage_method": "Intense heat flash-cooks flesh and boils blood. Metal equipment becomes untouchable. Organic materials ignite. Air itself becomes scorching, damaging lungs with each breath.",
+      "countermeasures": "Fire Resistance reduces damage significantly. Resist Elements provides immunity. Water from Create Water provides temporary relief. Door must be forced open (Strength DC 20) or use Dimension Door. Dispel Magic (DC 18) suppresses flames for 1 minute."
+    },
+    {
+      "trap_name": "Tidal Wave Corridor",
+      "trap_type": "Environmental",
+      "trap_dimensions": "60ft corridor x 10ft wide x 10ft high",
+      "damage_points": "6d8 bludgeoning + drowning",
+      "trap_description": "A massive wall of water is released from reservoir at one end of corridor, rushing forward with devastating force. The wave fills the entire corridor from floor to ceiling.",
+      "trap_effect": "Wave travels at 60ft per round. Victims must make Strength save (DC 17) or be swept along, taking bludgeoning damage and becoming submerged. Those carried by wave are slammed into walls/doors for additional 3d6 damage.",
+      "damage_method": "Crushing water pressure and impact against obstacles. Submerged victims must hold breath or begin drowning. Wave continues for 1 minute before water drains through floor grates.",
+      "countermeasures": "Strength (DC 18) to brace against wall avoids being swept away. Water Breathing prevents drowning. Athletics (DC 16) to swim with current reduces damage. Finding high alcove or ledge provides safety. Control Water can redirect flow."
+    },
+    {
+      "trap_name": "Earthen Burial Trap",
+      "trap_type": "Environmental",
+      "trap_dimensions": "15ft x 15ft room",
+      "damage_points": "8d6 bludgeoning + suffocation",
+      "trap_description": "Walls and ceiling rapidly collapse inward, filling room with tons of earth and stone. Victims are buried alive under massive weight of debris.",
+      "trap_effect": "Room fills with earth in 3 rounds. Round 1: knee-deep (movement halved). Round 2: chest-deep (movement at 1/4, Strength DC 15 to move). Round 3: completely buried. Buried victims begin suffocating immediately.",
+      "damage_method": "Crushing weight of earth compresses body. Complete burial prevents breathing. Victims have minutes of air before suffocation. Digging out requires hours without magical aid.",
+      "countermeasures": "Passwall creates escape tunnel. Stone Shape clears path. Strength (DC 20) can hold ceiling briefly. Dimension Door bypasses. Gaseous Form allows squeezing through earth. Move Earth clears debris after burial."
+    },
+    {
+      "trap_name": "Hurricane Wind Tunnel",
+      "trap_type": "Environmental",
+      "trap_dimensions": "40ft corridor x 10ft wide",
+      "damage_points": "5d8 bludgeoning + fall damage",
+      "trap_description": "Powerful winds blast through corridor with hurricane force. The gale is strong enough to lift creatures off their feet and hurl them backward into walls or out windows.",
+      "trap_effect": "Wind speed reaches 120 mph. Creatures must make Strength save (DC 18) or be blown backward 3d6 x 10 feet, taking 1d6 bludgeoning per 10ft traveled. Small creatures have disadvantage. Landing against wall/obstacle deals additional damage.",
+      "damage_method": "Violent wind buffeting causes disorientation and impact injuries. Being slammed into walls causes severe trauma. Objects become projectiles, dealing additional 2d6 damage.",
+      "countermeasures": "Anchoring with rope to solid object prevents movement. Gaseous Form or Wind Walk allows passage. Control Weather or Wind Wall blocks gale. Heavy armor provides advantage on save. Crawling reduces DC to 14."
+    },
+    {
+      "trap_name": "Party Scatter Teleportation",
+      "trap_type": "Magical",
+      "trap_dimensions": "15ft diameter circle",
+      "damage_points": "None (separation only)",
+      "trap_description": "A teleportation circle designed to separate groups. Each creature standing on it when triggered is teleported to a different random location within the dungeon, splitting the party completely.",
+      "trap_effect": "When activated, each creature is teleported individually. Roll 1d12 for each: 1-3 = random room same level; 4-6 = 1 level up; 7-9 = 1 level down; 10-11 = trapped in sealed cell; 12 = outside dungeon. No save, instant effect.",
+      "damage_method": "No direct damage but party separation leaves individuals vulnerable. Some destinations may contain additional hazards. Regrouping requires exploration and luck.",
+      "countermeasures": "Dimensional Anchor on party members prevents teleportation. Arcana (DC 17) identifies scatter pattern. Dispel Magic (DC 18) disables circle. Stepping on together while holding hands reduces separation chance. Antimagic Field blocks effect."
+    },
+    {
+      "trap_name": "Curse of Weakness",
+      "trap_type": "Curse",
+      "trap_dimensions": "Affects creature touching cursed object",
+      "damage_points": "Special (ability score reduction)",
+      "trap_description": "A cursed idol or weapon that saps physical strength from those who touch it. Victims feel immediate fatigue as their muscles seem to wither.",
+      "trap_effect": "Touching object requires Constitution save (DC 16) or suffer -4 to Strength score immediately. Each day thereafter, lose additional 1d4 Strength. At Strength 0, victim becomes paralyzed and helpless. Effect persists until curse removed.",
+      "damage_method": "Curse directly drains physical capability. Muscles atrophy rapidly. Carrying capacity and combat effectiveness severely reduced. Eventually leads to complete physical helplessness.",
+      "countermeasures": "Detect Magic reveals necromancy curse. Investigation (DC 17) notices previous victims nearby. Remove Curse ends effect. Greater Restoration restores lost ability scores. Don't touch suspicious objects. Mage Hand for remote manipulation."
+    },
+    {
+      "trap_name": "Anti-Magic Dead Zone",
+      "trap_type": "Magical",
+      "trap_dimensions": "30ft radius sphere",
+      "damage_points": "None (spell suppression)",
+      "trap_description": "An area of complete magical nullification. All magic ceases to function within the zone - spells fail, magical items become inert, and supernatural abilities are suppressed.",
+      "trap_effect": "Entering zone immediately suppresses all magic. Active spells end. Magical items provide no benefits. Spellcasting impossible. Even innate magical abilities fail. Effect persists while in zone and for 1 round after leaving.",
+      "damage_method": "No direct damage but devastating for magic-dependent characters. Enchanted weapons become mundane. Healing magic unavailable. Protection spells vanish. Leaves party vulnerable to physical threats.",
+      "countermeasures": "Cannot be dispelled (it suppresses Dispel Magic itself). Arcana (DC 18) detects zone boundary before entering. Mundane weapons and tactics only option. Rope can pull incapacitated allies out. Find alternate route. Destroy rune generating field (outside zone)."
+    },
+    {
+      "trap_name": "Arctic Freeze Chamber",
+      "trap_type": "Magical",
+      "trap_dimensions": "20ft x 20ft room",
+      "damage_points": "10d8 cold + frozen",
+      "trap_description": "Temperature plummets to hundreds of degrees below zero in seconds. Ice crystals form instantly on all surfaces, and moisture in the air becomes snow.",
+      "trap_effect": "All creatures make Constitution save (DC 17) or take damage and become frozen solid for 1d4 rounds (paralyzed). Even on save, take half damage and speed reduced to 0 for 1 round. Water freezes, metal shatters from brittleness.",
+      "damage_method": "Extreme cold causes instant frostbite and hypothermia. Body fluids begin crystallizing. Frozen victims are paralyzed and vulnerable. Equipment becomes fragile.",
+      "countermeasures": "Cold Resistance halves damage. Endure Elements provides immunity. Heat Metal creates warmth zone. Breaking free from ice requires Strength (DC 18). Fireball or similar fire magic ends freeze immediately."
+    },
+    {
+      "trap_name": "Temporal Stasis Field",
+      "trap_type": "Magical",
+      "trap_dimensions": "15ft radius sphere",
+      "damage_points": "None (time freeze)",
+      "trap_description": "A shimmering field of chronomancy that freezes time for all who enter. Victims become trapped in a single moment, unable to move or act while the world continues around them.",
+      "trap_effect": "Entering field requires Wisdom save (DC 18) or become frozen in time for 1d4+1 rounds. Frozen creatures are completely paralyzed, unaware of time passing. Other creatures can interact normally with frozen victims (move them, loot them, attack them).",
+      "damage_method": "No damage but complete helplessness. Frozen victims are vulnerable to any action. Party members frozen at different times creates chaos. Enemies can position for devastating attacks.",
+      "countermeasures": "Haste provides advantage on save. Arcana (DC 17) identifies temporal magic. Freedom of Movement prevents freeze. Time Stop allows operating within field. Dispel Magic (DC 19) frees one creature. Avoiding field entirely is safest."
+    },
+    {
+      "trap_name": "Flamestrike Pillars",
+      "trap_type": "Magical",
+      "trap_dimensions": "30ft x 30ft chamber with 6 pillars",
+      "damage_points": "8d6 fire + radiant",
+      "trap_description": "Stone pillars throughout room erupt with vertical columns of divine fire when triggered. The flames burn with holy wrath, searing both body and soul.",
+      "trap_effect": "Moving through room triggers random pillars (1d3 per round). Each pillar creates 10ft radius, 40ft high column of fire. Creatures in area make Dexterity save (DC 16) or take full damage (half fire, half radiant). Pillars can retrigger.",
+      "damage_method": "Divine flames burn physical and spiritual essence. Radiant component prevents some regeneration. Multiple pillars can overlap for devastating effect.",
+      "countermeasures": "Fire Resistance only reduces fire portion. Path can be predicted with Investigation (DC 15). Pressing floor tiles in specific order disables trap. Fire Immunity helps but radiant damage still applies. Teleportation bypasses."
+    },
+    {
+      "trap_name": "Drowning Pool Floor",
+      "trap_type": "Environmental",
+      "trap_dimensions": "25ft x 25ft floor section, 20ft deep",
+      "damage_points": "Drowning damage",
+      "trap_description": "What appears to be solid stone floor is actually a thin layer of ice covering a deep pool of freezing water. Weight causes ice to crack and victims to plunge into frigid depths.",
+      "trap_effect": "Ice breaks under weight (100+ lbs). Victims fall into 20ft deep pool of near-freezing water. Must make Constitution save (DC 15) or suffer cold shock (stunned 1 round). Swimming to surface requires Athletics (DC 14). Climbing out requires DC 16.",
+      "damage_method": "Initial cold shock can incapacitate. Hypothermia sets in quickly (2d6 cold damage per minute in water). Wet clothes and armor make climbing difficult. Ice reforms above, trapping victims below.",
+      "countermeasures": "Investigation (DC 14) notices thin ice. Testing with pole reveals water. Walking around edge is safer. Rope allows safe extraction. Water Walking or Water Breathing helps. Fire damage melts ice for safer descent."
+    },
+    {
+      "trap_name": "Earthquake Rumble Trap",
+      "trap_type": "Environmental",
+      "trap_dimensions": "50ft radius area",
+      "damage_points": "4d8 bludgeoning + falling",
+      "trap_description": "The ground violently shakes and buckles, creating fissures and causing structures to collapse. The tremor lasts for several terrifying seconds.",
+      "trap_effect": "All creatures make Dexterity save (DC 16) or fall prone and take damage from falling debris. Movement reduced to 1/4. Spell concentration broken. Fissures open (1d3 creatures fall 20ft for 2d6 damage). Lasts 3 rounds.",
+      "damage_method": "Falling debris causes bludgeoning damage. Fissures can swallow victims. Being prone makes avoiding further hazards difficult. Structures may collapse for additional damage.",
+      "countermeasures": "Acrobatics (DC 15) maintains footing. Flying avoids ground effects. Earthquake spell can counter-vibrate to stabilize. Stone Shape can close fissures. Levitation protects from falling. Getting to doorway provides stability."
+    },
+    {
+      "trap_name": "Cyclone Vortex Chamber",
+      "trap_type": "Environmental",
+      "trap_dimensions": "30ft diameter circular room",
+      "damage_points": "6d8 bludgeoning + thrown",
+      "trap_description": "A powerful cyclone forms in the center of circular chamber, lifting creatures and objects into a violent spinning vortex of air and debris.",
+      "trap_effect": "All creatures must make Strength save (DC 17) or be pulled into vortex. Those caught spin violently, taking damage each round and making Constitution save (DC 14) or become nauseated (disadvantage on attacks/checks). Vortex lasts 1 minute.",
+      "damage_method": "Violent spinning causes disorientation and impact with debris. Creatures are battered against walls and each other. Nausea persists for 1d4 rounds after escape.",
+      "countermeasures": "Anchoring to walls prevents pull. Feather Fall allows floating safely. Control Weather dissipates cyclone. Gaseous Form allows escape. Strength (DC 19) can pull self to edge. Heavy armor provides advantage."
+    },
+    {
+      "trap_name": "Debilitating Curse Circle",
+      "trap_type": "Curse",
+      "trap_dimensions": "10ft diameter circle",
+      "damage_points": "Special (all abilities -2)",
+      "trap_description": "A cursed circle that drains vitality from all who cross it. Victims feel profound exhaustion as their capabilities diminish across the board.",
+      "trap_effect": "Crossing circle requires Charisma save (DC 16) or suffer -2 to all ability scores (Str, Dex, Con, Int, Wis, Cha) for 24 hours. Multiple crossings stack penalties. At any ability 0, victim falls unconscious.",
+      "damage_method": "Curse weakens all aspects of victim's being. Reduced combat effectiveness, spell difficulty, skills, and physical endurance. Cumulative effect can be devastating.",
+      "countermeasures": "Detect Magic reveals necromancy curse. Protection from Evil and Good grants immunity. Remove Curse reverses penalty. Greater Restoration immediately restores scores. Jump over circle avoids trigger. Dispel Magic (DC 17) disables circle."
+    },
+    {
+      "trap_name": "Magic Drain Obelisk",
+      "trap_type": "Magical",
+      "trap_dimensions": "8ft tall obelisk, 20ft radius effect",
+      "damage_points": "Spell slot loss",
+      "trap_description": "A black obelisk covered in runes that hungrily absorbs magical energy. Spellcasters near it feel their prepared spells unraveling as energy is siphoned away.",
+      "trap_effect": "Each round within 20ft, spellcasters must make Intelligence save (DC 16) or lose one random spell slot. Obelisk glows brighter with each slot absorbed. When it absorbs 20 slot levels, it explodes (8d6 force damage, 30ft radius).",
+      "damage_method": "Direct drain on magical reserves. Losing high-level slots cripples spellcasters. Explosion from overload threatens entire party. Non-casters unaffected by drain but vulnerable to explosion.",
+      "countermeasures": "Destroying obelisk before explosion requires AC 17, 100 HP but triggers immediate detonation. Dispel Magic (DC 18) disables for 1 minute. Antimagic Field protects from drain. Counterspell when slots being drained (contested check). Keep distance."
+    },
+    {
+      "trap_name": "Furnace Floor",
+      "trap_type": "Environmental",
+      "trap_dimensions": "20ft x 20ft metal floor",
+      "damage_points": "8d6 fire per round",
+      "trap_description": "A metal floor that rapidly heats to extreme temperatures. The surface begins glowing red-hot, making standing on it agonizing.",
+      "trap_effect": "Floor heats over 2 rounds (4d6 first round, 8d6 thereafter). Anything touching floor takes damage. Metal armor conducts heat (additional 2d6). Boots/shoes ignite. Jumping from foot to foot only delays inevitable. Heat persists 1 minute.",
+      "damage_method": "Feet suffer severe burns. Heat conducts through armor and equipment. Prolonged contact causes third-degree burns. Metal items become too hot to hold.",
+      "countermeasures": "Levitation or flying avoids contact. Resist Elements provides immunity. Ice or water provides brief cooling. Jump requires Athletics (DC 13) to reach walls/ledges. Door often locked, requiring lockpicking while taking damage. Dispel Magic (DC 16) cools floor."
+    },
+    {
+      "trap_name": "Tidal Undertow Pit",
+      "trap_type": "Pit",
+      "trap_dimensions": "15ft x 15ft x 40ft deep, water-filled",
+      "damage_points": "4d6 (fall) + drowning + undertow",
+      "trap_description": "A pit filled with churning water that has powerful undertow. Victims are pulled down and held beneath surface by magical current.",
+      "trap_effect": "Falling into pit means entering water. Powerful undertow pulls victim to bottom (Strength DC 18 to resist). Each round submerged requires holding breath or begin drowning. Undertow prevents surfacing without overcoming current.",
+      "damage_method": "Initial fall damage followed by drowning threat. Magical current prevents escape. Cold water causes hypothermia. Disorientation from churning makes finding surface difficult.",
+      "countermeasures": "Rope from above allows pulling victim out. Water Breathing negates drowning. Water Walk prevents sinking. Athletics (DC 19) can swim against current. Control Water calms undertow. Dimension Door escapes pit entirely."
+    },
+    {
+      "trap_name": "Stone Skin Petrification",
+      "trap_type": "Curse",
+      "trap_dimensions": "Affects creature viewing cursed statue",
+      "damage_points": "Petrification (gradual)",
+      "trap_description": "A statue that emits slow petrification effect. Victims' skin gradually hardens to stone over several minutes, giving them time to panic as transformation progresses.",
+      "trap_effect": "Viewing statue requires Constitution save (DC 17) or begin petrification. Transformation occurs over 5 rounds: Round 1 - skin hardens (AC +2, speed -10ft); Round 2 - joints stiffen (disadvantage on Dex); Round 3 - speed 0; Round 4 - paralyzed; Round 5 - fully petrified.",
+      "damage_method": "Progressive transformation allows victim to watch their doom. Each stage brings increasing helplessness. Full petrification is permanent without Greater Restoration or similar magic.",
+      "countermeasures": "Not looking at statue prevents trigger. Blindfold or closing eyes stops progression. Lesser Restoration halts petrification if cast before round 4. Greater Restoration reverses any stage. Destroying statue prevents new victims. Mirror allows safe viewing."
+    },
+    {
+      "trap_name": "Tornado Hallway",
+      "trap_type": "Environmental",
+      "trap_dimensions": "60ft corridor x 15ft wide",
+      "damage_points": "10d6 bludgeoning",
+      "trap_description": "A full tornado manifests in the corridor, spinning with devastating force. Debris, furniture, and even stones are caught in the vortex.",
+      "trap_effect": "Tornado moves 30ft per round down corridor. Creatures in its path make Strength save (DC 19) or be caught in vortex, taking damage and being spun violently. Those caught move with tornado and are thrown at end for additional 3d6.",
+      "damage_method": "Extreme winds and battering by debris cause severe trauma. Disorientation from spinning. Final impact when tornado dissipates or victim is thrown out.",
+      "countermeasures": "Gaseous Form flows safely with wind. Strength (DC 20) can brace in alcove. Control Weather dissipates tornado. Wind Walk allows passing through. Dimension Door bypasses. Feather Fall reduces thrown damage."
+    },
+    {
+      "trap_name": "Magma Eruption Floor",
+      "trap_type": "Environmental",
+      "trap_dimensions": "25ft x 25ft floor section",
+      "damage_points": "12d10 fire",
+      "trap_description": "Floor tiles erupt with gouts of molten lava in random patterns. Magma sprays upward in violent jets before raining back down.",
+      "trap_effect": "Each round, 1d4 floor tiles erupt (5ft squares). Creatures in square make Dexterity save (DC 18) or take full damage. Splash damage (half) to adjacent squares. Eruptions last 5 rounds with increasing frequency (2d4, then 3d4, then all tiles).",
+      "damage_method": "Direct magma contact causes catastrophic burns. Splashing lava spreads damage. Eventually entire floor becomes death trap. Metal equipment begins melting.",
+      "countermeasures": "Pattern can be learned with Investigation (DC 16). Fire Immunity makes crossable. Levitation avoids floor. Jumping tile to tile requires Acrobatics (DC 15). Water cools lava but creates steam (obscured vision). Ice provides temporary paths."
+    },
+    {
+      "trap_name": "Flash Freeze Mist",
+      "trap_type": "Magical",
+      "trap_dimensions": "30ft x 30ft room",
+      "damage_points": "6d8 cold + restrained",
+      "trap_description": "A freezing mist fills the room, and moisture on creatures instantly crystallizes into ice. Victims become encased in expanding ice shells.",
+      "trap_effect": "Mist fills room in 1 round. All creatures make Constitution save (DC 16) or take damage and become restrained as ice forms on body and clothing. Each round, another save or ice thickens (additional 2d8 cold, Strength DC to escape increases by 2).",
+      "damage_method": "Progressive freezing restricts movement then immobilizes completely. Ice conducts cold directly to skin. Eventually victims become frozen statues. Hypothermia sets in quickly.",
+      "countermeasures": "Heat sources prevent ice formation. Resist Elements provides immunity. Strength checks to break ice (starting DC 13). Freedom of Movement prevents restraint. Fire damage melts ice. Dispel Magic (DC 16) clears mist."
+    },
+    {
+      "trap_name": "Curse of Clumsiness",
+      "trap_type": "Curse",
+      "trap_dimensions": "Affects creature touching cursed item",
+      "damage_points": "Special (-6 Dexterity)",
+      "trap_description": "A cursed ring, amulet, or weapon that makes the wielder incredibly clumsy. Fine motor control becomes nearly impossible.",
+      "trap_effect": "Touching/wearing cursed item requires Wisdom save (DC 16) or Dexterity reduced by 6 immediately. Victim drops things, stumbles, cannot perform delicate tasks. Combat rolls suffer. Cannot pick locks or perform acrobatics. Lasts until curse removed.",
+      "damage_method": "Severe Dexterity penalty cripples rogues and archers. Cannot dodge effectively. Increased vulnerability to traps requiring Dexterity saves. Social embarrassment from constant fumbling.",
+      "countermeasures": "Identify reveals curse before touching. Remove Curse ends effect. Don't touch suspicious items. Mage Hand for remote manipulation. Someone already cursed wearing it suffers no additional effect but item is stuck."
+    },
+    {
+      "trap_name": "Anti-Magic Shackles",
+      "trap_type": "Mechanical",
+      "trap_dimensions": "Pair of shackles",
+      "damage_points": "None (magic suppression)",
+      "trap_description": "Shackles that appear on victim's wrists when triggered. While worn, they completely suppress all spellcasting and magical abilities.",
+      "trap_effect": "Triggering trap (opening chest, pulling lever) causes shackles to materialize on wrists. Wearer cannot cast spells, use spell-like abilities, or activate magic items. Shackles resist removal (DC 20 Strength check or DC 22 lockpick). Antimagic prevents all magical escape methods.",
+      "damage_method": "No damage but devastating for spellcasters. Completely helpless without magic. Party must protect while finding key or breaking shackles. Some shackles teleport wearer to cell.",
+      "countermeasures": "Investigation (DC 18) detects trap before trigger. Someone non-magical triggering it is less harmful. Key is usually nearby (DC 16 to find). Knock spell fails (antimagic). Brute force or mundane lockpicks only solution. Cutting off hands is desperate option."
+    },
+    {
+      "trap_name": "Boiling Oil Deluge",
+      "trap_type": "Mechanical",
+      "trap_dimensions": "20ft corridor section",
+      "damage_points": "10d6 fire + ongoing",
+      "trap_description": "Reservoir of boiling oil dumps from ceiling, coating victims in scalding liquid that continues burning.",
+      "trap_effect": "All in area make Dexterity save (DC 17) or be coated in oil, taking immediate damage and 3d6 fire damage each round for 3 rounds. Oil makes surfaces slippery (Dexterity DC 12 to move without falling). Flames can ignite oil for additional 4d6.",
+      "damage_method": "Boiling oil adheres to skin and clothing, causing deep burns. Continuing damage as oil seeps into wounds. Slippery surfaces cause falls. If ignited, becomes inferno.",
+      "countermeasures": "Shield raised above blocks oil. Dexterity save allows dodging to wall alcove. Water washes oil off (reduces ongoing damage to 1d6). Sand or dirt smothers flames. Resist Elements provides immunity. Avoid open flames while covered."
+    },
+    {
+      "trap_name": "Frostbite Wind Tunnel",
+      "trap_type": "Environmental",
+      "trap_dimensions": "40ft corridor x 8ft wide",
+      "damage_points": "8d8 cold + exhaustion",
+      "trap_description": "Arctic winds blast through corridor with devastating cold. Exposed skin freezes almost instantly, and breathing the air burns lungs.",
+      "trap_effect": "Wind causes Constitution save (DC 17) each round in corridor or take cold damage. Failed saves cause exhaustion levels (maximum 3). Fingers and toes become frostbitten (disadvantage on tool use and Acrobatics). Wind speed makes movement difficult (half speed).",
+      "damage_method": "Extreme cold causes frostbite, hypothermia, and respiratory damage. Exhaustion accumulates rapidly. Frozen extremities may require amputation if not magically healed. Metal weapons and armor become dangerously cold.",
+      "countermeasures": "Cold Resistance halves damage. Heavy winter clothes provide advantage on saves. Endure Elements provides immunity. Wall of Fire creates warm zone. Moving through quickly limits exposure. Gust of Wind can counter the arctic blast."
+    },
+    {
+      "trap_name": "Boulder Avalanche",
+      "trap_type": "Environmental",
+      "trap_dimensions": "60ft slope, 20ft wide",
+      "damage_points": "8d10 bludgeoning",
+      "trap_description": "Trigger releases dozens of boulders that tumble down a slope, creating an avalanche of stone. The cascade of rocks is nearly impossible to avoid.",
+      "trap_effect": "Boulders cascade at 80ft per round. Creatures in path make Dexterity save (DC 18) or be struck by multiple boulders. Being hit knocks victim prone and carries them downslope for additional 2d6. Buried under boulders at bottom (suffocation threat).",
+      "damage_method": "Multiple impacts from rolling boulders cause massive trauma. Being carried downslope multiplies damage. Burial under pile crushes and suffocates.",
+      "countermeasures": "Running uphill away from boulders (Athletics DC 16). Diving into side alcove provides safety. Passwall creates shelter. Feather Fall allows floating above avalanche. Wall of Stone blocks boulders. After trigger, warning allows party behind to prepare."
+    },
+    {
+      "trap_name": "Temporal Slow Field",
+      "trap_type": "Magical",
+      "trap_dimensions": "25ft radius sphere",
+      "damage_points": "None (slow effect)",
+      "trap_description": "Time moves at half speed within this field. Affected creatures move in slow motion while the world around them proceeds normally.",
+      "trap_effect": "Entering field requires Wisdom save (DC 17) or be affected by Slow spell (speed halved, -2 AC, -2 Dex saves, can't use reactions, only one attack or action per turn). Effect lasts while in field plus 1d4 rounds after leaving.",
+      "damage_method": "No damage but severe tactical disadvantage. Enemies can position freely. Escape becomes difficult. Spellcasting heavily impaired. Party coordination disrupted.",
+      "countermeasures": "Haste counters slow effect. Freedom of Movement provides immunity. Arcana (DC 17) identifies temporal magic. Dispel Magic (DC 18) frees one creature. Avoiding field is best. Time Stop allows operating normally within field."
+    },
+    {
+      "trap_name": "Geyser Eruption Pit",
+      "trap_type": "Environmental",
+      "trap_dimensions": "10ft diameter pit, 30ft deep",
+      "damage_points": "6d6 fire + fall damage",
+      "trap_description": "A pit that periodically erupts with superheated steam and water, launching anyone inside upward with tremendous force.",
+      "trap_effect": "Every 3 rounds, geyser erupts. Creatures in pit are launched 60ft upward, taking 6d6 fire damage from scalding water and then 6d6 falling damage on the way back down. Falling back into pit risks being in next eruption.",
+      "damage_method": "Scalding steam burns exposed skin. Being launched causes disorientation and terror. Fall damage upon return. Cycle continues, potentially launching victims repeatedly.",
+      "countermeasures": "Timing eruptions allows climbing between bursts (Athletics DC 15). Feather Fall eliminates fall damage but not scald. Fly spell allows escape during launch. Cold Resistance helps with heat. Rope from above allows faster extraction."
+    },
+    {
+      "trap_name": "Sandstorm Chamber",
+      "trap_type": "Environmental",
+      "trap_dimensions": "30ft x 30ft room",
+      "damage_points": "4d6 slashing + blinded",
+      "trap_description": "Powerful winds whip sand into a blinding storm. The abrasive particles scour exposed skin and make visibility impossible.",
+      "trap_effect": "All creatures in room take damage each round and are blinded. Breathing requires covering mouth (action) or Constitution save (DC 15) or be choking (incapacitated). Navigation impossible without magic. Storm lasts 1 minute.",
+      "damage_method": "Abrasive sand acts like thousands of tiny blades. Eyes are damaged (even after storm, vision blurred for 1 hour). Choking from inhaled sand. Complete disorientation.",
+      "countermeasures": "Goggles and face covering reduce damage by half and prevent choking. Gust of Wind clears area temporarily. Control Weather ends storm. Stone Shape creates wind break. Blindsight allows navigation. Rope prevents party separation."
+    },
+    {
+      "trap_name": "Lightning Arc Floor Grid",
+      "trap_type": "Magical",
+      "trap_dimensions": "20ft x 20ft metal floor grid",
+      "damage_points": "8d8 lightning",
+      "trap_description": "Metal floor grid periodically crackles with powerful electrical discharges. Lightning arcs between grid lines in seemingly random but deadly patterns.",
+      "trap_effect": "Every round, lightning arcs across 2d4 grid squares (5ft each). Creatures in those squares make Dexterity save (DC 17) or take full lightning damage and be stunned until end of next turn. Pattern appears random but follows programmed sequence.",
+      "damage_method": "High voltage electricity causes cardiac arrest, seizures, and severe burns. Stunning effect leaves victims vulnerable. Metal armor makes save at disadvantage and increases damage by 2d8.",
+      "countermeasures": "Investigation (DC 16) reveals pattern. Insulated boots grant advantage. Grounding rod absorbs lightning safely. Levitation avoids floor entirely. Lightning Resistance halves damage. Dispel Magic (DC 17) deactivates grid for 1 minute."
+    },
+    {
+      "trap_name": "Curse of Befuddlement",
+      "trap_type": "Curse",
+      "trap_dimensions": "Affects creature reading cursed text",
+      "damage_points": "Special (-4 Intelligence and Wisdom)",
+      "trap_description": "Cursed writings that scramble the reader's mind. Thoughts become muddled, memories uncertain, and reasoning difficult.",
+      "trap_effect": "Reading text requires Intelligence save (DC 16) or suffer -4 to Intelligence and Wisdom for 24 hours. Spellcasting becomes difficult (DC increased by 2). Cannot concentrate effectively. Navigation and tactics impaired. May forget party members temporarily.",
+      "damage_method": "Cognitive impairment cripples spellcasters and strategists. Reduced wisdom makes victim vulnerable to persuasion and deception. Cannot use knowledge skills effectively. May make poor decisions.",
+      "countermeasures": "Detect Magic reveals enchantment curse before reading. Someone illiterate can't trigger it. Remove Curse ends effect. Greater Restoration reverses ability penalties. Mind Blank provides immunity. Don't read mysterious texts without checking first."
+    },
+    {
+      "trap_name": "Null Magic Zone",
+      "trap_type": "Magical",
+      "trap_dimensions": "40ft x 40ft room",
+      "damage_points": "Spell failure and item suppression",
+      "trap_description": "An enhanced anti-magic field that not only suppresses magic but actively drains it. Even innate magical abilities are stripped away, leaving casters powerless.",
+      "trap_effect": "All magic ceases immediately upon entering. Additionally, each round spellcasters must make Intelligence save (DC 15) or lose one random spell slot as zone drains their reserves. Magic items permanently lose 1 charge per minute in zone. Supernatural abilities fail.",
+      "damage_method": "Beyond suppression, actively drains magical resources. Spellcasters can be left with no slots. Charged items can be completely drained. Leaves magic users utterly helpless.",
+      "countermeasures": "Cannot be dispelled from inside. Source rune must be destroyed from outside zone. Non-magical party members should enter first. Retrieve casters quickly before drained. Find alternate route. Physical barrier around zone prevents entry."
+    },
+    {
+      "trap_name": "Volcanic Vent Room",
+      "trap_type": "Environmental",
+      "trap_dimensions": "25ft x 25ft room with central vent",
+      "damage_points": "10d10 fire",
+      "trap_description": "A vent in the floor that releases waves of superheated volcanic gas and ash. The room becomes an oven of toxic fumes and scorching heat.",
+      "trap_effect": "Vent erupts every other round. All in room make Constitution save (DC 18) or take full damage and be poisoned (choking on fumes). Even on save, take half damage. Room temperature rises 50°F per eruption. After 4 eruptions, ambient heat alone deals 4d6 per round.",
+      "damage_method": "Combination of extreme heat, toxic fumes, and choking ash. Progressive heat makes room uninhabitable. Poisoned condition persists for 1 hour. Inhalation can scar lungs permanently.",
+      "countermeasures": "Fire Resistance essential. Wet cloth over face helps with fumes. Create Water temporarily cools air. Cork or stone plug can seal vent (requires 3 rounds to emplace). Air Bubble spell provides breathable air. Door usually jams, requiring Strength (DC 18) to force."
+    },
+    {
+      "trap_name": "Whirlpool Trap",
+      "trap_type": "Environmental",
+      "trap_dimensions": "20ft diameter circular pool, 40ft deep",
+      "damage_points": "Drowning + 4d6 bludgeoning",
+      "trap_description": "A circular pool with powerful whirlpool that pulls victims down to the bottom, battering them against stone sides while drowning them.",
+      "trap_effect": "Falling in requires Strength save (DC 18) each round to avoid being pulled under. Once submerged, whirlpool batters victim against sides (4d6) while preventing surfacing. Must hold breath or drown. Escape requires three consecutive successful Strength saves (DC 17).",
+      "damage_method": "Spinning current disorients and batters. Impossible to swim against. Drowning threat constant. Even strong swimmers struggle. Panic sets in quickly.",
+      "countermeasures": "Rope allows pulling victim out (requires Strength DC 14). Control Water calms whirlpool. Water Breathing prevents drowning but not battering. Gaseous Form escapes easily. Dimension Door. Freedom of Movement allows swimming against current."
+    },
+    {
+      "trap_name": "Petrification Dust Cloud",
+      "trap_type": "Magical",
+      "trap_dimensions": "20ft radius cloud",
+      "damage_points": "Petrification",
+      "trap_description": "Enchanted dust fills the air. Inhaling it causes rapid petrification from the inside out, turning lungs to stone first.",
+      "trap_effect": "All in cloud must hold breath or make Constitution save (DC 17). Failure begins petrification: Round 1 - chest tightness, can't breathe; Round 2 - torso turns to stone, paralyzed; Round 3 - complete petrification. Holding breath only delays, must eventually breathe.",
+      "damage_method": "Internal petrification is agonizing and terrifying. Watching self turn to stone from inside out. Quick death as stone lungs can't expand. Permanent without Greater Restoration.",
+      "countermeasures": "Hold breath and run through (Constitution DC 12 per round). Air Bubble spell provides clean air. Gust of Wind disperses dust. Greater Restoration reverses any stage. Protection from Poison provides immunity. Wet cloth over face grants advantage on save."
+    },
+    {
+      "trap_name": "Blizzard Corridor",
+      "trap_type": "Environmental",
+      "trap_dimensions": "50ft corridor x 10ft wide",
+      "damage_points": "6d6 cold + exhaustion + blinded",
+      "trap_description": "A howling blizzard fills the corridor with driving snow and bitter cold. Visibility drops to near zero and the cold is life-threatening.",
+      "trap_effect": "Crossing corridor requires Constitution save (DC 16) each round or take cold damage and gain one exhaustion level (max 2). Blinded by snow (can't see beyond 5ft). Wind (40mph) makes movement difficult (half speed, Strength DC 13 or be pushed back).",
+      "damage_method": "Combination of cold damage, exhaustion, and disorientation can be fatal. Getting lost in corridor despite short length. Wind chill makes cold deadly. Snow accumulation can bury fallen victims.",
+      "countermeasures": "Rope between party members prevents separation. Cold Resistance halves damage. Endure Elements provides immunity. Control Weather ends blizzard. Following wall ensures forward progress. Goggles reduce blindness. Warm clothes grant advantage on saves."
+    },
+    {
+      "trap_name": "Temporal Acceleration Trap",
+      "trap_type": "Magical",
+      "trap_dimensions": "15ft radius circle",
+      "damage_points": "Aging damage",
+      "trap_description": "Time accelerates drastically within this circle. Victims age years in seconds as time flows at 100x normal speed for them alone.",
+      "trap_effect": "Entering circle causes Charisma save (DC 18) or begin aging rapidly. Each round, victim ages 1d10 years. At elderly age (race-dependent), Constitution save (DC 15) each round or die of old age. Hair grays, skin wrinkles, strength fades (lose 1 Strength per decade).",
+      "damage_method": "Rapid aging causes physical deterioration. Joints stiffen, vision blurs, breathing labors. Eventually die of natural old age in combat time. Permanent aging even if rescued.",
+      "countermeasures": "Haste provides advantage on save. Time Stop counters acceleration. Dispel Magic (DC 19) frees victim. Greater Restoration can reverse aging but expensive. Jumping over circle avoids trigger. Antimagic Field prevents effect."
+    },
+    {
+      "trap_name": "Mudslide Slope",
+      "trap_type": "Environmental",
+      "trap_dimensions": "40ft slope x 20ft wide",
+      "damage_points": "5d6 bludgeoning + burial",
+      "trap_description": "Slope suddenly liquefies into rushing mud that carries victims downward. At bottom, mud hardens, potentially burying victims alive.",
+      "trap_effect": "Slope becomes mudslide. All on slope make Dexterity save (DC 16) or be carried down (5d6 damage from impacts). At bottom, mud begins hardening. Each round, Strength save (DC 14, +2 per round) to escape or become buried. Buried victims suffocate.",
+      "damage_method": "Battering during slide causes injuries. Burial in hardening mud crushes and suffocates. Digging out requires significant time. Multiple victims can be trapped.",
+      "countermeasures": "Athletics (DC 17) to climb up mudslide. Rope allows pulling victims up. Passwall creates safe tunnel. Levitation avoids mud entirely. Stone Shape can halt hardening. Water softens mud for easier extraction."
+    },
+    {
+      "trap_name": "Static Shock Field",
+      "trap_type": "Magical",
+      "trap_dimensions": "30ft x 30ft room",
+      "damage_points": "4d8 lightning per action",
+      "trap_description": "Room is charged with static electricity. Any movement or action generates painful electrical discharge. The more you do, the more you're shocked.",
+      "trap_effect": "Each action taken triggers shock (4d8 lightning damage, Dexterity save DC 15 for half). Moving triggers shock per 10ft moved. Attacking triggers shock. Casting spell triggers shock. Standing still is safe but useless. Multiple party members multiply shocks.",
+      "damage_method": "Electrical shocks with each action create terrible dilemma - stand still or suffer. Combat becomes nearly impossible. Crossing room becomes gauntlet of pain.",
+      "countermeasures": "Lightning Resistance makes manageable. Insulated suits provide immunity (if available). Feather Fall allows gliding (movement doesn't count). Teleportation avoids walking. Grounding rods absorb charges. Dispel Magic (DC 16) neutralizes field."
+    },
+    {
+      "trap_name": "Curse of Frailty",
+      "trap_type": "Curse",
+      "trap_dimensions": "Affects creature touching cursed armor",
+      "damage_points": "Special (-6 Constitution)",
+      "trap_description": "Cursed armor that makes the wearer incredibly fragile. Their body becomes weak and vulnerable, unable to sustain normal levels of damage.",
+      "trap_effect": "Wearing cursed armor reduces Constitution by 6 (and thus HP maximum). Victim becomes sickly and weak. Exhausts easily. More vulnerable to disease and poison. Cannot be removed without Remove Curse. Lasts until curse broken.",
+      "damage_method": "Reduced Constitution severely lowers HP, making victim fragile. Failed death saves more likely. Vulnerability to ongoing damage effects. Party member becomes liability.",
+      "countermeasures": "Identify reveals curse before wearing. Remove Curse frees wearer. Greater Restoration restores lost Constitution. Someone checking armor first saves others. Mage Hand can manipulate from distance. Once cursed, resist all attempts to remove normally."
+    },
+    {
+      "trap_name": "Spell-Eating Runes",
+      "trap_type": "Magical",
+      "trap_dimensions": "Covering walls and ceiling of 20ft room",
+      "damage_points": "Spell reflection + absorption",
+      "trap_description": "Walls covered in runes that absorb and reflect magical energy. Spells cast in room not only fail but harm the caster.",
+      "trap_effect": "Any spell cast in room is absorbed by runes, fails to work, and deals damage back to caster equal to spell level x 2d6 (e.g., 3rd level = 6d6 force damage). Runes glow brighter with each absorbed spell. After absorbing 20 spell levels, room explodes (10d6 force, 40ft radius).",
+      "damage_method": "Spellcasters hurt themselves attempting magic. Accumulated energy threatens entire party. Non-casters unaffected except by potential explosion. Clever enemies might force party into room then bombard with spells from outside.",
+      "countermeasures": "Don't cast spells in room. Arcana (DC 17) identifies spell-eating runes. Dispel Magic from outside can suppress runes. Destroying specific rune breaks circle but triggers partial explosion (5d6). Antimagic Field protects but prevents all magic. Use mundane solutions only."
+    },
+    {
+      "trap_name": "Firestorm Cyclone",
+      "trap_type": "Magical",
+      "trap_dimensions": "25ft diameter fire tornado",
+      "damage_points": "10d6 fire + 6d6 bludgeoning",
+      "trap_description": "A tornado made entirely of fire appears in the center of the room, spinning with incredible violence. It pulls victims into its burning vortex.",
+      "trap_effect": "All within 30ft must make Strength save (DC 18) or be pulled into fire tornado, taking fire and bludgeoning damage. Those pulled in are spun violently (Constitution save DC 15 or stunned). Tornado persists for 1 minute, damage each round caught inside.",
+      "damage_method": "Combination of burning and violent spinning. Disorientation from vortex. Continuous damage while trapped. Eventually flung out with great force (3d6 additional damage from impact).",
+      "countermeasures": "Fire Resistance essential for survival. Anchoring to walls prevents pull. Dispel Magic (DC 18) ends tornado. Control Weather can counter. Gaseous Form allows escaping vortex. Water spells reduce fire damage but not bludgeoning. Heavy armor grants advantage on Strength saves."
+    },
+    {
+      "trap_name": "Quickice Floor",
+      "trap_type": "Environmental",
+      "trap_dimensions": "30ft x 30ft super-slick ice",
+      "damage_points": "2d6 per fall + cold damage",
+      "trap_description": "Floor covered in magically smooth ice so slippery that standing is nearly impossible. The ice is also supernaturally cold, causing frostbite on contact.",
+      "trap_effect": "Moving requires Acrobatics check (DC 17) or fall prone (2d6 damage). While prone, contact with ice deals 2d6 cold damage per round. Standing up requires DC 15 check. Running increases DC to 20. Combat on ice is nearly impossible (disadvantage on attacks, enemy advantage against you).",
+      "damage_method": "Repeated falls cause bruising and injury. Ice contact causes frostbite. Complete loss of mobility advantage. Enemies can attack prone victims freely.",
+      "countermeasures": "Spiked boots or crampons negate slipping. Heat Metal or Fire spells melt ice temporarily. Sand or salt increases traction. Crawling is slower but safer (DC 12). Levitation or flying avoids ice. Grease spell ironically helps by allowing controlled sliding."
+    },
+    {
+      "trap_name": "Sand Pit Trap",
+      "trap_type": "Pit",
+      "trap_dimensions": "20ft x 20ft x 30ft deep sand pit",
+      "damage_points": "Suffocation + crushing",
+      "trap_description": "A pit filled with loose sand that acts like quicksand. Victims sink rapidly and the weight of sand above crushes and suffocates them.",
+      "trap_effect": "Falling into pit means sinking in sand. Each round sink 5ft deeper (3 rounds to complete burial). Struggling accelerates sinking. At buried depth, suffocation begins and sand weight deals 4d6 crushing damage per round. Escaping requires Strength DC 19 with assistance from above.",
+      "damage_method": "Progressive burial creates panic. Eventually weight of sand above crushes chest, preventing breathing even before complete burial. Sand fills nose and mouth. Death from suffocation or crushing.",
+      "countermeasures": "Lying flat slows sinking. Rope from above essential for rescue. Athletics (DC 18) can swim in sand if not panicking. Stone Shape creates solid platform. Passwall tunnels through sand. Dimension Door escapes entirely. Testing floor ahead reveals soft sand."
+    },
+    {
+      "trap_name": "Lightning Storm Chamber",
+      "trap_type": "Magical",
+      "trap_dimensions": "40ft x 40ft x 30ft high room",
+      "damage_points": "8d6 lightning per bolt",
+      "trap_description": "Artificial storm clouds form at ceiling, raining down multiple lightning bolts. The strikes are relentless and nearly impossible to avoid in enclosed space.",
+      "trap_effect": "Each round, 1d4+2 lightning bolts strike random locations in room. Creatures in 5ft radius of strike make Dexterity save (DC 17) or take full damage and be stunned until end of next turn. Storm intensifies each round (+1 bolt per round). Lasts 1 minute.",
+      "damage_method": "Multiple lightning strikes cause severe electrical burns. Stunning prevents escape. Metal armor attracts strikes (disadvantage on save, +2d6 damage). Accumulating ozone makes breathing difficult.",
+      "countermeasures": "Lightning Resistance essential. Avoiding metal helps. Faraday cage (metal enclosure) paradoxically protects. Feather Fall allows floating safely. Control Weather ends storm. Insulated suit provides immunity. Getting against wall reduces target area."
+    },
+    {
+      "trap_name": "Temporal Loop Trap",
+      "trap_type": "Magical",
+      "trap_dimensions": "20ft x 20ft room",
+      "damage_points": "None (time loop)",
+      "trap_description": "Time loops in this room, causing victims to relive the same 6 seconds endlessly. They remember previous loops, creating psychological torment.",
+      "trap_effect": "Entering room requires Wisdom save (DC 18) or become trapped in 6-second time loop. Victim experiences loop 10-100 times (DM rolls) before automatic release. They remember each iteration but cannot change actions. Exit appears at random iteration.",
+      "damage_method": "No physical damage but severe psychological trauma. Victim experiences hours or days in seconds. Can cause madness. Allies see victim frozen for 1 round then suddenly aged/traumatized. May gain indefinite madness.",
+      "countermeasures": "Time Stop allows operating outside loop. Haste provides advantage on save. Dispel Magic (DC 20) breaks loop from outside. Greater Restoration can heal psychological damage afterward. Avoiding room entirely is best. Arcana (DC 18) detects temporal anomaly."
+    },
+    {
+      "trap_name": "Magma Bomb Statues",
+      "trap_type": "Mechanical",
+      "trap_dimensions": "Four 6ft tall statues",
+      "damage_points": "12d6 fire each",
+      "trap_description": "Statues that appear to be decorative but are actually hollow shells filled with magma. When triggered, they explode violently, spraying molten rock in all directions.",
+      "trap_effect": "Trigger causes all four statues to explode simultaneously (4 separate 20ft radius bursts). Creatures in any burst area make Dexterity save (DC 18) or take full damage. Overlapping bursts are cumulative. Molten rock spatters continue burning (2d6 per round for 3 rounds).",
+      "damage_method": "Massive fire damage from multiple explosions. Being in center of room exposes to all four. Continuing burn damage from magma spatters. Equipment melts. Room becomes hazardous inferno.",
+      "countermeasures": "Investigation (DC 16) notices statues are hollow and warm. Not triggering trap prevents explosion. Fire Resistance/Immunity essential if triggered. Taking cover behind solid object provides partial protection. Trigger from distance is safe. Freezing statues first may crack them safely."
+    },
+    {
+      "trap_name": "Vacuum Chamber",
+      "trap_type": "Environmental",
+      "trap_dimensions": "25ft x 25ft sealed room",
+      "damage_points": "Suffocation (accelerated)",
+      "trap_description": "Magical vents suck all air from the room, creating perfect vacuum. Victims suffocate rapidly while pressure differential causes additional trauma.",
+      "trap_effect": "Air evacuates in 2 rounds. Round 1: breathing becomes difficult (Constitution save DC 14 or stunned). Round 2: complete vacuum (automatic suffocation begins). Vacuum causes eyes to bulge, eardrums to rupture (2d6 damage), blood vessels to burst. Death in 1d4 rounds without air.",
+      "damage_method": "Rapid suffocation combined with decompression damage. Internal pressure causes blood vessels to rupture. Eardrums burst. Eyes damaged. Painful and terrifying death.",
+      "countermeasures": "Water Breathing doesn't help (no air to breathe). Air Bubble spell provides oxygen. Holding breath only delays inevitable. Door must be forced open (Strength DC 22 against pressure). Destroy vents. Create Air spell refills room. Dimension Door escapes."
+    },
+    {
+      "trap_name": "Prismatic Spray Statue",
+      "trap_type": "Magical",
+      "trap_dimensions": "8ft tall crystal statue",
+      "damage_points": "Varies (8 different effects)",
+      "trap_description": "A crystalline statue that fires rainbow-colored beams when triggered. Each color has different deadly effect, making this wildly unpredictable.",
+      "trap_effect": "Statue fires 8 beams in random directions (1d8 for each creature in room determines which beam hits them). Red=fire (10d6), Orange=acid (10d6), Yellow=lightning (10d6), Green=poison (DC 16 or poisoned), Blue=petrified (DC 16), Indigo=insane (DC 16), Violet=teleport to another plane, Special 8=struck by two beams.",
+      "damage_method": "Random effects make this unpredictable and terrifying. Different party members suffer different fates. Some effects permanently debilitating. Can split party across planes.",
+      "countermeasures": "Destroy statue before trigger (AC 15, 80 HP, but triggers upon destruction). Prismatic Sphere or Wall provides defense. Specific resistances help with damage beams but not special effects. Spell Immunity protects from specific color. Luck feat helps with random roll. Mirror deflects beam back at statue."
+    },
+    {
+      "trap_name": "Permafrost Room",
+      "trap_type": "Environmental",
+      "trap_dimensions": "30ft x 30ft room",
+      "damage_points": "8d8 cold + permanent freezing",
+      "trap_description": "Room temperature drops to absolute zero levels. Everything freezes solid instantly - flesh, metal, stone, air itself crystallizes.",
+      "trap_effect": "All creatures make Constitution save (DC 19) or take damage and begin freezing solid. Each failed save, victim loses 10ft movement as limbs freeze (eventually speed 0 = frozen statue). Even on save, take half damage and slowed. Room remains frozen permanently.",
+      "damage_method": "Extreme cold beyond normal ice. Cellular structure crystallizes. Frozen victims are statues that shatter if struck. Permanent death without powerful restoration magic. Equipment becomes brittle and shatters.",
+      "countermeasures": "Cold Immunity only way to survive extended exposure. Fire spells create temporary warm zones. Resist Elements helps but not enough. Greater Restoration can thaw frozen victims (if statue intact). Dispel Magic (DC 19) might warm room slightly. Door freezes shut immediately."
+    }
+  ]
+}
