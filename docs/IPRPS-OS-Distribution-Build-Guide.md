@@ -22681,6 +22681,8 @@ update-desktop-database /usr/share/applications
 | **Soundboard** | One-click sound effects and ambience: built-in sounds made by the computer, your own files, boards and hotkeys; plays files on the Table too | Exists (`soundboard/`, 12.11) | ✔ | ✔ | ✔ |
 | **IPRPS Updates** | Security fixes, new app versions and optional software, installed without reinstalling (pacman); Hub tile, notifications | Exists (`iprps-base`, 12.12) | ✔ | ✔ | ✔ |
 | **IPRPS File Viewer** | Open and check `.iprps`, `.ipai`, `.srpatch` and `.capstone`/`.pcapstone` files; import sheets | Exists (`file-viewer/`, 12.10) | ✔ | ✔ | ✔ |
+| **IPRPS Master Database** | One catalog: bestiary, tavern ledger, species, weapons, armory, grimoire, flora and fauna, gear, covenants, traps; reports and `.iprps` exports | Exists (`master_db/`, 12.10) | ✔ | ✔ | ✔ |
+| **Character Prompt Builder** | Random character reference-sheet prompts for image generators | Exists (`character-prompt-builder/`, 12.10) | ✔ | ✔ | ✔ |
 | **Lookbook Studio** | Visual lookbooks for campaigns and settings | Exists | — | — | ✔ |
 | **Reel** | Browser-based audio workstation | Exists | — | — | ✔ |
 | **THE DIRECTOR** | Story maps into AI video Scene Packages | Exists | — | — | ✔ |
@@ -22863,6 +22865,8 @@ The Hub (`/srv/www/iprps/hub/`, opened by the **Session Master Hub** launcher an
 | `lighting-generator` | Lighting Generator |
 | `iprps_email` | IPRPS Email |
 | `file-viewer` | IPRPS File Viewer (12.10) |
+| `master_db` | Master Database (12.10) |
+| `character-prompt-builder` | Character Prompt Builder (12.10) |
 
 The Hub lists any folder in `/srv/www/iprps` with an `index.php` or `index.html` (except `auth`, `hub` and helper folders such as `sql`). Display names come from `hub/app-names.json`, then the app's page title, then the folder name; icons from the app's own `favicon`/`icon`/`logo` file, then the IPRPS icon theme (an icon named after the folder), then the app's initials. A default app that isn't installed is named under **Manage apps**, so a missing or misnamed folder is easy to spot.
 
@@ -23356,6 +23360,39 @@ It prints **2**. This installs the current script from the repository (writing i
 | A tool says *Choose or start a session first* | Choose the campaign at the top, then **+ Session** (or pick an existing session) |
 | *That stored key can't be read (the vault key changed)* | The vault key was deleted (for example by the release cleanup on a test image). Delete the key in Welcome and store it again |
 | Colors don't change in the Hub, Writer, Oracle or Character Sheets | The color scheme applies to the session tools and Welcome; the other apps keep their own look for now |
+
+**Master Database and Character Prompt Builder.** Two apps from infiniteplane.space, adapted for IPRPS OS and delivered by IPRPS Updates (12.12) to every edition. Both use the Universal Login.
+
+| App | Folder | Package | What it does |
+|---|---|---|---|
+| **IPRPS Master Database** | `master_db` | `iprps-master-db` | One searchable catalog for the bestiary, tavern ledger, humanoid species, physical weapons, weapon armory, grimoire, flora and fauna, gear, covenants and dungeon traps; images, printable reports, `.iprps` exports and imports |
+| **Character Prompt Builder** | `character-prompt-builder` | `iprps-character-prompt-builder` | Builds random character reference-sheet prompts (gender, height, build, skin tone, age, hair, eyes and more, from lists you can edit) to paste into an image generator. Works offline; your lists are remembered in the browser |
+
+How the Master Database differs from the site version:
+
+- **Database:** this computer's MariaDB. The first time the app opens, it creates the database `iprps_master` with its tables and catalog templates (`schema.sql`), and updates the tables when a new version changes `schema.sql`. The `iprps` database user can do this because it has rights on `iprps_%` databases (12.5).
+- **Password:** none in the app. It reads `/etc/iprps/db.php`, which first boot writes (13.1).
+- **Admins:** every account on the computer can add and edit entries. To limit editing, create `/etc/iprps/master-db-admins.php` (owner `root`, group `apache`, mode `640`) with `<?php return ['you@example.com'];`. Listed accounts edit; everyone else reads.
+- **Starter data:** the catalog starts empty. An admin opens **⭳ Import** and chooses **Import ALL starter datasets** (about 2,500 entries from `seed_data/`). Duplicates are skipped, so importing again is safe.
+- **Images** that admins upload are saved in `master_db/images/`, owned by `apache` (the package's install script sets this). Updates keep them.
+- The site's **migration script** (`migrate.php`) is not included: it held the site's database passwords and is only for moving the old hosted tools.
+
+> **Side note:** The Character Prompt Builder lives in its own folder, not `storyboard/` as on the site, because `storyboard` is a separate exported app (12.5) and two packages can't own the same files.
+
+**Test it. [TEST VM]**
+
+1. **IPRPS Updates** (or `sudo pacman -Syu`) installs `iprps-master-db` and `iprps-character-prompt-builder`.
+2. Open **Master Database** from the Hub or the IPRPS menu. Sign in if asked. The sidebar shows the ten catalogs with 0 entries.
+3. **⭳ Import → Import ALL starter datasets.** The counts fill in (about 2,500 entries).
+4. **＋ New entry** in the Bestiary with an image, save it, then **⭳ Export data (.iprps)**.
+5. Open **Character Prompt Builder**, press **Randomize Traits** and **Copy** the prompt.
+
+| Problem | Fix |
+|---|---|
+| *The IPRPS database is not reachable. Is MariaDB running?* | `sudo systemctl start mariadb`; check that `/etc/iprps/db.php` exists (13.1) |
+| *Access denied … to database 'iprps_master'* | The `iprps` user is missing its rights on the `iprps_*` databases. Run the `GRANT` line from `iprps-db-init` (13.1) as root in `sudo mariadb`, then reload the app |
+| Saving an entry with an image fails | `sudo chown -R apache:apache /srv/www/iprps/master_db/images` |
+| **⭳ Import** and **＋ New entry** are missing | Your email isn't in `/etc/iprps/master-db-admins.php`. Add it, or delete the file so every account is an admin |
 
 ### 12.11 Soundboard
 
@@ -24419,8 +24456,12 @@ if ! grep -q '^\[iprps-core\]' "$MNT/etc/pacman.conf" 2>/dev/null; then
     mv -f "$MNT/etc/pacman.conf.pacnew" "$MNT/etc/pacman.conf"
     echo "Fixed in the copy: /etc/pacman.conf now has the IPRPS repositories (from pacman.conf.pacnew)."
     echo "Fix the build image too (12.12 step 7's .pacnew line), or the next release repeats this."
+  elif grep -q '^\[iprps-core\]' "$MNT/build/src/iprps-os/packages/iprps-base/pacman.conf" 2>/dev/null; then
+    install -m644 "$MNT/build/src/iprps-os/packages/iprps-base/pacman.conf" "$MNT/etc/pacman.conf"
+    echo "Fixed in the copy: /etc/pacman.conf restored from the iprps-base package source (packages/iprps-base/pacman.conf)."
+    echo "Fix the build image too (Appendix B), or the next release repeats this."
   else
-    die "the image's /etc/pacman.conf has no IPRPS repositories, so IPRPS Updates can't work: in the build image run 12.12 step 7's .pacnew line, or reinstall iprps-base"
+    die "the image's /etc/pacman.conf has no IPRPS repositories, so IPRPS Updates can't work: restore it in the build image (Appendix B, \"no usable package repositories\")"
   fi
 fi
 grep -q '^Server *= *https://' "$MNT/etc/pacman.d/iprps-mirrorlist" 2>/dev/null \
@@ -29902,7 +29943,7 @@ Then re-enter the IPRPS CHROOT and BUILDER windows (0.5). Details and restoring:
 - **Updates are your job as the distributor,** and since 12.12 they reach installed computers as **packages**: users click **Install updates** in IPRPS Updates (or run `sudo iprps-update upgrade`). New images (1.0.1, 1.1, …) are still worth publishing for new installs, but nobody has to reinstall to stay current.
 - **Watch** https://www.linuxfromscratch.org/blfs/advisories/ (and LFS's) for security fixes in packages IPRPS OS ships.
 
-Every update follows the same path:
+Every update follows the same path (the **IPRPS Release Desk**, 17.7, walks you through it):
 
 | Step | Where | Command |
 |---|---|---|
@@ -29925,6 +29966,8 @@ Installed computers notice within 6 hours (or at once with **Check now**). **Tes
 ```bash
 /root/iprps-repo.sh add iprps-apps /mnt/iprps/build/repo/iprps-*-2026.11.15-1-any.pkg.tar.zst
 ```
+
+The **IPRPS Release Desk** (17.7) does steps 1–2 for you and walks you through the rest.
 
 A **new app** for an edition: add a `package_iprps-<app>()` function and its name to `pkgname=()` in `iprps-apps/PKGBUILD`, a menu entry in `iprps-apps/desktop/`, and the name to the edition lists (`_apps_lite`, …) in `iprps-base/PKGBUILD`. Then publish a new `iprps-base` (17.3) too: the edition packages then depend on it, so every computer of that edition installs it with the next update.
 
@@ -29969,6 +30012,63 @@ Good candidates for extras: binary apps that carry their own libraries (Calibre,
 - **The signing key** expires after 5 years. Before then, extend it (`gpg --quick-set-expire <fingerprint> 5y`), run `/root/iprps-repo.sh key` to export the public key again, and publish a new `iprps-keyring` (raise its `pkgver`).
 - **If the private key leaks:** create a new key, put the old fingerprint in `packages/iprps-keyring/iprps-revoked` and the new key in `iprps.gpg`/`iprps-trusted`, sign the new `iprps-keyring` with the **old** key one last time (so computers accept it), then re-sign everything with the new key and announce it.
 - **A 2.x series** with breaking changes gets its own folder (`…/repo/2/`) and a new `iprps-mirrorlist`, so 1.x computers are never moved to it by accident.
+
+### 17.6 Retiring an app
+
+To stop shipping an app and take it off the computers that have it:
+
+1. In `packages/iprps-apps/PKGBUILD`: remove its name from `pkgname=()` and delete its `package_iprps-<app>()` function, its menu entry in `desktop/` and its `.install` script, if it has one. Remove it from `apps/hub/app-names.json` and `default-apps.json`. Raise `pkgver` (17.1).
+2. In `packages/iprps-base/PKGBUILD`: remove it from the edition lists (`_apps_lite`, …) and raise `pkgrel`. Add its package name to **`packages/iprps-base/retired-apps`** (one per line).
+3. Build `iprps-apps` and `iprps-base` (steps 2–3 of the table above). Then **[IPRPS CHROOT]** `pacman -Rns iprps-<app>` in the build image.
+4. **[DEBIAN ROOT]** add `iprps-base` and the three edition packages to `iprps-core` and the Hub (`iprps-hub`) to `iprps-apps`, then take the app out: `/root/iprps-repo.sh remove iprps-apps iprps-<app>`. Check, test, publish.
+
+After its next update, **IPRPS Updates removes the retired apps** listed in `/usr/lib/iprps/retired-apps` (`iprps-update upgrade` runs `pacman -Rs` on the ones installed, unless something else needs one), and no longer offers them as optional software. Files that people saved with the app outside its package stay: uploads, its database, their settings.
+
+### 17.7 The IPRPS Release Desk: every update, step by step
+
+The **IPRPS Release Desk** (`tools/release-desk/` in the repository) walks you through this whole part as a browser page or a terminal menu. It covers:
+
+- update an app
+- add a new app
+- retire an app
+- update IPRPS OS files or a recipe
+- apply a security update
+- make a point release
+- publish the repository
+- prepare GitHub
+
+Each step is labeled with its window (**DEBIAN ROOT**, **BUILDER**, **IPRPS CHROOT**, **TEST VM**, **WINDOWS**), and shows its command with a **Copy** button. The Desk runs the steps it can and records which steps are done. It makes the recipe changes of 17.1 and 17.6 itself, with a backup first:
+
+- raising versions (a second update on the same day raises `pkgrel`)
+- new packages, menu entries, Hub names, edition lists and `retired-apps`
+
+Before an app is built and before anything goes to GitHub, it checks the files for passwords, API keys, hosting server names and private keys. A step that finds one stops until it's removed.
+
+**Install it, once. [DEBIAN ROOT]**
+
+```bash
+apt install nodejs unzip git rsync
+bash /mnt/g/IPRPS/iprps-os/tools/release-desk/iprps-desk install
+```
+
+**Start it.**
+
+- **Windows:** copy `G:\IPRPS\iprps-os\tools\release-desk\IPRPS Release Desk.cmd` to the desktop and double-click it. It starts the Desk in Debian and opens `http://127.0.0.1:7791/#k=…` in the browser. Keep its window open while you use the Desk.
+- **Terminal:** `iprps-desk menu` in DEBIAN ROOT, or `bash /build/src/iprps-os/tools/release-desk/iprps-desk menu` in the BUILDER or IPRPS CHROOT window.
+
+Open the build image first (`bash /root/iprps-enter.sh`): from DEBIAN ROOT the Desk runs the BUILDER and IPRPS CHROOT steps inside it. Tasks are saved in `/build/.iprps-desk`, which all three windows see.
+
+**Folders** (its third tab) sets where your repository, the incoming folder for new app versions, the upload folders and the build image are. Windows paths work. The defaults are the ones in this guide.
+
+| Problem | Fix |
+|---|---|
+| *The Release Desk needs Node.js 18 or newer* | `apt install nodejs` in Debian |
+| *Port 7791 is in use* | The Desk is already running: use its window's link. Or `IPRPS_DESK_PORT=7792 iprps-desk` |
+| The page says *Open the Desk with its link* | Open the link that starts with `http://127.0.0.1:7791/#k=`, shown in the Desk's window; it changes each time the Desk starts |
+| *The build image is not open* | `bash /root/iprps-enter.sh` in the IPRPS CHROOT window |
+| The signing step fails with a GnuPG *pinentry* or *passphrase* error | GnuPG needs a terminal for the passphrase: run that step from `iprps-desk menu` in DEBIAN ROOT, or copy its command there, then **Mark done** |
+| *git push*: *could not read Username* / authentication failed | The Desk runs Git as the folder's owner (`chiita`): set up Git's login for that user once (GITHUB-SETUP.md), or run the step from a terminal |
+| A password check stops on an example value | **Mark as safe** (recorded in `.iprps-desk-allow`) |
 
 ---
 
@@ -30067,7 +30167,7 @@ Done in 1.0: **13.9** makes a live ISO for each edition (DVD or USB, UEFI and BI
 | The Oracle has no **Character sheets** buttons | Character Sheets isn't installed, or the Oracle files are older than 12.9 | 12.9 step 1 (the Oracle line), then reload the Oracle |
 | The Oracle: *the answer was not a usable sheet* | The model's answer didn't fit the sheet layout | Try again; a shorter description helps. Check `ollama --version` is 0.5 or newer (structured outputs) |
 | Session Master Mode: closing the browser leaves a white full-screen page | The full-screen player display stayed open on a single screen (and in Lite no display page exists yet) | 12.2 `iprps-session` update (full screen only with two screens); right now press **Alt+F4** |
-| IPRPS Updates: "Could not check for updates: error: no usable package repositories configured" | `/etc/pacman.conf` is still the temporary file from 12.12 step 3 (`head -1 /etc/pacman.conf` says "Temporary"): step 7's `.pacnew` line was skipped in this edition's build | On that computer: `sudo mv /etc/pacman.conf.pacnew /etc/pacman.conf`, then **Check now**. In the build image, run step 7's `.pacnew` line again. Release scripts from 2026-11-11 fix the copy and stop if they can't |
+| IPRPS Updates: "Could not check for updates: error: no usable package repositories configured" | `/etc/pacman.conf` is still the temporary file from 12.12 step 3 (`head -1 /etc/pacman.conf` says "Temporary"): step 7's `.pacnew` line was skipped in this edition's build | On that computer: `sudo mv /etc/pacman.conf.pacnew /etc/pacman.conf`, then **Check now**. No `.pacnew` file? Write the packaged file back: in the build image **[IPRPS CHROOT]** `install -m644 /build/src/iprps-os/packages/iprps-base/pacman.conf /etc/pacman.conf`; on an installed computer, copy `packages/iprps-base/pacman.conf` from the repository to `/etc/pacman.conf` with `sudo`. Release scripts from 2026-11-11 fix the copy and stop if they can't |
 | A new installation is very slow for the first 10–30 minutes, then fine (or fine after a restart) | One-time background work: disk preparation (`ext4lazyinit`), first-use caches, the first update check. Not the database | Normal. Leave it on until the "setup is finished" message, then restart once. To see it: `ps -e \| grep ext4lazyinit` (13.3). Images and installers from 2026-11-09 do most of it before the first login |
 | Everything is slow when running from a USB stick | USB 2 sticks (and ports) have very slow small reads and writes | Use a USB 3 stick in a USB 3 (often blue) port, or install to the internal disk; the first boot is the slowest (disk growth, swap, database) |
 | Boot shows many "Failed to preset all unit … Read-only file system" lines | The release image's `/etc/machine-id` said `uninitialized` (first boot), so systemd tried to reset all services | 13.4: the release script now leaves it **empty**. On an affected image it's harmless (the reset failed); new releases don't show it |
