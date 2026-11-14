@@ -31,7 +31,7 @@ New apps and fixes now go out through **IPRPS Updates** (pacman, signed reposito
 | Part 13 — Release engineering | ✅ Done | Release cleanup, first-boot setup, installer, `.img.xz` and live `.iso`; first start after install takes 10–30 minutes, then one restart (13.3) |
 | Part 14 — Lite release | ✅ Beta | Installed and tested on a 16 GB laptop and a 6 GB desktop; IPRPS Updates tested |
 | Part 15 — Stage H (Medium) | ✅ Beta | Chromium (default browser, apps in their own windows), LibreOffice, GIMP and more; IPRPS Oracle with local Llama 3.2 3B and optional Claude |
-| Part 16 — Stage I (Advanced) | ✅ Beta | Medium plus Calibre and more; IPRPS Updates tested (the `pacman.conf` fix of 2026-11-11 is in the release cleanup) |
+| Part 16 — Stage I (Advanced) | ✅ Beta | Medium plus Calibre and more; installed and running on the 16 GB laptop (2026-11-14); IPRPS Updates tested (the `pacman.conf` fix of 2026-11-11 is in the release cleanup) |
 | Part 17 — After release | ✅ In use | Updates, new apps, retiring apps, security updates and point releases; the **IPRPS Release Desk** (`tools/release-desk/`) walks through each one |
 
 ## Waiting to be published or tested
