@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- Copyright (C) 2026 Mythical Legends Publishing, LLC -->
+<!-- Hub tile for IPRPS Link: the link itself runs as its own service on port 7778 (/opt/iprps/link). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>IPRPS Link</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0b0e1a; color: #e6e3d6; font: 16px/1.5 system-ui, "DejaVu Sans", sans-serif; }
+  main { max-width: 520px; padding: 24px; text-align: center; }
+  h1 { font: 600 28px "DejaVu Serif", Georgia, serif; color: #f1d58c; }
+  code { background: #0008; padding: 2px 6px; border-radius: 4px; }
+  a { color: #d9b45a; }
+</style>
+</head>
+<body>
+<main>
+  <h1>✦ IPRPS Link</h1>
+  <p id="msg">Opening remote play…</p>
+</main>
+<script>
+  const URL = 'http://localhost:7778/';
+  fetch('http://localhost:7778/api/state', { mode: 'no-cors', cache: 'no-store' })
+    .then(() => location.replace(URL))
+    .catch(() => {
+      document.getElementById('msg').innerHTML = 'The IPRPS Link service isn\'t running.<br><br>Open <b>IPRPS Link</b> from the IPRPS menu (it starts the service), or run <code>sudo systemctl start iprps-link</code>, then <a href="' + URL + '">open it</a>.';
+    });
+</script>
+</body>
+</html>

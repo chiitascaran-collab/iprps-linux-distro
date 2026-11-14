@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS Link
+GenericName=Remote Play
+Comment=Players in other cities join your IPRPS Table from any browser
+Exec=iprps-link
+Icon=/usr/share/iprps/icons/iprps-link.svg
+Terminal=false
+Categories=X-IPRPS;Game;Network;
+Keywords=remote;online;internet;players;table;relay;
