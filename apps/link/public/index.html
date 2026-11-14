@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- Copyright (C) 2026 Mythical Legends Publishing, LLC -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPRPS Link</title>
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/link.css">
+</head>
+<body>
+<header>
+  <h1>✦ IPRPS Link</h1>
+  <p>Players in other cities join your IPRPS Table from any browser. Nothing to install on their side.</p>
+</header>
+<main>
+  <section class="card" id="power">
+    <div class="row">
+      <div class="grow">
+        <h2 id="status-title">Remote play is off</h2>
+        <p id="status-text" class="muted"></p>
+      </div>
+      <button id="toggle" class="big">Turn on</button>
+    </div>
+    <div id="share" hidden>
+      <label for="url">Send this link to your remote players</label>
+      <div class="row">
+        <input id="url" readonly>
+        <button id="copy">Copy</button>
+      </div>
+      <div class="row top">
+        <img id="qr" width="180" height="180" alt="QR code of the link" hidden>
+        <ul class="plain">
+          <li>They open the link and type the <b>join code</b> from your IPRPS Table console, like everyone else.</li>
+          <li>The table must be <b>open</b> in the IPRPS Table console.</li>
+          <li>The link stays the same every session.</li>
+          <li id="counts" class="muted"></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>1. Your Infinite Plane account</h2>
+    <div id="signed-out">
+      <p class="muted">Sign in once. Your relay only accepts tables from its owner's account.</p>
+      <div class="row"><a class="button" id="signin" href="/auth/start">Sign in with Infinite Plane</a></div>
+      <details>
+        <summary>Sign-in page won't open?</summary>
+        <p class="muted">Sign in at the Infinite Plane site in any browser, copy your session token, and paste it here.</p>
+        <div class="row"><input id="token" type="password" placeholder="64-character session token" autocomplete="off"><button id="use-token">Use token</button></div>
+      </details>
+    </div>
+    <div id="signed-in" hidden>
+      <div class="row"><p class="grow">Signed in as <b id="who"></b></p><button id="signout" class="ghost">Sign out</button></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2. Your relay</h2>
+    <p class="muted">The public address your players open. It runs on a server or web host you control (see the Remote Players guide).</p>
+    <label for="relay">Relay address</label>
+    <div class="row"><input id="relay" placeholder="https://play.example.com  or  https://example.com/play" spellcheck="false"><button id="save">Save</button></div>
+    <details>
+      <summary>Advanced</summary>
+      <label for="auth">Infinite Plane sign-in address</label>
+      <input id="auth" spellcheck="false">
+    </details>
+    <p id="relay-info" class="muted"></p>
+  </section>
+
+  <section class="card">
+    <h2>Activity</h2>
+    <ul id="log" class="log"></ul>
+  </section>
+</main>
+<p id="err" role="alert"></p>
+<script src="/assets/qr.js"></script>
+<script src="/assets/link.js"></script>
+</body>
+</html>

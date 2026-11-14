@@ -1,0 +1,40 @@
+# IPRPS OS: IPRPS Link, remote players for the IPRPS Table (an update for all editions)
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+#
+# Built from a copy of the IPRPS OS repository (default /build/src/iprps-os; set IPRPS_REPO to use another),
+# like packages/iprps-apps. Or add the package_iprps-link() function below to iprps-apps/PKGBUILD and
+# "iprps-link" to its pkgname list, with desktop/iprps-link.desktop and iprps-link.install beside it.
+# The Session Master's settings and sign-in live in /var/lib/iprps-link, never in this package.
+
+pkgname=iprps-link
+pkgver=2026.11.14
+pkgrel=1
+pkgdesc='IPRPS Link: players in other cities join the IPRPS Table from any browser'
+arch=(any)
+url='https://github.com/chiitascaran-collab/iprps-linux-distro'
+license=(GPL-2.0-only)
+depends=(iprps-base iprps-table)
+install=iprps-link.install
+options=(!strip !debug)
+
+_repo=${IPRPS_REPO:-/build/src/iprps-os}
+_www=srv/www/iprps
+
+prepare() {
+  [ -f "$_repo/apps/link/agent.js" ] || { echo "No apps/link in $_repo (copy the repository there, or set IPRPS_REPO)" >&2; return 1; }
+}
+
+package() {
+  install -dm755 "$pkgdir/opt/iprps/link"
+  cp -r "$_repo/apps/link/." "$pkgdir/opt/iprps/link/"
+  find "$pkgdir/opt/iprps/link" -type d -exec chmod 755 {} +
+  find "$pkgdir/opt/iprps/link" -type f -exec chmod 644 {} +
+  # Hub tile
+  install -dm755 "$pkgdir/$_www/link"
+  cp -r "$_repo/apps/link-tile/." "$pkgdir/$_www/link/"
+  find "$pkgdir/$_www/link" -type f -exec chmod 644 {} +
+  install -Dm755 "$_repo/rootfs/usr/bin/iprps-link" "$pkgdir/usr/bin/iprps-link"
+  install -Dm644 "$_repo/rootfs/usr/lib/systemd/system/iprps-link.service" "$pkgdir/usr/lib/systemd/system/iprps-link.service"
+  install -Dm644 "$_repo/apps/link/public/icon.svg" "$pkgdir/usr/share/iprps/icons/iprps-link.svg"
+  install -Dm644 "$startdir/iprps-link.desktop" "$pkgdir/usr/share/applications/iprps-link.desktop"
+}

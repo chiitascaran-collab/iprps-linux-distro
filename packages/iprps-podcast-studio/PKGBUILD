@@ -1,0 +1,38 @@
+# IPRPS OS: IPRPS Podcast Studio (an update for Medium and Advanced; works on Lite too)
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+#
+# Built from a copy of the IPRPS OS repository (default /build/src/iprps-os; set IPRPS_REPO to use another),
+# like packages/iprps-apps. Shows, recordings and API keys live in the user's home folder
+# (~/.local/share/iprps-podcast-studio, ~/.config/iprps-podcast-studio), never in this package.
+#
+# ffmpeg must be built with libx264, libmp3lame, libopus, libvpx and freetype (exports and name captions need them).
+
+pkgname=iprps-podcast-studio
+pkgver=2026.11.14
+pkgrel=1
+pkgdesc='IPRPS Podcast Studio: record, mix, edit and publish audio and video shows with remote and AI co-hosts'
+arch=(any)
+url='https://github.com/chiitascaran-collab/iprps-linux-distro'
+license=(GPL-2.0-only)
+depends=(iprps-base python ffmpeg openssl)
+optdepends=('rsync: publish feeds to a web server over SSH'
+            'fontconfig: name captions on video exports')
+options=(!strip !debug)
+
+_repo=${IPRPS_REPO:-/build/src/iprps-os}
+
+prepare() {
+  [ -f "$_repo/apps/podcast-studio/server/studio.py" ] || { echo "No apps/podcast-studio in $_repo (copy the repository there, or set IPRPS_REPO)" >&2; return 1; }
+}
+
+package() {
+  install -dm755 "$pkgdir/opt/iprps/podcast-studio"
+  cp -r "$_repo/apps/podcast-studio/server" "$_repo/apps/podcast-studio/web" "$pkgdir/opt/iprps/podcast-studio/"
+  find "$pkgdir/opt/iprps/podcast-studio" -name '__pycache__' -type d -exec rm -rf {} +
+  find "$pkgdir/opt/iprps/podcast-studio" -type d -exec chmod 755 {} +
+  find "$pkgdir/opt/iprps/podcast-studio" -type f -exec chmod 644 {} +
+  install -Dm755 "$_repo/rootfs/usr/bin/iprps-podcast-studio" "$pkgdir/usr/bin/iprps-podcast-studio"
+  install -Dm644 "$_repo/apps/podcast-studio/web/img/icon.svg" "$pkgdir/usr/share/iprps/icons/iprps-podcast-studio.svg"
+  install -Dm644 "$startdir/iprps-podcast-studio.desktop" "$pkgdir/usr/share/applications/iprps-podcast-studio.desktop"
+  install -Dm644 "$_repo/apps/podcast-studio/README.md" "$pkgdir/usr/share/doc/iprps-podcast-studio/README.md"
+}

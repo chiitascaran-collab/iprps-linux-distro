@@ -1,0 +1,16 @@
+# IPRPS Link relay: every address in this folder goes to index.php (the "data" folder protects itself).
+Options -Indexes
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^data(/|$) - [F,L]
+RewriteRule ^config(\.sample)?\.php$ - [F,L]
+RewriteCond %{REQUEST_URI} !/index\.php$
+RewriteRule ^ index.php [L]
+</IfModule>
+# Do not compress or hold back the live events stream
+<IfModule mod_deflate.c>
+SetEnv no-gzip 1
+</IfModule>
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+</IfModule>

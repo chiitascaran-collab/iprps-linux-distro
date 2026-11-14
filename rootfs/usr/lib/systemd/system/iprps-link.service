@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# IPRPS Link: remote players reach the IPRPS Table through the Session Master's relay.
+[Unit]
+Description=IPRPS Link (remote players for the IPRPS Table)
+Documentation=https://infiniteplane.space/iprps-os/manual
+Wants=network-online.target
+After=network-online.target iprps-table.service
+
+[Service]
+User=iprps-link
+Group=iprps-link
+ExecStart=/usr/bin/node /opt/iprps/link/agent.js
+StateDirectory=iprps-link
+StateDirectoryMode=0700
+Restart=on-failure
+RestartSec=3
+# It only needs the network, its state folder and the Table on this computer.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=no
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

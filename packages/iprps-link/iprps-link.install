@@ -1,0 +1,14 @@
+# IPRPS Link: its service account, and the service at every boot (remote play itself stays off until the Session Master turns it on)
+post_install() {
+  getent group iprps-link >/dev/null || groupadd -r iprps-link
+  getent passwd iprps-link >/dev/null || useradd -r -g iprps-link -d /var/lib/iprps-link -s /sbin/nologin -c "IPRPS Link" iprps-link
+  systemctl daemon-reload >/dev/null 2>&1 || true
+  systemctl enable --now iprps-link.service >/dev/null 2>&1 || true
+}
+post_upgrade() {
+  post_install
+  systemctl try-restart iprps-link.service >/dev/null 2>&1 || true
+}
+pre_remove() {
+  systemctl disable --now iprps-link.service >/dev/null 2>&1 || true
+}

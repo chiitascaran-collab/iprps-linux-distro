@@ -1,0 +1,5 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
+# Opens IPRPS Podcast Studio: starts its server (or reuses the running one) and opens the studio window.
+APP="${IPRPS_PODCAST_APP:-/opt/iprps/podcast-studio}"
+exec python3 "$APP/server/studio.py" --open "$@"
