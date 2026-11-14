@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS Podcast Studio
+GenericName=Podcast Recording Studio
+Comment=Record, edit and publish audio and video podcasts with remote and AI guests
+Exec=iprps-podcast-studio
+Icon=/usr/share/iprps/icons/iprps-podcast-studio.svg
+Terminal=false
+Categories=X-IPRPS;AudioVideo;Audio;Video;Recorder;AudioVideoEditing;
+Keywords=podcast;record;mixer;equalizer;rss;iprps;
+StartupWMClass=iprps-podcast-studio
