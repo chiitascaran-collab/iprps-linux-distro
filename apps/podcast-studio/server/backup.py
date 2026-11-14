@@ -70,7 +70,10 @@ def restore(path):
             for m in tar.getmembers():
                 if m.name.startswith(("/", "..")) or ".." in m.name.split("/") or not (m.isfile() or m.isdir()):
                     raise ValueError("This archive is not a Podcast Studio backup.")
-            tar.extractall(work, filter="data")
+            try:
+                tar.extractall(work, filter="data")
+            except TypeError:                       # Python before 3.11.4 (Debian 12): members were checked above
+                tar.extractall(work)
         src = os.path.join(work, "show")
         show = store.read_json(os.path.join(src, "show.json"))
         if not show or "id" not in show:

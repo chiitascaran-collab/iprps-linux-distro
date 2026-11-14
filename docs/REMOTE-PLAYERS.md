@@ -4,6 +4,8 @@
 
 *For Session Masters with players in another city or state. From Appendix G of the build guide.*
 
+> **Side note:** Players who can't or won't install an app can join from a plain browser with **IPRPS Link** (12.13).
+
 The IPRPS Table (12.7) is made for players in the same room, on the same network. A player in another city or state can join too, through **Tailscale**: a free app on both computers that links them into a small private network over the internet, encrypted with WireGuard. The remote player's browser then reaches the Table exactly as a phone on the Session Master's Wi-Fi does, and the Table treats them as a local player: same join code, same chat, dice, media and character sheets.
 
 Nothing in IPRPS OS changes for this, and the Table needs no update: it already listens on every network the computer is on, answers only while the table is **open**, and only with the join code. No router settings (port forwarding) are needed on either side.

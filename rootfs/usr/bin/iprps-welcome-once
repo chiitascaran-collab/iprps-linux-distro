@@ -1,0 +1,33 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-welcome-once - open IPRPS Welcome at a user's first desktop login (once per user)
+# Within 3 hours of a new installation's first boot (a USB image or a fresh install to disk), the
+# computer is still finishing its setup in the background: disk preparation, font and app caches.
+# Say so once per user and installation, and say again when it's done.
+FB=/var/lib/iprps/firstboot-done
+if [ -n "$(find "$FB" -mmin -180 2>/dev/null)" ] && command -v notify-send >/dev/null; then
+  SEEN="$HOME/.config/iprps/first-start-$(stat -c %Y "$FB")"
+  if [ ! -e "$SEEN" ]; then
+    mkdir -p "$HOME/.config/iprps" && touch "$SEEN"
+    notify-send -i iprps-logo -t 30000 "IPRPS OS is finishing its setup" \
+      "For the next 10-30 minutes, apps may open slowly while the computer prepares itself. Please leave it on. You'll get a message when it's done."
+    (
+      sleep 300; calm=0
+      for _ in $(seq 330); do              # up to about 55 more minutes
+        busy=0
+        pgrep -x ext4lazyinit >/dev/null && busy=1
+        awk -v n="$(nproc)" '{exit !($1 < n * 0.6)}' /proc/loadavg || busy=1
+        if [ $busy = 0 ]; then calm=$((calm + 1)); [ $calm -ge 3 ] && break; else calm=0; fi
+        sleep 10
+      done
+      notify-send -i iprps-logo -t 0 "IPRPS OS setup is finished" \
+        "Restart the computer once (menu, Log Out, Restart). After that, it runs at full speed."
+    ) &
+  fi
+fi
+DONE="$HOME/.config/iprps/welcome-shown"
+[ -e "$DONE" ] && exit 0
+mkdir -p "$HOME/.config/iprps" && touch "$DONE"
+sleep 6                               # let the desktop and the web services settle
+exec iprps-open welcome/

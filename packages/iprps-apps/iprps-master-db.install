@@ -1,0 +1,6 @@
+# Master Database: images that admins upload are saved by the web server in images/
+post_install() {
+  getent passwd apache >/dev/null && chown -R apache:apache /srv/www/iprps/master_db/images && chmod 755 /srv/www/iprps/master_db/images
+  return 0
+}
+post_upgrade() { post_install; }

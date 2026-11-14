@@ -57,7 +57,7 @@ computer (`http://localhost:.../auth/callback`) and to nothing else.
 mkdir -p /opt/iprps-link-relay
 cp relay.js relay.env.sample /opt/iprps-link-relay/
 cd /opt/iprps-link-relay && cp relay.env.sample relay.env
-nano relay.env          # set PUBLIC_URL=https://play.example.com
+nano relay.env          # set PUBLIC_URL=https://play.example.com and OWNERS=<your Infinite Plane username>
 cp iprps-link-relay.service /etc/systemd/system/
 systemctl daemon-reload && systemctl enable --now iprps-link-relay
 ```
@@ -85,7 +85,9 @@ curl https://play.example.com/_link/health        # {"ok":true,"relay":"node",..
 
 1. Make a folder for it, for example `play` (or a subdomain `play.example.com` that points to a folder).
 2. Upload `relay/php/index.php` and `relay/php/.htaccess` into it.
-3. Optional: copy `config.sample.php` to `config.php` and edit it.
+3. Copy `config.sample.php` to `config.php` and put your Infinite Plane username in `'owners' => ['yourname']`.
+   (Without an owners list, the first Infinite Plane account to connect becomes the owner: anyone with an account
+   who finds the address before you do could take it.)
 4. Open `https://example.com/play/_link/health` in a browser. You should see `{"ok":true,"relay":"php",...}`.
 
 The relay makes its own `data` folder and locks it. If the health page says it cannot write, make the
@@ -95,11 +97,13 @@ folder writable. On the Infinite Plane site itself the relay finds `/auth/` and 
 
 **WHERE: IPRPS OS**
 
-1. Open **IPRPS Updates** and install **IPRPS Link** (or `sudo pacman -S iprps-link`).
+1. Open **IPRPS Updates**, then **IPRPS apps and optional software**, and install **IPRPS Link** (or `sudo iprps-update install iprps-link`).
 2. Open **IPRPS Link** from the IPRPS menu or the Hub.
 3. **Sign in with Infinite Plane.** Your browser opens the sign-in page; choose **Allow**.
-4. Type your **relay address** and **Save**.
-5. **Turn on.** The first account to connect becomes the relay's owner.
+4. Type your **relay address** and **Save**. It must start with `https://`: IPRPS Link shows the relay your
+   Infinite Plane sign-in so the relay knows the table is yours. **Use only a relay you or your co-Session Master run.**
+5. **Turn on.** If you left the owners list empty, your account now owns the relay (`data/owner.json` on the relay
+   shows your username; check it once).
 6. Copy the link (or show the QR code) and send it to your remote players.
 7. Open the table in **IPRPS Table** and give players the join code, as always.
 
@@ -138,17 +142,25 @@ computer or network: IPRPS Link only ever talks to the Table's port.
 
 ## For the maintainer: publishing the update
 
+The **IPRPS Release Desk** does this for you: **Update IPRPS OS files or a recipe → `iprps-link`** (it goes to
+`iprps-apps`). By hand:
+
 **WHERE: BUILDER (in the build image)**
 
 ```
 cd /build/src/iprps-os/packages/iprps-link
-makepkg -f --nodeps
+makepkg -f --nodeps --noconfirm
 ```
 
 **WHERE: DEBIAN ROOT**
 
-Sign and publish with `build-host/iprps-repo.sh` as for any app update (`add`, `check`, `stage`, upload,
-`online`). The Hub tile is named in `apps/hub/app-names.json` (`link`).
+```
+/root/iprps-repo.sh add iprps-apps /mnt/iprps/build/repo/iprps-link-*-any.pkg.tar.zst
+/root/iprps-repo.sh check && /root/iprps-repo.sh stage
+```
+
+Upload with FileZilla, then `/root/iprps-repo.sh online` (guide 12.12, 17.1). IPRPS Link is optional: it appears in
+**IPRPS Updates → IPRPS apps and optional software** on every edition. The Hub tile is named in `apps/hub/app-names.json` (`link`).
 
 ## Tests
 

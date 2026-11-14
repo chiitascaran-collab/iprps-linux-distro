@@ -21,6 +21,7 @@
     <span>Model</span>
     <select id="model"></select>
   </label>
+  <button id="onlineOpen" class="ghost" type="button" title="Claude (online): API key and models">Online AI…</button>
   <span id="status" class="pill">Connecting…</span>
   <div class="spacer"></div>
   <button id="displayOpen" class="ghost" title="Open the player display window">Player display ↗</button>
@@ -59,6 +60,7 @@
       </details>
       <button id="clearChat" class="ghost danger">Clear this chat</button>
     </section>
+    <p class="credit">Local AI: Llama 3.2 3B Instruct. <b>Built with Llama.</b> <a href="about-models.html" target="_blank" rel="noopener">Licenses</a></p>
   </aside>
 
   <main class="chat">
@@ -70,6 +72,7 @@
            Replies can be pinned to memory, saved to the campaign, or shown to the players.</p>
       </div>
     </div>
+    <div id="onlineNote" class="online-note" hidden>🌐 <b>Online:</b> your message, the campaign memory and any named character sheets go to Anthropic to answer. Your Anthropic account is charged for each reply.</div>
     <form id="composer" class="composer">
       <textarea id="input" rows="2" placeholder="Ask the Oracle… (Enter to send, Shift+Enter for a new line)"></textarea>
       <div class="buttons">
@@ -81,6 +84,34 @@
 </div>
 
 <div id="toast" class="toast" hidden></div>
+
+<dialog id="online" class="online">
+  <form method="dialog" class="online-in">
+    <h2>Online AI: Claude</h2>
+    <p>The Oracle can use <b>Claude</b>, Anthropic's AI, instead of the model on this computer. Claude is usually faster and writes richer NPCs and scenes. It needs <b>internet</b> and <b>your own Anthropic API key</b>. Anthropic charges your account for each reply, and the local model stays free and private.</p>
+    <p class="hint">What is sent to Anthropic: your message, recent Oracle chat, the campaign memory (when <i>Use campaign memory</i> is on) and the character sheets you name. Get a key at <b>console.anthropic.com</b> → <b>API keys</b>.</p>
+
+    <h3>Your API key</h3>
+    <div id="keyHave" class="row" hidden>
+      <span>Saved: <code id="keyHint"></code></span>
+      <button id="keyRemove" type="button" class="ghost danger">Remove key</button>
+    </div>
+    <div id="keyNew" class="row">
+      <input id="keyInput" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…">
+      <button id="keySave" type="button">Check and save</button>
+    </div>
+    <p class="hint">The key is checked with Anthropic, then stored encrypted on this computer in your IPRPS key vault (the same one as IPRPS Welcome → API keys). It never goes to your web browser or the players.</p>
+
+    <h3>Claude models</h3>
+    <ul id="claudeList" class="claude-list"></ul>
+    <div class="row">
+      <button id="claudeCheck" type="button" class="ghost">Check for new models</button>
+      <span id="claudeChecked" class="hint"></span>
+    </div>
+    <p class="hint">When Anthropic releases a new Haiku, Sonnet, Opus or Fable, <b>Check for new models</b> (or the automatic weekly check) puts it in the Model menu. No IPRPS update is needed.</p>
+    <div class="row end"><button value="close">Close</button></div>
+  </form>
+</dialog>
 
 <script src="markdown.js"></script>
 <script src="oracle.js"></script>

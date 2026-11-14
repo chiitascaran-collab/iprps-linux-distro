@@ -16,9 +16,17 @@
 // POST ?action=display_clear
 // POST ?action=recap  {session_id, model}   a players' recap of a session from its log (Session Log app)
 // POST ?action=sheet_generate {kind: npc|creature, details, level, campaign, model}   a character sheet, saved to Character Sheets
+// GET  ?action=online                      Claude: key stored?, models, last check
+// POST ?action=claude_key   {secret}       check the Anthropic API key with Anthropic, then store it in the key vault
+// POST ?action=claude_key_delete
+// POST ?action=claude_check                ask Anthropic for the newest Claude models
+// POST ?action=set_model    {model}        remember this Session Master's model (recaps and sheets use it too)
+//
+// "model" is an Ollama name, or "claude:<id>" for Claude (online, the Session Master's own API key; llm.php).
 
 require __DIR__ . '/config.php';
 require __DIR__ . '/prompts.php';
+require __DIR__ . '/llm.php';
 // Character Sheets (character-sheets/lib.php): the Oracle reads the Session Master's sheets and writes NPC and creature sheets.
 $CS_LIB = getenv('ORACLE_SHEETS_LIB') ?: __DIR__ . '/../character-sheets/lib.php';
 if (is_file($CS_LIB)) require_once $CS_LIB;
@@ -60,6 +68,30 @@ function installed_models(): ?array {
     $t = ollama('/api/tags');
     if ($t === null) return null;
     return array_values(array_map(fn($m) => $m['name'], $t['models'] ?? []));
+}
+
+// The model to use: the one asked for, else this Session Master's last choice, else the IPRPS model.
+// Claude models need no local service; local ones must be installed.
+function pick_model(PDO $db, int $uid, ?string $want): string {
+    $want = $want ?: setting_get($db, $uid, 'oracle.model');
+    if (is_claude($want)) {
+        if (!preg_match('/^claude:claude-[a-z0-9.-]{3,60}$/', $want)) throw new LlmError('Unknown Claude model.');
+        return $want;
+    }
+    $models = installed_models();
+    if ($models === null) throw new LlmError('The local AI service (Ollama) is not running. Start it with: sudo systemctl start ollama (or choose a Claude model).');
+    $m = resolve_model($want, $models);
+    if (!$m) throw new LlmError('No local AI model is installed. Run: sudo iprps-ai-model status (or choose a Claude model).');
+    return $m;
+}
+// The base model the IPRPS model should be built from (ai/Modelfile), if it isn't downloaded yet.
+function local_upgrade(?array $models): ?string {
+    $mf = (getenv('ORACLE_AI_SHARE') ?: '/usr/share/iprps/ai') . '/Modelfile';
+    if ($models === null || !is_readable($mf) || !preg_match('/^FROM\s+(\S+)/m', (string)file_get_contents($mf), $m)) return null;
+    $base = $m[1];
+    if (str_starts_with($base, '/') || str_starts_with($base, '.')) return null;          // a custom .gguf
+    foreach ($models as $have) if ($have === $base || $have === "$base:latest") return null;
+    return $base;
 }
 
 // Ollama names "iprps-storyteller" as "iprps-storyteller:latest".
@@ -194,9 +226,46 @@ case 'status':
     $models = $ver ? (installed_models() ?? []) : [];
     $gens = [];
     foreach (ORACLE_GENERATORS as $k => $g) $gens[] = ['key' => $k, 'label' => $g[0], 'icon' => $g[1]];
+    $chosen = setting_get($db, $UID, 'oracle.model');
+    $checked = (int)setting_get($db, $UID, 'oracle.claude_checked', '0');
+    $hint = vault_hint($db, $UID, 'anthropic');
     out(['ok' => true, 'user' => $USER, 'ollama' => $ver['version'] ?? null, 'models' => $models,
          'default_model' => resolve_model(null, $models), 'iprps_model' => ORACLE_MODEL, 'generators' => $gens,
-         'sheets' => function_exists('cs_save')]);
+         'sheets' => function_exists('cs_save'), 'chosen' => $chosen, 'local_upgrade' => $ver ? local_upgrade($models) : null,
+         'claude' => ['key' => $hint, 'models' => claude_models($db, $UID), 'checked' => $checked ?: null,
+                      'check_due' => $hint !== null && time() - $checked > CLAUDE_CHECK_DAYS * 86400]]);
+
+case 'online':
+    $checked = (int)setting_get($db, $UID, 'oracle.claude_checked', '0');
+    out(['ok' => true, 'key' => vault_hint($db, $UID, 'anthropic'), 'models' => claude_models($db, $UID), 'checked' => $checked ?: null]);
+
+case 'claude_key':
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Use POST.', 405);
+    $secret = trim((string)($in['secret'] ?? ''));
+    if ($secret === '' || strlen($secret) > 400 || preg_match('/\s/', $secret)) fail('Paste the key exactly as the Anthropic Console shows it (no spaces).');
+    try {
+        [$models, $new] = claude_check($db, $UID, $secret);           // proves the key works before it is stored
+        $hint = vault_put($db, $UID, 'anthropic', 'Anthropic (Claude)', $secret);
+    } catch (LlmError $e) { fail($e->getMessage(), 400); }
+    out(['ok' => true, 'key' => $hint, 'models' => $models, 'checked' => time()]);
+
+case 'claude_key_delete':
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Use POST.', 405);
+    llm_tables($db);
+    $db->prepare("DELETE FROM user_secrets WHERE user_id = ? AND provider = 'anthropic'")->execute([$UID]);
+    if (is_claude(setting_get($db, $UID, 'oracle.model'))) $db->prepare("DELETE FROM user_settings WHERE user_id = ? AND name = 'oracle.model'")->execute([$UID]);
+    out(['ok' => true]);
+
+case 'claude_check':
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Use POST.', 405);
+    try { [$models, $new] = claude_check($db, $UID); } catch (LlmError $e) { fail($e->getMessage(), 502); }
+    out(['ok' => true, 'models' => $models, 'new' => $new, 'checked' => time(), 'chosen' => setting_get($db, $UID, 'oracle.model')]);
+
+case 'set_model':
+    $m = (string)($in['model'] ?? '');
+    if ($m === '' || strlen($m) > 120 || preg_match('/\s/', $m)) fail('Choose a model.');
+    setting_set($db, $UID, 'oracle.model', $m);
+    out(['ok' => true]);
 
 case 'campaigns':
     $rows = $db->query("SELECT id, name, setting, status FROM campaigns ORDER BY FIELD(status,'active','planning','paused','finished'), name")->fetchAll();
@@ -283,10 +352,11 @@ case 'chat':
     $gen = (string)($in['generator'] ?? '');
     $message = $gen !== '' ? oracle_generator_prompt($gen, (string)($in['details'] ?? '')) : trim((string)($in['message'] ?? ''));
     if (!$message) fail('Type a message, or pick a generator.');
-    $models = installed_models();
-    if ($models === null) fail('The local AI service (Ollama) is not running. Start it with: sudo systemctl start ollama', 503);
-    $model = resolve_model($in['model'] ?? null, $models);
-    if (!$model) fail('No AI model is installed. See “AI models” in the IPRPS guide, or run: sudo iprps-ai-model status', 503);
+    try {
+        $model = pick_model($db, $UID, $in['model'] ?? null);
+        if (is_claude($model)) claude_key($db, $UID);                     // fail now, not halfway
+    } catch (LlmError $e) { fail($e->getMessage(), 503); }
+    if (!empty($in['model'])) setting_set($db, $UID, 'oracle.model', $model);
 
     $system = ORACLE_SYSTEM;
     if (($in['use_memory'] ?? true) && $c) {
@@ -303,11 +373,7 @@ case 'chat':
     // Store the request as the model sees it, so later turns keep the format instructions.
     $db->prepare("INSERT INTO oracle_messages (user_id, campaign_id, role, content) VALUES (?, ?, 'user', ?)")
        ->execute([$UID, $c, $message]);
-
-    $show = ollama('/api/show', ['model' => $model]);
-    $req = ['model' => $model, 'messages' => $messages, 'stream' => true,
-            'options' => ['num_ctx' => ORACLE_NUM_CTX]];
-    if (in_array('thinking', $show['capabilities'] ?? [], true)) $req['think'] = false;   // answer directly
+    $askId = (int)$db->lastInsertId();
 
     // Stream: one JSON object per line -> {"t":"text"} ... {"done":true}
     set_time_limit(0);
@@ -318,34 +384,12 @@ case 'chat':
     header('Cache-Control: no-store');
     header('X-Accel-Buffering: no');
     $emit = function (array $o) { echo json_encode($o, JSON_UNESCAPED_UNICODE), "\n"; flush(); };
-    $emit(['start' => true, 'model' => $model, 'shown' => $shown]);
+    $emit(['start' => true, 'model' => $model, 'label' => model_label($db, $UID, $model), 'online' => is_claude($model), 'shown' => $shown]);
 
-    $answer = ''; $buf = ''; $err = null;
-    $ch = curl_init(OLLAMA_URL . '/api/chat');
-    curl_setopt_array($ch, [
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode($req),
-        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-        CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_TIMEOUT => 900,
-        CURLOPT_WRITEFUNCTION => function ($ch, $data) use (&$answer, &$buf, &$err, $emit) {
-            if (connection_aborted()) return -1;                 // Stop pressed: stop generating
-            $buf .= $data;
-            while (($p = strpos($buf, "\n")) !== false) {
-                $line = substr($buf, 0, $p); $buf = substr($buf, $p + 1);
-                if (trim($line) === '') continue;
-                $j = json_decode($line, true);
-                if (!is_array($j)) continue;
-                if (isset($j['error'])) { $err = $j['error']; continue; }
-                $t = $j['message']['content'] ?? '';
-                if ($t !== '') { $answer .= $t; $emit(['t' => $t]); }
-            }
-            return strlen($data);
-        },
-    ]);
-    curl_exec($ch);
-    $cerr = curl_errno($ch) && !connection_aborted() ? curl_error($ch) : null;
-    curl_close($ch);
+    $answer = ''; $err = null;
+    try {
+        $answer = llm_stream($db, $UID, $model, $messages, function (string $t) use ($emit) { $emit(['t' => $t]); });
+    } catch (LlmError $e) { $err = $e->getMessage(); }
 
     $answer = trim(preg_replace('/<think>.*?<\/think>/s', '', $answer));
     $id = null;
@@ -354,7 +398,9 @@ case 'chat':
            ->execute([$UID, $c, $answer]);
         $id = (int)$db->lastInsertId();
     }
-    if ($err || $cerr) $emit(['error' => $err ?: "Connection to Ollama lost: $cerr"]);
+    // A question that got no answer leaves the history, so it isn't sent again with the next one
+    if ($answer === '') $db->prepare('DELETE FROM oracle_messages WHERE id = ? AND user_id = ?')->execute([$askId, $UID]);
+    if ($err) $emit(['error' => $err]);
     $emit(['done' => true, 'id' => $id]);
     exit;
 
@@ -370,10 +416,7 @@ case 'recap':
     if (!$lines) fail('The session log is empty: there is nothing to recap yet.');
     $logText = implode("\n", $lines);
     if (mb_strlen($logText) > 9000) $logText = mb_substr($logText, -9000);          // the end of a long session matters most
-    $models = installed_models();
-    if ($models === null) fail('The local AI service (Ollama) is not running. Start it with: sudo systemctl start ollama', 503);
-    $model = resolve_model($in['model'] ?? null, $models);
-    if (!$model) fail('No AI model is installed. See “AI models” in the IPRPS guide, or run: sudo iprps-ai-model status', 503);
+    try { $model = pick_model($db, $UID, $in['model'] ?? null); } catch (LlmError $e) { fail($e->getMessage(), 503); }
     $system = ORACLE_SYSTEM;
     $mem = campaign_memory($db, $UID, (int)$sess['campaign_id']);
     if ($mem !== '') $system .= "\n\n=== CAMPAIGN MEMORY ===\n" . $mem . "\n=== END OF CAMPAIGN MEMORY ===";
@@ -381,15 +424,12 @@ case 'recap':
          . "Use only what the session log below says happened; don't invent events. Past tense, vivid but short: two to four paragraphs, naming the characters.\n"
          . "Leave out anything the players' characters couldn't know, and never reveal the Session Master's notes or secrets.\n"
          . "End with a short list headed \"Threads to follow\" (2-4 open questions or leads).\n\nSESSION LOG:\n" . $logText;
-    $req = ['model' => $model, 'stream' => false, 'messages' => [['role' => 'system', 'content' => $system], ['role' => 'user', 'content' => $ask]],
-            'options' => ['num_ctx' => ORACLE_NUM_CTX, 'temperature' => 0.7]];
-    $show = ollama('/api/show', ['model' => $model]);
-    if (in_array('thinking', $show['capabilities'] ?? [], true)) $req['think'] = false;
     set_time_limit(0);
-    $r = ollama('/api/chat', $req, 900);
-    $text = trim(preg_replace('/<think>.*?<\/think>/s', '', (string)($r['message']['content'] ?? '')));
-    if ($text === '') fail('The Oracle could not write the recap (Ollama stopped or timed out). Try again.', 502);
-    out(['ok' => true, 'text' => $text, 'model' => $model]);
+    try {
+        $text = llm_complete($db, $UID, $model, [['role' => 'system', 'content' => $system], ['role' => 'user', 'content' => $ask]], ['temperature' => 0.7]);
+    } catch (LlmError $e) { fail($e->getMessage(), 502); }
+    if ($text === '') fail('The Oracle could not write the recap. Try again.', 502);
+    out(['ok' => true, 'text' => $text, 'model' => $model, 'label' => model_label($db, $UID, $model)]);
 
 case 'sheet_generate':
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Use POST.', 405);
@@ -398,29 +438,19 @@ case 'sheet_generate':
     $c = cid($in['campaign'] ?? 0);
     $details = mb_substr(trim((string)($in['details'] ?? '')), 0, 1000);
     $level = isset($in['level']) && (int)$in['level'] > 0 ? min(110, (int)$in['level']) : null;
-    $models = installed_models();
-    if ($models === null) fail('The local AI service (Ollama) is not running. Start it with: sudo systemctl start ollama', 503);
-    $model = resolve_model($in['model'] ?? null, $models);
-    if (!$model) fail('No AI model is installed. See “AI models” in the IPRPS guide, or run: sudo iprps-ai-model status', 503);
+    try { $model = pick_model($db, $UID, $in['model'] ?? null); } catch (LlmError $e) { fail($e->getMessage(), 503); }
 
     $system = ORACLE_SYSTEM . "\n\n" . ORACLE_SHEET_RULES;
     if ($c) {
         $mem = campaign_memory($db, $UID, $c);
         if ($mem !== '') $system .= "\n\n=== CAMPAIGN MEMORY ===\n" . $mem . "\n=== END OF CAMPAIGN MEMORY ===";
     }
-    $system .= "\n\nAnswer with the JSON object only.";
-    $req = ['model' => $model, 'stream' => false, 'format' => oracle_sheet_schema($kind),
-            'messages' => [['role' => 'system', 'content' => $system], ['role' => 'user', 'content' => oracle_sheet_prompt($kind, $details, $level)]],
-            'options' => ['num_ctx' => ORACLE_NUM_CTX, 'temperature' => 0.8]];
-    $show = ollama('/api/show', ['model' => $model]);
-    if (in_array('thinking', $show['capabilities'] ?? [], true)) $req['think'] = false;
+    if (!is_claude($model)) $system .= "\n\nAnswer with the JSON object only.";
     set_time_limit(0);
-    $r = ollama('/api/chat', $req, 900);
-    if ($r === null) fail('The Oracle could not answer (Ollama stopped or timed out). Try again.', 502);
-    $raw = trim(preg_replace('/<think>.*?<\/think>/s', '', (string)($r['message']['content'] ?? '')));
-    if (preg_match('/\{.*\}/s', $raw, $m)) $raw = $m[0];
-    $sheet = json_decode($raw, true);
-    if (!is_array($sheet) || array_is_list($sheet)) fail('The Oracle\'s answer was not a usable sheet. Try again, or describe it differently.', 502);
+    try {
+        $sheet = llm_json($db, $UID, $model, [['role' => 'system', 'content' => $system], ['role' => 'user', 'content' => oracle_sheet_prompt($kind, $details, $level)]],
+                          oracle_sheet_schema($kind), ['temperature' => 0.8]);
+    } catch (LlmError $e) { fail($e->getMessage(), 502); }
     $sheet['sheetType'] = $kind;
     if ($level) $sheet['level'] = $level;
     unset($sheet['characterPoints'], $sheet['avatar'], $sheet['playerName']);

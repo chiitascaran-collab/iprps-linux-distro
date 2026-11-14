@@ -13,6 +13,7 @@ ExecStart=/usr/sbin/iprps-setup
 StandardInput=tty
 StandardOutput=tty
 TTYPath=/dev/tty1
+Environment=TERM=linux
 TTYReset=yes
 TTYVHangup=yes
 RemainAfterExit=yes

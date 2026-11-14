@@ -862,6 +862,16 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 <li>Your friend installs the Tailscale app, accepts your invite, and opens the <code>http://100.x.y.z:7777/</code> address with the join code.</li>
 </ol>
 <p>Full steps are in <code>docs/REMOTE-PLAYERS.md</code> and in Appendix G of the build guide. Test it with a phone on mobile data first. Pictures and video you show come from your home internet's upload speed, so short clips work best.</p>
+<p><strong>Players who won't install anything: IPRPS Link.</strong> With <strong>IPRPS Link</strong>, remote players just open a link in their browser. It needs a <em>relay</em>: a small program at a public web address you control, on your own web hosting or a small server.</p>
+<ol>
+<li>Install <strong>IPRPS Link</strong> from <strong>IPRPS Updates → IPRPS apps and optional software</strong>, and open it from the IPRPS menu or the Hub.</li>
+<li>Choose <strong>Sign in with Infinite Plane</strong>, then <strong>Allow</strong>.</li>
+<li>Type your relay's address (it starts with <code>https://</code>), choose <strong>Save</strong>, then <strong>Turn on</strong>.</li>
+<li>Send players the link (or show the QR code). They join with the table's code as always.</li>
+</ol>
+<p>Your console stays on your computer only. Turn remote play off when the session ends; players then see a waiting page. Use only a relay you or your co-Session Master run: IPRPS Link shows it your Infinite Plane sign-in. Setting up the relay is in <code>docs/REMOTE-PLAYERS-LINK.md</code>.</p>
+<h3 id="record-the-session-as-a-podcast">Record the session as a podcast<a class="anchor" href="#record-the-session-as-a-podcast" aria-label="Link to this section">#</a></h3>
+<p><strong>IPRPS Podcast Studio</strong> (optional, from <strong>IPRPS Updates → IPRPS apps and optional software</strong>) records actual-play episodes and recaps. It has a mixer, a soundboard and chapter markers. Co-hosts and guests join from their own browser with an invite link, and each person arrives in the editor on their own track. Edit on a timeline, export MP3 or MP4, and publish a podcast feed. An AI co-host is optional and uses your own API keys. Open it from the IPRPS menu. It keeps running when its window closes, so guests stay connected: stop it with <strong>Settings → Quit Podcast Studio</strong>.</p>
 </section>
 <section class="chapter"><h2 id="quick-reference-game-night">Quick reference: game night<a class="anchor" href="#quick-reference-game-night" aria-label="Link to this section">#</a></h2>
 <div class="table-scroll" tabindex="0"><table>
@@ -971,6 +981,10 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 <tr>
 <td>A player can't join</td>
 <td>You may have ticked <strong>Lock</strong>. Untick it, let them in, then lock again</td>
+</tr>
+<tr>
+<td>A remote player sees <em>The Session Master's table isn't connected</em></td>
+<td>Open <strong>IPRPS Link</strong> and choose <strong>Turn on</strong>; check that your computer is online</td>
 </tr>
 <tr>
 <td>A phone plays no sound</td>

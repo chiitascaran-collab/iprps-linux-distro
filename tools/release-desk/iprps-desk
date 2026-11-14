@@ -1,0 +1,29 @@
+#!/bin/bash
+# IPRPS Release Desk launcher (Debian on the build PC, any Linux, macOS)
+#   iprps-desk            open the Desk in your browser
+#   iprps-desk menu       the same walkthrough in this terminal (DEBIAN ROOT, IPRPS CHROOT or BUILDER window)
+#   iprps-desk status     a summary
+#   iprps-desk install    install it as a command (/usr/local/bin/iprps-desk), so it keeps working while the
+#                         repository is replaced by a newer one
+set -u
+SELF=$0; while [ -L "$SELF" ]; do L=$(readlink "$SELF"); case $L in /*) SELF=$L ;; *) SELF=$(dirname "$SELF")/$L ;; esac; done
+HERE=$(cd "$(dirname "$SELF")" && pwd)
+NODE=$(command -v node || command -v nodejs || true)
+if [ -z "$NODE" ]; then
+  echo "The Release Desk needs Node.js 18 or newer."
+  if [ -f /etc/debian_version ]; then echo "  Debian:  apt install nodejs"; elif [ "$(uname)" = Darwin ]; then echo "  Mac:     brew install node   (or the installer from nodejs.org)"; else echo "  Install nodejs with your package manager."; fi
+  exit 1
+fi
+MAJOR=$("$NODE" -e 'console.log(process.versions.node.split(".")[0])')
+[ "$MAJOR" -ge 18 ] || { echo "Node.js $MAJOR is too old: the Release Desk needs 18 or newer."; exit 1; }
+case "${1:-web}" in
+  web|menu|status) exec "$NODE" "$HERE/desk.js" "${1:-web}" ;;
+  install)
+    [ "$(id -u)" = 0 ] || { echo "Run as root: sudo $0 install"; exit 1; }
+    D=/usr/local/lib/iprps-desk
+    rm -rf "$D.new" && mkdir -p "$D.new" && cp -r "$HERE/desk.js" "$HERE/lib" "$HERE/ui" "$HERE/iprps-desk" "$D.new/" && rm -rf "$D" && mv "$D.new" "$D" && chmod 755 "$D/iprps-desk"
+    ln -sf "$D/iprps-desk" /usr/local/bin/iprps-desk
+    echo "Installed: iprps-desk  (version $(grep -m1 "VERSION = " "$D/desk.js" | cut -d"'" -f2), from $HERE)"
+    echo "Windows: copy 'IPRPS Release Desk.cmd' to your desktop and double-click it." ;;
+  *) sed -n '2,8p' "$0"; exit 1 ;;
+esac

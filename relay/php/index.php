@@ -45,7 +45,8 @@ function page(int $status, string $title, string $body, int $refresh = 0): void 
 function put(string $file, string $data): void { $tmp = $file . '.' . bin2hex(random_bytes(4)) . '.tmp'; file_put_contents($tmp, $data); rename($tmp, $file); }
 function get_json(string $file): ?array { $s = @file_get_contents($file); if ($s === false) return null; $j = json_decode($s, true); return is_array($j) ? $j : null; }
 function rmtree(string $dir): void { foreach ((array) @scandir($dir) as $f) { if ($f === '.' || $f === '..' || $f === false) continue; $p = "$dir/$f"; is_dir($p) ? rmtree($p) : @unlink($p); } @rmdir($dir); }
-function client_ip(): string { global $CFG; if ($CFG['trust_proxy'] && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) return trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]); return $_SERVER['REMOTE_ADDR'] ?? ''; }
+// The proxy in front adds the visitor's address at the END of X-Forwarded-For; earlier entries can say anything.
+function client_ip(): string { global $CFG; if ($CFG['trust_proxy'] && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) { $a = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']); return trim((string) end($a)); } return $_SERVER['REMOTE_ADDR'] ?? ''; }
 function limited(string $key, int $max, int $seconds): bool {
     global $DATA; $f = "$DATA/rl/" . hash('sha256', $key);
     $now = time(); $a = array_values(array_filter((array) (get_json($f) ?? []), fn($t) => $now - $t < $seconds));

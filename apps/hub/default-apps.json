@@ -20,6 +20,8 @@
     "lighting-generator",
     "iprps_email",
     "file-viewer",
-    "updates"
+    "updates",
+    "master_db",
+    "character-prompt-builder"
   ]
 }

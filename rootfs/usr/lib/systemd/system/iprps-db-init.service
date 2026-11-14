@@ -9,6 +9,7 @@ Requires=mariadb.service
 [Service]
 Type=oneshot
 ExecStart=/usr/sbin/iprps-db-init
+TimeoutStartSec=300
 RemainAfterExit=yes
 
 [Install]

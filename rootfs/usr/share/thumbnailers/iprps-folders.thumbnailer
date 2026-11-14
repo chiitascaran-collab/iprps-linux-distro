@@ -1,0 +1,7 @@
+[Thumbnailer Entry]
+Version=1.0
+Encoding=UTF-8
+Type=X-Thumbnailer
+Name=IPRPS folder icons
+MimeType=inode/directory;
+Exec=/usr/bin/iprps-folder-thumbnailer %s %i %o

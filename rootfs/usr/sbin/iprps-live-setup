@@ -1,0 +1,39 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-live-setup - prepares the live session when IPRPS OS starts from its ISO (DVD or USB).
+# The live initramfs (4.9) marks a live start with /etc/iprps-live; everything here lives in RAM
+# and is gone at shutdown. Installed systems never run it.
+set -u
+[ -e /etc/iprps-live ] || exit 0
+U=live
+getent group autologin >/dev/null || groupadd -r autologin
+if ! id "$U" >/dev/null 2>&1; then
+  useradd -m -G users,wheel,audio,video,iprps,autologin -s /bin/bash -c "IPRPS Live" "$U"
+  for g in lpadmin scanner; do getent group $g >/dev/null && usermod -aG $g "$U"; done
+fi
+passwd -d "$U" >/dev/null
+echo "$U ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/99-iprps-live
+chmod 440 /etc/sudoers.d/99-iprps-live
+# No password prompts in the live session (the live user has no password)
+cat > /etc/polkit-1/rules.d/05-iprps-live.rules << "LIVEEOF"
+polkit.addRule(function(action, subject) {
+    if (subject.user == "live") return polkit.Result.YES;
+});
+LIVEEOF
+echo iprps-live > /etc/hostname; hostname iprps-live
+sed -i '/^127\.0\.1\.1/d' /etc/hosts; echo "127.0.1.1 iprps-live" >> /etc/hosts
+mkdir -p /etc/lightdm/lightdm.conf.d
+cat > /etc/lightdm/lightdm.conf.d/50-iprps-live.conf << "LIVEEOF"
+[Seat:*]
+autologin-user=live
+autologin-user-timeout=0
+autologin-session=xfce
+LIVEEOF
+# The installer, on the desktop
+D=/home/$U/Desktop
+install -d -o "$U" -g "$U" "$D"
+if [ -f /usr/share/applications/iprps-install.desktop ]; then
+  install -m 755 -o "$U" -g "$U" /usr/share/applications/iprps-install.desktop "$D/"
+fi
+exit 0
