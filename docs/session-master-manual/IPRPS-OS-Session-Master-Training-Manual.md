@@ -476,6 +476,19 @@ In short:
 
 Full steps are in `docs/REMOTE-PLAYERS.md` and in Appendix G of the build guide. Test it with a phone on mobile data first. Pictures and video you show come from your home internet's upload speed, so short clips work best.
 
+**Players who won't install anything: IPRPS Link.** With **IPRPS Link**, remote players just open a link in their browser. It needs a *relay*: a small program at a public web address you control, on your own web hosting or a small server.
+
+1. Install **IPRPS Link** from **IPRPS Updates → IPRPS apps and optional software**, and open it from the IPRPS menu or the Hub.
+2. Choose **Sign in with Infinite Plane**, then **Allow**.
+3. Type your relay's address (it starts with `https://`), choose **Save**, then **Turn on**.
+4. Send players the link (or show the QR code). They join with the table's code as always.
+
+Your console stays on your computer only. Turn remote play off when the session ends; players then see a waiting page. Use only a relay you or your co-Session Master run: IPRPS Link shows it your Infinite Plane sign-in. Setting up the relay is in `docs/REMOTE-PLAYERS-LINK.md`.
+
+### Record the session as a podcast
+
+**IPRPS Podcast Studio** (optional, from **IPRPS Updates → IPRPS apps and optional software**) records actual-play episodes and recaps. It has a mixer, a soundboard and chapter markers. Co-hosts and guests join from their own browser with an invite link, and each person arrives in the editor on their own track. Edit on a timeline, export MP3 or MP4, and publish a podcast feed. An AI co-host is optional and uses your own API keys. Open it from the IPRPS menu. It keeps running when its window closes, so guests stay connected: stop it with **Settings → Quit Podcast Studio**.
+
 ## Quick reference: game night
 
 | Moment | Tool | Where |
@@ -503,6 +516,7 @@ Full steps are in `docs/REMOTE-PLAYERS.md` and in Appendix G of the build guide.
 | A player can't open the Table address | Their device must be on the **same Wi-Fi** as your computer. Guest Wi-Fi networks often block devices from seeing each other, so use your main network. Check that the table says **Open** |
 | "The table is closed" | Choose **Open the table** in the console. After a restart, the table always starts closed |
 | A player can't join | You may have ticked **Lock**. Untick it, let them in, then lock again |
+| A remote player sees *The Session Master's table isn't connected* | Open **IPRPS Link** and choose **Turn on**; check that your computer is online |
 | A phone plays no sound | The player must tap the page once. Look for **🔊 Tap to turn on the table sound** |
 | Someone saw the join code who shouldn't have | Choose **New code**. Players already at the table stay connected |
 | The Combat Tracker says to choose a session | Choose **+ Session** at the top to start tonight's session |

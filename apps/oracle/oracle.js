@@ -10,6 +10,8 @@
     set(k, v) { try { localStorage.setItem('oracle.' + k, v); } catch {} },
   };
   let busy = null;            // AbortController while a reply is streaming
+  let S = null;               // the last status: local models, Claude key and models
+  const isClaude = v => (v || '').startsWith('claude:');
 
   // ---------------------------------------------------------------- helpers
   async function api(action, body, params = '') {
@@ -97,7 +99,7 @@
     const label = kind === 'creature' ? 'Creature sheet' : 'NPC sheet';
     const d = $('details').value.trim();
     addMsg('user', '⟡ ' + label + (d ? ': ' + d : ''));
-    const wait = addMsg('assistant', `✦ Writing the ${label.toLowerCase()}… this can take a minute or two.`);
+    const wait = addMsg('assistant', `✦ Writing the ${label.toLowerCase()}… ${isClaude($('model').value) ? 'this takes a few seconds.' : 'this can take a minute or two.'}`);
     wait.classList.add('streaming'); wait.querySelector('.actions')?.remove();
     try {
       const j = await api('sheet_generate', { kind, details: d, campaign: campaign(), model: $('model').value });
@@ -199,22 +201,21 @@
   // ---------------------------------------------------------------- loading
   async function loadStatus() {
     try {
-      const s = await api('status');
-      const sel = $('model'); sel.innerHTML = '';
-      for (const m of s.models) sel.add(new Option(m.replace(/:latest$/, ''), m));
-      const want = store.get('model', s.default_model);
-      sel.value = s.models.includes(want) ? want : (s.default_model || '');
+      const s = S = await api('status');
+      fillModels(s.chosen || store.get('model', s.default_model));
+      const local = !isClaude($('model').value);
       if (!s.ollama) {
-        $('status').textContent = 'AI offline'; $('status').className = 'pill bad';
-        banner('The local AI service isn\'t running. Open a terminal and run <code>sudo systemctl start ollama</code>, then reload.');
+        banner(local ? 'The local AI service isn\'t running. Open a terminal and run <code>sudo systemctl start ollama</code>, then reload. Or choose a Claude model (online).' : '');
       } else if (!s.models.length) {
-        $('status').textContent = 'No model'; $('status').className = 'pill bad';
-        banner('No AI model is installed. Run <code>sudo iprps-ai-model status</code> in a terminal for help.');
+        banner(local ? 'No local AI model is installed. Run <code>sudo iprps-ai-model status</code> in a terminal for help, or choose a Claude model (online).' : '');
+      } else if (s.local_upgrade) {
+        banner(`A new local model is ready for the Oracle: <b>${s.local_upgrade}</b>. To download it (about 3.4 GB, needs internet), open a terminal and run <code>sudo iprps-ai-model upgrade</code>. Until then the Oracle keeps using the current model.`);
       } else {
-        $('status').textContent = 'Ollama ' + s.ollama; $('status').className = 'pill ok';
         banner(s.models.some(m => m.startsWith(s.iprps_model)) ? '' :
-          `The IPRPS model <b>${s.iprps_model}</b> isn't installed; using <b>${sel.value}</b>.`);
+          `The IPRPS model <b>${s.iprps_model}</b> isn't installed; using <b>${$('model').selectedOptions[0]?.textContent || ''}</b>.`);
       }
+      updateOnline();
+      if (s.claude.check_due) checkModels(true);
       const g = $('gens'); g.innerHTML = '';
       for (const gen of s.generators) {
         const b = document.createElement('button');
@@ -236,6 +237,67 @@
       }
     } catch (e) { banner(e.message); }
   }
+  // The Model menu: models on this computer, then Claude (online)
+  function fillModels(want) {
+    const sel = $('model'); sel.innerHTML = '';
+    if (S.models.length) {
+      const g = document.createElement('optgroup'); g.label = 'On this computer (offline, private)';
+      for (const m of S.models) g.appendChild(new Option(m.replace(/:latest$/, '').replace(/^iprps-storyteller$/, 'iprps-storyteller (Llama 3.2 3B)'), m));
+      sel.appendChild(g);
+    }
+    const g = document.createElement('optgroup');
+    g.label = S.claude.key ? 'Online: Claude (internet, your API key)' : 'Online: Claude (add your API key first)';
+    for (const m of S.claude.models) g.appendChild(new Option(`${m.label} · ${m.what}`, m.value));
+    sel.appendChild(g);
+    const all = [...sel.options].map(o => o.value);
+    sel.value = all.includes(want) ? want : (S.default_model || all[0] || '');
+  }
+  function updateOnline() {
+    const v = $('model').value, on = isClaude(v);
+    $('onlineNote').hidden = !on;
+    if (on) {
+      $('status').textContent = S.claude.key ? 'Online · ' + ($('model').selectedOptions[0]?.textContent.split(' · ')[0] || 'Claude') : 'Online · no API key';
+      $('status').className = 'pill ' + (S.claude.key ? 'online' : 'bad');
+    } else if (!S.ollama) { $('status').textContent = 'AI offline'; $('status').className = 'pill bad'; }
+    else if (!S.models.length) { $('status').textContent = 'No model'; $('status').className = 'pill bad'; }
+    else { $('status').textContent = 'On this computer'; $('status').title = 'Ollama ' + S.ollama; $('status').className = 'pill ok'; }
+  }
+  async function chooseModel() {
+    const v = $('model').value;
+    store.set('model', v); updateOnline();
+    try { await api('set_model', { model: v }); } catch {}
+    if (isClaude(v) && !S.claude.key) openOnline();
+  }
+
+  // Online AI dialog: the Anthropic API key and the Claude model list
+  function fillOnline() {
+    const c = S.claude;
+    $('keyHave').hidden = !c.key; $('keyNew').hidden = !!c.key; $('keyHint').textContent = c.key || '';
+    $('claudeCheck').disabled = !c.key;
+    const ul = $('claudeList'); ul.innerHTML = '';
+    for (const m of c.models) {
+      const li = document.createElement('li');
+      li.innerHTML = '<span></span><span></span>';
+      li.firstChild.textContent = m.label; li.lastChild.innerHTML = `<code></code> · ${m.what}`;
+      li.lastChild.querySelector('code').textContent = m.id;
+      ul.appendChild(li);
+    }
+    $('claudeChecked').textContent = c.checked ? 'Last checked ' + new Date(c.checked * 1000).toLocaleString() : (c.key ? 'Not checked yet' : 'Add your key to check');
+  }
+  function openOnline() { fillOnline(); $('online').showModal(); setTimeout(() => (S.claude.key ? $('claudeCheck') : $('keyInput')).focus(), 50); }
+  async function checkModels(quiet) {
+    try {
+      $('claudeCheck').disabled = true;
+      const j = await api('claude_check', {});
+      const want = j.chosen || $('model').value;
+      S.claude.models = j.models; S.claude.checked = j.checked; S.claude.check_due = false;
+      fillModels(want); updateOnline(); fillOnline();
+      if (j.new.length) toast('New Claude model' + (j.new.length > 1 ? 's' : '') + ' added: ' + j.new.join(', '));
+      else if (!quiet) toast('The Claude models are up to date');
+    } catch (e) { if (!quiet) toast(e.message, true); }
+    finally { $('claudeCheck').disabled = !S.claude.key; }
+  }
+
   async function loadCampaigns() {
     try {
       const j = await api('campaigns');
@@ -278,7 +340,31 @@
     $('logout').onclick = () => IPAuth.logout();
     $('useMemory').checked = store.get('useMemory', '1') === '1';
     $('useMemory').onchange = () => store.set('useMemory', $('useMemory').checked ? '1' : '0');
-    $('model').onchange = () => store.set('model', $('model').value);
+    $('model').onchange = chooseModel;
+    $('onlineOpen').onclick = openOnline;
+    $('claudeCheck').onclick = () => checkModels(false);
+    $('keySave').onclick = async () => {
+      const k = $('keyInput').value.trim(); if (!k) return $('keyInput').focus();
+      $('keySave').disabled = true; $('keySave').textContent = 'Checking…';
+      try {
+        const j = await api('claude_key', { secret: k });
+        $('keyInput').value = '';
+        Object.assign(S.claude, { key: j.key, models: j.models, checked: j.checked, check_due: false });
+        fillModels($('model').value); fillOnline(); updateOnline();
+        toast('API key saved. Claude models are in the Model menu.');
+      } catch (e) { toast(e.message, true); }
+      finally { $('keySave').disabled = false; $('keySave').textContent = 'Check and save'; }
+    };
+    $('keyRemove').onclick = async () => {
+      if (!confirm('Remove your Anthropic API key from this computer? The Oracle goes back to the local model.')) return;
+      try {
+        await api('claude_key_delete', {});
+        S.claude.key = null;
+        if (isClaude($('model').value)) { fillModels(S.default_model); chooseModel(); } else fillModels($('model').value);
+        fillOnline(); updateOnline(); toast('API key removed');
+      } catch (e) { toast(e.message, true); }
+    };
+    $('keyInput').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); $('keySave').click(); } };
     $('campaign').onchange = () => { store.set('campaign', $('campaign').value); loadHistory(); loadMemory(); };
     $('composer').onsubmit = e => {
       e.preventDefault();

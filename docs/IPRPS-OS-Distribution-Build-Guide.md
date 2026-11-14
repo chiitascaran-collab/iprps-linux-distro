@@ -22670,6 +22670,8 @@ update-desktop-database /usr/share/applications
 | **Session Log and Recap** | Campaigns and sessions; timeline of notes, events, combat, rolls, loot and XP; recap (from the log or the Oracle) and Session Master notes; attendance and XP | Exists (`session-log/`, 12.10) | ✔ | ✔ | ✔ |
 | **Character Creator** | The IPRPS character sheet (attributes, DP costs, skills, advantages, spells, portrait); exports `.json`; one file players can use anywhere | Exists (`character-creator/`, 12.9) | ✔ | ✔ | ✔ |
 | **Character Sheets** | The Session Master's sheet library: import players' files, view, print, by campaign; NPC and creature sheets; in the Table console; read by the Oracle | Exists (`character-sheets/`, 12.9) | ✔ | ✔ | ✔ |
+| **IPRPS Link** | Remote players join the IPRPS Table from any browser through the Session Master's own relay; nothing to install for players | Exists (`link/`, 12.13) | optional | optional | optional |
+| **IPRPS Podcast Studio** | Record, mix, edit and publish audio and video shows with co-hosts, guests and an optional AI co-host | Exists (`podcast-studio/`, 12.14) | optional | optional | optional |
 | **IPRPS Table** | LAN play: players join from phones, tablets and laptops on the same network; chat (everyone, players only, private), images and audio, IPRPS dice, and the Session Master pushes pictures, video, text and sound to everyone, groups or single players | Exists (`/opt/iprps/table`, 12.7) | ✔ | ✔ | ✔ |
 | **Player Display** | Full-screen handouts, maps and initiative for players | **Exists** (`hub/display.php`, shows text sent to it: Oracle replies, the turn order, rolls, recaps); maps to build | ✔ | ✔ | ✔ |
 | **Infinite Plane Universal Login** | Single sign-on for the local IPRPS apps | Exists | ✔ | ✔ | ✔ |
@@ -23816,6 +23818,100 @@ ls -l /root/snapshots/iprps-iprps-apps-lite.img     # must show 42949672960 byte
 ```
 
 Then re-enter the IPRPS CHROOT and BUILDER windows (0.5). Details and restoring: 0.4.
+
+### 12.13 IPRPS Link: remote players from any browser (optional)
+
+**IPRPS Link** lets players in another city or state join the IPRPS Table from a plain browser. They install nothing, and nobody changes a router. Appendix G's Tailscale method still works; use it when players are willing to install an app.
+
+```
+player's browser --https--> RELAY (public address) <--https-- IPRPS Link (IPRPS OS) --> IPRPS Table :7777
+```
+
+The **relay** is a small program at a public address the Session Master controls. **IPRPS Link** runs on the Session Master's computer: it dials *out* to the relay, collects what players ask for, asks the Table on the same computer, and sends the answers back. The Table is not changed. Remote players join with the same code and appear in the console with their own address (`127.77.x.y`). The Session Master console (`/sm/`) is never passed along.
+
+| Piece | Where | |
+|---|---|---|
+| Package `iprps-link` | `packages/iprps-link/` (its own recipe folder) | optional on every edition; depends on `iprps-base` and `iprps-table` |
+| Service | `/opt/iprps/link/agent.js`, `iprps-link.service` | account `iprps-link`, settings and sign-in in `/var/lib/iprps-link` (mode 700); starts at boot, but remote play stays **off** until the Session Master turns it on |
+| Console | `http://localhost:7778/` (this computer only) | menu entry **IPRPS Link**, Hub tile `link` |
+| Relays | `relay/node/` (a server, Node.js), `relay/php/` (web hosting, PHP 7.4+, no database) | both speak the same protocol |
+| Sign-in page | `relay/auth/link.html` | goes in the Infinite Plane site's `/auth/` folder |
+
+**Publish it once. [BUILDER] then [DEBIAN ROOT]** The Release Desk (17.7) does this with **Update IPRPS OS files or a recipe → `iprps-link`**. By hand:
+
+```bash
+cd /build/src/iprps-os/packages/iprps-link && makepkg -f --nodeps --noconfirm
+```
+
+```bash
+/root/iprps-repo.sh add iprps-apps /mnt/iprps/build/repo/iprps-link-*-any.pkg.tar.zst
+/root/iprps-repo.sh check && /root/iprps-repo.sh stage
+```
+
+Upload and check online as in 12.12 step 8. The package brings its own Hub tile (`/srv/www/iprps/link`); its display name, **IPRPS Link**, is in `apps/hub/app-names.json` and arrives with the next `iprps-apps` update (until then the Hub shows it as *link*).
+
+**The Session Master's setup** is in `docs/REMOTE-PLAYERS-LINK.md` (a players' and Session Masters' guide). In short:
+
+1. Upload `relay/auth/link.html` to the site's `/auth/` folder, beside `auth-client.js` (once, for everyone).
+2. Put up a relay: the Node.js relay behind Caddy or nginx with HTTPS, or the PHP relay in a folder or (better) a subdomain of a web host. Set the **owners** list (`OWNERS=` in `relay.env`, `'owners' =>` in `config.php`) to the Session Master's Infinite Plane username.
+3. On IPRPS OS: **IPRPS Updates → IPRPS apps and optional software → IPRPS Link**, open it, **Sign in with Infinite Plane**, type the relay address (`https://` only) and **Turn on**. Send players the link and the join code.
+
+> **Side note:** IPRPS Link shows the relay the Session Master's Infinite Plane sign-in, so the relay knows the table is theirs. That's why the address must start with `https://`, and why a Session Master should use only a relay they or their co-Session Master run. The relay checks the sign-in with the site and never stores it.
+
+**Test it. [TEST VM]** With players on mobile data (not your Wi-Fi): join, chat both ways, a roll, a pushed image and video, and a character sheet. The repository's tests run the real Table with both relays on any Linux computer with Node.js and PHP:
+
+```bash
+node tests/iprps-link/e2e.js node && node tests/iprps-link/e2e.js php && node tests/iprps-link/e2e.js php burst
+```
+
+| Problem | Fix |
+|---|---|
+| *No IPRPS Link relay answered* | Open `<relay>/_link/health` in a browser and fix the relay first |
+| *This relay belongs to another Session Master* | Another account connected first: set the owners list, or delete `data/owner.json` on the relay |
+| *The relay address must start with https://* | Give the relay HTTPS (Caddy does it automatically); plain `http://` is refused because the sign-in travels to it |
+| Chat arrives about half a second late | Normal on web hosts that hold responses back (the PHP relay switches to short connections); the Node.js relay is instant |
+| Players see *The Session Master's table isn't connected* | Remote play is off, or the computer is offline: `systemctl status iprps-link`, `journalctl -u iprps-link -e` |
+
+### 12.14 IPRPS Podcast Studio (optional)
+
+**IPRPS Podcast Studio** records, mixes, edits and publishes audio and video shows: for actual-play episodes, recaps, or any podcast. It's optional on every edition: **IPRPS Updates → IPRPS apps and optional software → IPRPS Podcast Studio**.
+
+| | |
+|---|---|
+| Package | `iprps-podcast-studio`, recipe in `packages/iprps-podcast-studio/`; installs to `/opt/iprps/podcast-studio`; depends on `iprps-base` only |
+| Needs | Python 3 (LFS), FFmpeg with libx264, libmp3lame, libopus, libvpx and freetype (Stage G), OpenSSL: every edition has them, built from source |
+| Opens | **IPRPS Podcast Studio** in the IPRPS menu (`iprps-podcast-studio`): a server on `http://127.0.0.1:8765` (this computer only) in a Chromium app window (Firefox on Lite) |
+| Guests | A guest gateway on port **8766** (HTTPS, self-signed certificate) serves only join pages, each behind a personal invite link |
+| Data | Shows and recordings in `~/.local/share/iprps-podcast-studio/`; settings and API keys in `~/.config/iprps-podcast-studio/config.json` (mode 600) |
+
+What it does:
+
+- **Studio:** camera and microphone, screen share, a mixer with a 10-band equalizer, high-pass filter and compressor on every channel, two decks with a crossfader, a 12-pad soundboard, chapter markers.
+- **Guests and co-hosts** join from a browser with their invite link, on the local network or the internet. Everyone is recorded on their own machine and arrives in the editor as a separate, synced track.
+- **AI co-host or guest (optional):** speaks with Gemini TTS, Grok or ElevenLabs and thinks with Gemini, Grok, Claude or the local Oracle (Ollama). The user adds their own API keys in Settings; they stay in the config file above.
+- **Editor:** multitrack timeline with split, trim, ripple delete, fades, per-track effects, video layouts, chapters and undo.
+- **Export and publish:** MP3, M4A, WAV, FLAC, MP4 and audiogram, loudness-normalized; an RSS feed with a readiness check, copied to a folder or uploaded with rsync over SSH; status tracking for 14 podcast directories.
+- **Backup:** one `.ipod.tar.gz` file per show, restored here or on another computer.
+
+**Publish it once. [BUILDER] then [DEBIAN ROOT]** The Release Desk: **Update IPRPS OS files or a recipe → `iprps-podcast-studio`**. By hand:
+
+```bash
+cd /build/src/iprps-os/packages/iprps-podcast-studio && makepkg -f --nodeps --noconfirm
+```
+
+```bash
+/root/iprps-repo.sh add iprps-apps /mnt/iprps/build/repo/iprps-podcast-studio-*-any.pkg.tar.zst
+/root/iprps-repo.sh check && /root/iprps-repo.sh stage
+```
+
+**Test it. [TEST VM]** Install it from IPRPS Updates, open it, create a show and an episode, record a minute with the microphone, and export an MP3 and an MP4. Then invite a guest from a second computer on the same network (accept the certificate warning once). The repository's tests: `apps/podcast-studio/tests/smoke.sh` (server, renders, feed, backup) and `python3 apps/podcast-studio/tests/ai_mock_test.py`.
+
+| Problem | Fix |
+|---|---|
+| The guest's browser warns about the certificate | Expected on the local network: **Advanced → Proceed**. The certificate is the studio's own |
+| A guest on the internet can't connect | Port 8766 must be reachable from outside (a port forward, a VPN address or an HTTPS tunnel with `--guest-http`); add a TURN server in Settings for strict firewalls |
+| Exports fail | `ffmpeg -hide_banner -encoders | grep -E 'libx264|libmp3lame|libopus'` must list all three (Stage G) |
+| The studio keeps running after its window closes | On purpose, so guests stay connected: **Settings → Quit Podcast Studio** |
 
 ---
 
@@ -29969,6 +30065,8 @@ Installed computers notice within 6 hours (or at once with **Check now**). **Tes
 
 The **IPRPS Release Desk** (17.7) does steps 1–2 for you and walks you through the rest.
 
+Two apps have their own recipe folder instead of a function in `iprps-apps`: `packages/iprps-link/` (12.13) and `packages/iprps-podcast-studio/` (12.14). Update them like any package folder (raise `pkgver`, build in that folder, add to `iprps-apps`); in the Release Desk, choose **Update IPRPS OS files or a recipe**.
+
 A **new app** for an edition: add a `package_iprps-<app>()` function and its name to `pkgname=()` in `iprps-apps/PKGBUILD`, a menu entry in `iprps-apps/desktop/`, and the name to the edition lists (`_apps_lite`, …) in `iprps-base/PKGBUILD`. Then publish a new `iprps-base` (17.3) too: the edition packages then depend on it, so every computer of that edition installs it with the next update.
 
 ### 17.2 A security update for a system package (example: cURL)
@@ -30705,6 +30803,8 @@ ls -l /root/iprps-system.img
 | Backups are very slow | Normal for a USB 2 drive or a busy disk. Close Windows programs that scan files (or exclude `D:\IPRPS\backups` from real-time antivirus scanning) |
 
 ## Appendix G — Remote Players
+
+> **Side note:** Players who can't or won't install an app can join from a plain browser with **IPRPS Link** (12.13).
 
 The IPRPS Table (12.7) is made for players in the same room, on the same network. A player in another city or state can join too, through **Tailscale**: a free app on both computers that links them into a small private network over the internet, encrypted with WireGuard. The remote player's browser then reaches the Table exactly as a phone on the Session Master's Wi-Fi does, and the Table treats them as a local player: same join code, same chat, dice, media and character sheets.
 

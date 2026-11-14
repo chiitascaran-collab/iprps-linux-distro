@@ -3,5 +3,5 @@ Type=Application
 Name=Session Master Mode
 Comment=Open the Session Master Hub, ambience and the player display
 Exec=iprps-session
-Icon=/usr/share/iprps/icons/iprps-session.png
+Icon=iprps-session
 Categories=X-IPRPS;

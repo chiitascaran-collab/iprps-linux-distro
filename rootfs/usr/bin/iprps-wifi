@@ -1,0 +1,311 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+"""IPRPS Wi-Fi Networks: scan, connect, and open NetworkManager's advanced settings
+for the chosen network. Uses nmcli; no root needed (polkit rule 10-iprps.rules)."""
+import subprocess, threading, re, sys
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib, Pango
+
+NMCLI = 'nmcli'
+RESCAN_SECONDS = 20
+
+
+def nmcli(*args, timeout=40):
+    p = subprocess.run([NMCLI, *args], capture_output=True, text=True, timeout=timeout)
+    return p.returncode, p.stdout, (p.stderr or p.stdout).strip()
+
+
+def split_terse(line):
+    """Split one line of `nmcli -t -e yes` output on unescaped colons."""
+    out, cur, esc = [], '', False
+    for ch in line:
+        if esc: cur += ch; esc = False
+        elif ch == '\\': esc = True
+        elif ch == ':': out.append(cur); cur = ''
+        else: cur += ch
+    out.append(cur)
+    return out
+
+
+def scan(rescan=True):
+    """Return (networks, error). Networks: one entry per SSID, strongest signal."""
+    rc, out, err = nmcli('-t', '-e', 'yes', '-f', 'IN-USE,SSID,SIGNAL,SECURITY', 'device', 'wifi', 'list',
+                         '--rescan', 'yes' if rescan else 'no')
+    if rc != 0:
+        return [], err or 'Wi-Fi scan failed'
+    nets = {}
+    for line in out.splitlines():
+        f = split_terse(line)
+        if len(f) < 4 or not f[1]:
+            continue                       # hidden networks have no name
+        inuse, ssid, signal, sec = f[0] == '*', f[1], int(f[2] or 0), f[3]
+        n = nets.get(ssid)
+        if n is None or signal > n['signal'] or inuse:
+            nets[ssid] = {'ssid': ssid, 'signal': signal, 'security': sec, 'active': inuse or (n or {}).get('active', False)}
+    return sorted(nets.values(), key=lambda n: (not n['active'], -n['signal'], n['ssid'].lower())), None
+
+
+def saved_profiles():
+    """SSID -> connection UUID for saved Wi-Fi profiles."""
+    rc, out, _ = nmcli('-t', '-e', 'yes', '-f', 'UUID,TYPE', 'connection', 'show')
+    res = {}
+    if rc != 0:
+        return res
+    for line in out.splitlines():
+        uuid, typ = (split_terse(line) + ['', ''])[:2]
+        if typ != '802-11-wireless':
+            continue
+        rc2, ssid, _ = nmcli('-g', '802-11-wireless.ssid', 'connection', 'show', uuid)
+        if rc2 == 0 and ssid.strip():
+            res[ssid.strip()] = uuid
+    return res
+
+
+def bars(sig):
+    return '▂▄▆█'[:max(1, min(4, (sig + 24) // 25))].ljust(4, '·')
+
+
+def is_enterprise(sec):
+    return '802.1X' in sec or 'EAP' in sec
+
+
+class WifiWindow(Gtk.Window):
+    def __init__(self):
+        super().__init__(title='Wi-Fi Networks')
+        self.set_default_size(460, 520)
+        self.set_icon_name('network-wireless')
+        self.busy = False
+        self.note = ''
+
+        hb = Gtk.HeaderBar(title='Wi-Fi Networks', show_close_button=True)
+        self.set_titlebar(hb)
+        self.refresh_btn = Gtk.Button.new_from_icon_name('view-refresh', Gtk.IconSize.BUTTON)
+        self.refresh_btn.set_tooltip_text('Scan again')
+        self.refresh_btn.connect('clicked', lambda *_: self.refresh(True))
+        hb.pack_start(self.refresh_btn)
+        self.spinner = Gtk.Spinner()
+        hb.pack_start(self.spinner)
+
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8, margin=12)
+        self.add(box)
+        self.status = Gtk.Label(xalign=0, wrap=True)
+        box.pack_start(self.status, False, False, 0)
+
+        self.store = Gtk.ListStore(str, str, str, str, bool)   # ssid, label, bars, security, active
+        self.view = Gtk.TreeView(model=self.store, headers_visible=False, activate_on_single_click=False)
+        r = Gtk.CellRendererText(ellipsize=Pango.EllipsizeMode.END)
+        col = Gtk.TreeViewColumn('Network', r, markup=1); col.set_expand(True)
+        self.view.append_column(col)
+        self.view.append_column(Gtk.TreeViewColumn('Security', Gtk.CellRendererText(foreground='#888'), text=3))
+        self.view.append_column(Gtk.TreeViewColumn('Signal', Gtk.CellRendererText(family='monospace'), text=2))
+        self.view.connect('row-activated', lambda *_: self.connect_selected())
+        self.view.get_selection().connect('changed', lambda *_: self.update_buttons())
+        sw = Gtk.ScrolledWindow(); sw.add(self.view)
+        box.pack_start(sw, True, True, 0)
+
+        row = Gtk.Box(spacing=6)
+        self.connect_btn = Gtk.Button(label='Connect')
+        self.connect_btn.get_style_context().add_class('suggested-action')
+        self.connect_btn.connect('clicked', lambda *_: self.connect_selected())
+        self.adv_btn = Gtk.Button(label='Advanced settings…')
+        self.adv_btn.set_tooltip_text('IP addresses, DNS, proxy, enterprise (802.1X) security and more, for the selected network')
+        self.adv_btn.connect('clicked', lambda *_: self.advanced_selected())
+        hidden = Gtk.Button(label='Hidden network…')
+        hidden.connect('clicked', lambda *_: self.connect_hidden())
+        allc = Gtk.Button(label='All connections…')
+        allc.set_tooltip_text('NetworkManager\'s connection editor: wired, VPN, saved networks')
+        allc.connect('clicked', lambda *_: self.run_editor([]))
+        for b in (self.connect_btn, self.adv_btn):
+            row.pack_start(b, False, False, 0)
+        for b in (allc, hidden):
+            row.pack_end(b, False, False, 0)
+        box.pack_start(row, False, False, 0)
+
+        self.update_buttons()
+        self.refresh(True)
+        GLib.timeout_add_seconds(RESCAN_SECONDS, self.auto_refresh)
+
+    # -------------------------------------------------------------- scanning
+    def auto_refresh(self):
+        if not self.busy:
+            self.refresh(True, quiet=True)
+        return True
+
+    def refresh(self, rescan, quiet=False):
+        if self.busy:
+            return
+        self.busy = True
+        self.spinner.start()
+        if not quiet:
+            self.status.set_text('Scanning for Wi-Fi networks…')
+
+        def work():
+            rc, out, _ = nmcli('radio', 'wifi')
+            if out.strip() == 'disabled':
+                GLib.idle_add(self.show_radio_off); return
+            nets, err = scan(rescan)
+            GLib.idle_add(self.show_networks, nets, err)
+        threading.Thread(target=work, daemon=True).start()
+
+    def show_radio_off(self):
+        self.busy = False; self.spinner.stop()
+        d = Gtk.MessageDialog(transient_for=self, modal=True, message_type=Gtk.MessageType.QUESTION,
+                              buttons=Gtk.ButtonsType.YES_NO, text='Wi-Fi is turned off')
+        d.format_secondary_text('Turn Wi-Fi on and scan for networks?')
+        if d.run() == Gtk.ResponseType.YES:
+            nmcli('radio', 'wifi', 'on')
+            GLib.timeout_add_seconds(3, lambda: (self.refresh(True), False)[1])
+        d.destroy()
+        self.status.set_text('Wi-Fi is off.')
+
+    def show_networks(self, nets, err):
+        self.busy = False; self.spinner.stop()
+        sel = self.selected()
+        self.store.clear()
+        if err:
+            self.status.set_text(f'Couldn\'t scan: {err}\nIs there a Wi-Fi adapter? (Try "nmcli device" in a terminal.)')
+            return
+        for n in nets:
+            name = GLib.markup_escape_text(n['ssid'])
+            label = f'<b>{name}</b>  <small>connected</small>' if n['active'] else name
+            sec = '🔒 ' + n['security'] if n['security'] not in ('', '--') else 'open'
+            self.store.append([n['ssid'], label, bars(n['signal']), sec, n['active']])
+        self.status.set_text(self.note or (f'{len(nets)} networks found. Double-click one to connect.' if nets else
+                             'No networks found. Move closer to the router, or press refresh.'))
+        self.note = ''
+        if sel:
+            for i, r in enumerate(self.store):
+                if r[0] == sel['ssid']:
+                    self.view.get_selection().select_path(Gtk.TreePath(i))
+        self.update_buttons()
+
+    def selected(self):
+        m, it = self.view.get_selection().get_selected()
+        if not it:
+            return None
+        return {'ssid': m[it][0], 'security': m[it][3], 'active': m[it][4]}
+
+    def update_buttons(self):
+        s = self.selected()
+        self.connect_btn.set_sensitive(bool(s) and not s['active'])
+        self.adv_btn.set_sensitive(bool(s))
+
+    # -------------------------------------------------------------- actions
+    def ask_password(self, ssid):
+        d = Gtk.Dialog(title='Wi-Fi password', transient_for=self, modal=True)
+        d.add_buttons('Cancel', Gtk.ResponseType.CANCEL, 'Connect', Gtk.ResponseType.OK)
+        d.set_default_response(Gtk.ResponseType.OK)
+        a = d.get_content_area(); a.set_spacing(8); a.set_border_width(12)
+        a.add(Gtk.Label(label=f'Password for “{ssid}”:', xalign=0))
+        e = Gtk.Entry(visibility=False, activates_default=True); a.add(e)
+        show = Gtk.CheckButton(label='Show password')
+        show.connect('toggled', lambda b: e.set_visibility(b.get_active())); a.add(show)
+        d.show_all()
+        pw = e.get_text() if d.run() == Gtk.ResponseType.OK else None
+        d.destroy()
+        return pw
+
+    def message(self, text, detail='', error=False):
+        d = Gtk.MessageDialog(transient_for=self, modal=True,
+                              message_type=Gtk.MessageType.ERROR if error else Gtk.MessageType.INFO,
+                              buttons=Gtk.ButtonsType.OK, text=text)
+        if detail: d.format_secondary_text(detail)
+        d.run(); d.destroy()
+
+    def run_nmcli_async(self, args, done_text, ssid):
+        self.spinner.start(); self.status.set_text(f'Connecting to “{ssid}”…')
+
+        def work():
+            rc, out, err = nmcli(*args, timeout=90)
+            GLib.idle_add(self.after_connect, rc, err, done_text, ssid)
+        threading.Thread(target=work, daemon=True).start()
+
+    def after_connect(self, rc, err, done_text, ssid):
+        self.spinner.stop()
+        if rc == 0:
+            self.status.set_text(done_text); self.note = done_text
+        else:
+            msg = re.sub(r'^Error:\s*', '', err.splitlines()[-1] if err else 'unknown error')
+            self.message(f'Couldn\'t connect to “{ssid}”', msg +
+                         ('\n\nIf the password is right, try Advanced settings….' if 'Secrets' in msg or 'password' in msg.lower() else ''),
+                         error=True)
+            self.status.set_text('Not connected.')
+        self.refresh(False)
+
+    def connect_selected(self):
+        s = self.selected()
+        if not s or s['active']:
+            return
+        ssid, sec = s['ssid'], s['security']
+        if is_enterprise(sec):
+            self.message('This network uses enterprise (802.1X) sign-in',
+                         'Use Advanced settings… to enter the user name, certificates and method your organisation gave you.')
+            return self.advanced_selected()
+        saved = saved_profiles().get(ssid)
+        if saved:
+            return self.run_nmcli_async(['connection', 'up', saved], f'Connected to “{ssid}”.', ssid)
+        args = ['device', 'wifi', 'connect', ssid]
+        if sec != 'open':
+            pw = self.ask_password(ssid)
+            if pw is None:
+                return
+            args += ['password', pw]
+        self.run_nmcli_async(args, f'Connected to “{ssid}”. It will reconnect automatically.', ssid)
+
+    def connect_hidden(self):
+        d = Gtk.Dialog(title='Hidden network', transient_for=self, modal=True)
+        d.add_buttons('Cancel', Gtk.ResponseType.CANCEL, 'Connect', Gtk.ResponseType.OK)
+        a = d.get_content_area(); a.set_spacing(8); a.set_border_width(12)
+        a.add(Gtk.Label(label='Network name (SSID):', xalign=0)); n = Gtk.Entry(); a.add(n)
+        a.add(Gtk.Label(label='Password (leave empty for an open network):', xalign=0))
+        p = Gtk.Entry(visibility=False, activates_default=True); a.add(p)
+        d.set_default_response(Gtk.ResponseType.OK); d.show_all()
+        ok = d.run() == Gtk.ResponseType.OK
+        ssid, pw = n.get_text().strip(), p.get_text()
+        d.destroy()
+        if ok and ssid:
+            args = ['device', 'wifi', 'connect', ssid, 'hidden', 'yes'] + (['password', pw] if pw else [])
+            self.run_nmcli_async(args, f'Connected to “{ssid}”.', ssid)
+
+    def run_editor(self, args):
+        try:
+            subprocess.Popen(['nm-connection-editor', *args])
+        except FileNotFoundError:
+            self.message('NetworkManager\'s connection editor isn\'t installed.', error=True)
+
+    def advanced_selected(self):
+        """Open the advanced editor for the selected network, creating its profile first if needed."""
+        s = self.selected()
+        if not s:
+            return
+        ssid, sec = s['ssid'], s['security']
+        uuid = saved_profiles().get(ssid)
+        if not uuid:
+            args = ['connection', 'add', 'type', 'wifi', 'ifname', '*', 'con-name', ssid, 'ssid', ssid]
+            if is_enterprise(sec):
+                args += ['wifi-sec.key-mgmt', 'wpa-eap', '802-1x.eap', 'peap', '802-1x.phase2-auth', 'mschapv2']
+            elif 'WPA3' in sec and 'WPA2' not in sec:
+                args += ['wifi-sec.key-mgmt', 'sae']
+            elif 'WPA' in sec:
+                args += ['wifi-sec.key-mgmt', 'wpa-psk']
+            elif 'WEP' in sec:
+                args += ['wifi-sec.key-mgmt', 'none']
+            rc, out, err = nmcli(*args)
+            m = re.search(r'\(([0-9a-f-]{36})\)', out)
+            if rc != 0 or not m:
+                return self.message('Couldn\'t prepare the network\'s settings', err, error=True)
+            uuid = m.group(1)
+        self.status.set_text(f'Opening advanced settings for “{ssid}”…')
+        self.run_editor(['--edit', uuid])
+
+
+def main():
+    if subprocess.run(['which', NMCLI], capture_output=True).returncode != 0:
+        print('nmcli not found: NetworkManager is required', file=sys.stderr); sys.exit(1)
+    w = WifiWindow(); w.connect('destroy', Gtk.main_quit); w.show_all(); Gtk.main()
+
+
+if __name__ == '__main__':
+    main()

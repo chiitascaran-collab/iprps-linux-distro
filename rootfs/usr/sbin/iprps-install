@@ -1,11 +1,19 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2026 Mythical Legends Publishing, LLC
-# iprps-install — copy the running IPRPS system to an internal disk
+# iprps-install — copy IPRPS OS to an internal disk: the running system (USB image),
+# or, when started from the live ISO (DVD or USB), the clean system on the disc
 set -euo pipefail
 [ $EUID -eq 0 ] || { echo "Please run: sudo iprps-install"; exit 1; }
-SRC_ROOT=$(findmnt -no SOURCE /)
-SRC_DISK=$(lsblk -no PKNAME "$SRC_ROOT")
+if [ -e /etc/iprps-live ] && mountpoint -q /run/live/rootfs; then
+  SRC=/run/live/rootfs                                   # live ISO: the read-only system, not the RAM session
+  MEDIUM=$(findmnt -no SOURCE /run/live/medium)
+  SRC_DISK=$(lsblk -no PKNAME "$MEDIUM" 2>/dev/null || true); [ -n "$SRC_DISK" ] || SRC_DISK=$(basename "$MEDIUM")
+else
+  SRC=/
+  SRC_ROOT=$(findmnt -no SOURCE /)
+  SRC_DISK=$(lsblk -no PKNAME "$SRC_ROOT")
+fi
 echo "Disks on this computer (you are running from: $SRC_DISK):"
 lsblk -d -e 7,11 -o NAME,SIZE,MODEL,TRAN | grep -v "^$SRC_DISK "
 read -rp "Install IPRPS OS to which disk (e.g. nvme0n1 or sda)? " T
@@ -25,7 +33,10 @@ PARTS
 partx -u "$TARGET"; sleep 2
 case "$T" in nvme*|mmcblk*) P="${TARGET}p" ;; *) P="$TARGET" ;; esac
 mkfs.vfat -F 32 "${P}1"
-mkfs.ext4 -F "${P}3"
+echo "Preparing the disk. On a large hard drive this can take several minutes..."
+# Initialize the whole file system now. By default ext4 leaves this to a background task
+# (ext4lazyinit) that keeps the disk busy for 10-30 minutes after the first start.
+mkfs.ext4 -F -E lazy_itable_init=0,lazy_journal_init=0 "${P}3"
 
 NEW=/mnt/iprps-target
 mkdir -p "$NEW"
@@ -34,11 +45,11 @@ mkdir -p "$NEW/boot/efi"
 mount "${P}1" "$NEW/boot/efi"
 rsync -aAXH --info=progress2 \
   --exclude={/dev/*,/proc/*,/sys/*,/run/*,/tmp/*,/mnt/*,/media/*,/lost+found,/swapfile,/boot/efi/*} \
-  / "$NEW/"
+  "$SRC/" "$NEW/"
 
 ROOT_UUID=$(blkid -s UUID -o value "${P}3")
 EFI_UUID=$(blkid -s UUID -o value "${P}1")
-OLD_UUID=$(blkid -s UUID -o value "$SRC_ROOT")
+OLD_UUID=$(grep -o 'root=UUID=[^ ]*' "$SRC/boot/grub/grub.cfg" | head -1 | cut -d= -f3)
 cat > "$NEW/etc/fstab" << FSTAB
 UUID=$ROOT_UUID  /          ext4  defaults                                 1 1
 UUID=$EFI_UUID   /boot/efi  vfat  codepage=437,iocharset=iso8859-1,nofail  0 2
@@ -50,6 +61,8 @@ chroot "$NEW" grub-install --target=x86_64-efi --efi-directory=/boot/efi --remov
 chroot "$NEW" grub-install --target=i386-pc "$TARGET"
 
 rm -f "$NEW/var/lib/iprps/firstboot-done" "$NEW/etc/ssh/ssh_host_"*
-echo uninitialized > "$NEW/etc/machine-id"
+: > "$NEW/etc/machine-id"        # empty: a new ID at first boot, without systemd's preset reset
 umount -R "$NEW"
-echo; echo "Done. Shut down, remove the USB drive, and start the computer."
+echo; echo "Done. Shut down, remove the USB drive or DVD, and start the computer."
+echo "The first start takes a little longer, and the first 10-30 minutes on the desktop can be slow"
+echo "while IPRPS OS finishes setting up. After that, restart once."

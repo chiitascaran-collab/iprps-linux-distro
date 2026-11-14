@@ -1,0 +1,102 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-icon-theme [ROOT] - build the IPRPS icon theme (guide 9.3; the iprps-icons package runs it too)
+# Reads ROOT/usr/share/iprps/icons/*.png (256x256) and writes ROOT/usr/share/icons/IPRPS: every icon as
+# iprps-<name>, plus the standard names Xfce, Thunar and GTK ask for. Links point to /usr/share/iprps/icons.
+set -eu
+ROOT=${1:-}
+I=/usr/share/iprps/icons
+T=$ROOT/usr/share/icons/IPRPS
+[ -d "$ROOT$I" ] || { echo "iprps-icon-theme: $ROOT$I not found" >&2; exit 1; }
+rm -rf "$T"
+install -dm755 "$T"/256x256/{places,apps,devices,mimetypes}
+n=0; missing=""
+ic() {   # ic <icon file name> <context> <theme name>...
+  local f=$1 ctx=$2; shift 2
+  if [ ! -f "$ROOT$I/$f.png" ]; then missing="$missing $f"; return 0; fi
+  local name; for name in "$@"; do ln -sf "$I/$f.png" "$T/256x256/$ctx/$name.png"; n=$((n + 1)); done
+}
+# Every icon under its own IPRPS name (launchers, the Hub, the folder thumbnailer)
+for p in "$ROOT$I"/*.png; do b=$(basename "$p" .png); ic "$b" apps "iprps-$b"; done
+
+# Places: home and the standard folders (xdg-user-dirs), network, trash, any folder
+ic home              places user-home folder-home
+ic folder-desktop    places user-desktop folder-desktop
+ic documents         places folder-documents
+ic folder-downloads  places folder-download folder-downloads
+ic folder-music      places folder-music
+ic folder-pictures   places folder-pictures
+ic folder-videos     places folder-videos
+ic Public            places folder-publicshare folder-public
+ic Templates         places folder-templates
+ic Projects          places folder-projects
+ic campaigns         places folder-campaigns
+ic folder-network    places folder-remote
+ic network           places network-workgroup
+ic trash             places user-trash user-trash-full
+ic folder            places folder generic-folder
+# Devices
+ic file-system       devices drive-harddisk
+# File types
+ic folder            mimetypes inode-directory
+ic text-files        mimetypes text-x-generic text-plain
+ic document          mimetypes x-office-document application-document
+# Applications and menu categories
+ic thunar-app        apps org.xfce.thunar
+ic file-system-thunar apps thunar Thunar
+ic finder            apps system-file-manager
+ic terminal          apps utilities-terminal org.xfce.terminal org.xfce.terminalemulator
+ic internet          apps applications-internet web-browser org.xfce.webbrowser
+ic settings          apps preferences-system preferences-desktop org.xfce.settings.manager
+ic security          apps preferences-system-privacy
+ic audio             apps applications-multimedia multimedia-volume-control
+ic menu              apps org.xfce.panel.applicationsmenu start-here
+ic apps              apps applications-other applications-all
+ic home              apps go-home
+# IPRPS apps whose icon file has another name
+ic hub               apps iprps-hub
+ic initiative        apps iprps-combat
+ic session-master-mode apps iprps-session
+ic dice              apps iprps-dice
+
+cat > "$T/index.theme" << "EOF"
+[Icon Theme]
+Name=IPRPS
+Comment=IPRPS OS icons
+Inherits=Adwaita,hicolor
+Directories=256x256/places,256x256/apps,256x256/devices,256x256/mimetypes
+
+[256x256/places]
+Size=256
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Places
+
+[256x256/apps]
+Size=256
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Applications
+
+[256x256/devices]
+Size=256
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Devices
+
+[256x256/mimetypes]
+Size=256
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=MimeTypes
+EOF
+echo "IPRPS icon theme: $n names from $(ls "$ROOT$I"/*.png | wc -l) icons"
+[ -z "$missing" ] || echo "  not found (those names keep Adwaita's icon):$missing"
+# The cache needs the real files, so only build it on the system itself
+if [ -z "$ROOT" ] && command -v gtk-update-icon-cache >/dev/null; then gtk-update-icon-cache -qf "$T"; fi
+exit 0

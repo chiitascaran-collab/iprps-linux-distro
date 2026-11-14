@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+[Unit]
+Description=IPRPS OS live session: live user, automatic login, installer on the desktop
+ConditionPathExists=/etc/iprps-live
+After=local-fs.target
+Before=display-manager.service iprps-setup.service systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/iprps-live-setup
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

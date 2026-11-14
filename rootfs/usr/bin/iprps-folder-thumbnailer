@@ -1,0 +1,45 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+# iprps-folder-thumbnailer <size> <folder> <output.png> - IPRPS folder icons in Thunar (guide 9.3)
+# Thunar (through tumbler) asks for a "thumbnail" of each folder; this answers with the IPRPS icon for
+# that folder, if there is one. Folders without one keep the theme's folder icon (the command fails).
+# Nothing is written inside the folders themselves.
+I=/usr/share/iprps/icons
+dir=${2%/}; out=$3
+[ -n "$dir" ] || dir=/
+icon=""
+# System folders, by full path
+case "$dir" in
+  /) icon=folder-root-system ;;
+  /bin|/usr/bin) icon=bin ;;     /boot) icon=boot ;;    /dev) icon=dev ;;      /etc) icon=etc ;;
+  /home) icon=home ;;            /lib|/usr/lib) icon=lib ;;  /lib64|/usr/lib64) icon=lib64 ;;
+  /media|/run/media) icon=media ;; /mnt) icon=mnt ;;    /opt) icon=opt ;;      /proc) icon=proc ;;
+  /root) icon=root ;;            /run) icon=run ;;      /sbin|/usr/sbin) icon=sbin ;;
+  /srv) icon=srv ;;              /sys) icon=sys ;;      /tmp|/var/tmp) icon=tmp ;;
+  /usr) icon=usr ;;              /var) icon=var ;;      /build) icon=build ;;
+  /usr/src) icon=src ;;          /build/src|/sources) icon=sources ;;
+esac
+# Folders in home directories (and anywhere else), by name, any capitalization
+if [ -z "$icon" ]; then
+  name=$(basename "$dir" | tr 'A-Z' 'a-z')
+  case "$name" in
+    campaigns) icon=campaigns ;;      projects) icon=Projects ;;
+    public) icon=Public ;;            templates) icon=Templates ;;
+    maps) icon=folder-maps ;;         handouts) icon=folder-handouts ;;
+    npcs) icon=folder-npcs ;;         players) icon=folder-players ;;
+    creatures) icon=folder-creatures ;; dungeons) icon=folder-dungeons ;;
+    "ai profiles"|ai-profiles) icon=folder-ai-profiles ;;
+    "ai patches"|ai-patches|patches) icon=folder-ai-patches ;;
+    "rpg vault"|rpg-vault|vault) icon=folder-rpg-vault ;;
+    archives|archive) icon=folder-archives ;;
+    code|scripts|"code and scripts") icon=folder-code-scripts ;;
+    "text files"|text-files) icon=folder-text-files ;;
+    audio) icon=folder-music ;;
+    debian-kconfig) icon=debian-kconfig ;;
+    src) icon=src ;;                  sources) icon=sources ;;
+  esac
+fi
+[ -n "$icon" ] && [ -f "$I/$icon.png" ] || exit 1
+# tumbler scales the picture to the size Thunar asked for
+exec cp "$I/$icon.png" "$out"

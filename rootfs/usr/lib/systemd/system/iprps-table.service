@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+[Unit]
+Description=IPRPS Table (LAN play for the Session Master)
+After=network.target
+
+[Service]
+User=iprps-table
+Group=iprps-table
+ExecStart=/usr/bin/node /opt/iprps/table/server.js
+StateDirectory=iprps-table
+StateDirectoryMode=0750
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+LockPersonality=yes
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target

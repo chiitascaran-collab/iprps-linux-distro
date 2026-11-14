@@ -56,7 +56,9 @@ function readBody(req, max) {
     req.on('end', () => resolve(Buffer.concat(parts))); req.on('error', reject);
   });
 }
-const clientIp = req => (TRUST_PROXY && String(req.headers['x-forwarded-for'] || '').split(',')[0].trim()) || req.socket.remoteAddress || '';
+// The proxy in front (Caddy, nginx) adds the visitor's address at the END of X-Forwarded-For; earlier entries
+// come from the visitor and can say anything, so only the last one counts (join-code guessing limits use it).
+const clientIp = req => (TRUST_PROXY && String(req.headers['x-forwarded-for'] || '').split(',').pop().trim()) || req.socket.remoteAddress || '';
 function publicUrl(req) {
   if (PUBLIC_URL) return PUBLIC_URL;
   const proto = (TRUST_PROXY && req.headers['x-forwarded-proto']) || (req.socket.encrypted ? 'https' : 'http');

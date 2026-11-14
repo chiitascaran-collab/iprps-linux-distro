@@ -1,12 +1,38 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2026 Mythical Legends Publishing, LLC
-# iprps-session — Session Master Mode
-iprps-open hub/ &
+# iprps-session - Session Master Mode: the Hub, ambience, and the player display
+W=/srv/www/iprps
+note() { command -v notify-send >/dev/null && notify-send -i iprps-logo "Session Master Mode" "$1"; }
+if [ -d "$W/hub" ]; then
+  iprps-open hub/ &
+else
+  note "The Session Master Hub isn't installed in this version yet."
+fi
 sleep 2
 [ -d "$HOME/Campaigns/Audio" ] && mpv --player-operation-mode=pseudo-gui --no-video \
     --shuffle --loop-playlist=inf --title="IPRPS Ambience" "$HOME/Campaigns/Audio" &
-mkdir -p "$HOME/.iprps/player-display"
-firefox --no-remote --profile "$HOME/.iprps/player-display" --kiosk \
-        "http://localhost/iprps/hub/display.php" &
+# Medium/Advanced: load the Oracle's AI model now, so its first answer is quick
+command -v ollama >/dev/null && curl -s -m 2 http://127.0.0.1:11434/api/generate \
+    -d '{"model":"iprps-storyteller","keep_alive":"60m"}' >/dev/null &
+# The player display: only if a display page is installed
+PAGE=""
+[ -f "$W/oracle/display.php" ] && PAGE=oracle/display.php
+[ -f "$W/hub/display.php" ] && PAGE=hub/display.php
+if [ -n "$PAGE" ]; then
+  mkdir -p "$HOME/.iprps/player-display"
+  SCREENS=$(xrandr --listactivemonitors 2>/dev/null | awk 'NR==1{print $2}')
+  if [ "${SCREENS:-1}" -ge 2 ]; then
+    # Second screen or projector: full screen there (drag it over if needed; Alt+F4 closes it)
+    firefox --no-remote --profile "$HOME/.iprps/player-display" --kiosk "http://localhost/iprps/$PAGE" &
+  elif [ -x /usr/bin/iprps-table ]; then
+    # One screen: the players follow on their own phones, tablets and laptops (IPRPS Table, 12.7)
+    iprps-table &
+    note "One screen: open the table, and players join on their own devices. With a second screen or projector, the player display opens there."
+  else
+    # One screen, no IPRPS Table: a normal window, so it can't cover the desktop
+    firefox --no-remote --profile "$HOME/.iprps/player-display" --new-window "http://localhost/iprps/$PAGE" &
+    note "Player display opened in a window. With a second screen or projector connected, it opens full screen there."
+  fi
+fi
 wait

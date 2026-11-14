@@ -5,7 +5,6 @@
 # like packages/iprps-apps. Shows, recordings and API keys live in the user's home folder
 # (~/.local/share/iprps-podcast-studio, ~/.config/iprps-podcast-studio), never in this package.
 #
-# ffmpeg must be built with libx264, libmp3lame, libopus, libvpx and freetype (exports and name captions need them).
 
 pkgname=iprps-podcast-studio
 pkgver=2026.11.14
@@ -14,7 +13,9 @@ pkgdesc='IPRPS Podcast Studio: record, mix, edit and publish audio and video sho
 arch=(any)
 url='https://github.com/chiitascaran-collab/iprps-linux-distro'
 license=(GPL-2.0-only)
-depends=(iprps-base python ffmpeg openssl)
+# Python (LFS), FFmpeg with libx264, libmp3lame, libopus, libvpx and freetype (Stage G) and OpenSSL are part of every
+# IPRPS OS edition, built from source rather than installed as pacman packages, so they can't be listed here.
+depends=(iprps-base)
 optdepends=('rsync: publish feeds to a web server over SSH'
             'fontconfig: name captions on video exports')
 options=(!strip !debug)

@@ -75,12 +75,20 @@
     "name": "Soundboard",
     "description": "Sound effects and ambience at a click"
   },
-  "link": {
-    "name": "IPRPS Link",
-    "description": "Players in other cities join your IPRPS Table from any browser"
-  },
   "updates": {
     "name": "IPRPS Updates",
     "description": "Security fixes, new app versions and optional software"
+  },
+  "master_db": {
+    "name": "Master Database",
+    "description": "Bestiary, taverns, species, weapons, grimoire, flora and fauna, gear, covenants and traps in one catalog"
+  },
+  "character-prompt-builder": {
+    "name": "Character Prompt Builder",
+    "description": "Random character reference-sheet prompts for image generators"
+  },
+  "link": {
+    "name": "IPRPS Link",
+    "description": "Players in other cities join your IPRPS Table from any browser"
   }
 }

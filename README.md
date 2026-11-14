@@ -4,7 +4,7 @@
 
 [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](LICENSE)
 
-> **Status: in development (pre-1.0).** The base system, generic kernel, graphics, audio, networking and the Xfce desktop are built, and the desktop logs in successfully in boot tests. Next: the web server and database (Stage F). See [BUILD-STATUS.md](BUILD-STATUS.md). No downloadable images yet.
+> **Status: 1.0 Beta.** All three editions (Lite, Medium, Advanced) are built, boot from USB (the `.img.xz` image; the live `.iso` in DD mode) and install on real PCs. Updates and new apps arrive through **IPRPS Updates** (pacman). Downloads: [infiniteplane.space/downloads/iprps](https://infiniteplane.space/downloads/iprps/#download). See [BUILD-STATUS.md](BUILD-STATUS.md).
 
 ## What it is
 
@@ -47,6 +47,10 @@ Read the user-facing overview: **[docs/IPRPS-OS-Overview.md](docs/IPRPS-OS-Overv
 | `apps/hub/` | The **Session Master Hub**: home page with the Session Master's apps, **Manage apps** (every app in `/srv/www/iprps`, on/off per account), default apps, and the player display |
 | `apps/table/` | The **IPRPS Table**: LAN play. A Node.js service (no npm packages) on port 7777: players join from phones, tablets and laptops; chat with private messages, images and audio; IPRPS dice (`dice-presets.json`); the Session Master pushes images, video, text and sound to everyone, groups or single players |
 | `apps/table-tile/` | The Hub tile that opens the IPRPS Table console (installed as `/srv/www/iprps/table`) |
+| `apps/link/`, `apps/link-tile/` | **IPRPS Link** (`iprps-link`, optional): remote players join the IPRPS Table from any browser through a relay the Session Master hosts. A Node.js service on port 7778 (this computer only) that dials out to the relay; the Table is unchanged and its console is never passed along (12.13, `docs/REMOTE-PLAYERS-LINK.md`) |
+| `relay/` | The IPRPS Link relays, for the Session Master's own server or web hosting: `relay/node/` (Node.js, with a service unit and Caddy/nginx samples), `relay/php/` (PHP, no database), and `relay/auth/link.html` for the site's `/auth/` folder |
+| `apps/podcast-studio/` | **IPRPS Podcast Studio** (`iprps-podcast-studio`, optional): record, mix, edit and publish audio and video shows, with co-hosts and guests over the network and an optional AI co-host; Python standard library and FFmpeg (12.14) |
+| `tests/iprps-link/` | End-to-end tests for IPRPS Link with the real Table and both relays |
 | `apps/writer/` | **IPRPS Writer**: a simple word processor (per-account documents; opens and saves .docx, .odt, .txt, .html; PDF via print) |
 | `apps/oracle/` | The **IPRPS Oracle**: AI for Session Masters (Medium and Advanced), PHP + JavaScript, Universal Login; local Llama 3.2 3B, or Claude online with the Session Master's own API key (`llm.php`); reads character sheets and writes NPC and creature sheets |
 | `apps/character-creator/` | The **Character Creator**: the IPRPS character sheet as one self-contained HTML file (attributes, DP costs, skills, advantages, spells, portrait; exports `.json`). Works in the Hub, on the IPRPS Table (`/sheet/`) and on its own |

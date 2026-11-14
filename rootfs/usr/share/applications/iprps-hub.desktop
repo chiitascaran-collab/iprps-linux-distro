@@ -3,5 +3,5 @@ Type=Application
 Name=Session Master Hub
 Comment=Campaigns, players, characters, sessions and encounters
 Exec=iprps-open hub/
-Icon=/usr/share/iprps/icons/iprps-hub.png
+Icon=iprps-hub
 Categories=X-IPRPS;

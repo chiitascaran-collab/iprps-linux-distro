@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Character Prompt Builder
+GenericName=IPRPS Character Prompts
+Comment=Random character reference-sheet prompts for image generators
+Exec=iprps-open character-prompt-builder/
+Icon=iprps-character-prompt-builder
+Terminal=false
+Categories=X-IPRPS;Graphics;

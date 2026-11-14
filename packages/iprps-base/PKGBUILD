@@ -9,7 +9,7 @@
 pkgbase=iprps-base
 pkgname=(iprps-base iprps-lite iprps-medium iprps-advanced)
 pkgver=1.0
-pkgrel=4
+pkgrel=8
 arch=(any)
 url='https://infiniteplane.space/'
 license=(GPL-2.0-only)
@@ -17,7 +17,7 @@ license=(GPL-2.0-only)
 # The IPRPS apps every edition has (packages from packages/iprps-apps), and the icons (packages/iprps-icons)
 _apps_lite=(iprps-lib iprps-hub iprps-writer iprps-table iprps-character-creator iprps-character-sheets
             iprps-combat iprps-dice iprps-session-log iprps-welcome iprps-file-viewer iprps-soundboard iprps-updates-tile
-            iprps-icons)
+            iprps-icons iprps-master-db iprps-character-prompt-builder)
 _apps_medium=("${_apps_lite[@]}" iprps-oracle)
 _apps_advanced=("${_apps_medium[@]}")
 
@@ -50,6 +50,8 @@ package_iprps-base() {
     install -Dm644 "$s/$k.hook" "$pkgdir/usr/share/libalpm/hooks/$k.hook"
   done
   install -dm755 "$pkgdir/var/lib/iprps-updates"
+  # Apps retired by the distributor: IPRPS Updates removes them after updating (guide 17.6)
+  install -Dm644 "$s/retired-apps" "$pkgdir/usr/lib/iprps/retired-apps"
 }
 
 _edition() {   # _edition <name> <Title> <apps...>

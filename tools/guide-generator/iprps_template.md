@@ -2370,6 +2370,8 @@ update-desktop-database /usr/share/applications
 | **Session Log and Recap** | Campaigns and sessions; timeline of notes, events, combat, rolls, loot and XP; recap (from the log or the Oracle) and Session Master notes; attendance and XP | Exists (`session-log/`, 12.10) | ✔ | ✔ | ✔ |
 | **Character Creator** | The IPRPS character sheet (attributes, DP costs, skills, advantages, spells, portrait); exports `.json`; one file players can use anywhere | Exists (`character-creator/`, 12.9) | ✔ | ✔ | ✔ |
 | **Character Sheets** | The Session Master's sheet library: import players' files, view, print, by campaign; NPC and creature sheets; in the Table console; read by the Oracle | Exists (`character-sheets/`, 12.9) | ✔ | ✔ | ✔ |
+| **IPRPS Link** | Remote players join the IPRPS Table from any browser through the Session Master's own relay; nothing to install for players | Exists (`link/`, 12.13) | optional | optional | optional |
+| **IPRPS Podcast Studio** | Record, mix, edit and publish audio and video shows with co-hosts, guests and an optional AI co-host | Exists (`podcast-studio/`, 12.14) | optional | optional | optional |
 | **IPRPS Table** | LAN play: players join from phones, tablets and laptops on the same network; chat (everyone, players only, private), images and audio, IPRPS dice, and the Session Master pushes pictures, video, text and sound to everyone, groups or single players | Exists (`/opt/iprps/table`, 12.7) | ✔ | ✔ | ✔ |
 | **Player Display** | Full-screen handouts, maps and initiative for players | **Exists** (`hub/display.php`, shows text sent to it: Oracle replies, the turn order, rolls, recaps); maps to build | ✔ | ✔ | ✔ |
 | **Infinite Plane Universal Login** | Single sign-on for the local IPRPS apps | Exists | ✔ | ✔ | ✔ |
@@ -2381,6 +2383,8 @@ update-desktop-database /usr/share/applications
 | **Soundboard** | One-click sound effects and ambience: built-in sounds made by the computer, your own files, boards and hotkeys; plays files on the Table too | Exists (`soundboard/`, 12.11) | ✔ | ✔ | ✔ |
 | **IPRPS Updates** | Security fixes, new app versions and optional software, installed without reinstalling (pacman); Hub tile, notifications | Exists (`iprps-base`, 12.12) | ✔ | ✔ | ✔ |
 | **IPRPS File Viewer** | Open and check `.iprps`, `.ipai`, `.srpatch` and `.capstone`/`.pcapstone` files; import sheets | Exists (`file-viewer/`, 12.10) | ✔ | ✔ | ✔ |
+| **IPRPS Master Database** | One catalog: bestiary, tavern ledger, species, weapons, armory, grimoire, flora and fauna, gear, covenants, traps; reports and `.iprps` exports | Exists (`master_db/`, 12.10) | ✔ | ✔ | ✔ |
+| **Character Prompt Builder** | Random character reference-sheet prompts for image generators | Exists (`character-prompt-builder/`, 12.10) | ✔ | ✔ | ✔ |
 | **Lookbook Studio** | Visual lookbooks for campaigns and settings | Exists | — | — | ✔ |
 | **Reel** | Browser-based audio workstation | Exists | — | — | ✔ |
 | **THE DIRECTOR** | Story maps into AI video Scene Packages | Exists | — | — | ✔ |
@@ -2563,6 +2567,8 @@ The Hub (`/srv/www/iprps/hub/`, opened by the **Session Master Hub** launcher an
 | `lighting-generator` | Lighting Generator |
 | `iprps_email` | IPRPS Email |
 | `file-viewer` | IPRPS File Viewer (12.10) |
+| `master_db` | Master Database (12.10) |
+| `character-prompt-builder` | Character Prompt Builder (12.10) |
 
 The Hub lists any folder in `/srv/www/iprps` with an `index.php` or `index.html` (except `auth`, `hub` and helper folders such as `sql`). Display names come from `hub/app-names.json`, then the app's page title, then the folder name; icons from the app's own `favicon`/`icon`/`logo` file, then the IPRPS icon theme (an icon named after the folder), then the app's initials. A default app that isn't installed is named under **Manage apps**, so a missing or misnamed folder is easy to spot.
 
@@ -2967,6 +2973,30 @@ LIST
 cat > /usr/bin/iprps-welcome-once << "EOF"
 #!/bin/bash
 # iprps-welcome-once - open IPRPS Welcome at a user's first desktop login (once per user)
+# Within 3 hours of a new installation's first boot (a USB image or a fresh install to disk), the
+# computer is still finishing its setup in the background: disk preparation, font and app caches.
+# Say so once per user and installation, and say again when it's done.
+FB=/var/lib/iprps/firstboot-done
+if [ -n "$(find "$FB" -mmin -180 2>/dev/null)" ] && command -v notify-send >/dev/null; then
+  SEEN="$HOME/.config/iprps/first-start-$(stat -c %Y "$FB")"
+  if [ ! -e "$SEEN" ]; then
+    mkdir -p "$HOME/.config/iprps" && touch "$SEEN"
+    notify-send -i iprps-logo -t 30000 "IPRPS OS is finishing its setup" \
+      "For the next 10-30 minutes, apps may open slowly while the computer prepares itself. Please leave it on. You'll get a message when it's done."
+    (
+      sleep 300; calm=0
+      for _ in $(seq 330); do              # up to about 55 more minutes
+        busy=0
+        pgrep -x ext4lazyinit >/dev/null && busy=1
+        awk -v n="$(nproc)" '{exit !($1 < n * 0.6)}' /proc/loadavg || busy=1
+        if [ $busy = 0 ]; then calm=$((calm + 1)); [ $calm -ge 3 ] && break; else calm=0; fi
+        sleep 10
+      done
+      notify-send -i iprps-logo -t 0 "IPRPS OS setup is finished" \
+        "Restart the computer once (menu, Log Out, Restart). After that, it runs at full speed."
+    ) &
+  fi
+fi
 DONE="$HOME/.config/iprps/welcome-shown"
 [ -e "$DONE" ] && exit 0
 mkdir -p "$HOME/.config/iprps" && touch "$DONE"
@@ -3032,6 +3062,39 @@ It prints **2**. This installs the current script from the repository (writing i
 | A tool says *Choose or start a session first* | Choose the campaign at the top, then **+ Session** (or pick an existing session) |
 | *That stored key can't be read (the vault key changed)* | The vault key was deleted (for example by the release cleanup on a test image). Delete the key in Welcome and store it again |
 | Colors don't change in the Hub, Writer, Oracle or Character Sheets | The color scheme applies to the session tools and Welcome; the other apps keep their own look for now |
+
+**Master Database and Character Prompt Builder.** Two apps from infiniteplane.space, adapted for IPRPS OS and delivered by IPRPS Updates (12.12) to every edition. Both use the Universal Login.
+
+| App | Folder | Package | What it does |
+|---|---|---|---|
+| **IPRPS Master Database** | `master_db` | `iprps-master-db` | One searchable catalog for the bestiary, tavern ledger, humanoid species, physical weapons, weapon armory, grimoire, flora and fauna, gear, covenants and dungeon traps; images, printable reports, `.iprps` exports and imports |
+| **Character Prompt Builder** | `character-prompt-builder` | `iprps-character-prompt-builder` | Builds random character reference-sheet prompts (gender, height, build, skin tone, age, hair, eyes and more, from lists you can edit) to paste into an image generator. Works offline; your lists are remembered in the browser |
+
+How the Master Database differs from the site version:
+
+- **Database:** this computer's MariaDB. The first time the app opens, it creates the database `iprps_master` with its tables and catalog templates (`schema.sql`), and updates the tables when a new version changes `schema.sql`. The `iprps` database user can do this because it has rights on `iprps_%` databases (12.5).
+- **Password:** none in the app. It reads `/etc/iprps/db.php`, which first boot writes (13.1).
+- **Admins:** every account on the computer can add and edit entries. To limit editing, create `/etc/iprps/master-db-admins.php` (owner `root`, group `apache`, mode `640`) with `<?php return ['you@example.com'];`. Listed accounts edit; everyone else reads.
+- **Starter data:** the catalog starts empty. An admin opens **⭳ Import** and chooses **Import ALL starter datasets** (about 2,500 entries from `seed_data/`). Duplicates are skipped, so importing again is safe.
+- **Images** that admins upload are saved in `master_db/images/`, owned by `apache` (the package's install script sets this). Updates keep them.
+- The site's **migration script** (`migrate.php`) is not included: it held the site's database passwords and is only for moving the old hosted tools.
+
+> **Side note:** The Character Prompt Builder lives in its own folder, not `storyboard/` as on the site, because `storyboard` is a separate exported app (12.5) and two packages can't own the same files.
+
+**Test it. [TEST VM]**
+
+1. **IPRPS Updates** (or `sudo pacman -Syu`) installs `iprps-master-db` and `iprps-character-prompt-builder`.
+2. Open **Master Database** from the Hub or the IPRPS menu. Sign in if asked. The sidebar shows the ten catalogs with 0 entries.
+3. **⭳ Import → Import ALL starter datasets.** The counts fill in (about 2,500 entries).
+4. **＋ New entry** in the Bestiary with an image, save it, then **⭳ Export data (.iprps)**.
+5. Open **Character Prompt Builder**, press **Randomize Traits** and **Copy** the prompt.
+
+| Problem | Fix |
+|---|---|
+| *The IPRPS database is not reachable. Is MariaDB running?* | `sudo systemctl start mariadb`; check that `/etc/iprps/db.php` exists (13.1) |
+| *Access denied … to database 'iprps_master'* | The `iprps` user is missing its rights on the `iprps_*` databases. Run the `GRANT` line from `iprps-db-init` (13.1) as root in `sudo mariadb`, then reload the app |
+| Saving an entry with an image fails | `sudo chown -R apache:apache /srv/www/iprps/master_db/images` |
+| **⭳ Import** and **＋ New entry** are missing | Your email isn't in `/etc/iprps/master-db-admins.php`. Add it, or delete the file so every account is an admin |
 
 ### 12.11 Soundboard
 
@@ -3443,6 +3506,100 @@ bash /root/iprps-enter.sh
 
 > **Checkpoint:** All Lite IPRPS apps open from the IPRPS menu, Session Master Mode opens all three windows, and **IPRPS Updates** opens and checks. Take snapshot **`iprps-apps-lite`**.
 
+### 12.13 IPRPS Link: remote players from any browser (optional)
+
+**IPRPS Link** lets players in another city or state join the IPRPS Table from a plain browser. They install nothing, and nobody changes a router. Appendix G's Tailscale method still works; use it when players are willing to install an app.
+
+```
+player's browser --https--> RELAY (public address) <--https-- IPRPS Link (IPRPS OS) --> IPRPS Table :7777
+```
+
+The **relay** is a small program at a public address the Session Master controls. **IPRPS Link** runs on the Session Master's computer: it dials *out* to the relay, collects what players ask for, asks the Table on the same computer, and sends the answers back. The Table is not changed. Remote players join with the same code and appear in the console with their own address (`127.77.x.y`). The Session Master console (`/sm/`) is never passed along.
+
+| Piece | Where | |
+|---|---|---|
+| Package `iprps-link` | `packages/iprps-link/` (its own recipe folder) | optional on every edition; depends on `iprps-base` and `iprps-table` |
+| Service | `/opt/iprps/link/agent.js`, `iprps-link.service` | account `iprps-link`, settings and sign-in in `/var/lib/iprps-link` (mode 700); starts at boot, but remote play stays **off** until the Session Master turns it on |
+| Console | `http://localhost:7778/` (this computer only) | menu entry **IPRPS Link**, Hub tile `link` |
+| Relays | `relay/node/` (a server, Node.js), `relay/php/` (web hosting, PHP 7.4+, no database) | both speak the same protocol |
+| Sign-in page | `relay/auth/link.html` | goes in the Infinite Plane site's `/auth/` folder |
+
+**Publish it once. [BUILDER] then [DEBIAN ROOT]** The Release Desk (17.7) does this with **Update IPRPS OS files or a recipe → `iprps-link`**. By hand:
+
+```bash
+cd /build/src/iprps-os/packages/iprps-link && makepkg -f --nodeps --noconfirm
+```
+
+```bash
+/root/iprps-repo.sh add iprps-apps /mnt/iprps/build/repo/iprps-link-*-any.pkg.tar.zst
+/root/iprps-repo.sh check && /root/iprps-repo.sh stage
+```
+
+Upload and check online as in 12.12 step 8. The package brings its own Hub tile (`/srv/www/iprps/link`); its display name, **IPRPS Link**, is in `apps/hub/app-names.json` and arrives with the next `iprps-apps` update (until then the Hub shows it as *link*).
+
+**The Session Master's setup** is in `docs/REMOTE-PLAYERS-LINK.md` (a players' and Session Masters' guide). In short:
+
+1. Upload `relay/auth/link.html` to the site's `/auth/` folder, beside `auth-client.js` (once, for everyone).
+2. Put up a relay: the Node.js relay behind Caddy or nginx with HTTPS, or the PHP relay in a folder or (better) a subdomain of a web host. Set the **owners** list (`OWNERS=` in `relay.env`, `'owners' =>` in `config.php`) to the Session Master's Infinite Plane username.
+3. On IPRPS OS: **IPRPS Updates → IPRPS apps and optional software → IPRPS Link**, open it, **Sign in with Infinite Plane**, type the relay address (`https://` only) and **Turn on**. Send players the link and the join code.
+
+> **Side note:** IPRPS Link shows the relay the Session Master's Infinite Plane sign-in, so the relay knows the table is theirs. That's why the address must start with `https://`, and why a Session Master should use only a relay they or their co-Session Master run. The relay checks the sign-in with the site and never stores it.
+
+**Test it. [TEST VM]** With players on mobile data (not your Wi-Fi): join, chat both ways, a roll, a pushed image and video, and a character sheet. The repository's tests run the real Table with both relays on any Linux computer with Node.js and PHP:
+
+```bash
+node tests/iprps-link/e2e.js node && node tests/iprps-link/e2e.js php && node tests/iprps-link/e2e.js php burst
+```
+
+| Problem | Fix |
+|---|---|
+| *No IPRPS Link relay answered* | Open `<relay>/_link/health` in a browser and fix the relay first |
+| *This relay belongs to another Session Master* | Another account connected first: set the owners list, or delete `data/owner.json` on the relay |
+| *The relay address must start with https://* | Give the relay HTTPS (Caddy does it automatically); plain `http://` is refused because the sign-in travels to it |
+| Chat arrives about half a second late | Normal on web hosts that hold responses back (the PHP relay switches to short connections); the Node.js relay is instant |
+| Players see *The Session Master's table isn't connected* | Remote play is off, or the computer is offline: `systemctl status iprps-link`, `journalctl -u iprps-link -e` |
+
+### 12.14 IPRPS Podcast Studio (optional)
+
+**IPRPS Podcast Studio** records, mixes, edits and publishes audio and video shows: for actual-play episodes, recaps, or any podcast. It's optional on every edition: **IPRPS Updates → IPRPS apps and optional software → IPRPS Podcast Studio**.
+
+| | |
+|---|---|
+| Package | `iprps-podcast-studio`, recipe in `packages/iprps-podcast-studio/`; installs to `/opt/iprps/podcast-studio`; depends on `iprps-base` only |
+| Needs | Python 3 (LFS), FFmpeg with libx264, libmp3lame, libopus, libvpx and freetype (Stage G), OpenSSL: every edition has them, built from source |
+| Opens | **IPRPS Podcast Studio** in the IPRPS menu (`iprps-podcast-studio`): a server on `http://127.0.0.1:8765` (this computer only) in a Chromium app window (Firefox on Lite) |
+| Guests | A guest gateway on port **8766** (HTTPS, self-signed certificate) serves only join pages, each behind a personal invite link |
+| Data | Shows and recordings in `~/.local/share/iprps-podcast-studio/`; settings and API keys in `~/.config/iprps-podcast-studio/config.json` (mode 600) |
+
+What it does:
+
+- **Studio:** camera and microphone, screen share, a mixer with a 10-band equalizer, high-pass filter and compressor on every channel, two decks with a crossfader, a 12-pad soundboard, chapter markers.
+- **Guests and co-hosts** join from a browser with their invite link, on the local network or the internet. Everyone is recorded on their own machine and arrives in the editor as a separate, synced track.
+- **AI co-host or guest (optional):** speaks with Gemini TTS, Grok or ElevenLabs and thinks with Gemini, Grok, Claude or the local Oracle (Ollama). The user adds their own API keys in Settings; they stay in the config file above.
+- **Editor:** multitrack timeline with split, trim, ripple delete, fades, per-track effects, video layouts, chapters and undo.
+- **Export and publish:** MP3, M4A, WAV, FLAC, MP4 and audiogram, loudness-normalized; an RSS feed with a readiness check, copied to a folder or uploaded with rsync over SSH; status tracking for 14 podcast directories.
+- **Backup:** one `.ipod.tar.gz` file per show, restored here or on another computer.
+
+**Publish it once. [BUILDER] then [DEBIAN ROOT]** The Release Desk: **Update IPRPS OS files or a recipe → `iprps-podcast-studio`**. By hand:
+
+```bash
+cd /build/src/iprps-os/packages/iprps-podcast-studio && makepkg -f --nodeps --noconfirm
+```
+
+```bash
+/root/iprps-repo.sh add iprps-apps /mnt/iprps/build/repo/iprps-podcast-studio-*-any.pkg.tar.zst
+/root/iprps-repo.sh check && /root/iprps-repo.sh stage
+```
+
+**Test it. [TEST VM]** Install it from IPRPS Updates, open it, create a show and an episode, record a minute with the microphone, and export an MP3 and an MP4. Then invite a guest from a second computer on the same network (accept the certificate warning once). The repository's tests: `apps/podcast-studio/tests/smoke.sh` (server, renders, feed, backup) and `python3 apps/podcast-studio/tests/ai_mock_test.py`.
+
+| Problem | Fix |
+|---|---|
+| The guest's browser warns about the certificate | Expected on the local network: **Advanced → Proceed**. The certificate is the studio's own |
+| A guest on the internet can't connect | Port 8766 must be reachable from outside (a port forward, a VPN address or an HTTPS tunnel with `--guest-http`); add a TURN server in Settings for strict firewalls |
+| Exports fail | `ffmpeg -hide_banner -encoders | grep -E 'libx264|libmp3lame|libopus'` must list all three (Stage G) |
+| The studio keeps running after its window closes | On purpose, so guests stay connected: **Settings → Quit Podcast Studio** |
+
 ---
 
 ## Part 13 — Release Engineering
@@ -3794,7 +3951,7 @@ sed -i "/^127\.0\.1\.1/d" /etc/hosts; echo "127.0.1.1 $HN" >> /etc/hosts
 ln -sf "/usr/share/zoneinfo/$TZ" /etc/localtime
 unset P
 touch /var/lib/iprps/setup-done
-msg --title " All set " --msgbox "Welcome, ${FN:-$U}!\n\nThe login screen appears next. Sign in as \"$U\".\n\nTip: Session Master Mode is in the IPRPS menu." 12 60
+msg --title " All set " --msgbox "Welcome, ${FN:-$U}!\n\nThe login screen appears next. Sign in as \"$U\".\n\nThe first 10-30 minutes can feel slow: IPRPS OS is still finishing its setup in the background. A message tells you when it's done. Then restart once.\n\nTip: Session Master Mode is in the IPRPS menu." 17 64
 EOF
 chmod 755 /usr/sbin/iprps-setup
 cat > /usr/lib/systemd/system/iprps-setup.service << "EOF"
@@ -3892,7 +4049,10 @@ PARTS
 partx -u "$TARGET"; sleep 2
 case "$T" in nvme*|mmcblk*) P="${TARGET}p" ;; *) P="$TARGET" ;; esac
 mkfs.vfat -F 32 "${P}1"
-mkfs.ext4 -F "${P}3"
+echo "Preparing the disk. On a large hard drive this can take several minutes..."
+# Initialize the whole file system now. By default ext4 leaves this to a background task
+# (ext4lazyinit) that keeps the disk busy for 10-30 minutes after the first start.
+mkfs.ext4 -F -E lazy_itable_init=0,lazy_journal_init=0 "${P}3"
 
 NEW=/mnt/iprps-target
 mkdir -p "$NEW"
@@ -3920,6 +4080,8 @@ rm -f "$NEW/var/lib/iprps/firstboot-done" "$NEW/etc/ssh/ssh_host_"*
 : > "$NEW/etc/machine-id"        # empty: a new ID at first boot, without systemd's preset reset
 umount -R "$NEW"
 echo; echo "Done. Shut down, remove the USB drive or DVD, and start the computer."
+echo "The first start takes a little longer, and the first 10-30 minutes on the desktop can be slow"
+echo "while IPRPS OS finishes setting up. After that, restart once."
 EOF
 chmod 755 /usr/sbin/iprps-install
 cat > /usr/share/applications/iprps-install.desktop << "EOF"
@@ -3930,6 +4092,26 @@ Exec=xfce4-terminal --title "IPRPS Installer" -x sudo /usr/sbin/iprps-install
 Icon=drive-harddisk
 Categories=X-IPRPS;System;
 EOF
+```
+
+**The first 10–30 minutes after installing.** A new installation is slower for its first 10–30 minutes, then normal. Apps open slowly, and the disk light stays busy. Restarting once afterwards brings full speed right away. The database isn't the cause: `iprps-db-init` creates one small database in a few seconds, and each app makes its own tables in milliseconds the first time it's used. The work happens in this order:
+
+| When | What | How long |
+|---|---|---|
+| Before the setup screens | `iprps-firstboot` (13.1): grow the disk, make the swap file, make SSH keys. `iprps-db-init`: start MariaDB and set its password. `iprps-pacman-keyring`: make this computer's signing keys | Seconds to a few minutes |
+| First minutes after login | **Disk preparation:** a new or grown ext4 file system zeroes its inode tables in the background (the `ext4lazyinit` kernel task). It runs at low priority, but on a hard drive its writes slow every read | About 1–3 minutes per 100 GB on a hard drive, much less on an SSD |
+| First time each app opens | Font cache (if out of date), the browser's new profile and its first downloads, menu and icon caches, folder thumbnails | Seconds each, once per user |
+| 10–30 minutes after start | The first update check downloads the package lists (12.12) | Seconds, when online |
+
+The installer (above) now zeroes the file system while it installs (`lazy_itable_init=0`), and 13.4 refreshes the font and icon caches in the image, so most of this no longer happens after installing. A computer written straight from a release image still does the rest. At the first login, `iprps-welcome-once` (12.5) shows a notice and a second one when the background work has finished. It watches for `ext4lazyinit` and for the system load to drop.
+
+**To see what a slow first start is doing [TEST VM]** (or a real computer), open a terminal:
+
+```bash
+ps -e | grep -E 'ext4lazyinit|fc-cache|mariadbd|pacman'   # what's still running
+cat /proc/pressure/io                                      # "some avg60" above 20 means waiting on the disk
+systemd-analyze blame | head -10                           # the slowest start-up services
+journalctl -b -u iprps-firstboot -u iprps-db-init -u iprps-pacman-keyring --no-pager | tail -20
 ```
 
 > **Warning:** Test the installer in a VM with a second empty virtual disk before every release. Installed from a USB image, the new system keeps the user account created at first boot, and its next boot re-runs `iprps-firstboot`, which creates swap and new SSH keys for the new disk. Installed from the **live ISO** (13.9), it copies the clean system from the disc instead of the live session, so its first boot runs the full setup (account, computer name, time zone).
@@ -3957,6 +4139,7 @@ What it does, in order:
    - empties `/etc/machine-id`, so each computer gets its own ID at first boot. It's left **empty**, not `uninitialized`: `uninitialized` tells systemd "first boot", which resets every service to systemd's default presets (and would switch off IPRPS's own services);
    - removes broken service links (left behind by packages that were rebuilt or removed), listing them;
    - locks root's password;
+   - refreshes the system caches (fonts, file types, settings, icons, menus and libraries), so the first login doesn't rebuild them for each user;
    - sets the edition name (`IPRPS OS 1.0 Lite`) in `/etc/os-release`. The first-boot setup (13.2) shows that name.
 
    It then prints a check list.
@@ -4047,6 +4230,27 @@ mount "$LP" "$MNT"
 for d in dev proc sys run; do mount --rbind "/$d" "$MNT/$d"; done
 mount --make-rslave "$MNT"
 echo "Copy: $IMG (root file system on $LP)"
+
+# IPRPS Updates needs the IPRPS repositories in pacman.conf. 12.12 step 7 takes the packaged
+# version from /etc/pacman.conf.pacnew; a build that skipped it keeps the temporary file
+# ("no usable package repositories configured" on the released computer).
+if ! grep -q '^\[iprps-core\]' "$MNT/etc/pacman.conf" 2>/dev/null; then
+  if grep -q '^\[iprps-core\]' "$MNT/etc/pacman.conf.pacnew" 2>/dev/null; then
+    mv -f "$MNT/etc/pacman.conf.pacnew" "$MNT/etc/pacman.conf"
+    echo "Fixed in the copy: /etc/pacman.conf now has the IPRPS repositories (from pacman.conf.pacnew)."
+    echo "Fix the build image too (12.12 step 7's .pacnew line), or the next release repeats this."
+  elif grep -q '^\[iprps-core\]' "$MNT/build/src/iprps-os/packages/iprps-base/pacman.conf" 2>/dev/null; then
+    install -m644 "$MNT/build/src/iprps-os/packages/iprps-base/pacman.conf" "$MNT/etc/pacman.conf"
+    echo "Fixed in the copy: /etc/pacman.conf restored from the iprps-base package source (packages/iprps-base/pacman.conf)."
+    echo "Fix the build image too (Appendix B), or the next release repeats this."
+  else
+    die "the image's /etc/pacman.conf has no IPRPS repositories, so IPRPS Updates can't work: restore it in the build image (Appendix B, \"no usable package repositories\")"
+  fi
+fi
+grep -q '^Server *= *https://' "$MNT/etc/pacman.d/iprps-mirrorlist" 2>/dev/null \
+  || die "the image's /etc/pacman.d/iprps-mirrorlist has no https Server line (a test line from 12.12 left in?): put the real line back (12.12)"
+PN=$(find "$MNT/etc" "$MNT/srv/www/iprps" -name '*.pacnew' 2>/dev/null | sed "s|^$MNT||")
+[ -z "$PN" ] || { echo "Note: these package files are waiting (12.12 step 7 takes them):"; echo "$PN"; }
 
 # ---------------------------------------------------------------- the cleanup inside the copy
 cat > "$INSIDE" << 'INSIDE_EOF'
@@ -4147,6 +4351,13 @@ BROKEN=$(find /etc/systemd/system /etc/systemd/user -xtype l 2>/dev/null || true
 if [ -n "$BROKEN" ]; then echo "Removing broken service links:"; echo "$BROKEN" | sed 's/^/  /'; echo "$BROKEN" | xargs -r rm -f; fi
 rm -rf /var/lib/iprps/*-done /var/lib/ollama/.ollama /var/log/journal/* /var/lib/iprps-table/* /var/lib/iprps-vault/* /var/lib/iprps-sounds/*   # Table test data; API key vault key; Soundboard files
 passwd -l root >/dev/null
+# Fresh system caches, so nothing is rebuilt per user at the first login
+command -v fc-cache >/dev/null && fc-cache -sf
+command -v update-mime-database >/dev/null && update-mime-database /usr/share/mime
+command -v glib-compile-schemas >/dev/null && glib-compile-schemas /usr/share/glib-2.0/schemas
+for t in /usr/share/icons/*/; do [ -f "$t/index.theme" ] && gtk-update-icon-cache -qf "$t"; done
+command -v update-desktop-database >/dev/null && update-desktop-database -q /usr/share/applications
+ldconfig
 sed -i "s/^VERSION=.*/VERSION=\"1.0 $EDC\"/; s/^PRETTY_NAME=.*/PRETTY_NAME=\"IPRPS OS 1.0 $EDC\"/" /etc/os-release
 [ -f /etc/lsb-release ] && sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION=\"IPRPS OS 1.0 $EDC\"/" /etc/lsb-release
 
@@ -4341,6 +4552,7 @@ To write the downloads somewhere else, run `IPRPS_RELEASE_OUT=/mnt/d/somewhere /
 | 6 GB RAM machine or VM (Lite) | Desktop + Firefox + Hub usable; `free -h` shows swap |
 | `iprps-install` to a second disk | Installed system boots without the USB drive |
 | Live ISO (13.9) as DVD and as USB, UEFI and BIOS | Live desktop as IPRPS Live; installing to a second disk gives the setup screens at its first boot |
+| First login after installing | The "finishing its setup" notice, then "setup is finished" within about 30 minutes; after one restart, apps open at normal speed |
 | `systemctl --failed` | Shows nothing |
 
 **Without Hyper-V** (Windows 11 Home, for example), run the VM tests in QEMU on an **overlay**: a small file on top of the release `.qcow2` that leaves it unchanged and acts as a 40 GB disk, so first boot has room to grow. The backing file needs its **full path**:
@@ -4639,13 +4851,14 @@ For the installer test, add an empty disk (`qemu-img create -f qcow2 /root/iso-t
 **Writing the ISO** (also for the release notes and the download page):
 
 - **DVD (Windows):** right-click the `.iso`, then **Burn disc image**.
-- **USB stick:** **balenaEtcher**, or **Rufus**: when Rufus asks how to write the image, choose **DD Image mode**. On Linux: `sudo dd if=iprps-os-1.0-lite.iso of=/dev/sdX bs=4M status=progress conv=fsync`.
+- **USB stick, Rufus (Windows):** choose the `.iso` and click **Start**. Rufus then asks how to write it: choose **Write in DD Image mode**, not **Write in ISO Image mode** (the one marked *recommended*). ISO Image mode copies the files to an NTFS stick (the ISO holds a file over 4 GB, too big for FAT32), and the live startup can't use it (Appendix B). Tested on real hardware.
+- **USB stick, other tools:** **USBImager** (Windows, macOS, Linux) writes the `.iso` as it is, with nothing to choose. balenaEtcher doesn't open the IPRPS `.iso`: use it for the `.img.xz` only. On Linux: `sudo dd if=iprps-os-1.0-lite.iso of=/dev/sdX bs=4M status=progress conv=fsync`.
 - **Secure Boot must be off**, as for the other downloads.
 
 | Problem | Fix |
 |---|---|
 | The script stops: *the image has no live boot support* or *the initramfs is older* | Step 1 wasn't done in the image that was released: do it in the build image (or the Lite release copy), then clean and release again (13.4) |
-| Boot stops at "The IPRPS OS live medium (IPRPS_OS_1_0_…) was not found" | The stick was written in Rufus's *ISO mode*, which changes the volume name: write it again in **DD Image mode**. In a VM, check the ISO is attached |
+| Boot stops at "The IPRPS OS live medium (IPRPS_OS_1_0_…) was not found" | The stick was written in Rufus's *ISO Image mode* (its recommended choice). In the shell, `blkid` shows the label on an `ntfs` (or `vfat`) partition and a second partition labeled `RUFUS_BOOT`. Write it again: click **Start**, then choose **Write in DD Image mode**. Or use USBImager. In a VM, check the ISO is attached |
 | *Could not open live/filesystem.squashfs* | The download or the disc is damaged: check it against `SHA256SUMS-<edition>-iso`, and burn DVDs at a slower speed |
 | The desktop gets slow, or programs close, after a while | The live session keeps every change in RAM: install IPRPS OS, or use the `.img.xz` on a USB stick to keep changes |
 | The ISO is too big for a DVD | Use a dual-layer DVD or a USB stick (step 4) |
@@ -5218,7 +5431,7 @@ Install the Advanced IPRPS apps (12.4).
 - **Updates are your job as the distributor,** and since 12.12 they reach installed computers as **packages**: users click **Install updates** in IPRPS Updates (or run `sudo iprps-update upgrade`). New images (1.0.1, 1.1, …) are still worth publishing for new installs, but nobody has to reinstall to stay current.
 - **Watch** https://www.linuxfromscratch.org/blfs/advisories/ (and LFS's) for security fixes in packages IPRPS OS ships.
 
-Every update follows the same path:
+Every update follows the same path (the **IPRPS Release Desk**, 17.7, walks you through it):
 
 | Step | Where | Command |
 |---|---|---|
@@ -5241,6 +5454,10 @@ Installed computers notice within 6 hours (or at once with **Check now**). **Tes
 ```bash
 /root/iprps-repo.sh add iprps-apps /mnt/iprps/build/repo/iprps-*-2026.11.15-1-any.pkg.tar.zst
 ```
+
+The **IPRPS Release Desk** (17.7) does steps 1–2 for you and walks you through the rest.
+
+Two apps have their own recipe folder instead of a function in `iprps-apps`: `packages/iprps-link/` (12.13) and `packages/iprps-podcast-studio/` (12.14). Update them like any package folder (raise `pkgver`, build in that folder, add to `iprps-apps`); in the Release Desk, choose **Update IPRPS OS files or a recipe**.
 
 A **new app** for an edition: add a `package_iprps-<app>()` function and its name to `pkgname=()` in `iprps-apps/PKGBUILD`, a menu entry in `iprps-apps/desktop/`, and the name to the edition lists (`_apps_lite`, …) in `iprps-base/PKGBUILD`. Then publish a new `iprps-base` (17.3) too: the edition packages then depend on it, so every computer of that edition installs it with the next update.
 
@@ -5285,6 +5502,63 @@ Good candidates for extras: binary apps that carry their own libraries (Calibre,
 - **The signing key** expires after 5 years. Before then, extend it (`gpg --quick-set-expire <fingerprint> 5y`), run `/root/iprps-repo.sh key` to export the public key again, and publish a new `iprps-keyring` (raise its `pkgver`).
 - **If the private key leaks:** create a new key, put the old fingerprint in `packages/iprps-keyring/iprps-revoked` and the new key in `iprps.gpg`/`iprps-trusted`, sign the new `iprps-keyring` with the **old** key one last time (so computers accept it), then re-sign everything with the new key and announce it.
 - **A 2.x series** with breaking changes gets its own folder (`…/repo/2/`) and a new `iprps-mirrorlist`, so 1.x computers are never moved to it by accident.
+
+### 17.6 Retiring an app
+
+To stop shipping an app and take it off the computers that have it:
+
+1. In `packages/iprps-apps/PKGBUILD`: remove its name from `pkgname=()` and delete its `package_iprps-<app>()` function, its menu entry in `desktop/` and its `.install` script, if it has one. Remove it from `apps/hub/app-names.json` and `default-apps.json`. Raise `pkgver` (17.1).
+2. In `packages/iprps-base/PKGBUILD`: remove it from the edition lists (`_apps_lite`, …) and raise `pkgrel`. Add its package name to **`packages/iprps-base/retired-apps`** (one per line).
+3. Build `iprps-apps` and `iprps-base` (steps 2–3 of the table above). Then **[IPRPS CHROOT]** `pacman -Rns iprps-<app>` in the build image.
+4. **[DEBIAN ROOT]** add `iprps-base` and the three edition packages to `iprps-core` and the Hub (`iprps-hub`) to `iprps-apps`, then take the app out: `/root/iprps-repo.sh remove iprps-apps iprps-<app>`. Check, test, publish.
+
+After its next update, **IPRPS Updates removes the retired apps** listed in `/usr/lib/iprps/retired-apps` (`iprps-update upgrade` runs `pacman -Rs` on the ones installed, unless something else needs one), and no longer offers them as optional software. Files that people saved with the app outside its package stay: uploads, its database, their settings.
+
+### 17.7 The IPRPS Release Desk: every update, step by step
+
+The **IPRPS Release Desk** (`tools/release-desk/` in the repository) walks you through this whole part as a browser page or a terminal menu. It covers:
+
+- update an app
+- add a new app
+- retire an app
+- update IPRPS OS files or a recipe
+- apply a security update
+- make a point release
+- publish the repository
+- prepare GitHub
+
+Each step is labeled with its window (**DEBIAN ROOT**, **BUILDER**, **IPRPS CHROOT**, **TEST VM**, **WINDOWS**), and shows its command with a **Copy** button. The Desk runs the steps it can and records which steps are done. It makes the recipe changes of 17.1 and 17.6 itself, with a backup first:
+
+- raising versions (a second update on the same day raises `pkgrel`)
+- new packages, menu entries, Hub names, edition lists and `retired-apps`
+
+Before an app is built and before anything goes to GitHub, it checks the files for passwords, API keys, hosting server names and private keys. A step that finds one stops until it's removed.
+
+**Install it, once. [DEBIAN ROOT]**
+
+```bash
+apt install nodejs unzip git rsync
+bash /mnt/g/IPRPS/iprps-os/tools/release-desk/iprps-desk install
+```
+
+**Start it.**
+
+- **Windows:** copy `G:\IPRPS\iprps-os\tools\release-desk\IPRPS Release Desk.cmd` to the desktop and double-click it. It starts the Desk in Debian and opens `http://127.0.0.1:7791/#k=…` in the browser. Keep its window open while you use the Desk.
+- **Terminal:** `iprps-desk menu` in DEBIAN ROOT, or `bash /build/src/iprps-os/tools/release-desk/iprps-desk menu` in the BUILDER or IPRPS CHROOT window.
+
+Open the build image first (`bash /root/iprps-enter.sh`): from DEBIAN ROOT the Desk runs the BUILDER and IPRPS CHROOT steps inside it. Tasks are saved in `/build/.iprps-desk`, which all three windows see.
+
+**Folders** (its third tab) sets where your repository, the incoming folder for new app versions, the upload folders and the build image are. Windows paths work. The defaults are the ones in this guide.
+
+| Problem | Fix |
+|---|---|
+| *The Release Desk needs Node.js 18 or newer* | `apt install nodejs` in Debian |
+| *Port 7791 is in use* | The Desk is already running: use its window's link. Or `IPRPS_DESK_PORT=7792 iprps-desk` |
+| The page says *Open the Desk with its link* | Open the link that starts with `http://127.0.0.1:7791/#k=`, shown in the Desk's window; it changes each time the Desk starts |
+| *The build image is not open* | `bash /root/iprps-enter.sh` in the IPRPS CHROOT window |
+| The signing step fails with a GnuPG *pinentry* or *passphrase* error | GnuPG needs a terminal for the passphrase: run that step from `iprps-desk menu` in DEBIAN ROOT, or copy its command there, then **Mark done** |
+| *git push*: *could not read Username* / authentication failed | The Desk runs Git as the folder's owner (`chiita`): set up Git's login for that user once (GITHUB-SETUP.md), or run the step from a terminal |
+| A password check stops on an example value | **Mark as safe** (recorded in `.iprps-desk-allow`) |
 
 ---
 
@@ -5383,6 +5657,8 @@ Done in 1.0: **13.9** makes a live ISO for each edition (DVD or USB, UEFI and BI
 | The Oracle has no **Character sheets** buttons | Character Sheets isn't installed, or the Oracle files are older than 12.9 | 12.9 step 1 (the Oracle line), then reload the Oracle |
 | The Oracle: *the answer was not a usable sheet* | The model's answer didn't fit the sheet layout | Try again; a shorter description helps. Check `ollama --version` is 0.5 or newer (structured outputs) |
 | Session Master Mode: closing the browser leaves a white full-screen page | The full-screen player display stayed open on a single screen (and in Lite no display page exists yet) | 12.2 `iprps-session` update (full screen only with two screens); right now press **Alt+F4** |
+| IPRPS Updates: "Could not check for updates: error: no usable package repositories configured" | `/etc/pacman.conf` is still the temporary file from 12.12 step 3 (`head -1 /etc/pacman.conf` says "Temporary"): step 7's `.pacnew` line was skipped in this edition's build | On that computer: `sudo mv /etc/pacman.conf.pacnew /etc/pacman.conf`, then **Check now**. No `.pacnew` file? Write the packaged file back: in the build image **[IPRPS CHROOT]** `install -m644 /build/src/iprps-os/packages/iprps-base/pacman.conf /etc/pacman.conf`; on an installed computer, copy `packages/iprps-base/pacman.conf` from the repository to `/etc/pacman.conf` with `sudo`. Release scripts from 2026-11-11 fix the copy and stop if they can't |
+| A new installation is very slow for the first 10–30 minutes, then fine (or fine after a restart) | One-time background work: disk preparation (`ext4lazyinit`), first-use caches, the first update check. Not the database | Normal. Leave it on until the "setup is finished" message, then restart once. To see it: `ps -e \| grep ext4lazyinit` (13.3). Images and installers from 2026-11-09 do most of it before the first login |
 | Everything is slow when running from a USB stick | USB 2 sticks (and ports) have very slow small reads and writes | Use a USB 3 stick in a USB 3 (often blue) port, or install to the internal disk; the first boot is the slowest (disk growth, swap, database) |
 | Boot shows many "Failed to preset all unit … Read-only file system" lines | The release image's `/etc/machine-id` said `uninitialized` (first boot), so systemd tried to reset all services | 13.4: the release script now leaves it **empty**. On an affected image it's harmless (the reset failed); new releases don't show it |
 | "Driver 'pcspkr' is already registered, aborting" at boot | Two PC-speaker drivers | Harmless; 4.9 blacklists them (`/etc/modprobe.d/iprps-blacklist.conf`) |
@@ -5774,6 +6050,8 @@ ls -l /root/iprps-system.img
 | Backups are very slow | Normal for a USB 2 drive or a busy disk. Close Windows programs that scan files (or exclude `D:\IPRPS\backups` from real-time antivirus scanning) |
 
 ## Appendix G — Remote Players
+
+> **Side note:** Players who can't or won't install an app can join from a plain browser with **IPRPS Link** (12.13).
 
 The IPRPS Table (12.7) is made for players in the same room, on the same network. A player in another city or state can join too, through **Tailscale**: a free app on both computers that links them into a small private network over the internet, encrypted with WireGuard. The remote player's browser then reaches the Table exactly as a phone on the Session Master's Wi-Fi does, and the Table treats them as a local player: same join code, same chat, dice, media and character sheets.
 

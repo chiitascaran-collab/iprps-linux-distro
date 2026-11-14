@@ -1,0 +1,3 @@
+# IPRPS OS: retired apps (guide 17.6). IPRPS Updates removes these packages after an update,
+# when they're installed and nothing else needs them. One package name per line.
+# The IPRPS Release Desk adds names here when you retire an app.

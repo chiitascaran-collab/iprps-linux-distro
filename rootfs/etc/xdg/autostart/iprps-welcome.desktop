@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS Welcome (first login)
+Exec=/usr/bin/iprps-welcome-once
+NoDisplay=true

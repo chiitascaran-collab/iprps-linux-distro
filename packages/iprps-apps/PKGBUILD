@@ -8,8 +8,8 @@
 pkgbase=iprps-apps
 pkgname=(iprps-lib iprps-hub iprps-writer iprps-table iprps-character-creator iprps-character-sheets
          iprps-combat iprps-dice iprps-session-log iprps-welcome iprps-file-viewer iprps-soundboard
-         iprps-oracle iprps-updates-tile)
-pkgver=2026.11.07
+         iprps-oracle iprps-updates-tile iprps-master-db iprps-character-prompt-builder)
+pkgver=2026.11.14
 pkgrel=1
 arch=(any)
 url='https://github.com/chiitascaran-collab/iprps-linux-distro'
@@ -146,4 +146,19 @@ package_iprps-updates-tile() {
   pkgdesc='IPRPS Updates tile for the Session Master Hub'
   depends=(iprps-base)
   _web updates-tile updates
+}
+
+package_iprps-master-db() {
+  pkgdesc='IPRPS Master Database: bestiary, taverns, species, weapons, grimoire, flora and fauna, gear, covenants and traps in one catalog'
+  depends=(iprps-lib)
+  install=iprps-master-db.install
+  _web master_db master_db
+  _menu master-db master_db/favicon.svg
+}
+
+package_iprps-character-prompt-builder() {
+  pkgdesc='Character Prompt Builder: random character reference-sheet prompts for image generators'
+  depends=(iprps-lib)
+  _web character-prompt-builder character-prompt-builder
+  _menu character-prompt-builder character-prompt-builder/favicon.svg
 }

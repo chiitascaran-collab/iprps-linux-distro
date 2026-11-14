@@ -134,3 +134,23 @@ body.display { background: radial-gradient(1400px 900px at 50% 30%, #1b2150 0%, 
 .subh { font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; margin: 14px 0 0; }
 #sheetBox .hint a { color: var(--gold2); }
 .mini.gold { border-color: var(--gold); color: var(--gold2); }
+
+/* Online AI (Claude) */
+.credit { margin: 14px 4px 4px; font-size: .78rem; color: var(--dim); line-height: 1.4; }
+.credit a { color: inherit; }
+.online-note { margin: 0 16px 8px; padding: 7px 12px; border-radius: 8px; font-size: .85rem; line-height: 1.35;
+  background: rgba(71,191,196,.12); border: 1px solid rgba(71,191,196,.45); }
+.pill.online { background: rgba(71,191,196,.18); color: #7fe0e4; border-color: rgba(71,191,196,.55); }
+dialog.online { max-width: 600px; width: calc(100% - 32px); border: 1px solid var(--line, #334); border-radius: 14px; padding: 0;
+  background: var(--panel, #1b2148); color: var(--text, #eee); }
+dialog.online::backdrop { background: rgba(0,0,0,.55); }
+.online-in { padding: 20px 22px 16px; }
+.online-in h2 { margin: 0 0 8px; } .online-in h3 { margin: 18px 0 6px; font-size: 1rem; }
+.online-in p { margin: 6px 0; line-height: 1.45; }
+.online-in .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.online-in .row.end { justify-content: flex-end; margin-top: 16px; }
+.online-in input { flex: 1 1 240px; min-width: 0; }
+.claude-list { list-style: none; margin: 0; padding: 0; }
+.claude-list li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line, #334); font-size: .9rem; }
+.claude-list li span:last-child { color: var(--dim); text-align: right; }
+.claude-list code { font-size: .8rem; }

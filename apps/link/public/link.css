@@ -27,3 +27,4 @@ details { margin-top: 8px; } summary { cursor: pointer; color: #d9b45a; }
 #err { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: #5a211c; color: #ffd9d4; padding: 10px 16px; border-radius: 8px; margin: 0; max-width: 90vw; }
 #err:empty { display: none; }
 @media (max-width: 560px) { .row.top { flex-direction: column; } }
+code { background: #0008; padding: 1px 5px; border-radius: 4px; font-size: .92em; }

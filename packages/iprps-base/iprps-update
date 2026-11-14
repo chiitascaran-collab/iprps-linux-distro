@@ -113,7 +113,7 @@ def offered():
         r = run(PACMAN + ['-Sl', repo, '--dbpath', CHECKDB])
         for l in r.stdout.splitlines():
             p = l.split()
-            if len(p) >= 3 and p[1] not in PROTECTED:
+            if len(p) >= 3 and p[1] not in PROTECTED and p[1] not in retired():
                 rows.append({'repo': p[0], 'name': p[1], 'version': p[2], 'installed': '[installed' in l})
     info = sync_info([x['name'] for x in rows])
     inst = installed()
@@ -291,9 +291,36 @@ def download_then_install(refresh, names, yes):
     return rc, out1 + out2 + out3
 
 
+RETIRED = '/usr/lib/iprps/retired-apps'
+
+
+def retired():
+    """Apps the distributor has retired (guide 17.6): one package name per line, from iprps-base."""
+    try:
+        return [l.split('#')[0].strip() for l in open(RETIRED) if l.split('#')[0].strip()]
+    except OSError:
+        return []
+
+
+def remove_retired(yes):
+    """After an update: remove retired apps that are installed and that nothing else needs.
+    Files the app's users made (uploads, saved data outside the package) are left alone."""
+    inst = installed()
+    gone = [n for n in retired() if n in inst and n not in PROTECTED]
+    if not gone:
+        return 0, ''
+    print('== Removing retired apps: ' + ' '.join(gone))
+    rc, out = pacman_live(['-Rs', '--noprogressbar'] + yes + gone)
+    if rc:
+        print('>> A retired app is still needed by something else, so it was kept: ' + ' '.join(gone))
+    return 0, out
+
+
 def cmd_upgrade(rest):
     need_root()
     rc, out = download_then_install(True, [], confirm_flag(rest))
+    if rc == 0:
+        remove_retired(confirm_flag(rest))
     after_transaction(out, rc)
     print('\nDone.' if rc == 0 else '\nThe update stopped: nothing was half-installed. Read the messages above.')
     return rc

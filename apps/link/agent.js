@@ -256,6 +256,7 @@ function drop(key) {
 async function openLink() {
   const base = cleanUrl(C.relay);
   if (!/^https?:\/\//.test(base)) throw new Error('Type the address of your IPRPS Link relay first.');
+  if (!/^https:\/\//.test(base) && !/^http:\/\/(localhost|127\.\d+\.\d+\.\d+)(:\d+)?(\/|$)/.test(base)) throw new Error('The relay address must start with https:// (your sign-in travels to it).');
   if (!C.token) throw new Error('Sign in with your Infinite Plane account first.');
   const r = await call('POST', base + '/_link/open', { headers: { 'Content-Type': 'application/json', 'X-Auth-Token': C.token }, body: JSON.stringify({ version: VERSION, name: (C.user && C.user.username) || '' }), timeout: 30000 });
   if (!r.json) throw new Error(`No IPRPS Link relay answered at ${base} (HTTP ${r.status}).`);
@@ -365,8 +366,9 @@ async function route(req, res) {
   const b = await readJson(req);
   if (p === '/api/settings') {
     const relay = cleanUrl(b.relay), auth = cleanUrl(b.auth || DEFAULT_AUTH, true);
-    if (relay && !/^https?:\/\/[^\s/]+/.test(relay)) return json(res, 400, { ok: false, error: 'The relay address starts with https://' });
-    if (!/^https?:\/\/[^\s/]+/.test(auth)) return json(res, 400, { ok: false, error: 'The sign-in address starts with https://' });
+    // The relay checks the Infinite Plane sign-in, so it is only ever sent over HTTPS (plain http only to this computer, for tests)
+    if (relay && !/^https:\/\/[^\s/]+/.test(relay) && !/^http:\/\/(localhost|127\.\d+\.\d+\.\d+)(:\d+)?(\/|$)/.test(relay)) return json(res, 400, { ok: false, error: 'The relay address must start with https:// (your sign-in travels to it).' });
+    if (!/^https:\/\/[^\s/]+/.test(auth) && !/^http:\/\/(localhost|127\.\d+\.\d+\.\d+)(:\d+)?(\/|$)/.test(auth)) return json(res, 400, { ok: false, error: 'The sign-in address starts with https://' });
     const changed = relay !== C.relay || auth !== C.auth;
     if (auth !== C.auth) { C.token = ''; C.user = null; }
     C.relay = relay; C.auth = auth; saveConf();

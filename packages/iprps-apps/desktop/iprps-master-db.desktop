@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Master Database
+GenericName=IPRPS Master Database
+Comment=Bestiary, taverns, species, weapons, grimoire, gear and more in one catalog
+Exec=iprps-open master_db/
+Icon=iprps-master-db
+Terminal=false
+Categories=X-IPRPS;Game;

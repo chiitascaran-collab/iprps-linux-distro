@@ -1,9 +1,15 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2026 Mythical Legends Publishing, LLC
-# iprps-open <app-folder> — open an IPRPS web app (for example: iprps-open hub)
-APP="${1:-}"
+# iprps-open <app-folder> - open an IPRPS web app (for example: iprps-open hub)
+# Medium/Advanced: its own window (Chromium app mode). Lite: a Firefox window.
+APP="${1:-}"; APP="${APP%/}"
+URL="http://localhost/iprps/${APP:+$APP/}"
 for svc in httpd php-fpm mariadb; do
   systemctl is-active --quiet "$svc" || pkexec systemctl start "$svc"
 done
-exec firefox --new-window "http://localhost/iprps/${APP}"
+if command -v chromium >/dev/null; then
+  exec chromium --app="$URL"
+else
+  exec firefox --new-window "$URL"
+fi

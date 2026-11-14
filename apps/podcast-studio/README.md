@@ -20,13 +20,13 @@ directories accept.
 
 No pip or npm packages, no database.
 
-**IPRPS OS (LFS) note:** the ffmpeg build needs `libx264`, `libmp3lame`, `libopus`, `libvpx` and
-`freetype` enabled (`--enable-gpl --enable-libx264 --enable-libmp3lame --enable-libopus
---enable-libvpx --enable-libfreetype`). Debian's ffmpeg package already has them.
+**IPRPS OS note:** every edition already has all of these: Python from LFS, and FFmpeg from Stage G
+built with `libx264`, `libmp3lame`, `libopus`, `libvpx` and `freetype`. They were built from source, so the
+package depends only on `iprps-base`. Debian's ffmpeg package already has those libraries too.
 
 ## Install
 
-**IPRPS OS:** install **IPRPS Podcast Studio** from IPRPS Updates (package `iprps-podcast-studio`,
+**IPRPS OS:** install **IPRPS Podcast Studio** from **IPRPS Updates → IPRPS apps and optional software** (package `iprps-podcast-studio`,
 recipe in `packages/iprps-podcast-studio/`). It installs to `/opt/iprps/podcast-studio`.
 
 **Debian** (from this folder):
