@@ -1,0 +1,20 @@
+# /etc/systemd/system/iprps-link-relay.service  (on the relay server, not on IPRPS OS)
+[Unit]
+Description=IPRPS Link relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+DynamicUser=yes
+StateDirectory=iprps-link-relay
+Environment=DATA_DIR=/var/lib/iprps-link-relay
+WorkingDirectory=/opt/iprps-link-relay
+ExecStart=/usr/bin/node /opt/iprps-link-relay/relay.js
+Restart=on-failure
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
+# Opens IPRPS Link (remote play). Starts the service first if it is not running.
+URL=http://localhost:7778/
+if ! systemctl is-active --quiet iprps-link.service; then
+  systemctl start iprps-link.service 2>/dev/null || pkexec systemctl start iprps-link.service || true
+  sleep 1
+fi
+for b in chromium ungoogled-chromium chromium-browser; do
+  command -v "$b" >/dev/null 2>&1 && exec "$b" --app="$URL" --class=iprps-link
+done
+exec xdg-open "$URL"

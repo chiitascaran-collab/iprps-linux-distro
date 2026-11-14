@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-14
+
+- **IPRPS Link (new, through IPRPS Updates):** remote players join the IPRPS Table from any browser, with nothing to install and no router setup. `apps/link/` (package `iprps-link`, service `iprps-link.service`, console at `http://localhost:7778/`, Hub tile `link`) dials out to a relay the Session Master hosts, and passes players' requests to the Table on the same computer. The Table is not changed: remote players join with the same code and appear as players with their own address (`127.77.x.y`); the Session Master console is never passed along. Guide: `docs/REMOTE-PLAYERS-LINK.md`. The Tailscale method (`docs/REMOTE-PLAYERS.md`) stays for players who can install an app.
+  - **Relays (`relay/`):** `relay/node/` for a server (Node.js core only, with a service unit and Caddy/nginx samples) and `relay/php/` for ordinary web hosting (PHP, no database). Both speak the same protocol. Only the Infinite Plane account that owns a relay can connect a table to it (Universal Login; `relay/auth/link.html` goes in the site's `/auth/` folder).
+  - **Testing:** `tests/iprps-link/` runs the real Table, IPRPS Link and each relay with a stand-in for the Infinite Plane sign-in: join, chat both ways, dice, uploads, a 13 MB file each way, range requests, a dropped connection resuming with nothing lost, the console unreachable, another account refused; plus a Chrome test. Not yet run against the live sign-in, a real web host, HTTPS, or a pacman build.
+
 ## 2026-11-11
 
 - **IPRPS Release Desk (17.7, new):** `tools/release-desk/` is a browser page and terminal menu that walks you through every update after release: update an app (from a folder or `.zip`, keeping the IPRPS OS `config.php`), add a new app (package, menu entry, icon, Hub name, editions, writable folders), retire an app, update a recipe, security updates, point releases, publishing the repository and GitHub (commit and push, or files for github.com's uploader). Every step is labeled with its window and runs from DEBIAN ROOT where it can, including the BUILDER and IPRPS CHROOT steps inside the build image. It checks apps and changes for passwords, API keys, hosting names and private keys before anything is built or pushed, and backs up every file it changes. Node.js without npm packages; Windows (`IPRPS Release Desk.cmd`, through WSL), Linux and macOS.

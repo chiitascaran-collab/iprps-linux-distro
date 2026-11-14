@@ -1,0 +1,29 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Copyright (C) 2026 Mythical Legends Publishing, LLC */
+* { box-sizing: border-box; }
+body { margin: 0; background: #0b0e1a; color: #e6e3d6; font: 16px/1.5 system-ui, "DejaVu Sans", sans-serif; }
+header, main { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+header { padding-top: 28px; }
+h1 { font: 600 30px "DejaVu Serif", Georgia, serif; color: #f1d58c; margin: 0; }
+h2 { font: 600 19px "DejaVu Serif", Georgia, serif; color: #f1d58c; margin: 0 0 6px; }
+p { margin: 6px 0; } .muted { color: #a9a698; } .grow { flex: 1; min-width: 0; }
+.card { background: #141829; border: 1px solid #2a3050; border-radius: 12px; padding: 18px 20px; margin: 16px 0; }
+.row { display: flex; gap: 10px; align-items: center; margin: 8px 0; } .row.top { align-items: flex-start; gap: 18px; }
+label { display: block; font-size: 14px; color: #c9c6b8; margin-top: 10px; }
+input { flex: 1; width: 100%; font: inherit; color: inherit; background: #0b0e1a; border: 1px solid #353c60; border-radius: 8px; padding: 9px 11px; }
+button, .button { font: inherit; font-weight: 600; color: #1a1405; background: #d9b45a; border: 0; border-radius: 8px; padding: 9px 16px; cursor: pointer; text-decoration: none; display: inline-block; white-space: nowrap; }
+button:hover, .button:hover { background: #f1d58c; } button:disabled { opacity: .5; cursor: default; }
+button.ghost { background: transparent; color: #d9b45a; border: 1px solid #5b5330; }
+button.big { padding: 13px 26px; font-size: 18px; }
+button.on { background: #2b3358; color: #e6e3d6; border: 1px solid #4a5488; }
+:focus-visible { outline: 2px solid #f1d58c; outline-offset: 2px; }
+#power.online { border-color: #4f9d6a; } #power.error { border-color: #c5584f; } #power.connecting { border-color: #d9b45a; }
+#share { border-top: 1px solid #2a3050; margin-top: 12px; padding-top: 6px; }
+#url { font-family: ui-monospace, "DejaVu Sans Mono", monospace; font-size: 15px; }
+#qr { background: #fff; border-radius: 8px; flex: none; }
+ul.plain { margin: 0; padding-left: 18px; } ul.plain li { margin: 4px 0; }
+details { margin-top: 8px; } summary { cursor: pointer; color: #d9b45a; }
+.log { list-style: none; margin: 0; padding: 0; max-height: 220px; overflow: auto; font-size: 14px; } .log li { padding: 3px 0; border-bottom: 1px solid #1e233b; } .log time { color: #8b8876; margin-right: 8px; }
+#err { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: #5a211c; color: #ffd9d4; padding: 10px 16px; border-radius: 8px; margin: 0; max-width: 90vw; }
+#err:empty { display: none; }
+@media (max-width: 560px) { .row.top { flex-direction: column; } }
