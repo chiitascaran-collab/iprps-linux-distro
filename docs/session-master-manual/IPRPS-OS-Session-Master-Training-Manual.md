@@ -366,6 +366,18 @@ Players often go somewhere you didn't plan. The **IPRPS Oracle** helps you keep 
 - **Campaign memory:** it reads your campaign, its latest sessions and log, NPCs, open quests and character sheets. **Pin** facts it must always respect.
 - **Share it:** under each answer, **Show players** puts it on the player display, **Pin to memory** saves it as a fact, and **Save NPC** keeps a character for later.
 
+**How fast is it?**
+
+The Oracle thinks on your own computer, not in a big data center, so it is slower than online AI. Plan for that and it works well at the table.
+
+- **It reads first, then writes.** After you ask, it reads your request and your campaign memory. That takes a moment. Then the answer appears word by word, so you can start reading before it finishes.
+- **Once it is writing, expect about a sentence every one to three seconds** on a typical processor.
+- **The first answer after you start the computer takes longest**, while the AI loads. Session Master Mode loads it for you when it starts, so start it a few minutes before the game.
+- **Short answers are quickest:** **Names**, **Loot** and **Plot hook**. An **NPC** or a **Read-aloud** takes longer. **NPC sheet** and **Creature sheet** take the longest, often a minute or two. On an older processor, an NPC can take one to three minutes.
+- **The computer matters most.** A newer processor and 16 GB of memory are best. The Advanced edition is meant for that kind of computer.
+
+> **Tip:** Use the Oracle like a helper behind your screen. Ask while the players talk, shop or plan. Better still, make your NPCs and places before the session, choose **Save NPC**, and have them ready. When you need an answer in seconds, switch the **Model** menu to Claude (below).
+
 **Good habits:**
 
 - Set the **Campaign** menu at the top before you ask, so the Oracle knows your story.
