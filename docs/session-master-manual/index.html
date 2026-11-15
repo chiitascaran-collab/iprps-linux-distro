@@ -505,7 +505,7 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 <li>opens the <strong>Session Master Hub</strong>;</li>
 <li>plays your <strong>Campaigns/Audio</strong> folder as shuffled, looping background sound, in a small window with play, pause and volume buttons;</li>
 <li>with a <strong>second screen</strong> (TV, projector or monitor), opens the full-screen <strong>player display</strong> there; with <strong>one screen</strong>, it opens the <strong>IPRPS Table</strong> console instead;</li>
-<li>in Medium and Advanced, warms up the <strong>IPRPS Oracle</strong>, so its first answer comes quickly.</li>
+<li>in Medium and Advanced, loads the <strong>IPRPS Oracle</strong>, so its first answer doesn't have to wait for it to load.</li>
 </ol>
 <figure class="wide"><a href="images/diagram-flow.png" target="_blank" rel="noopener"><img src="images/diagram-flow.png" alt="Game night at a glance: prepare, one click, players join, play, wrap up" loading="lazy" decoding="async"></a><figcaption>Game night at a glance: prepare, one click, players join, play, wrap up</figcaption></figure>
 <h3 id="opening-the-table">Opening the table<a class="anchor" href="#opening-the-table" aria-label="Link to this section">#</a></h3>
@@ -773,16 +773,21 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 <li><strong>Share it:</strong> under each answer, <strong>Show players</strong> puts it on the player display, <strong>Pin to memory</strong> saves it as a fact, and <strong>Save NPC</strong> keeps a character for later.</li>
 </ul>
 <p><strong>How fast is it?</strong></p>
-<p>The Oracle thinks on your own computer, not in a big data center, so it is slower than online AI. Plan for that and it works well at the table.</p>
+<p>The Oracle thinks on your own computer, not in a big data center, so it is much slower than online AI. Plan for that and it works well at the table.</p>
+<p>Every answer has three parts:</p>
+<ol>
+<li><strong>Loading.</strong> The first answer after you start the computer waits while the AI loads, about 40 seconds on a 16 GB laptop. Session Master Mode loads it for you, so start it a few minutes before the game.</li>
+<li><strong>Reading.</strong> The Oracle reads your request, its instructions and your campaign memory before it writes a word. With campaign memory on, this can take a few minutes on a laptop. A follow-up question in the same chat usually starts sooner, because the Oracle keeps what it has already read.</li>
+<li><strong>Writing.</strong> The answer appears word by word, about <strong>two or three words a second</strong> on a laptop. A short paragraph takes about half a minute. You can start reading before it finishes.</li>
+</ol>
+<p><strong>A real example.</strong> On a 16 GB laptop with the Advanced edition, a three-sentence description of a nervous dockhand, with no campaign memory, took about a minute and a half the first time: 40 seconds loading, 20 seconds reading and 35 seconds writing.</p>
 <ul>
-<li><strong>It reads first, then writes.</strong> After you ask, it reads your request and your campaign memory. That takes a moment. Then the answer appears word by word, so you can start reading before it finishes.</li>
-<li><strong>Once it is writing, expect about a sentence every one to three seconds</strong> on a typical processor.</li>
-<li><strong>The first answer after you start the computer takes longest</strong>, while the AI loads. Session Master Mode loads it for you when it starts, so start it a few minutes before the game.</li>
-<li><strong>Short answers are quickest:</strong> <strong>Names</strong>, <strong>Loot</strong> and <strong>Plot hook</strong>. An <strong>NPC</strong> or a <strong>Read-aloud</strong> takes longer. <strong>NPC sheet</strong> and <strong>Creature sheet</strong> take the longest, often a minute or two. On an older processor, an NPC can take one to three minutes.</li>
-<li><strong>The computer matters most.</strong> A newer processor and 16 GB of memory are best. The Advanced edition is meant for that kind of computer.</li>
+<li><strong>Short answers are quickest:</strong> <strong>Names</strong>, <strong>Loot</strong> and <strong>Plot hook</strong>, especially with <strong>Use campaign memory</strong> unticked.</li>
+<li><strong>NPC</strong> and <strong>Read-aloud</strong> take a few minutes. <strong>NPC sheet</strong> and <strong>Creature sheet</strong> take the longest.</li>
+<li><strong>The computer matters most.</strong> A newer processor and 16 GB of memory help. A graphics chip the AI can use helps even more.</li>
 </ul>
 <aside class="box tip"><span class="box-label">Tip</span>
-<p>Use the Oracle like a helper behind your screen. Ask while the players talk, shop or plan. Better still, make your NPCs and places before the session, choose <strong>Save NPC</strong>, and have them ready. When you need an answer in seconds, switch the <strong>Model</strong> menu to Claude (below).</p>
+<p>Use the Oracle like a helper behind your screen, not like a search box. Make your NPCs and places <strong>before the session</strong>, choose <strong>Save NPC</strong>, and have them ready. During the game, ask while the players talk, shop or plan. When you need an answer in seconds, switch the <strong>Model</strong> menu to Claude (below).</p>
 </aside>
 <p><strong>Good habits:</strong></p>
 <ul>
@@ -800,12 +805,12 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 <li>In the <strong>Details</strong> box above the generators, type <em>a pawnbroker near the docks who hears everything</em>. Choose <strong>NPC</strong>.</li>
 <li>Read the answer. If you like the character, choose <strong>Save NPC</strong>.</li>
 <li>In the <strong>Details</strong> box, type <em>the pawnshop at night, in the rain</em> and choose <strong>Read-aloud</strong>. Choose <strong>Show players</strong> to put it on the player display, or copy it into a Table text card.</li>
-<li>Need stats in a hurry? Type a short description of the pawnbroker in <strong>Details</strong> and choose <strong>NPC sheet</strong>. It takes a minute or two with the local model.</li>
+<li>Need stats? Type a short description of the pawnbroker in <strong>Details</strong> and choose <strong>NPC sheet</strong>. With the local model it takes several minutes, so this is a good one to do before the session.</li>
 </ol>
 <p><strong>Check:</strong> the new sheet appears in Character Sheets under <strong>NPCs</strong>, ready to add to a fight.</p>
 </aside>
 <h3 id="optional-claude-the-online-ai">Optional: Claude, the online AI<a class="anchor" href="#optional-claude-the-online-ai" aria-label="Link to this section">#</a></h3>
-<p>The local model is free and private, but it can be slow on older computers. If you have internet, the Oracle can use <strong>Claude</strong>, an AI made by Anthropic, instead. Claude usually answers in seconds and writes richer scenes. You need your own <strong>Anthropic API key</strong>, and Anthropic charges your account a small amount for each answer.</p>
+<p>The local model is free and private, but it is slow, especially on older computers. If you have internet, the Oracle can use <strong>Claude</strong>, an AI made by Anthropic, instead. Claude usually answers in seconds and writes richer scenes. You need your own <strong>Anthropic API key</strong>, and Anthropic charges your account a small amount for each answer.</p>
 <figure class="medium"><a href="images/oracle-online.jpg" target="_blank" rel="noopener"><img src="images/oracle-online.jpg" alt="The Online AI window: your saved key, the four Claude models, and Check for new models" loading="lazy" decoding="async"></a><figcaption>The Online AI window: your saved key, the four Claude models, and Check for new models</figcaption></figure>
 <p><strong>Set it up once:</strong></p>
 <ol>
@@ -1044,7 +1049,7 @@ footer .in { max-width: 1240px; margin: 0 auto; padding: 26px 20px 40px; }
 </tr>
 <tr>
 <td>The Oracle is slow</td>
-<td>The first answer of the day takes longest, so start Session Master Mode early. <strong>Clear this chat</strong> between scenes. The local model needs a fairly recent processor and plenty of memory (16 GB is best). For answers in seconds, choose a Claude model (Chapter 8)</td>
+<td>That is normal for an AI on your own computer (Chapter 8, <strong>How fast is it?</strong>). Start Session Master Mode early, <strong>Clear this chat</strong> between scenes, untick <strong>Use campaign memory</strong> for Names and Loot, and prepare NPCs before the game. For answers in seconds, choose a Claude model</td>
 </tr>
 <tr>
 <td>The Oracle says <em>A new local model is ready</em></td>
