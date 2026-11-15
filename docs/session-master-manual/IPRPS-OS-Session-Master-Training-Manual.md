@@ -32,7 +32,7 @@ If you have run the walkthrough adventure *Fog on Pier Nine*, you already know t
 | --- | --- | --- |
 | 1. What makes IPRPS OS different | Know when IPRPS OS is the right tool | 10 minutes |
 | 2. Get set up | Create your campaign and choose your apps | 15 minutes |
-| 3. Prepare a session | Collect characters, notes, pictures and sound | 20 minutes |
+| 3. Prepare a session | Collect characters, notes, monsters, pictures and sound | 25 minutes |
 | 4. Open the IPRPS Table | Get players connected on their phones | 15 minutes |
 | 5. Roll the IPRPS way | Read checks, bands and BTN | 15 minutes |
 | 6. Run a fight | Track initiative, HP, AR and conditions | 20 minutes |
@@ -116,7 +116,7 @@ You decide which tiles appear. Choose **Manage apps**, switch apps on or off, an
 > 3. Choose **Create campaign**.
 > 4. Go to the **Color scheme** step and pick the one that's easiest for you to read.
 > 5. Choose **Open the Session Master Hub**.
-> 6. Choose **Manage apps**. Make sure these are on: IPRPS Table, Character Sheets, Character Creator, Combat Tracker, Dice Roller, Session Log, Soundboard and IPRPS Writer. Choose **Save**.
+> 6. Choose **Manage apps**. Make sure these are on: IPRPS Table, Character Sheets, Character Creator, Combat Tracker, Dice Roller, Session Log, Soundboard, IPRPS Writer and Master Database. Choose **Save**.
 >
 > **Check:** the Hub shows your apps as tiles. In the Combat Tracker, the **Campaign** menu at the top now lists *Iron City Blues*.
 
@@ -169,6 +169,31 @@ There are two ways to get your players' characters:
 > 5. Now make an NPC: choose **New ▾ → NPC sheet** and create *Inspector Hale Ostrander*, a gruff Wolffolk detective.
 >
 > **Check:** the list shows Brenna under **Players** and Ostrander under **NPCs**. Both will show up in the Combat Tracker's **From sheets** list.
+
+### The Master Database
+
+The **IPRPS Master Database** is your reference library for the Infinite Plane. It keeps ten catalogs in one searchable place: the **bestiary**, the **tavern ledger**, **humanoid species**, **physical weapons**, the **weapon armory**, the **grimoire**, **flora and fauna**, **gear**, **covenants** and **dungeon traps**. Open it from the Hub or the IPRPS menu.
+
+- Type in **Search entries…**, or browse a catalog, to find a monster, a spell or a trap in seconds.
+- **＋ New entry** adds your own, with a picture if you like.
+- **🖨 Report** on an entry makes a printable page for your notes.
+- **⭳ Export data (.iprps)** saves entries as a file you can share with another Session Master.
+
+The catalogs start empty. The first time, choose **⭳ Import**, then **Import ALL starter datasets**. About 2,500 entries come in. Importing again is safe, because it skips entries you already have.
+
+> **Tip:** Everyone who signs in on the computer can add and change entries. If your players use the same computer, the person who set it up can limit editing to the Session Masters. The build guide (12.10) explains how.
+
+### The Character Prompt Builder
+
+Want a picture of an NPC? The **Character Prompt Builder** writes the description for you. It picks random traits, such as gender, height, build, skin tone, age, hair and eyes, from lists you can change. Then it turns them into a **prompt**: text you paste into an image AI to get a character reference sheet.
+
+1. Open **Character Prompt Builder** from the Hub or the IPRPS menu.
+2. Choose **Randomize Traits**. Change any trait you don't like.
+3. Choose **Copy**, and paste the prompt into the image AI you use.
+
+It works without the internet. Only the image AI you paste into is online.
+
+> **Try it:** Make a prompt for Inspector Hale Ostrander. Randomize, then set the traits to match a gruff, older Wolffolk detective in a rain-soaked coat.
 
 ## Chapter 4: Open the IPRPS Table
 
@@ -383,8 +408,7 @@ The Oracle thinks on your own computer, not in a big data center, so it is slowe
 - Set the **Campaign** menu at the top before you ask, so the Oracle knows your story.
 - Pin the facts that matter, like who is secretly working for whom.
 - Treat answers as ideas. You are the Session Master, so change anything you like.
-- The first answer of the day is slower while the AI loads. Session Master Mode warms it up for you.
-- On an older computer, a long answer can take a minute or more. **Clear this chat** between scenes, and untick **Use campaign memory** for **Names** and **Loot**. Both make answers start sooner.
+- **Clear this chat** between scenes, and untick **Use campaign memory** for **Names** and **Loot**. Both make answers start sooner.
 
 > **Walkthrough 6: When the players go off script**
 >
@@ -474,6 +498,8 @@ IPRPS OS updates itself without reinstalling. About 10 minutes after you start t
 
 To install them, open **IPRPS → IPRPS Updates**, type your password, and choose **Install updates**. Your campaigns, sheets, settings and files are kept. The same window lists extra IPRPS apps and optional software you can add with **Install**.
 
+Updates can also bring **new apps**. The Master Database and the Character Prompt Builder arrived this way. They appear in the IPRPS menu and on the Hub after the update. Now and then an app is **retired**. Then an update removes it, but anything you saved with it stays on your computer.
+
 > **Tip:** Install updates the day before game night, not an hour before.
 
 ### Remote players
@@ -517,6 +543,7 @@ Your console stays on your computer only. Turn remote play off when the session 
 | Start a fight | **+ New**, **+ Whole party**, **Roll initiative** | Combat Tracker |
 | Next turn | **Next turn ▶** or the **N** key | Combat Tracker |
 | Thunder! | Click the pad, or press its key | Soundboard |
+| Look up a monster, spell or trap | Search the catalog | Master Database |
 | A quick NPC or place | **NPC**, **Location** | IPRPS Oracle (Medium and up) |
 | A faster Oracle | **Model** menu → a Claude model (online, your key) | IPRPS Oracle, **Online AI…** |
 | End of the night | **Draft from the log**, then **Close the table** | Session Log, Table console |
@@ -554,6 +581,8 @@ Your console stays on your computer only. Turn remote play off when the session 
 | **API key** | A secret code from a company like Anthropic that lets an app use its online AI and charges your account |
 | **IPRPS Table** | Lets players join from their own devices to chat, roll and see what you share |
 | **Join code** | The six-character code players type to join an open table |
+| **Master Database** | The library of IPRPS creatures, species, weapons, spells, gear, covenants and traps |
+| **Prompt** | The text you give an AI, such as a description for an image AI |
 | **Player display** | A full-screen window for players on a second screen |
 | **Session** | One game night. Its log, fights and recap belong to it |
 | **Session Master (SM)** | The person who runs the game |
