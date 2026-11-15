@@ -27,10 +27,10 @@ New apps and fixes now go out through **IPRPS Updates** (pacman, signed reposito
 | Part 10 — Stage F (Apache, PHP-FPM, MariaDB) + campaign schema | ✅ Done | PHP 8.5.12 with MariaDB support; MariaDB 12.3.3 without a preset root password; Apache on 127.0.0.1 only |
 | Part 11 — Stage G (Lite apps) | ✅ Done | Node.js, Firefox, Poppler, Evince, Parole, mpv, FFmpeg |
 | Part 12 — IPRPS apps | ✅ Done | Session Master Hub, Writer, Character Creator and Character Sheets, IPRPS Table (LAN play), Combat, Dice, Session Log, Welcome, File Viewer, Soundboard, Master Database, Character Prompt Builder, IPRPS Updates; 32 web apps from the live server (cleaned of keys and hosting passwords) with the Universal Login and local databases. Optional: IPRPS Link (remote players) and IPRPS Podcast Studio |
-| Part 12.12 — Package manager | ✅ Done | pacman with a signed IPRPS repository (`iprps-core`, `iprps-apps`, `iprps-extra`) and **IPRPS Updates** (graphical, notifications, Hub tile) |
+| Part 12.12 — Package manager | ✅ Done | pacman with a signed IPRPS repository (`iprps-core`, `iprps-apps`, `iprps-extra`) and **IPRPS Updates** (graphical, notifications, Hub tile). Tested on installed computers: the Master Database and the Character Prompt Builder arrived through IPRPS Updates |
 | Part 13 — Release engineering | ✅ Done | Release cleanup, first-boot setup, installer, `.img.xz` and live `.iso`; first start after install takes 10–30 minutes, then one restart (13.3) |
 | Part 14 — Lite release | ✅ Beta | Installed and tested on a 16 GB laptop and a 6 GB desktop; IPRPS Updates tested |
-| Part 15 — Stage H (Medium) | ✅ Beta | Chromium (default browser, apps in their own windows), LibreOffice, GIMP and more; IPRPS Oracle with local Llama 3.2 3B and optional Claude |
+| Part 15 — Stage H (Medium) | ✅ Beta | Chromium (default browser, apps in their own windows), LibreOffice, GIMP and more; IPRPS Oracle with local Llama 3.2 3B and optional Claude; the Oracle tested on real hardware: it works, faster than earlier builds, but slower than online AI (the manual sets expectations, Chapter 8) |
 | Part 16 — Stage I (Advanced) | ✅ Beta | Medium plus Calibre and more; installed and running on the 16 GB laptop (2026-11-14); IPRPS Updates tested (the `pacman.conf` fix of 2026-11-11 is in the release cleanup) |
 | Part 17 — After release | ✅ In use | Updates, new apps, retiring apps, security updates and point releases; the **IPRPS Release Desk** (`tools/release-desk/`) walks through each one |
 
@@ -38,7 +38,7 @@ New apps and fixes now go out through **IPRPS Updates** (pacman, signed reposito
 
 | Item | What's left |
 |---|---|
-| App packages 2026.11.14 and `iprps-base` 1.0-8 (Master Database, Character Prompt Builder, retiring apps) | Build, sign and upload with the Release Desk (**Update IPRPS OS files or a recipe**, `iprps-apps` and `iprps-base`); then **Check now** on a Lite and an Advanced computer |
+| App packages 2026.11.14 and `iprps-base` 1.0-8 (retiring apps; versions above the 2026.11.11 build) | Build, sign and upload with the Release Desk (**Update IPRPS OS files or a recipe**, `iprps-apps` and `iprps-base`); then **Check now** on a Lite and an Advanced computer |
 | IPRPS Link (12.13, optional) | Its tests pass with both relays (Node.js and PHP, also in burst mode). Still to do: the live Infinite Plane sign-in (`relay/auth/link.html` in the site's `/auth/`), one relay on HTTPS, a session with a phone on mobile data, `makepkg` in the build image |
 | IPRPS Podcast Studio (12.14, optional) | Server, export and AI-provider tests pass with mocks. Still to do: real camera and microphone, one LAN guest, a guest over the internet, real AI keys, `makepkg` in the build image |
 | Session Master Hub and web apps | Overhaul of the 32 server apps before 1.0 final |
