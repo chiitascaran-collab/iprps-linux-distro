@@ -172,8 +172,12 @@ function pkgSteps(job, cfg, dir, repoName, opts = {}) {
   return [stepCopy(cfg),
     opts.checksums ? { id: 'checksums', where: 'builder', action: 'checksums', optional: true, title: 'Update the download checksums',
       text: 'Runs `makepkg -g` (downloads the source) and writes the new checksums into your repository\'s PKGBUILD, then copies it into the image again. Compare them with the checksum on the BLFS page or the project\'s site, or check the download\'s signature. Skip this if you typed the checksum yourself.' } : null,
-    stepBuild(cfg, [dir]), stepInstall(cfg, inst, '', opts.takeover ? "--overwrite '/usr/*' " : ''), stepRepoAdd(cfg, [[repoName, fl]])].filter(Boolean);
+    stepBuild(cfg, [dir]),
+    // Optional apps stay out of the build image, so they stay out of the release images: computers add them from IPRPS Updates
+    OPTIONAL_DIRS.has(dir) ? null : stepInstall(cfg, inst, '', opts.takeover ? "--overwrite '/usr/*' " : ''),
+    stepRepoAdd(cfg, [[repoName, fl]])].filter(Boolean);
 }
+const OPTIONAL_DIRS = new Set(['iprps-link', 'iprps-podcast-studio']);
 // Apps in their own recipe folder (iprps-link, iprps-podcast-studio) go to iprps-apps like the others
 const APP_DIRS = new Set(['iprps-apps', 'iprps-link', 'iprps-podcast-studio']);
 const defaultRepo = dir => APP_DIRS.has(dir) ? 'iprps-apps' : 'iprps-core';

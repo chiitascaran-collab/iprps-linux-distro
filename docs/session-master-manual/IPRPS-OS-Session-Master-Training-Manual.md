@@ -208,7 +208,7 @@ About fifteen minutes before players arrive, choose **Session Master Mode** on t
 1. opens the **Session Master Hub**;
 2. plays your **Campaigns/Audio** folder as shuffled, looping background sound, in a small window with play, pause and volume buttons;
 3. with a **second screen** (TV, projector or monitor), opens the full-screen **player display** there; with **one screen**, it opens the **IPRPS Table** console instead;
-4. in Medium and Advanced, warms up the **IPRPS Oracle**, so its first answer comes quickly.
+4. in Medium and Advanced, loads the **IPRPS Oracle**, so its first answer doesn't have to wait for it to load.
 
 ![Game night at a glance: prepare, one click, players join, play, wrap up](images/diagram-flow.png "w=6.5")
 
@@ -393,15 +393,21 @@ Players often go somewhere you didn't plan. The **IPRPS Oracle** helps you keep 
 
 **How fast is it?**
 
-The Oracle thinks on your own computer, not in a big data center, so it is slower than online AI. Plan for that and it works well at the table.
+The Oracle thinks on your own computer, not in a big data center, so it is much slower than online AI. Plan for that and it works well at the table.
 
-- **It reads first, then writes.** After you ask, it reads your request and your campaign memory. That takes a moment. Then the answer appears word by word, so you can start reading before it finishes.
-- **Once it is writing, expect about a sentence every one to three seconds** on a typical processor.
-- **The first answer after you start the computer takes longest**, while the AI loads. Session Master Mode loads it for you when it starts, so start it a few minutes before the game.
-- **Short answers are quickest:** **Names**, **Loot** and **Plot hook**. An **NPC** or a **Read-aloud** takes longer. **NPC sheet** and **Creature sheet** take the longest, often a minute or two. On an older processor, an NPC can take one to three minutes.
-- **The computer matters most.** A newer processor and 16 GB of memory are best. The Advanced edition is meant for that kind of computer.
+Every answer has three parts:
 
-> **Tip:** Use the Oracle like a helper behind your screen. Ask while the players talk, shop or plan. Better still, make your NPCs and places before the session, choose **Save NPC**, and have them ready. When you need an answer in seconds, switch the **Model** menu to Claude (below).
+1. **Loading.** The first answer after you start the computer waits while the AI loads, about 40 seconds on a 16 GB laptop. Session Master Mode loads it for you, so start it a few minutes before the game.
+2. **Reading.** The Oracle reads your request, its instructions and your campaign memory before it writes a word. With campaign memory on, this can take a few minutes on a laptop. A follow-up question in the same chat usually starts sooner, because the Oracle keeps what it has already read.
+3. **Writing.** The answer appears word by word, about **two or three words a second** on a laptop. A short paragraph takes about half a minute. You can start reading before it finishes.
+
+**A real example.** On a 16 GB laptop with the Advanced edition, a three-sentence description of a nervous dockhand, with no campaign memory, took about a minute and a half the first time: 40 seconds loading, 20 seconds reading and 35 seconds writing.
+
+- **Short answers are quickest:** **Names**, **Loot** and **Plot hook**, especially with **Use campaign memory** unticked.
+- **NPC** and **Read-aloud** take a few minutes. **NPC sheet** and **Creature sheet** take the longest.
+- **The computer matters most.** A newer processor and 16 GB of memory help. A graphics chip the AI can use helps even more.
+
+> **Tip:** Use the Oracle like a helper behind your screen, not like a search box. Make your NPCs and places **before the session**, choose **Save NPC**, and have them ready. During the game, ask while the players talk, shop or plan. When you need an answer in seconds, switch the **Model** menu to Claude (below).
 
 **Good habits:**
 
@@ -419,13 +425,13 @@ The Oracle thinks on your own computer, not in a big data center, so it is slowe
 > 3. In the **Details** box above the generators, type *a pawnbroker near the docks who hears everything*. Choose **NPC**.
 > 4. Read the answer. If you like the character, choose **Save NPC**.
 > 5. In the **Details** box, type *the pawnshop at night, in the rain* and choose **Read-aloud**. Choose **Show players** to put it on the player display, or copy it into a Table text card.
-> 6. Need stats in a hurry? Type a short description of the pawnbroker in **Details** and choose **NPC sheet**. It takes a minute or two with the local model.
+> 6. Need stats? Type a short description of the pawnbroker in **Details** and choose **NPC sheet**. With the local model it takes several minutes, so this is a good one to do before the session.
 >
 > **Check:** the new sheet appears in Character Sheets under **NPCs**, ready to add to a fight.
 
 ### Optional: Claude, the online AI
 
-The local model is free and private, but it can be slow on older computers. If you have internet, the Oracle can use **Claude**, an AI made by Anthropic, instead. Claude usually answers in seconds and writes richer scenes. You need your own **Anthropic API key**, and Anthropic charges your account a small amount for each answer.
+The local model is free and private, but it is slow, especially on older computers. If you have internet, the Oracle can use **Claude**, an AI made by Anthropic, instead. Claude usually answers in seconds and writes richer scenes. You need your own **Anthropic API key**, and Anthropic charges your account a small amount for each answer.
 
 ![The Online AI window: your saved key, the four Claude models, and Check for new models](images/oracle-online.jpg "w=4.2")
 
@@ -560,7 +566,7 @@ Your console stays on your computer only. Turn remote play off when the session 
 | Someone saw the join code who shouldn't have | Choose **New code**. Players already at the table stay connected |
 | The Combat Tracker says to choose a session | Choose **+ Session** at the top to start tonight's session |
 | A character isn't in the **From sheets** list | Import their sheet into Character Sheets, and set its campaign to this one |
-| The Oracle is slow | The first answer of the day takes longest, so start Session Master Mode early. **Clear this chat** between scenes. The local model needs a fairly recent processor and plenty of memory (16 GB is best). For answers in seconds, choose a Claude model (Chapter 8) |
+| The Oracle is slow | That is normal for an AI on your own computer (Chapter 8, **How fast is it?**). Start Session Master Mode early, **Clear this chat** between scenes, untick **Use campaign memory** for Names and Loot, and prepare NPCs before the game. For answers in seconds, choose a Claude model |
 | The Oracle says *A new local model is ready* | An update brought a new local model. Open a terminal and type `sudo iprps-ai-model upgrade` once (it downloads 3.4 GB). The old model keeps working until then |
 | Claude: *refused the API key*, or *out of credit* | Copy the key again from console.anthropic.com, or add credit to your Anthropic account. The local model always works |
 | The computer is slow right after installing IPRPS OS | This happens only once. It is finishing its setup in the background. Wait for the message **IPRPS OS setup is finished** (10 to 30 minutes), then restart once |
