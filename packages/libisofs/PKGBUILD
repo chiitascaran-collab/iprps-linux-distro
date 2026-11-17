@@ -1,0 +1,31 @@
+# IPRPS OS: libisofs from BLFS 13.1 (publish to iprps-core). Needed by IPRPS CD Burner (guide 12.15).
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+# BLFS page: Multimedia > CD/DVD-Writing Utilities > libisofs.
+
+pkgname=libisofs
+pkgver=1.5.8.pl02
+pkgrel=1
+pkgdesc='Library for creating ISO 9660 file systems (with Rock Ridge and Joliet)'
+arch=(x86_64)
+url='https://dev.lovelyhq.com/libburnia/web/wiki'
+license=(GPL-2.0-or-later)
+depends=(iprps-base)
+provides=(libisofs.so)
+source=("https://files.libburnia-project.org/releases/libisofs-$pkgver.tar.gz")
+# From the BLFS page (MD5); prefer sha256sums from "makepkg -g" once the download is checked
+md5sums=('48150014510f8e65de66cb687ff63957')
+
+# The ".pl02" patch-level tarball may unpack without the ".pl02" in the folder name.
+_dir() { cd "$srcdir"/libisofs-${pkgver%%.pl*}*/; }
+
+build() {
+  _dir
+  ./configure --prefix=/usr --disable-static
+  make
+}
+
+package() {
+  _dir
+  make DESTDIR="$pkgdir" install
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}

@@ -1,0 +1,27 @@
+# IPRPS CD Burner: give people on this computer access to the disc drive.
+# Drives (/dev/sr*) belong to the 'cdrom' group. The person logged in at the desktop
+# usually gets access anyway (logind), but the group makes it work in every case.
+
+_cdrom_users() {
+  getent group cdrom >/dev/null || groupadd -g 15 cdrom
+  local u added=
+  while IFS=: read -r u _ uid _ _ _ shell; do
+    [ "$uid" -ge 1000 ] && [ "$uid" -lt 60000 ] || continue
+    case "$shell" in */nologin|*/false) continue ;; esac
+    id -nG "$u" | grep -qw cdrom && continue
+    usermod -aG cdrom "$u" && added="$added $u"
+  done < /etc/passwd
+  if [ -n "$added" ]; then
+    echo ":: Added to the 'cdrom' group:$added"
+    echo "   Log out and back in once before burning a disc."
+  fi
+}
+
+post_install() {
+  _cdrom_users
+  echo ":: IPRPS CD Burner is in the IPRPS menu."
+}
+
+post_upgrade() {
+  _cdrom_users
+}

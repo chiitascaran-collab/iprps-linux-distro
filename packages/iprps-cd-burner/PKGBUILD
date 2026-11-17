@@ -1,0 +1,43 @@
+# IPRPS OS: IPRPS CD Burner (an update for every edition, offered as optional software)
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+#
+# Built from a copy of the IPRPS OS repository (default /build/src/iprps-os; set IPRPS_REPO to use another),
+# like packages/iprps-apps. Publish to iprps-apps; it isn't in any edition's list, so IPRPS Updates offers it
+# under "IPRPS apps and optional software" on every edition (guide 12.15).
+
+pkgname=iprps-cd-burner
+pkgver=2026.11.17
+pkgrel=1
+pkgdesc='IPRPS CD Burner: burn data discs, audio CDs and disc images'
+arch=(any)
+url='https://github.com/chiitascaran-collab/iprps-linux-distro'
+license=(GPL-2.0-only)
+# Python 3 with PyGObject and GTK 3, and FFmpeg, are part of every IPRPS OS edition, built from source rather
+# than installed as pacman packages, so they can't be listed here. libisoburn (xorriso) brings libburn
+# (cdrskin, for audio CDs) and libisofs; on Advanced, which built them by hand, the packages take over those files.
+depends=(iprps-base libisoburn)
+install=iprps-cd-burner.install
+options=(!strip !debug)
+
+_repo=${IPRPS_REPO:-/build/src/iprps-os}
+_app=$_repo/apps/cd-burner
+
+prepare() {
+  [ -f "$_app/iprps_cd_burner/app.py" ] || { echo "No apps/cd-burner in $_repo (copy the repository there, or set IPRPS_REPO)" >&2; return 1; }
+}
+
+check() {
+  # The burning engine's tests; with xorriso installed they write and check real ISO images (no drive needed)
+  cd "$_app" && python3 -m unittest discover -s tests
+}
+
+package() {
+  install -dm755 "$pkgdir/opt/iprps/cd-burner/iprps_cd_burner"
+  install -m644 "$_app"/iprps_cd_burner/*.py "$pkgdir/opt/iprps/cd-burner/iprps_cd_burner/"
+  python3 -m compileall -q -d /opt/iprps/cd-burner/iprps_cd_burner "$pkgdir/opt/iprps/cd-burner/iprps_cd_burner"
+  install -Dm755 "$_repo/rootfs/usr/bin/iprps-cd-burner" "$pkgdir/usr/bin/iprps-cd-burner"
+  install -Dm644 "$_app/icon.svg" "$pkgdir/usr/share/iprps/icons/iprps-cd-burner.svg"
+  install -Dm644 "$_app/icon.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/iprps-cd-burner.svg"   # window and About icon
+  install -Dm644 "$startdir/iprps-cd-burner.desktop" "$pkgdir/usr/share/applications/iprps-cd-burner.desktop"
+  install -Dm644 "$_app/README.md" "$pkgdir/usr/share/doc/iprps-cd-burner/README.md"
+}

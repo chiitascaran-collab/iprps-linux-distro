@@ -1,0 +1,35 @@
+# IPRPS OS: libburn from BLFS 13.1 (publish to iprps-core). Needed by IPRPS CD Burner (guide 12.15).
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+# BLFS page: Multimedia > CD/DVD-Writing Utilities > libburn. Installs cdrskin (audio CDs).
+
+pkgname=libburn
+pkgver=1.5.8
+pkgrel=1
+pkgdesc='Library for writing CDs, DVDs and Blu-ray discs, with the cdrskin program'
+arch=(x86_64)
+url='https://dev.lovelyhq.com/libburnia/web/wiki'
+license=(GPL-2.0-or-later)
+depends=(iprps-base)
+provides=(libburn.so)
+source=("https://files.libburnia-project.org/releases/libburn-$pkgver.tar.gz")
+# From the BLFS page (MD5); prefer sha256sums from "makepkg -g" once the download is checked
+md5sums=('4c8c786e88eb3e9f7c1d0ddc4d4a39e7')
+
+_dir() { cd "$srcdir"/libburn-${pkgver%%.pl*}*/; }
+
+prepare() {
+  _dir
+  sed -i 's/catch_int ()/catch_int (int signum)/' test/poll.c
+}
+
+build() {
+  _dir
+  ./configure --prefix=/usr --disable-static
+  make
+}
+
+package() {
+  _dir
+  make DESTDIR="$pkgdir" install
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}

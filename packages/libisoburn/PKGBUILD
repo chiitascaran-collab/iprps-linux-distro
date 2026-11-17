@@ -1,0 +1,32 @@
+# IPRPS OS: libisoburn from BLFS 13.1 (publish to iprps-core). Needed by IPRPS CD Burner (guide 12.15).
+# Maintainer: Mythical Legends Publishing, LLC <https://infiniteplane.space>
+# BLFS page: Multimedia > CD/DVD-Writing Utilities > libisoburn.
+
+pkgname=libisoburn
+pkgver=1.5.8.pl02
+pkgrel=1
+pkgdesc='Library and xorriso program for making, burning and checking ISO images and data discs'
+arch=(x86_64)
+url='https://dev.lovelyhq.com/libburnia/web/wiki'
+license=(GPL-2.0-or-later GPL-3.0-or-later)   # the library GPLv2+, xorriso GPLv3+
+depends=(iprps-base libburn libisofs)
+provides=(libisoburn.so xorriso)
+source=("https://files.libburnia-project.org/releases/libisoburn-$pkgver.tar.gz")
+# From the BLFS page (MD5); prefer sha256sums from "makepkg -g" once the download is checked
+md5sums=('008b9adc9ab3545e167495220b453413')
+
+_dir() { cd "$srcdir"/libisoburn-${pkgver%%.pl*}*/; }
+
+build() {
+  _dir
+  ./configure --prefix=/usr              \
+              --disable-static           \
+              --enable-pkg-check-modules
+  make
+}
+
+package() {
+  _dir
+  make DESTDIR="$pkgdir" install
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}
