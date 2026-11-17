@@ -41,7 +41,7 @@ New apps and fixes now go out through **IPRPS Updates** (pacman, signed reposito
 | App packages 2026.11.14 and `iprps-base` 1.0-8 (retiring apps; versions above the 2026.11.11 build) | Build, sign and upload with the Release Desk (**Update IPRPS OS files or a recipe**, `iprps-apps` and `iprps-base`); then **Check now** on a Lite and an Advanced computer |
 | IPRPS Link (12.13, optional) | Its tests pass with both relays (Node.js and PHP, also in burst mode). Still to do: the live Infinite Plane sign-in (`relay/auth/link.html` in the site's `/auth/`), one relay on HTTPS, a session with a phone on mobile data, `makepkg` in the build image |
 | IPRPS Podcast Studio (12.14, optional) | Server, export and AI-provider tests pass with mocks. Still to do: real camera and microphone, one LAN guest, a guest over the internet, real AI keys, `makepkg` in the build image |
-| IPRPS CD Burner (12.15, optional) | Engine tests pass with real `xorriso` on image files; package built and installed with its three libraries in a test system (pacman 6.0.2, libraries from 1.5.6 sources). Still to do: `makepkg` of the 1.5.8 libraries and the app in the build image, publishing, installing from IPRPS Updates in a test VM, and a real drive (data disc, audio CD, erase) |
+| IPRPS CD Burner (12.15, optional) | ✅ Published 2026-11-17: `iprps-cd-burner` 2026.11.17-2 in `iprps-apps`, `libburn` 1.5.8-2, `libisofs` and `libisoburn` 1.5.8.pl02-2 in `iprps-core`, built in the build image (app tests pass), repository check passed and uploaded. Still to do: a real drive (data disc, audio CD, erase) |
 | Session Master Hub and web apps | Overhaul of the 32 server apps before 1.0 final |
 
 ## Decisions log
