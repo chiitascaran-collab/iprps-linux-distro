@@ -80,8 +80,15 @@ cmd_add() {
     cp -f "$p" "$d/" || die "copy failed: $p"
     rm -f "$d/${p##*/}.sig"
     gpg --batch --yes --detach-sign --no-armor -u "$F" "$d/${p##*/}" || die "signing failed: $p (wrong passphrase?)"
+    # The same file already in the list: only the package file needed putting back. Running repo-add
+    # --remove on it again could delete the file it has just copied (the old and new file names are the same).
+    if [ -f "$d/$repo.db.tar.zst" ] && db_pkgs "$d/$repo.db.tar.zst" | grep -qx "${p##*/}"; then
+      ok "${p##*/} is already in $repo's list: package file put back"
+      continue
+    fi
     added+=("$d/${p##*/}")
   done
+  [ ${#added[@]} -gt 0 ] || { ok "Nothing new for $repo's list. Next: $0 check"; return 0; }
   # --remove deletes the replaced older version of each package; --sign signs the database too
   repo-add --sign --key "$F" --verify --remove "$d/$repo.db.tar.zst" "${added[@]}" || die "repo-add failed"
   ok "Added to $repo: ${#added[@]} package(s). Next: $0 check, then test (serve), then stage and upload."
