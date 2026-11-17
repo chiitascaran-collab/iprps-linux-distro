@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
+# Opens IPRPS CD Burner (data discs, audio CDs and disc images).
+APP="${IPRPS_CDBURNER_APP:-/opt/iprps/cd-burner}"
+export PYTHONPATH="$APP${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m iprps_cd_burner "$@"

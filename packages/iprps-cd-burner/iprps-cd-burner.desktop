@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=IPRPS CD Burner
+GenericName=Disc Burner
+Comment=Burn data discs, audio CDs and disc images
+Exec=iprps-cd-burner %F
+Icon=/usr/share/iprps/icons/iprps-cd-burner.svg
+Terminal=false
+Categories=X-IPRPS;AudioVideo;DiscBurning;
+Keywords=CD;DVD;Blu-ray;burn;ISO;audio;erase;
+MimeType=application/x-cd-image;application/x-iso9660-image;application/vnd.efi.iso;
+StartupNotify=true
+StartupWMClass=iprps-cd-burner

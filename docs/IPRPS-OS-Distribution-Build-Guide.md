@@ -39,7 +39,7 @@ This guide builds **IPRPS OS** for distribution: a generic, ready-to-use Linux s
 | Video | mpv | + VLC, FFmpeg tools | + upstream video tools |
 | Images | Ristretto (viewer), **Drawing** (simple painting) | + GIMP, Inkscape, ImageMagick | + FontForge, Graphviz, upstream art tools |
 | Documents | **IPRPS Writer** (.docx/.odt/PDF), Evince (PDF), Mousepad (text) | + LibreOffice, printing (CUPS) | + scanning (SANE) |
-| Discs | — | Xfburn | + cdrdao, libisoburn |
+| Discs | IPRPS CD Burner (optional) | Xfburn; IPRPS CD Burner (optional) | + cdrdao, libisoburn |
 
 ### How the build is organized
 
@@ -22691,7 +22691,7 @@ update-desktop-database /usr/share/applications
 | **Script Breakdown Engine** | Story breakdowns for production | Exists | — | — | ✔ |
 | **Generative Art Gallery** | Image gallery with accounts | Exists | — | — | ✔ |
 | **RadioStation Manager** | Web radio broadcasting | Exists | — | — | ✔ |
-| **IPRPS CD Burner** | Disc burning for IPRPS media | In progress | — | — | ✔ |
+| **IPRPS CD Burner** | Burn data discs (one-click Campaigns backup), audio CDs and disc images; copy and erase discs | Exists (`cd-burner/`, 12.15) | optional | optional | optional |
 | **AI Session Master campaign apps** | AI-run campaigns | Exists (React) | — | — | ✔ |
 
 > **Warning:** Apps that call online AI services need internet access and each user's **own** API keys. Never ship keys in the image. **IPRPS Welcome** (12.10) stores each user's keys in one protected place.
@@ -23912,6 +23912,63 @@ cd /build/src/iprps-os/packages/iprps-podcast-studio && makepkg -f --nodeps --no
 | A guest on the internet can't connect | Port 8766 must be reachable from outside (a port forward, a VPN address or an HTTPS tunnel with `--guest-http`); add a TURN server in Settings for strict firewalls |
 | Exports fail | `ffmpeg -hide_banner -encoders | grep -E 'libx264|libmp3lame|libopus'` must list all three (Stage G) |
 | The studio keeps running after its window closes | On purpose, so guests stay connected: **Settings → Quit Podcast Studio** |
+
+### 12.15 IPRPS CD Burner (optional)
+
+**IPRPS CD Burner** burns data discs, audio CDs and disc images, saves data discs as ISO images and erases rewritable discs. It's optional on every edition: **IPRPS Updates → IPRPS apps and optional software → IPRPS CD Burner**. Installing it also installs the disc tools it needs.
+
+| | |
+|---|---|
+| Package | `iprps-cd-burner`, recipe in `packages/iprps-cd-burner/`; installs to `/opt/iprps/cd-burner`; depends on `iprps-base` and `libisoburn` |
+| Disc tools | `libburn` 1.5.8 (`cdrskin`, for audio CDs), `libisofs` 1.5.8.pl02 and `libisoburn` 1.5.8.pl02 (`xorriso`): BLFS 13.1 recipes in `packages/libburn`, `packages/libisofs` and `packages/libisoburn`, published to `iprps-core` so IPRPS Updates doesn't list them as optional software themselves. Medium (Xfburn, Stage H) and Advanced (Stage I) built some of them by hand; there the packages take over those files |
+| Needs | Python 3 with PyGObject and GTK 3, and FFmpeg: every edition has them, built from source |
+| Opens | **IPRPS CD Burner** in the IPRPS menu (`iprps-cd-burner`), a GTK 3 window; also **Open With** for `.iso` files |
+| Drive access | `/dev/sr*` belongs to the `cdrom` group. Installing the package adds every account (UID 1000 and up) to it; log out and back in once |
+
+What it does:
+
+- **Data Disc:** files and folders to CD, DVD or Blu-ray, or to an ISO image. **Add Campaigns** adds the whole *Campaigns* folder in one click. Every file is checked after burning. A disc that isn't closed takes more files later, as a new session.
+- **Audio CD:** MP3, FLAC, OGG, Opus, M4A, AAC, WMA, AIFF or WAV files as a standard audio CD, with CD-TEXT (album and song names). **Add Campaign Audio** adds *Campaigns/Audio*. Gaps between songs or none, and evened-out volume.
+- **Burn Image:** an `.iso` or `.img` to a disc as it is, with its SHA-256 checksum shown for comparing with a download page.
+- **Copy Disc** saves a data disc as an ISO image; **Erase** quick- or full-erases CD-RW, DVD-RW, DVD+RW and BD-RE.
+- Every burn can be **simulated** (laser off; CD-R/RW and DVD-R/RW), run at the slowest speed for car stereos, and eject when done. **Details** shows the exact commands and the drive's messages.
+
+**Publish it once. [BUILDER] then [IPRPS CHROOT] then [DEBIAN ROOT]** The libraries first. The build image already has them from Stages H and I, so they build in any order; installing the packages takes over those files.
+
+```bash
+cd /build/src/iprps-os/packages/libburn    && makepkg -f --nodeps --noconfirm
+cd /build/src/iprps-os/packages/libisofs   && makepkg -f --nodeps --noconfirm
+cd /build/src/iprps-os/packages/libisoburn && makepkg -f --nodeps --noconfirm
+cd /build/src/iprps-os/packages/iprps-cd-burner && makepkg -f --nodeps --noconfirm
+```
+
+The app's `check()` runs its tests, which write and check real ISO images with `xorriso`: it must print **OK**.
+
+```bash
+cd /build/repo && pacman -U --overwrite '/usr/*' libburn-1.5.8-1-x86_64.pkg.tar.zst libisofs-1.5.8.pl02-1-x86_64.pkg.tar.zst libisoburn-1.5.8.pl02-1-x86_64.pkg.tar.zst
+xorriso -version | head -1 && cdrskin -version | head -1
+```
+
+```bash
+D=/mnt/iprps/build/repo
+/root/iprps-repo.sh add iprps-core $D/libburn-1.5.8-1-x86_64.pkg.tar.zst $D/libisofs-1.5.8.pl02-1-x86_64.pkg.tar.zst $D/libisoburn-1.5.8.pl02-1-x86_64.pkg.tar.zst
+/root/iprps-repo.sh add iprps-apps $D/iprps-cd-burner-*-any.pkg.tar.zst
+/root/iprps-repo.sh check && /root/iprps-repo.sh stage
+```
+
+Upload and check online as in 12.12 step 8. With the Release Desk (17.7): **Update IPRPS OS files or a recipe**, once for each of `libburn`, `libisofs` and `libisoburn` (repository **iprps-core**), then `iprps-cd-burner` (**The usual one**: `iprps-apps`).
+
+> **Side note:** The `.pl02` downloads are patch-level releases; the recipes work whether the folder inside is named `libisofs-1.5.8` or `libisofs-1.5.8.pl02`. Their checksums are BLFS's MD5s: replace them with `makepkg -g` after checking the download, as in 17.2.
+
+**Test it. [TEST VM]** Install it from IPRPS Updates (it brings the three libraries), log out and back in, open **IPRPS CD Burner**: no "tools aren't installed" bar. On **Data Disc**, add a folder and **Save as Image**, then open the image in the file manager. Virtual CD drives can't write, so burning, audio CDs and erasing need a real drive: try **Simulate only** with a blank CD-R first. The repository's tests: `cd apps/cd-burner && python3 -m unittest discover -s tests -v`.
+
+| Problem | Fix |
+|---|---|
+| *You don't have permission to use /dev/sr0* | Log out and back in after installing; `id` must list `cdrom` (`sudo usermod -aG cdrom $USER` for an account made later) |
+| *No disc in the drive* right after putting one in | Wait until the drive's light stops blinking, then the refresh button |
+| *Simulate only* fails | DVD+R, DVD+RW and Blu-ray discs can't simulate: burn for real, or test with CD-R or DVD-R |
+| An audio CD skips in an old player or car stereo | Use CD-R (not CD-RW) and **Slowest (most reliable)** |
+| A bar says burning tools aren't installed | `pacman -Q libburn libisofs libisoburn`; remove and install IPRPS CD Burner again in IPRPS Updates |
 
 ---
 
@@ -30065,7 +30122,7 @@ Installed computers notice within 6 hours (or at once with **Check now**). **Tes
 
 The **IPRPS Release Desk** (17.7) does steps 1–2 for you and walks you through the rest.
 
-Two apps have their own recipe folder instead of a function in `iprps-apps`: `packages/iprps-link/` (12.13) and `packages/iprps-podcast-studio/` (12.14). Update them like any package folder (raise `pkgver`, build in that folder, add to `iprps-apps`); in the Release Desk, choose **Update IPRPS OS files or a recipe**.
+Three apps have their own recipe folder instead of a function in `iprps-apps`: `packages/iprps-link/` (12.13), `packages/iprps-podcast-studio/` (12.14) and `packages/iprps-cd-burner/` (12.15). Update them like any package folder (raise `pkgver`, build in that folder, add to `iprps-apps`); in the Release Desk, choose **Update IPRPS OS files or a recipe**.
 
 A **new app** for an edition: add a `package_iprps-<app>()` function and its name to `pkgname=()` in `iprps-apps/PKGBUILD`, a menu entry in `iprps-apps/desktop/`, and the name to the edition lists (`_apps_lite`, …) in `iprps-base/PKGBUILD`. Then publish a new `iprps-base` (17.3) too: the edition packages then depend on it, so every computer of that edition installs it with the next update.
 

@@ -177,16 +177,16 @@ function pkgSteps(job, cfg, dir, repoName, opts = {}) {
     OPTIONAL_DIRS.has(dir) ? null : stepInstall(cfg, inst, '', opts.takeover ? "--overwrite '/usr/*' " : ''),
     stepRepoAdd(cfg, [[repoName, fl]])].filter(Boolean);
 }
-const OPTIONAL_DIRS = new Set(['iprps-link', 'iprps-podcast-studio']);
-// Apps in their own recipe folder (iprps-link, iprps-podcast-studio) go to iprps-apps like the others
-const APP_DIRS = new Set(['iprps-apps', 'iprps-link', 'iprps-podcast-studio']);
+const OPTIONAL_DIRS = new Set(['iprps-link', 'iprps-podcast-studio', 'iprps-cd-burner']);
+// Apps in their own recipe folder (iprps-link, iprps-podcast-studio, iprps-cd-burner) go to iprps-apps like the others
+const APP_DIRS = new Set(['iprps-apps', 'iprps-link', 'iprps-podcast-studio', 'iprps-cd-burner']);
 const defaultRepo = dir => APP_DIRS.has(dir) ? 'iprps-apps' : 'iprps-core';
 
 WF['update-package'] = {
   title: 'Update IPRPS OS files or a recipe', icon: '✎', blurb: 'You changed files in a package folder (IPRPS Updates, the keyring, a recipe…): raise its version, build and publish it.',
   params: [
     { key: 'dir', label: 'Package folder', type: 'package', required: true },
-    { key: 'repo', label: 'Repository', type: 'choice', def: 'auto', choices: [['auto', 'The usual one (iprps-apps for apps, including iprps-link and iprps-podcast-studio; iprps-core otherwise)'], ['iprps-core', 'iprps-core'], ['iprps-apps', 'iprps-apps'], ['iprps-extra', 'iprps-extra (optional software)']] },
+    { key: 'repo', label: 'Repository', type: 'choice', def: 'auto', choices: [['auto', 'The usual one (iprps-apps for apps, including iprps-link, iprps-podcast-studio and iprps-cd-burner; iprps-core otherwise)'], ['iprps-core', 'iprps-core'], ['iprps-apps', 'iprps-apps'], ['iprps-extra', 'iprps-extra (optional software)']] },
     { key: 'note', label: 'What changed (changelog and commit message)', type: 'text', required: true },
   ],
   title_of: j => 'Update ' + j.params.dir,
