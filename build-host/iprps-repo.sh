@@ -69,6 +69,14 @@ cmd_add() {
   for p in "$@"; do
     [ -f "$p" ] || die "$p not found"
     case "$p" in *.pkg.tar.zst) ;; *) die "$p is not a package (.pkg.tar.zst)" ;; esac
+    # A package belongs in exactly one repository: IPRPS apps in iprps-apps, the system in iprps-core
+    local name other; name=$(bsdtar -xOf "$p" .PKGINFO 2>/dev/null | awk -F' = ' '$1=="pkgname"{print $2}')
+    for other in $REPOS; do
+      [ "$other" = "$repo" ] && continue
+      [ -f "$REPO/$other/$ARCH/$other.db.tar.zst" ] || continue
+      db_names "$REPO/$other/$ARCH/$other.db.tar.zst" | grep -qx "$name" && \
+        die "$name is already in $other. Add it there, not to $repo (or take it out of $other first: $0 remove $other $name)"
+    done
     cp -f "$p" "$d/" || die "copy failed: $p"
     rm -f "$d/${p##*/}.sig"
     gpg --batch --yes --detach-sign --no-armor -u "$F" "$d/${p##*/}" || die "signing failed: $p (wrong passphrase?)"
@@ -103,6 +111,8 @@ cmd_remove() {
 
 # Package files listed in a repository database (newest versions only)
 db_pkgs() { tar -xOf "$1" --wildcards '*/desc' 2>/dev/null | awk '/^%FILENAME%/{getline; print}'; }
+# Package names listed in a repository database
+db_names() { tar -xOf "$1" --wildcards '*/desc' 2>/dev/null | awk '/^%NAME%/{getline; print}'; }
 
 cmd_check() {
   need bsdtar libarchive-tools; need gpg gnupg
@@ -115,21 +125,24 @@ cmd_check() {
       [ -f "$d/$f" ] || { warn "$repo: $f is in the database but not in the folder"; bad=1; continue; }
       gpg --verify "$d/$f.sig" "$d/$f" 2>/dev/null || { warn "$repo: $f: signature bad or missing"; bad=1; }
       local name; name=$(bsdtar -xOf "$d/$f" .PKGINFO | awk -F' = ' '$1=="pkgname"{print $2}')
-      bsdtar -tf "$d/$f" | grep -v '^\.\|/$' | sed "s|^|$name |" >> "$tmp/files"
+      bsdtar -tf "$d/$f" | grep -v '^\.\|/$' | sed "s|^|$repo $name |" >> "$tmp/files"
       local backup; backup=$(bsdtar -xOf "$d/$f" .PKGINFO | awk -F' = ' '$1=="backup"{print $2}')
       for e in $(bsdtar -tf "$d/$f" | grep '^etc/.*[^/]$'); do
         grep -qx "$e" <<< "$backup" || warn "$name: $e is in /etc but not in backup=() (users' changes would be lost)"
       done
       bsdtar -xOf "$d/$f" .PKGINFO | grep -q '^depend = iprps-base' || \
-        case "$name" in iprps-base|iprps-keyring|iprps-lib|iprps-hub|iprps-writer|iprps-table|iprps-character-*|iprps-combat|iprps-dice|iprps-session-log|iprps-welcome|iprps-file-viewer|iprps-soundboard|iprps-oracle) ;;
+        case "$name" in pacman|iprps-base|iprps-keyring|iprps-master-db|iprps-lib|iprps-hub|iprps-writer|iprps-table|iprps-character-*|iprps-combat|iprps-dice|iprps-session-log|iprps-welcome|iprps-file-viewer|iprps-soundboard|iprps-oracle) ;;
           *) warn "$name doesn't depend on iprps-base (rule 1, packages/README.md)" ;; esac
     done
   done
   if [ -s "$tmp/files" ]; then
-    local dup; dup=$(awk '{print $2}' "$tmp/files" | sort | uniq -d)
+    local dup; dup=$(awk '{print $3}' "$tmp/files" | sort | uniq -d)
     if [ -n "$dup" ]; then
-      bad=1; warn "files in more than one package:"
-      grep -F -w -f <(echo "$dup") "$tmp/files" | sort -k2 | head -40
+      bad=1; warn "files in more than one package (repository, package, file):"
+      awk 'NR==FNR{d[$1]; next} ($3 in d)' <(echo "$dup") "$tmp/files" | sort -k3 | head -40
+      # The same package in two repositories is the usual cause: say which, and how to fix it
+      awk '{print $2, $1}' "$tmp/files" | sort -u | awk '{n[$1]=n[$1] " " $2; c[$1]++} END {for (p in c) if (c[p] > 1) print p ":" n[p]}' | sort | \
+        while read -r line; do warn "${line%%:*} is in more than one repository:${line#*:}  (remove it from the wrong one: $0 remove <repository> ${line%%:*})"; done
     fi
   fi
   rm -rf "$tmp"
