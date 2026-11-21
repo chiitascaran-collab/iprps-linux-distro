@@ -1,0 +1,110 @@
+{
+  "name": "iprps-model-loader",
+  "productName": "IPRPS Model Loader",
+  "version": "1.0.0",
+  "description": "Load and chat with local GGUF models (IPRPS AI models and any llama.cpp-compatible model) on Windows, macOS and Linux.",
+  "main": "main.js",
+  "author": "Mythical Legends Publishing, LLC",
+  "license": "GPL-2.0-only",
+  "homepage": "https://infiniteplane.space",
+  "scripts": {
+    "start": "electron .",
+    "fetch-engine": "node scripts/fetch-llama.js",
+    "test": "node test/gguf.test.js",
+    "dist": "electron-builder --publish never",
+    "dist:win": "node scripts/fetch-llama.js --os win --arch x64 && electron-builder --win --x64 --publish never",
+    "dist:mac": "node scripts/fetch-llama.js --os mac && electron-builder --mac --publish never",
+    "dist:linux": "node scripts/fetch-llama.js --os linux --arch x64 && electron-builder --linux --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "space.infiniteplane.modelloader",
+    "productName": "IPRPS Model Loader",
+    "artifactName": "IPRPS-Model-Loader-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "lib/**",
+      "renderer/**",
+      "build/icon.png",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "bin/${os}-${arch}",
+        "to": "bin",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "IPRPS-Model-Loader-Setup-${version}-${arch}.${ext}"
+    },
+    "portable": {
+      "artifactName": "IPRPS-Model-Loader-Portable-${version}-${arch}.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg"
+        },
+        {
+          "target": "zip"
+        }
+      ],
+      "category": "public.app-category.games",
+      "icon": "build/icon.png",
+      "identity": null
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Game",
+      "icon": "build/icon.png",
+      "maintainer": "Mythical Legends Publishing, LLC <support@infiniteplane.space>",
+      "synopsis": "Chat with local GGUF AI models"
+    },
+    "deb": {
+      "depends": [
+        "libgtk-3-0",
+        "libnss3",
+        "libxss1",
+        "libasound2 | libasound2t64",
+        "libgomp1"
+      ],
+      "recommends": [
+        "libvulkan1"
+      ]
+    }
+  }
+}
