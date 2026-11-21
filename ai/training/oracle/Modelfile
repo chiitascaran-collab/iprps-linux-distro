@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2026 Mythical Legends Publishing, LLC
+#
+# Ollama Modelfile for a fine-tuned IPRPS model (Llama 3.1 Nemotron Nano 4B, Llama 3 chat format),
+# for the IPRPS Oracle on Medium and Advanced.
+#
+#   1. Copy this file next to the .gguf file and change the FROM line to its file name.
+#   2. sudo iprps-ai-model install-modelfile /path/to/Modelfile
+#   3. sudo iprps-ai-model status     (the Oracle now uses it as iprps-storyteller)
+#   Undo with: sudo iprps-ai-model reset
+#
+# Why not "iprps-ai-model install FILE.gguf": that command doesn't set a TEMPLATE, so Ollama has to
+# guess the chat format from the file. This Modelfile sets the Llama 3 format the model was trained
+# with, and the stop token, so replies end cleanly.
+FROM ./Llama-3.1-Nemotron-Nano-4B-v1.1.Q4_K_M.gguf
+
+TEMPLATE """<|start_header_id|>system<|end_header_id|>
+
+{{ if .System }}{{ .System }}{{ end }}<|eot_id|>
+{{- range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1 }}
+{{- if eq .Role "user" }}<|start_header_id|>user<|end_header_id|>
+
+{{ .Content }}<|eot_id|>{{ if $last }}<|start_header_id|>assistant<|end_header_id|>
+
+{{ end }}
+{{- else if eq .Role "assistant" }}<|start_header_id|>assistant<|end_header_id|>
+
+{{ .Content }}{{ if not $last }}<|eot_id|>{{ end }}
+{{- end }}
+{{- end }}"""
+
+PARAMETER stop "<|eot_id|>"
+PARAMETER stop "<|start_header_id|>"
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.1
+PARAMETER num_ctx 8192
+
+# The system prompt the model was trained with. The Oracle sends its own system prompt (with the
+# campaign memory) on every request, which takes the place of this one.
+SYSTEM """You are the AI Session Master and rules assistant for the Infinite Plane Role Playing System (IPRPS) by Mythical Legends Publishing, LLC. You apply the official IPRPS AI profiles, profile patches, campaign patches and rules accurately, completely and in their intended tone."""

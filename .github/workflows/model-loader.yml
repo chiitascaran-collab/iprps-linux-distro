@@ -1,0 +1,56 @@
+name: Build IPRPS Model Loader (tools/model-loader)
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['model-loader-v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: windows-latest, os: win,   arch: x64,   flags: --win --x64 }
+          - { runner: macos-14,       os: mac,   arch: arm64, flags: --mac --arm64 }
+          - { runner: macos-13,       os: mac,   arch: x64,   flags: --mac --x64 }
+          - { runner: ubuntu-22.04,   os: linux, arch: x64,   flags: --linux --x64 }
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        working-directory: tools/model-loader
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install
+      - run: npm test
+      - name: Download llama.cpp engine
+        run: node scripts/fetch-llama.js --os ${{ matrix.os }} --arch ${{ matrix.arch }}
+        env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
+      - name: Build installers
+        run: npx electron-builder ${{ matrix.flags }} --publish never
+        env: { CSC_IDENTITY_AUTO_DISCOVERY: 'false' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IPRPS-Model-Loader-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            tools/model-loader/dist/*.exe
+            tools/model-loader/dist/*.dmg
+            tools/model-loader/dist/*.zip
+            tools/model-loader/dist/*.AppImage
+            tools/model-loader/dist/*.deb
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/model-loader-v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: artifacts, merge-multiple: true }
+      - uses: softprops/action-gh-release@v2
+        with: { files: 'artifacts/*', generate_release_notes: true }

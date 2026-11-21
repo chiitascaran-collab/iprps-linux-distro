@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-11-21
+
+- **IPRPS AI model training (`ai/training/`, new):** the tools behind the custom IPRPS model for the IPRPS Oracle.
+  - `dataset/build_jsonl.py` turns the AI Training Files folder into training and eval JSONL files, with sections under 4,096 tokens.
+  - The dataset generators add rule-checked worked examples: formulas (especially Mana Pool), character builds for all 18 species in administrative, religious, combat and adventurer roles, skill checks, reaction rolls and NPC behavior, all five combat systems, spellcasting with the official spells, weather effects on skills and magic, and dungeon rooms and checks for solo and group play.
+  - `IPRPS_Core_Dictionary.md` lists 288 core terms.
+  - `kit/train_iprps.py` fine-tunes Llama 3.1 Nemotron Nano 4B with Unsloth (LoRA) and exports GGUF files with the Llama 3 chat template.
+  - `kit/score_model.py` scores a model on 137 test questions with answer keys (`iprps_testset.jsonl`).
+  - `kit/fix_chat_template.py` repairs older GGUF exports whose chat template llama.cpp can't parse ("Incorrect chat template").
+  - `oracle/Modelfile` installs a trained model as `iprps-storyteller` with `sudo iprps-ai-model install-modelfile`.
+  - The history of the training sessions is in `ai/training/README.md`. The training data itself is not in the repository.
+- **IPRPS Model Loader (`tools/model-loader/`, new):** a desktop app for Windows, macOS and Linux, built with Electron and the official llama.cpp engine.
+  - It loads any GGUF model and chats with it.
+  - It checks each model's chat template against its tokenizer, and switches to the matching built-in template when the model's own template is missing or broken.
+  - `.github/workflows/model-loader.yml` builds the installers on GitHub: run it by hand or push a `model-loader-v*` tag.
+  - Tests: the GGUF checks pass. On Linux the app loaded the Q4_K_M IPRPS model with its broken template, switched to Llama 3 and chatted. The Windows and macOS builds haven't been run yet.
+
 ## 2026-11-17
 
 - **Published:** IPRPS CD Burner (`iprps-cd-burner` 2026.11.17-2, `iprps-apps`) and `libburn` 1.5.8-2, `libisofs` 1.5.8.pl02-2 and `libisoburn` 1.5.8.pl02-2 (`iprps-core`) are on the update server; every edition can install IPRPS CD Burner from IPRPS Updates.
