@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Map Maker
+GenericName=IPRPS Map Maker
+Comment=Top-down travel, battle, dungeon and town maps to draw, label, print and share
+Exec=iprps-open map-maker/
+Icon=iprps-map-maker
+Terminal=false
+Categories=X-IPRPS;Game;

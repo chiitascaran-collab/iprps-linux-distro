@@ -22,6 +22,7 @@
     "file-viewer",
     "updates",
     "master_db",
-    "character-prompt-builder"
+    "character-prompt-builder",
+    "map-maker"
   ]
 }
