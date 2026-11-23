@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><!-- IPRPS Map Maker -->
+<rect width="64" height="64" rx="12" fill="#121731"/>
+<path d="M10 16l14-5 16 5 14-5v37l-14 5-16-5-14 5z" fill="#efe2c0" stroke="#d9b45a" stroke-width="2" stroke-linejoin="round"/>
+<path d="M24 11v37M40 16v37" stroke="#c9b48a" stroke-width="1.5"/>
+<path d="M14 40l6-9 4 5 5-8 6 10" fill="none" stroke="#6b5737" stroke-width="2" stroke-linejoin="round"/>
+<path d="M15 23c6 2 9-3 14 0s8 4 14 1" fill="none" stroke="#5b93bd" stroke-width="2.4" stroke-linecap="round"/>
+<path d="M44 34l3 3m0-3l-3 3" stroke="#a02a2a" stroke-width="2.4" stroke-linecap="round"/>
+<circle cx="46" cy="44" r="3" fill="#d9b45a"/></svg>

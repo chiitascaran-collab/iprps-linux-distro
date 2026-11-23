@@ -86,4 +86,7 @@ body.display { background: radial-gradient(1400px 900px at 50% 30%, #1b2150 0%, 
 .stage h1 { font: 600 clamp(28px, 4.2vw, 64px) var(--serif); color: var(--gold2); margin: 0 0 3vh; }
 .stage .prose { font: clamp(20px, 2.3vw, 38px)/1.55 var(--serif); max-width: 46em; text-align: left; white-space: pre-wrap; }
 .stage .sigil { display: none; }
+.stage.picture { padding: 2vh 2vw; }
+.stage.picture h1 { font-size: clamp(18px, 2.2vw, 34px); margin: 0 0 1.5vh; }
+.stage .pic { max-width: 100%; max-height: 88vh; object-fit: contain; border-radius: 6px; box-shadow: 0 10px 40px #000c; }
 .stage.idle .sigil { display: block; font-size: 12vw; color: #d9b45a33; }

@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-11-23
+
+- **IPRPS Map Maker (new, every edition):** `apps/map-maker/` makes top-down maps for Session Masters: travel and terrain maps (coast, island, islands or inland; hex or square grid; rivers, roads, settlements, dungeons, ruins and named regions), battle maps (forest clearing, crossroads, camp, river crossing, cavern, ruined temple, tavern interior), dungeon levels (numbered rooms, doors, secret doors, stairs, traps, treasure) and hamlets, villages, walled towns and cities (streets, buildings, plaza, temple, inn, keep, districts). The same seed always makes the same map.
+  - Editing: paint and fill terrain, stamp objects, draw roads, rivers, trails, streets and walls, name places, draw notes (pen, line, arrow, rectangle, ellipse, text), erase, measure, undo and redo.
+  - Places carry a population, people (demographics by species, with a 100% check), notes, areas inside (dungeons, caves, ruins, rooms) and a link to their own map; **Make one** makes and links a dungeon level or settlement map for a place.
+  - The map has a title, legend, compass (rose or arrow) that turns with north, scale bar, key or gazetteer, five styles (full color, parchment, ink, old-school blue, night), landscape or portrait, and **Turn 90°**.
+  - Preview, print on one page or at battle scale (1 inch per square, over several labeled pages), save to each Session Master's library by campaign (`maps` table, made on first use), and **Show to players** on the player display.
+  - Export as SVG (the map rides inside, so it opens again), PNG, JPG, GIF (its own encoder), ASCII and `.ipmap`; import `.ipmap`, Map Maker SVGs and ASCII maps.
+  - Without the Universal Login (outside IPRPS OS) it still makes, exports and imports maps as files.
+  - Guide: `docs/MAP-MAKER.md`. Test: `tests/map-maker/browser_test.py` (every map type, every export and import, the main tools), passed; `api.php` tested against MariaDB (save, list by campaign, open, delete, other accounts refused, pictures for the player display).
+  - To publish it, use the Release Desk's **Add a new app** (folder `map-maker`, every edition): it writes the package `iprps-map-maker`, the menu entry, the Hub name and the edition lists.
+- **Player display shows pictures:** `apps/hub/display.php` now shows `image` items (PNG or JPEG data URLs, such as maps from Map Maker) full screen, and fetches each picture once instead of with every poll.
+
 ## 2026-11-21
 
 - **IPRPS AI model training (`ai/training/`, new):** the tools behind the custom IPRPS model for the IPRPS Oracle.

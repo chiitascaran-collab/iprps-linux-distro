@@ -19,7 +19,9 @@ if (isset($_GET['poll'])) {
             id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, campaign_id INT UNSIGNED NULL,
             kind ENUM('text','image','clear') NOT NULL DEFAULT 'text', title VARCHAR(160), body MEDIUMTEXT,
             shown_by INT NULL, shown_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-        $r = $db->query('SELECT id, kind, title, body FROM display_items ORDER BY id DESC LIMIT 1')->fetch();
+        // Pictures can be large: the poll only says one is there, and ?item=ID fetches it once.
+        if (isset($_GET['item'])) { $st = $db->prepare("SELECT id, kind, title, body FROM display_items WHERE id = ? AND kind = 'image'"); $st->execute([(int)$_GET['item']]); $r = $st->fetch(); }
+        else $r = $db->query("SELECT id, kind, title, IF(kind = 'image', NULL, body) AS body FROM display_items ORDER BY id DESC LIMIT 1")->fetch();
         echo json_encode(['ok' => true, 'item' => $r ?: null], JSON_UNESCAPED_UNICODE);
     } catch (Throwable $e) { echo json_encode(['ok' => false]); }
     exit;
@@ -33,20 +35,24 @@ if (isset($_GET['poll'])) {
 <link rel="stylesheet" href="hub.css">
 </head>
 <body class="display">
-<main id="stage" class="stage idle"><div class="sigil" aria-hidden="true">✦</div><h1 id="title"></h1><div id="body" class="prose"></div></main>
+<main id="stage" class="stage idle"><div class="sigil" aria-hidden="true">✦</div><h1 id="title"></h1><div id="body" class="prose"></div><img id="pic" class="pic" alt="" hidden></main>
 <script>
 (() => {
   let last = 0; const stage = document.getElementById('stage');
   async function poll() {
     try {
-      const it = (await (await fetch('display.php?poll=1', {cache: 'no-store'})).json()).item;
+      let it = (await (await fetch('display.php?poll=1', {cache: 'no-store'})).json()).item;
+      if (it && +it.id !== last && it.kind === 'image') it = (await (await fetch('display.php?poll=1&item=' + it.id, {cache: 'no-store'})).json()).item || it;
       if (it && +it.id !== last) {
         last = +it.id; stage.classList.add('fade');
         setTimeout(() => {
-          const clear = it.kind === 'clear';
-          stage.className = clear ? 'stage idle' : 'stage';
+          const clear = it.kind === 'clear', pic = document.getElementById('pic');
+          // Pictures (maps from IPRPS Map Maker) are PNG or JPEG data URLs; anything else is shown as text.
+          const img = it.kind === 'image' && /^data:image\/(png|jpeg);base64,[A-Za-z0-9+\/=]+$/.test(it.body || '');
+          stage.className = clear ? 'stage idle' : img ? 'stage picture' : 'stage';
           document.getElementById('title').textContent = clear ? '' : (it.title || '');
-          document.getElementById('body').textContent = clear ? '' : (it.body || '').replace(/\*\*/g, '');
+          document.getElementById('body').textContent = clear || img ? '' : (it.body || '').replace(/\*\*/g, '');
+          pic.hidden = !img; if (img) pic.src = it.body; else pic.removeAttribute('src');
         }, 400);
       }
     } catch (e) {}
