@@ -335,12 +335,13 @@
   function niceLen(target) { const p = Math.pow(10, Math.floor(Math.log10(target))); for (const k of [1, 2, 2.5, 5, 10]) if (k * p >= target) return k * p; return 10 * p; }
   function scaleSVG(m, P, geo, W, H, fs) {
     const unitPx = geo.W / (m.scale.per || 1), total = niceLen(W * 0.22 / unitPx), len = total * unitPx, seg = 4, h = fs * 0.45;
-    const [x, y] = corner(m.scalePos || 'bl', W, H, len + fs * 2, fs * 2.6, fs * 0.8);
-    let g = `<g id="scalebar" transform="translate(${f1(x + fs)},${f1(y + fs * 0.5)})"><rect x="${f1(-fs * 0.6)}" y="${f1(-fs * 0.5)}" width="${f1(len + fs * 1.2 + fs * 1.4)}" height="${f1(fs * 2.4)}" rx="${f1(fs * 0.2)}" fill="${P.halo}" opacity=".8"/>`;
+    const [x, y] = corner(m.scalePos || 'bl', W, H, len + fs * 2.4 + `1 square = ${m.scale.per} ${m.scale.unit}`.length * fs * 0.3, fs * 2.6, fs * 0.8);
+    const note = `1 ${m.grid.type === 'hex' ? 'hex' : 'square'} = ${m.scale.per} ${m.scale.unit}`, noteW = note.length * fs * 0.3;
+    let g = `<g id="scalebar" transform="translate(${f1(x + fs)},${f1(y + fs * 0.5)})"><rect x="${f1(-fs * 0.6)}" y="${f1(-fs * 0.5)}" width="${f1(len + fs * 1.6 + noteW)}" height="${f1(fs * 2.4)}" rx="${f1(fs * 0.2)}" fill="${P.halo}" opacity=".8"/>`;
     for (let i = 0; i < seg; i++) g += `<rect x="${f1(i * len / seg)}" y="0" width="${f1(len / seg)}" height="${f1(h)}" fill="${i % 2 ? P.halo : P.ink}" stroke="${P.ink}" stroke-width="${f1(fs * 0.05)}"/>`;
     const lab = v => `${+v.toFixed(2)}`;
     g += `<text x="0" y="${f1(h + fs * 1.05)}" text-anchor="middle" font-size="${f1(fs * 0.7)}" fill="${P.label}">0</text><text x="${f1(len / 2)}" y="${f1(h + fs * 1.05)}" text-anchor="middle" font-size="${f1(fs * 0.7)}" fill="${P.label}">${lab(total / 2)}</text><text x="${f1(len)}" y="${f1(h + fs * 1.05)}" text-anchor="middle" font-size="${f1(fs * 0.7)}" fill="${P.label}">${lab(total)} ${esc(m.scale.unit)}</text>`;
-    g += `<text x="${f1(len + fs * 0.9)}" y="${f1(h * 0.9)}" font-size="${f1(fs * 0.55)}" fill="${P.label}" font-style="italic">1 ${m.grid.type === 'hex' ? 'hex' : 'square'} = ${esc(m.scale.per)} ${esc(m.scale.unit)}</text></g>`;
+    g += `<text x="${f1(len + fs * 0.6)}" y="${f1(h * 0.9)}" font-size="${f1(fs * 0.55)}" fill="${P.label}" font-style="italic">${esc(note)}</text></g>`;
     return g;
   }
   // Entries: everything on the map, in a sensible order.
