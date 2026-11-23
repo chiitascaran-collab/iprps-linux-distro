@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- Copyright (C) 2026 Mythical Legends Publishing, LLC -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map Maker</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../iprps-lib/iprps.css">
+<link rel="stylesheet" href="map.css">
+<script src="../auth/auth-client.js"></script>
+<script src="../iprps-lib/iprps.js"></script>
+<script src="js/core.js"></script>
+<script src="js/generators.js"></script>
+<script src="js/render.js"></script>
+<script src="js/exporters.js"></script>
+</head>
+<body>
+<header class="bar">
+  <div class="brand"><span class="sigil">🗺</span> IPRPS <b>Map Maker</b></div>
+  <div id="picker"></div>
+  <div class="tb">
+    <button id="bNew" title="Make a new map (Ctrl+N)">＋ New</button>
+    <button id="bRegen" class="ghost" title="The same kind of map again, with a new seed">⟳ Regenerate</button>
+    <button id="bLib" class="ghost" title="Your saved maps">Library</button>
+    <button id="bSave" class="ghost" title="Save to your library (Ctrl+S)">Save</button>
+    <button id="bImport" class="ghost" title="Open a .ipmap, an SVG made here, or an ASCII map">Import</button>
+    <button id="bExport" class="ghost" title="Download as SVG, PNG, JPG, GIF, ASCII or .ipmap">Export</button>
+    <button id="bPreview" class="ghost" title="See the finished map before saving or printing">Preview</button>
+    <button id="bPrint" class="ghost" title="Print (Ctrl+P)">Print</button>
+    <button id="bShow" class="ghost" title="Show the map on the player display">Show to players</button>
+  </div>
+  <div class="spacer"></div>
+  <button id="bUndo" class="icon" title="Undo (Ctrl+Z)">↶</button><button id="bRedo" class="icon" title="Redo (Ctrl+Y)">↷</button>
+  <span id="dirty" class="pill" hidden>Not saved</span>
+  <span id="who" class="who"></span>
+</header>
+<div id="banner" class="banner" hidden></div>
+
+<div class="mm">
+  <nav class="tools" id="tools" aria-label="Tools"></nav>
+  <main class="view" id="view" tabindex="0">
+    <div class="stage" id="stage"></div>
+    <div class="zoom noprint">
+      <button class="ghost small" id="zOut" title="Zoom out (-)">−</button>
+      <span id="zLbl">100%</span>
+      <button class="ghost small" id="zIn" title="Zoom in (+)">＋</button>
+      <button class="ghost small" id="zFit" title="Fit the map in the window (0)">Fit</button>
+    </div>
+    <div class="status" id="status"></div>
+  </main>
+  <aside class="side" id="side">
+    <div class="tabs" id="tabs">
+      <button data-tab="tool" class="on">Tool</button><button data-tab="map">Map</button><button data-tab="places">Places</button>
+    </div>
+    <section class="pane" id="pane-tool"></section>
+    <section class="pane" id="pane-map" hidden></section>
+    <section class="pane" id="pane-places" hidden></section>
+  </aside>
+</div>
+
+<input type="file" id="file" accept=".ipmap,.json,.svg,.txt,.asc,application/json,image/svg+xml,text/plain" hidden>
+<datalist id="speciesList"></datalist>
+<div id="toast" class="toast" hidden></div>
+<script src="js/app.js"></script>
+</body>
+</html>

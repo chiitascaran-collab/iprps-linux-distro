@@ -1,6 +1,6 @@
 # Build status
 
-*Last updated: 2026-11-14*
+*Last updated: 2026-11-23*
 
 **IPRPS OS 1.0 is in Beta.** All three editions are built and released for testing:
 - **Lite**, **Medium** and **Advanced** images: `iprps-os-1.0-<edition>.img.xz` for USB sticks and disks (recommended), plus the live `.iso`.
@@ -42,6 +42,7 @@ New apps and fixes now go out through **IPRPS Updates** (pacman, signed reposito
 | IPRPS Link (12.13, optional) | Its tests pass with both relays (Node.js and PHP, also in burst mode). Still to do: the live Infinite Plane sign-in (`relay/auth/link.html` in the site's `/auth/`), one relay on HTTPS, a session with a phone on mobile data, `makepkg` in the build image |
 | IPRPS Podcast Studio (12.14, optional) | Server, export and AI-provider tests pass with mocks. Still to do: real camera and microphone, one LAN guest, a guest over the internet, real AI keys, `makepkg` in the build image |
 | IPRPS CD Burner (12.15, optional) | ✅ Published 2026-11-17: `iprps-cd-burner` 2026.11.17-2 in `iprps-apps`, `libburn` 1.5.8-2, `libisofs` and `libisoburn` 1.5.8.pl02-2 in `iprps-core`, built in the build image (app tests pass), repository check passed and uploaded. Still to do: a real drive (data disc, audio CD, erase) |
+| IPRPS Map Maker (every edition) | Browser test (all map types, exports, imports, tools) and `api.php` with MariaDB pass. Still to do: publish with the Release Desk (**Add a new app**, folder `map-maker`, every edition), then try it on the 6 GB desktop (editor speed on a large travel map) and a battle-scale printout |
 | Session Master Hub and web apps | Overhaul of the 32 server apps before 1.0 final |
 
 ## Decisions log
