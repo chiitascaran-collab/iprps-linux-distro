@@ -32,7 +32,7 @@ If you have run the walkthrough adventure *Fog on Pier Nine*, you already know t
 | --- | --- | --- |
 | 1. What makes IPRPS OS different | Know when IPRPS OS is the right tool | 10 minutes |
 | 2. Get set up | Create your campaign and choose your apps | 15 minutes |
-| 3. Prepare a session | Collect characters, notes, monsters, pictures and sound | 25 minutes |
+| 3. Prepare a session | Collect characters, notes, monsters, maps, pictures and sound | 40 minutes |
 | 4. Open the IPRPS Table | Get players connected on their phones | 15 minutes |
 | 5. Roll the IPRPS way | Read checks, bands and BTN | 15 minutes |
 | 6. Run a fight | Track initiative, HP, AR and conditions | 20 minutes |
@@ -116,7 +116,7 @@ You decide which tiles appear. Choose **Manage apps**, switch apps on or off, an
 > 3. Choose **Create campaign**.
 > 4. Go to the **Color scheme** step and pick the one that's easiest for you to read.
 > 5. Choose **Open the Session Master Hub**.
-> 6. Choose **Manage apps**. Make sure these are on: IPRPS Table, Character Sheets, Character Creator, Combat Tracker, Dice Roller, Session Log, Soundboard, IPRPS Writer and Master Database. Choose **Save**.
+> 6. Choose **Manage apps**. Make sure these are on: IPRPS Table, Character Sheets, Character Creator, Combat Tracker, Dice Roller, Session Log, Soundboard, IPRPS Writer, Master Database and Map Maker. Choose **Save**.
 >
 > **Check:** the Hub shows your apps as tiles. In the Combat Tracker, the **Campaign** menu at the top now lists *Iron City Blues*.
 
@@ -133,7 +133,7 @@ Your home folder has a **Campaigns** folder with three folders inside it:
 | Folder | Put this inside | Used by |
 | --- | --- | --- |
 | **Campaigns/Handouts** | Letters, clues, portraits of NPCs | The IPRPS Table (**Add media…**) |
-| **Campaigns/Maps** | Maps of cities, buildings and dungeons | The IPRPS Table and the player display |
+| **Campaigns/Maps** | Maps of cities, buildings and dungeons, including pictures you export from **Map Maker** | The IPRPS Table and the player display |
 | **Campaigns/Audio** | Music and background sound (MP3, OGG, WAV, M4A) | Session Master Mode plays it as looping ambience |
 
 Use pictures and sounds that you made yourself, or that you have the right to use.
@@ -194,6 +194,73 @@ Want a picture of an NPC? The **Character Prompt Builder** writes the descriptio
 It works without the internet. Only the image AI you paste into is online.
 
 > **Try it:** Make a prompt for Inspector Hale Ostrander. Randomize, then set the traits to match a gruff, older Wolffolk detective in a rain-soaked coat.
+
+### Maps with Map Maker
+
+**Map Maker** draws top-down maps for your game, the kind you see from above, like a bird would. It can make four kinds:
+
+| Map | What it shows | Starts with |
+| --- | --- | --- |
+| **Travel / terrain map** | A region: coasts, forests, hills, mountains, rivers, roads, cities, villages, dungeons and ruins | Hexes; 1 hex = 6 miles |
+| **Battle map** | One fight: a forest clearing, crossroads, camp, river crossing, cavern, ruined temple or tavern | Squares; 1 square = 5 feet |
+| **Dungeon level** | Numbered rooms, corridors, doors, secret doors, stairs, traps and treasure | Squares; 1 square = 5 feet |
+| **Town, city or village** | Streets, houses, the market square, temple, inn, keep, walls and districts | No grid; 1 square = 10 feet |
+
+Map Maker draws the first version for you. Then you change anything you like. It works without the internet.
+
+![Map Maker: the tools on the left, the map in the middle, and the options for the tool you picked on the right](images/map-maker.jpg "w=6.5")
+
+**Make a map.** Open **Map Maker** from the Hub or the IPRPS menu. Choose **＋ New**, pick the kind of map and its options, and choose **Make the map**. Leave **Name** empty and Map Maker invents one.
+
+Each map has a **seed**, a short code like *re5hjb*. The same kind of map with the same seed always comes out the same. So a friend can make your exact map from its seed. Don't like the map? Choose **⟳ Regenerate** for a new one.
+
+![New map: pick the kind of map, its size, and whether it is wide (landscape) or tall (portrait)](images/map-maker-new.jpg "w=5")
+
+**Change the map.** The tools are on the left. The options for each tool show in the **Tool** tab on the right.
+
+| Tool | Key | What it does |
+| --- | --- | --- |
+| **Select** | V | Click something to change it. Drag it to move it. **Delete** removes it |
+| **Paint** and **Fill** | B, G | Paint grass, forest, water, floors, walls and other ground |
+| **Stamp** | S | Add trees, rocks, doors, stairs, traps, chests, tables, tents, boats, buildings and more |
+| **Place** | P | Name a city, town, village, dungeon, cave, ruin, room, region or other place |
+| **Path** | R | Draw a road, trail, river, street or wall. Click each point, then double-click to finish |
+| **Pen, line, arrow, box, circle, text** | D, L, A, Q, O, T | Draw notes on the map in any color |
+| **Erase** | E | Remove something you added |
+| **Measure** | M | Drag from one point to another to see the distance |
+
+**Ctrl+Z** undoes a change. To move around, drag with the **✋** tool or hold the **Space** bar. The mouse wheel zooms in and out.
+
+**Name places and their people.** Click a place with **Select**, or open the **Places** tab. For a city, town or village you can type its **population** and its **people**: each species and its share, like *Human 52%, Wolffolk 21%*. **Make it 100%** fixes shares that don't add up. Map Maker also shows about how many of each species live there. Dungeons, caves, ruins and rooms can list the **areas inside** them, each with its own notes.
+
+![The Places tab: Iron City's population, people and notes](images/map-maker-places.jpg "w=6.5")
+
+A place can have **its own map**. On a travel map, click a dungeon and choose **Make one**: Map Maker makes a dungeon level with the same name and links the two. **Open** brings you back to it later.
+
+**How the map looks.** The **Map** tab sets the **style** (full color, parchment, ink, old-school blue or night), the grid and the scale, and which way **north** points. **Turn 90°** switches a map between wide and tall. You can also show or hide the **title**, the **legend**, the **compass**, the **scale bar**, the populations and people, and a **key** that lists numbered rooms beside the map.
+
+**Preview, save and print.** **Preview** shows the finished map. **Save** keeps it in your library, under the campaign at the top. **Library** opens your saved maps. **Print** fits the map on one page, or prints it at **battle scale**: one inch per square, over several pages, for miniatures. Each page is labeled with its row and column, so you can tape them together.
+
+**Share it.** **Export** saves the map as a picture (**PNG**, **JPG** or **GIF**), a drawing that stays sharp at any size (**SVG**), a text map (**ASCII**), or an **.ipmap** file. Send the .ipmap file to another Session Master: they open it with **Import** and can change it. An SVG made by Map Maker can be imported and changed too.
+
+> **Tip:** **Show to players** puts the map on the player display in one click. To show it on players' phones through the IPRPS Table, export a PNG into **Campaigns/Maps** and use **Add media…** in the Table console.
+
+> **Walkthrough 3: Map the Gaslight Bridge**
+>
+> In Walkthrough 6, smugglers ambush the party on the Gaslight Bridge. Make the battle map for that fight now.
+>
+> 1. Open **Map Maker** from the Hub. Set **Campaign** to *Iron City Blues*.
+> 2. Choose **＋ New**, then **Battle map**. Set **Scene** to **River crossing with a bridge**, **Size** to **Medium** and **Orientation** to **Landscape**. Type the **Name**: *Gaslight Bridge*. Choose **Make the map**.
+> 3. Choose the **Stamp** tool (**S**), then **Boat** in the **Tool** tab. Click the river next to the bridge. This is Sully's getaway boat.
+> 4. Choose the **Place** tool (**P**). Set **Kind** to **Point of interest** and click next to the boat. In the **Places** tab, type the **Name**: *Sully's boat*.
+> 5. Choose the **Arrow** tool (**A**) and pick red. Drag from the trees on one bank to the bridge. Then choose the **Text** tool (**T**), click by the trees, type *Enforcers hide here*, and choose **OK**.
+> 6. Open the **Map** tab. Set **Style** to **Night**, because the ambush happens in the rain after dark.
+> 7. Choose **Preview** to see the finished map, then **Save**.
+> 8. Choose **Print…**, set **Print** to **Battle scale: 1 inch per square**, and choose **Print**. In the print window, choose **Save as PDF** if you don't want to print it yet.
+>
+> **Check:** **Library** shows *Gaslight Bridge* with a small picture, under *Iron City Blues*. The printout has several pages, each marked with its row and column.
+
+> **Try it:** Make a **Travel / terrain map** of the coast around Iron City. Rename one city *Iron City*, give it a population of 38,400, and set its people to Human 52%, Wolffolk 21%, Catfolk 15% and Gemp 12%.
 
 ## Chapter 4: Open the IPRPS Table
 
@@ -256,7 +323,7 @@ Your players see what you send at the top of their screens. The dice bar is at t
 
 > **Tip:** Phones stay silent until the player touches the page once. If you start a sound and someone hasn't, they will see **🔊 Tap to turn on the table sound**.
 
-> **Walkthrough 3: Get your players in**
+> **Walkthrough 4: Get your players in**
 >
 > 1. Choose **Session Master Mode** on the panel. If you have one screen, the Table console opens. If not, open **IPRPS Table** from the Hub.
 > 2. Rename the table *Iron City Blues* and choose **Open the table**.
@@ -294,7 +361,7 @@ You never have to do this math. The Table, the Dice Roller and the Combat Tracke
 
 **3. In the Combat Tracker** during fights (Chapter 6), with **Quick roll**.
 
-> **Walkthrough 4: A skill check, start to finish**
+> **Walkthrough 5: A skill check, start to finish**
 >
 > 1. With your players at the Table, send everyone a message: *Brenna, roll Tracking against BTN 14.*
 > 2. On Dana's phone: **IPRPS ▾ → Skill check**. Attribute **14**, Skill **30**, BTN **14**, Band **A**. Tap **Roll**.
@@ -336,9 +403,9 @@ Pick the mode in the **Combat mode** menu. The tracker shows a short reminder of
 | **Keep players updated** | Shows the turn order to players after each turn |
 | **■ End combat** | Ends the fight and records it in the session log |
 
-> **Walkthrough 5: Ambush on the Gaslight Bridge**
+> **Walkthrough 6: Ambush on the Gaslight Bridge**
 >
-> The smugglers spring a trap on the party in the rain. Use Dual-Die, the gritty mode.
+> The smugglers spring a trap on the party in the rain. Use Dual-Die, the gritty mode. If you made the map in Walkthrough 3, open it in **Map Maker** and choose **Show to players** first.
 >
 > 1. Open the **Combat Tracker**. Set **Campaign** to *Iron City Blues*. Choose **+ Session** to start tonight's session.
 > 2. Under **Encounters**, choose **+ New**. Name it *Ambush on the Gaslight Bridge*. Set **Combat mode** to **4 · Dual-Die**.
@@ -416,7 +483,7 @@ Every answer has three parts:
 - Treat answers as ideas. You are the Session Master, so change anything you like.
 - **Clear this chat** between scenes, and untick **Use campaign memory** for **Names** and **Loot**. Both make answers start sooner.
 
-> **Walkthrough 6: When the players go off script**
+> **Walkthrough 7: When the players go off script**
 >
 > Tobin decides to visit a pawnshop you never planned.
 >
@@ -483,7 +550,7 @@ Open the **Recap** tab:
 
 Use the **Players** tab to record who came and the XP each player earned. XP here is a record. Update each character's XP on their sheet too.
 
-> **Walkthrough 7: Close out the night**
+> **Walkthrough 8: Close out the night**
 >
 > 1. In the **Session Log**, check that tonight's session is selected. Add a **💰 Loot** entry: *A brass key from Sully's coat.*
 > 2. Open the **Recap** tab and choose **Draft from the log**. Shorten it to a few sentences.
@@ -504,7 +571,7 @@ IPRPS OS updates itself without reinstalling. About 10 minutes after you start t
 
 To install them, open **IPRPS → IPRPS Updates**, type your password, and choose **Install updates**. Your campaigns, sheets, settings and files are kept. The same window lists extra IPRPS apps and optional software you can add with **Install**.
 
-Updates can also bring **new apps**. The Master Database and the Character Prompt Builder arrived this way. They appear in the IPRPS menu and on the Hub after the update. Now and then an app is **retired**. Then an update removes it, but anything you saved with it stays on your computer.
+Updates can also bring **new apps**. The Master Database, the Character Prompt Builder and Map Maker arrived this way. They appear in the IPRPS menu and on the Hub after the update. Now and then an app is **retired**. Then an update removes it, but anything you saved with it stays on your computer.
 
 > **Tip:** Install updates the day before game night, not an hour before.
 
@@ -550,6 +617,8 @@ Your console stays on your computer only. Turn remote play off when the session 
 | Next turn | **Next turn ▶** or the **N** key | Combat Tracker |
 | Thunder! | Click the pad, or press its key | Soundboard |
 | Look up a monster, spell or trap | Search the catalog | Master Database |
+| Show the battle map you made | **Show to players** | Map Maker |
+| How far is it? | **Measure** tool (**M**) | Map Maker |
 | A quick NPC or place | **NPC**, **Location** | IPRPS Oracle (Medium and up) |
 | A faster Oracle | **Model** menu → a Claude model (online, your key) | IPRPS Oracle, **Online AI…** |
 | End of the night | **Draft from the log**, then **Close the table** | Session Log, Table console |
@@ -571,6 +640,8 @@ Your console stays on your computer only. Turn remote play off when the session 
 | Claude: *refused the API key*, or *out of credit* | Copy the key again from console.anthropic.com, or add credit to your Anthropic account. The local model always works |
 | The computer is slow right after installing IPRPS OS | This happens only once. It is finishing its setup in the background. Wait for the message **IPRPS OS setup is finished** (10 to 30 minutes), then restart once |
 | The players see an old picture | Choose **Clear screens**, then show the new one |
+| Map Maker is slow on a big map | Open the **Map** tab and turn off **Painted texture**, or make the map a smaller size |
+| Battle-scale squares print smaller than 1 inch | In the print window, set the scale to **100%** (not **Fit to page**) |
 
 ## Glossary
 
@@ -582,6 +653,7 @@ Your console stays on your computer only. Turn remote play off when the session 
 | **Campaign** | Your whole story. Sessions, sheets, fights and notes belong to it |
 | **Console** | The Session Master's screen of the IPRPS Table |
 | **Development Points (DP)** | The points players spend to build characters |
+| **.ipmap file** | A map saved by Map Maker, to share with another Session Master or open again later |
 | **IPRPS** | The Infinite Plane Role Playing System, by Mythical Legends Publishing |
 | **IPRPS Oracle** | The storyteller AI (Medium and Advanced). Llama 3.2 runs on your computer; Claude is an optional online choice |
 | **API key** | A secret code from a company like Anthropic that lets an app use its online AI and charges your account |
@@ -589,6 +661,7 @@ Your console stays on your computer only. Turn remote play off when the session 
 | **Join code** | The six-character code players type to join an open table |
 | **Master Database** | The library of IPRPS creatures, species, weapons, spells, gear, covenants and traps |
 | **Prompt** | The text you give an AI, such as a description for an image AI |
+| **Seed** | The short code that Map Maker makes a map from. The same seed makes the same map |
 | **Player display** | A full-screen window for players on a second screen |
 | **Session** | One game night. Its log, fights and recap belong to it |
 | **Session Master (SM)** | The person who runs the game |

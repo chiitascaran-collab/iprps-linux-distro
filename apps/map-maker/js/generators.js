@@ -169,7 +169,8 @@
       for (const c of rg.cells) {
         const [x, y] = geo.center(...c), edge = Math.min(c[0], m.cols - 1 - c[0]) * 1.6, edgeY = Math.min(c[1], m.rows - 1 - c[1]) * 2;
         const near = taken.reduce((d, t) => Math.min(d, Math.hypot(t[0] - x, (t[1] - y) * 1.8) / m.cell), 99);
-        const sc = Math.min(near, 9) + Math.min(edge, 10) * 0.5 + Math.min(edgeY, 6) * 0.6 + MM.h2(c[0], c[1], 3);
+        const underTitle = c[1] < 4 && Math.abs(c[0] - m.cols / 2) < m.cols * 0.3 ? 6 : 0;   // the title banner sits there
+        const sc = Math.min(near, 9) + Math.min(edge, 10) * 0.5 + Math.min(edgeY, 6) * 0.6 + MM.h2(c[0], c[1], 3) - underTitle;
         if (sc > bs) { bs = sc; pick = c; }
       }
       const [px, py] = geo.center(...pick);
