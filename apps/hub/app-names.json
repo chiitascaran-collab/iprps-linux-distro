@@ -90,5 +90,9 @@
   "link": {
     "name": "IPRPS Link",
     "description": "Players in other cities join your IPRPS Table from any browser"
+  },
+  "map-maker": {
+    "name": "Map Maker",
+    "description": "Top-down travel, battle, dungeon and town maps to draw, label, print and share"
   }
 }

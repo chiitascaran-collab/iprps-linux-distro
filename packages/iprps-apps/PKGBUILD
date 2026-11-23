@@ -8,8 +8,8 @@
 pkgbase=iprps-apps
 pkgname=(iprps-lib iprps-hub iprps-writer iprps-table iprps-character-creator iprps-character-sheets
          iprps-combat iprps-dice iprps-session-log iprps-welcome iprps-file-viewer iprps-soundboard
-         iprps-oracle iprps-updates-tile iprps-master-db iprps-character-prompt-builder)
-pkgver=2026.11.14
+         iprps-oracle iprps-updates-tile iprps-master-db iprps-character-prompt-builder iprps-map-maker)
+pkgver=2026.11.23
 pkgrel=1
 arch=(any)
 url='https://github.com/chiitascaran-collab/iprps-linux-distro'
@@ -161,4 +161,11 @@ package_iprps-character-prompt-builder() {
   depends=(iprps-lib)
   _web character-prompt-builder character-prompt-builder
   _menu character-prompt-builder character-prompt-builder/favicon.svg
+}
+
+package_iprps-map-maker() {
+  pkgdesc='Map Maker: Top-down travel, battle, dungeon and town maps to draw, label, print and share'
+  depends=(iprps-lib)
+  _web map-maker map-maker
+  _menu map-maker map-maker/favicon.svg
 }
