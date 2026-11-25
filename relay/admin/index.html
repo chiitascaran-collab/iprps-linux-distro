@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- Copyright (C) 2026 Mythical Legends Publishing, LLC -->
+<!-- IPRPS Link relay dashboard. Upload this folder to the site that has the shared /auth/ folder, one level deep:
+     https://infiniteplane.space/play-admin/   (it must NOT be on the relay's own address). Set the relay in config.js. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>IPRPS Link · Relay dashboard</title>
+<link rel="stylesheet" href="admin.css">
+<script src="config.js"></script>
+<script src="../auth/auth-client.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark">✦</span><div><b>IPRPS Link</b><small>Relay dashboard</small></div></div>
+  <nav role="tablist" aria-label="Sections">
+    <button role="tab" data-tab="overview" class="on">Overview</button>
+    <button role="tab" data-tab="masters">Session Masters <span class="badge" id="pendingBadge" hidden></span></button>
+    <button role="tab" data-tab="invites">Pre-set accounts</button>
+    <button role="tab" data-tab="settings">Settings</button>
+    <button role="tab" data-tab="activity">Activity</button>
+  </nav>
+  <div class="who"><span id="relayAddr"></span><span id="you"></span><button id="refresh" title="Refresh now">↻</button></div>
+</header>
+<main>
+  <p id="banner" class="banner" hidden></p>
+
+  <section id="tab-overview" class="tab on" aria-label="Overview">
+    <div class="cards" id="cards"></div>
+    <div id="waiting"></div>
+    <p class="hint" id="ovNote"></p>
+  </section>
+
+  <section id="tab-masters" class="tab" aria-label="Session Masters">
+    <div class="row filters">
+      <input type="search" id="q" placeholder="Search name, username, email, address…" aria-label="Search">
+      <select id="fStatus" aria-label="Status"><option value="">Every status</option><option value="online">Online now</option><option>active</option><option>pending</option><option>suspended</option><option>blocked</option></select>
+      <select id="fPlan" aria-label="Plan"><option value="">Every plan</option></select>
+      <select id="sort" aria-label="Sort"><option value="last">Last connected</option><option value="new">Newest</option><option value="name">Name</option><option value="hours">Hours this month</option><option value="data">Data this month</option></select>
+      <span class="hint" id="count"></span>
+    </div>
+    <div class="split">
+      <div class="tablewrap"><table class="list"><thead><tr><th>Session Master</th><th>Status</th><th>Plan</th><th>Players' address</th><th>This month</th><th>Last connected</th></tr></thead><tbody id="rows"></tbody></table></div>
+      <aside class="editor" id="editor" hidden></aside>
+    </div>
+  </section>
+
+  <section id="tab-invites" class="tab" aria-label="Pre-set accounts">
+    <p class="hint">Set the plan, status or address of an Infinite Plane account <b>before</b> its IPRPS Link first connects, for example to give a playtester the Monthly plan, or to keep an account out. The settings apply the first time that account connects.</p>
+    <form id="inviteForm" class="grid">
+      <label>Infinite Plane username or email<input id="iWho" required maxlength="190" autocomplete="off"></label>
+      <label>Plan<select id="iPlan"></select></label>
+      <label>Status<select id="iStatus"><option value="active">Active</option><option value="suspended">Suspended</option><option value="blocked">Blocked</option></select></label>
+      <label>Players' address (optional)<input id="iName" maxlength="32" placeholder="for example: gm-riley" autocomplete="off"></label>
+      <label class="wide">Note (only you see it)<input id="iNote" maxlength="1000"></label>
+      <div class="wide"><button class="primary">Add</button> <span class="err" id="iErr"></span></div>
+    </form>
+    <table class="list"><thead><tr><th>Account</th><th>Plan</th><th>Status</th><th>Address</th><th>Note</th><th>Added</th><th></th></tr></thead><tbody id="invRows"></tbody></table>
+  </section>
+
+  <section id="tab-settings" class="tab" aria-label="Settings">
+    <form id="setForm" class="settings">
+      <fieldset><legend>Who can connect a table</legend>
+        <label class="radio"><input type="radio" name="access" value="open"> <span><b>Open</b> — any Infinite Plane account. Each Session Master is added the first time their IPRPS Link connects.</span></label>
+        <label class="radio"><input type="radio" name="access" value="approval"> <span><b>With approval</b> — anyone can sign up, but new Session Masters wait until you approve them under <i>Session Masters</i>.</span></label>
+        <label class="radio"><input type="radio" name="access" value="owners"> <span><b>Owners only</b> — only the accounts listed as <code>owners</code> in the relay's <code>config.php</code>: <span id="ownersList"></span></span></label>
+      </fieldset>
+      <fieldset><legend>Relay</legend>
+        <label>Tables connected at the same time <input type="number" id="sMax" min="0" step="1"> <small>0 = no limit. On shared web hosting, about 8 works well; each table keeps a few requests open.</small></label>
+        <label class="check"><input type="checkbox" id="sFriendly"> Give each Session Master their own address (<code>…/name/</code>) instead of <code>…/t/&lt;code&gt;/</code></label>
+        <label>Contact shown to refused Session Masters and on the relay's front page <input id="sContact" maxlength="200" placeholder="for example: support@infiniteplane.space"></label>
+      </fieldset>
+      <fieldset><legend>Plans</legend>
+        <p class="hint">0 = no limit. A Session Master's own limits (set on their page) win over their plan's. Limits are checked when IPRPS Link connects; a session already running is not cut off.</p>
+        <table class="list plans"><thead><tr><th>Key</th><th>Name</th><th>Hours a month</th><th>GB a month</th><th>Largest upload (MB)</th><th>Default</th><th></th></tr></thead><tbody id="planRows"></tbody></table>
+        <button type="button" id="addPlan">＋ Add a plan</button>
+      </fieldset>
+      <div><button class="primary">Save settings</button> <span class="err" id="sErr"></span></div>
+    </form>
+  </section>
+
+  <section id="tab-activity" class="tab" aria-label="Activity">
+    <div class="row filters"><select id="fType" aria-label="Kind"><option value="">Everything</option><option value="register">New Session Masters</option><option value="connect">Connections</option><option value="refused">Refused</option><option value="full">Relay full</option><option value="admin">Admin changes</option></select></div>
+    <ol class="log" id="log"></ol>
+  </section>
+</main>
+<div id="toast" class="toast" hidden role="status"></div>
+<script src="admin.js"></script>
+</body>
+</html>

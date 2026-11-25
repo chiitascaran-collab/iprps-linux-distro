@@ -70,7 +70,9 @@ const waitFor = async (fn, ms = 8000) => { const t = Date.now(); while (Date.now
   const U = st.url, base = new URL(U).pathname.replace(/\/$/, '');
   const other = await rq('POST', `${RELAY}/_link/open`, { headers: { 'X-Auth-Token': TOK_OTHER, 'Content-Type': 'application/json' }, body: '{}' });
   ok(other.status === 403, 'another account cannot use this relay', other.json?.error);
-  ok((await rq('GET', `${RELAY}/_link/poll?table=${st.url.split('/t/')[1].replace('/', '')}`, { headers: { 'X-Link-Key': 'nope' } })).status === 401, 'relay API needs the table key');
+  // the players' link is /t/<table>/ or, with friendly links (PHP relay), /<name>/
+  const tableId = st.url.includes('/t/') ? st.url.split('/t/')[1].replace('/', '') : fs.readdirSync(tmp + '/phpdata/t')[0];
+  ok((await rq('GET', `${RELAY}/_link/poll?table=${tableId}`, { headers: { 'X-Link-Key': 'nope' } })).status === 401, 'relay API needs the table key');
 
   // Session Master opens the table (console API: this computer only)
   const T = `http://127.0.0.1:${P.table}`, SMH = { 'Content-Type': 'application/json', 'x-iprps-sm': '1' }, thost = 'localhost:' + P.table;

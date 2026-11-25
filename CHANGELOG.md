@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-11-24
+
+- **IPRPS Link relay service (PHP relay 1.1):** one relay can now serve every Session Master who uses IPRPS Link. In the relay's `config.php`, `access` chooses who connects a table: `owners` (as before, the default), `open` (any Infinite Plane account; a Session Master is added the first time their IPRPS Link connects) or `approval` (new Session Masters wait for an admin).
+  - Each Session Master gets a separate table and their own players' address from their username (`https://play.infiniteplane.space/<name>/`); `/t/<table>/` links still work. IPRPS Link itself is unchanged.
+  - Statuses Active, Waiting for approval, Suspended and Blocked; suspending or blocking disconnects at once, and IPRPS Link shows the reason.
+  - Plans (Free, Monthly, Pay as you go, or your own) with monthly hours, monthly data and the largest upload, and a Session Master's own limits; checked when IPRPS Link connects. Connected time and data are counted per Session Master per month. Accounts can be pre-set before they first connect.
+  - A limit on tables connected at once, for shared hosting; a contact shown to refused Session Masters and on the front page; an activity log; the relay asks search engines not to index it.
+- **Relay dashboard (`relay/admin`, new):** goes on the main site (`/play-admin/`, signed in with the Universal Login), never on the relay's address. Overview, Session Masters (search, status, plan, address, limits, notes, disconnect, delete), pre-set accounts, settings and plans, and activity. It talks to the relay's new `/_admin/` API, which answers only the admins listed in `config.php` and only pages from `dashboard_origins`.
+- **Tests:** `tests/iprps-link/service.js` (52 checks: open sign-up, approval, addresses, plans and limits, suspend and block, the relay being full, the dashboard API's access rules and CORS). `tests/iprps-link/e2e.js` passes with the Node.js relay and the PHP relay (also in burst mode); it now finds the table from either kind of players' link.
+- **Docs:** build guide 12.13 (template, `.md` and `.docx`), `docs/REMOTE-PLAYERS-LINK.md` section C, `relay/php/config.sample.php`, `relay/admin/README.md`, README, ROADMAP and BUILD-STATUS.
+
 ## 2026-11-23
 
 - **Published:** IPRPS Map Maker (`iprps-map-maker` 2026.11.23-1, with every other IPRPS app at that version in `iprps-apps`) and `iprps-base`, `iprps-lite`, `iprps-medium` and `iprps-advanced` 1.0-9 (`iprps-core`), which add Map Maker to every edition. The Release Desk's recipe changes (`packages/iprps-apps/PKGBUILD`, the menu entry `iprps-map-maker.desktop`, `packages/iprps-base/PKGBUILD`, and the Hub's `app-names.json` and `default-apps.json`) are committed here; the Desk's own commit step didn't finish. Map Maker installed through IPRPS Updates on Lite and runs with no errors; IPRPS Podcast Studio installed through IPRPS Updates and works.
