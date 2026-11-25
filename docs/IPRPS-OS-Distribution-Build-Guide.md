@@ -23834,7 +23834,8 @@ The **relay** is a small program at a public address the Session Master controls
 | Package `iprps-link` | `packages/iprps-link/` (its own recipe folder) | optional on every edition; depends on `iprps-base` and `iprps-table` |
 | Service | `/opt/iprps/link/agent.js`, `iprps-link.service` | account `iprps-link`, settings and sign-in in `/var/lib/iprps-link` (mode 700); starts at boot, but remote play stays **off** until the Session Master turns it on |
 | Console | `http://localhost:7778/` (this computer only) | menu entry **IPRPS Link**, Hub tile `link` |
-| Relays | `relay/node/` (a server, Node.js), `relay/php/` (web hosting, PHP 7.4+, no database) | both speak the same protocol |
+| Relays | `relay/node/` (a server, Node.js), `relay/php/` (web hosting, PHP 7.4+, no database) | both speak the same protocol; the PHP relay can also run as a **relay service** for many Session Masters |
+| Relay dashboard | `relay/admin/` | for a relay service: goes on the site with the shared `/auth/` folder (`/play-admin/`), not on the relay's address |
 | Sign-in page | `relay/auth/link.html` | goes in the Infinite Plane site's `/auth/` folder |
 
 **Publish it once. [BUILDER] then [DEBIAN ROOT]** The Release Desk (17.7) does this with **Update IPRPS OS files or a recipe → `iprps-link`**. By hand:
@@ -23853,10 +23854,42 @@ Upload and check online as in 12.12 step 8. The package brings its own Hub tile 
 **The Session Master's setup** is in `docs/REMOTE-PLAYERS-LINK.md` (a players' and Session Masters' guide). In short:
 
 1. Upload `relay/auth/link.html` to the site's `/auth/` folder, beside `auth-client.js` (once, for everyone).
-2. Put up a relay: the Node.js relay behind Caddy or nginx with HTTPS, or the PHP relay in a folder or (better) a subdomain of a web host. Set the **owners** list (`OWNERS=` in `relay.env`, `'owners' =>` in `config.php`) to the Session Master's Infinite Plane username.
+2. Use a relay: the shared relay service, if there is one (below), or their own: the Node.js relay behind Caddy or nginx with HTTPS, or the PHP relay in a folder or (better) a subdomain of a web host. For their own, set the **owners** list (`OWNERS=` in `relay.env`, `'owners' =>` in `config.php`) to their Infinite Plane username.
 3. On IPRPS OS: **IPRPS Updates → IPRPS apps and optional software → IPRPS Link**, open it, **Sign in with Infinite Plane**, type the relay address (`https://` only) and **Turn on**. Send players the link and the join code.
 
-> **Side note:** IPRPS Link shows the relay the Session Master's Infinite Plane sign-in, so the relay knows the table is theirs. That's why the address must start with `https://`, and why a Session Master should use only a relay they or their co-Session Master run. The relay checks the sign-in with the site and never stores it.
+> **Side note:** IPRPS Link shows the relay the Session Master's Infinite Plane sign-in, so the relay knows the table is theirs. That's why the address must start with `https://`, and why a Session Master should use only a relay they trust: their own, their co-Session Master's, or the official relay service. The relay checks the sign-in with the site and never stores it.
+
+**One relay for every Session Master: the relay service.** The PHP relay (1.1) can serve Session Masters you don't know, so nobody needs their own relay. In its `config.php`, `access` chooses who may connect a table:
+
+| `access` | Who connects |
+|---|---|
+| `owners` | Only the accounts in `owners` (no list: the first account that connects). The default, for a Session Master's own relay |
+| `open` | **Any Infinite Plane account.** A Session Master is added the first time their IPRPS Link connects |
+| `approval` | Anyone can sign up; new Session Masters wait until an admin approves them |
+
+Every Session Master gets a separate table on the relay and **their own players' address**, made from their username: `https://play.infiniteplane.space/<name>/`. It stays the same every session. IPRPS Link needs no change; the Session Master types only the relay's address. The relay keeps a record of each Session Master (status, plan, address, note) and counts their connected hours and data each month, in its `data` folder. It never keeps sign-ins or game content.
+
+**Set it up. [WEB HOST]**
+
+1. Make the subdomain `play.infiniteplane.space` with HTTPS, pointing to an empty folder; PHP 7.4 or newer.
+2. Upload `relay/php/index.php`, `.htaccess` and a `config.php` made from `config.sample.php` with: `'access' => 'open'`, `'admins' => ['<your Infinite Plane username>']`, `'contact' => '<an address for questions>'` and `'max_online_tables' => 8` (shared hosting holds a few requests open per table).
+3. Upload `relay/admin/` to the main site as `/play-admin/` (beside `/auth/`), with the relay's address in its `config.js`. Open `https://infiniteplane.space/play-admin/` and sign in with an admin account.
+4. Check `https://play.infiniteplane.space/_link/health`, then turn IPRPS Link on with that address.
+
+The **relay dashboard** shows who is online, the Session Masters (search, status, plan, address, their own limits, notes, **Disconnect now**, **Delete**), accounts to **pre-set** before they first connect, **settings** (who can connect, tables at once, contact, plans) and the **activity** (sign-ups, connections, refusals, admin changes). Its changes are kept in the relay's `data/settings.json`; the admins list is only in `config.php`.
+
+| Status | What the Session Master sees in IPRPS Link |
+|---|---|
+| Active | Connected |
+| Waiting for approval | *Thanks for signing up. Your account is waiting for the relay's owner to approve it…* (IPRPS Link keeps trying and connects once approved) |
+| Suspended | *Remote play on this relay is paused for your account.* (disconnected at once) |
+| Blocked | *This Infinite Plane account can't use this relay.* (disconnected at once; also keeps them out in `open` mode, where **Delete** would let them sign up again) |
+
+**Plans** (Free, Monthly, Pay as you go, or your own) set monthly hours, monthly data and the largest upload; 0 means no limit, and a Session Master's own limits win over their plan's. Limits are checked when IPRPS Link connects; a session already running isn't cut off. Billing isn't connected yet: a Session Master's plan is set in the dashboard, and a payment service can later set it through the same records.
+
+> **Side note:** With open sign-up, the relay's address serves pages that come from strangers' computers (their Tables). That's why the dashboard lives on the main site, not on `play.infiniteplane.space`, and why the relay asks search engines not to index it. A Session Master who misuses the relay is **Blocked** in the dashboard; the `contact` setting shows players and Session Masters where to report problems.
+
+The relay service's tests: `node tests/iprps-link/service.js` (open sign-up, approval, addresses, plans and limits, suspend and block, the relay being full, the dashboard's access rules).
 
 **Test it. [TEST VM]** With players on mobile data (not your Wi-Fi): join, chat both ways, a roll, a pushed image and video, and a character sheet. The repository's tests run the real Table with both relays on any Linux computer with Node.js and PHP:
 
@@ -23871,6 +23904,11 @@ node tests/iprps-link/e2e.js node && node tests/iprps-link/e2e.js php && node te
 | *The relay address must start with https://* | Give the relay HTTPS (Caddy does it automatically); plain `http://` is refused because the sign-in travels to it |
 | Chat arrives about half a second late | Normal on web hosts that hold responses back (the PHP relay switches to short connections); the Node.js relay is instant |
 | Players see *The Session Master's table isn't connected* | Remote play is off, or the computer is offline: `systemctl status iprps-link`, `journalctl -u iprps-link -e` |
+| *Your account is waiting for the relay's owner to approve it* | Relay service in `approval` mode: the admin approves the Session Master in the dashboard |
+| *The relay is full right now* | More tables are connected than the relay's limit; IPRPS Link tries again by itself. Raise **Tables connected at the same time** if the host can take it |
+| *You have used this month's … of remote play on your plan* | Change the plan or the Session Master's own limits in the dashboard; it resets on the 1st (UTC) |
+| The dashboard says *Your account is not an admin of this relay* | Add the username to `admins` in the relay's `config.php` |
+| The dashboard says *This page may not manage the relay* | Add the dashboard's address (`https://infiniteplane.space`) to `dashboard_origins` in `config.php` |
 
 ### 12.14 IPRPS Podcast Studio (optional)
 

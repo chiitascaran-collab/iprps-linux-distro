@@ -33,6 +33,9 @@ app; use IPRPS Link when they are not.)
 
 Both speak the same language to IPRPS Link, so you can switch later by changing one address.
 
+**No relay of your own?** Use a shared **relay service** (section C) if one is offered to you, for example the
+official one at `https://play.infiniteplane.space`. You only type its address into IPRPS Link.
+
 > **Use a subdomain if you can** (`play.example.com`, not `example.com/play`). Game pages then cannot
 > touch anything else on your site, such as a signed-in session.
 
@@ -93,6 +96,63 @@ curl https://play.example.com/_link/health        # {"ok":true,"relay":"node",..
 The relay makes its own `data` folder and locks it. If the health page says it cannot write, make the
 folder writable. On the Infinite Plane site itself the relay finds `/auth/` and checks accounts directly.
 
+## C. A relay service for many Session Masters (PHP relay 1.1)
+
+**WHERE: your web host, and your main site (file manager or FTP)**
+
+One relay can serve every Session Master who uses IPRPS Link, including ones you don't know. Each Session Master
+gets a separate table and their own players' address, made from their username, for example
+`https://play.infiniteplane.space/marisol/`. Nobody has to set anything up but you.
+
+1. Make a subdomain for the relay (for example `play.example.com`) with HTTPS, pointing to an empty folder.
+2. Upload `relay/php/index.php` and `.htaccess`, and a `config.php` made from `config.sample.php`:
+   ```php
+   'access' => 'open',                        // or 'approval' to approve each new Session Master
+   'admins' => ['yourname'],                  // your Infinite Plane username: who may use the dashboard
+   'contact' => 'support@example.com',        // shown to refused Session Masters and on the front page
+   'max_online_tables' => 8,                  // shared hosting: a few requests stay open per table
+   ```
+3. Upload the folder `relay/admin` to your **main** site, the one with the shared `/auth/` folder, as `/play-admin/`.
+   Put the relay's address in its `config.js`:
+   ```js
+   window.IPRPS_RELAY = 'https://play.example.com';
+   ```
+4. Open `https://example.com/play-admin/` and sign in with your Infinite Plane account: that's the **relay dashboard**.
+
+**Why the dashboard is on the main site:** with open sign-up, pages under the relay's address come from strangers'
+computers (their Tables). A page there must never sit beside your admin page.
+
+**What Session Masters do:** in IPRPS Link, type the relay's address (`https://play.example.com`), sign in and
+**Turn on**. The first time, the relay adds them (or, with `approval`, puts them on the waiting list) and gives them
+their address. IPRPS Link shows it as the players' link.
+
+### The relay dashboard
+
+| Tab | What you do there |
+|---|---|
+| **Overview** | Tables online now, Session Masters by status, hours and data played this month, who can connect. Approve or block anyone waiting |
+| **Session Masters** | Search and filter. Open one to change their **status**, **plan**, **players' address**, their own **limits** and a private **note**; **Disconnect now**; **Delete** |
+| **Pre-set accounts** | Give an account a plan, status or address **before** its IPRPS Link first connects (a playtester on Monthly, an account kept out) |
+| **Settings** | Who can connect (open, with approval, owners only), tables at once, own addresses on or off, the contact, and the **plans** |
+| **Activity** | Sign-ups, connections, refusals (why), the relay being full, and every admin change, with times |
+
+| Status | What happens |
+|---|---|
+| Active | They connect |
+| Waiting for approval | IPRPS Link shows *your account is waiting for the relay's owner to approve it* and keeps trying; approve them and it connects |
+| Suspended | Disconnected now; IPRPS Link shows *Remote play on this relay is paused for your account* |
+| Blocked | Disconnected now; IPRPS Link shows *This Infinite Plane account can't use this relay*. Use this, not **Delete**, to keep someone out: with open sign-up a deleted Session Master is added again when they reconnect |
+
+**Plans:** Free, Monthly and Pay as you go to start, each with **hours a month**, **GB a month** and the **largest
+upload** (0 = no limit). A Session Master's own limits win over their plan's. Limits are checked when IPRPS Link
+connects, so a session that is already running is never cut off. The relay counts connected time (while IPRPS Link is
+on) and the data passed through it, per month (UTC). Payments aren't connected yet: you set each Session Master's plan
+in the dashboard.
+
+**Safety:** the relay keeps each Session Master's username, email, name, status, plan, address, note and monthly
+usage in its `data` folder (closed to the web). It never keeps sign-ins or anything from the games. Admins are only in
+`config.php`; the dashboard can't add one. The relay asks search engines not to index it.
+
 ## On your IPRPS OS computer
 
 **WHERE: IPRPS OS**
@@ -139,6 +199,12 @@ computer or network: IPRPS Link only ever talks to the Table's port.
 | Chat arrives late on the PHP relay | Normal on hosts that hold responses back. Move to the Node.js relay for instant chat. |
 | Long videos stall on the PHP relay | Your host stops long requests. Use the Node.js relay for video. |
 | Service state | `systemctl status iprps-link` and `journalctl -u iprps-link -e` |
+| "Your account is waiting for the relay's owner to approve it" | The relay service approves new Session Masters by hand. Wait, or ask its contact |
+| "Remote play on this relay is paused for your account" | The relay service suspended your account. Ask its contact |
+| "The relay is full right now" | Too many tables are connected at once. IPRPS Link tries again by itself |
+| "You have used this month's … of remote play on your plan" | Your plan's monthly hours or data are used up. It resets on the 1st, or ask about another plan |
+| Relay dashboard: "Your account is not an admin of this relay" | Add your username to `admins` in the relay's `config.php` |
+| Relay dashboard: "This page may not manage the relay" | Add the dashboard's site (for example `https://example.com`) to `dashboard_origins` in `config.php` |
 
 ## For the maintainer: publishing the update
 
@@ -168,5 +234,6 @@ Upload with FileZilla, then `/root/iprps-repo.sh online` (guide 12.12, 17.1). IP
 node tests/iprps-link/e2e.js node          # real Table + Link + Node relay
 node tests/iprps-link/e2e.js php           # ... + PHP relay (needs php)
 node tests/iprps-link/e2e.js php burst     # ... as on a host that holds responses back
+node tests/iprps-link/service.js           # relay service: open sign-up, approval, addresses, plans, dashboard API
 python3 tests/iprps-link/browser_test.py node   # Chrome: sign in, turn on, join, chat, roll
 ```

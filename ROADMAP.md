@@ -8,4 +8,4 @@ These are plans, not promises; release notes say what actually shipped.
 2. **New apps, first as updates, then in 1.1 for Medium and Advanced** — an **IPRPS CD/DVD player**, and the **AI Session Master** as its own app (with access to AI profiles, patches and capstones).
 3. **IPRPS Oracle** — a custom IPRPS model, fine-tuned as an RPG storyteller, installable next to the bundled Llama 3.2 3B.
 4. **1.1** — persistent live USB (keep changes on the stick) and a graphical installer.
-5. **Remote play service** — a hosted relay with Infinite Plane accounts, so Session Masters don't need their own (on hold).
+5. **Remote play service** — the relay service is built (open sign-up with Infinite Plane accounts, an address per Session Master, plans and limits, the relay dashboard); next, run it at `play.infiniteplane.space`, then connect it to the Monthly and pay-as-you-go subscriptions.
